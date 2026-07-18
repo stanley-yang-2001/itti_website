@@ -1,0 +1,1772 @@
+{
+  "242": {
+    "name": "Fiji",
+    "iso_numeric": "242",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "834": {
+    "name": "Tanzania",
+    "iso_numeric": "834",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "732": {
+    "name": "W. Sahara",
+    "iso_numeric": "732",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "124": {
+    "name": "Canada",
+    "iso_numeric": "124",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "840": {
+    "name": "United States of America",
+    "iso_numeric": "840",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "398": {
+    "name": "Kazakhstan",
+    "iso_numeric": "398",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "860": {
+    "name": "Uzbekistan",
+    "iso_numeric": "860",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "598": {
+    "name": "Papua New Guinea",
+    "iso_numeric": "598",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "360": {
+    "name": "Indonesia",
+    "iso_numeric": "360",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "032": {
+    "name": "Argentina",
+    "iso_numeric": "032",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "152": {
+    "name": "Chile",
+    "iso_numeric": "152",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "180": {
+    "name": "Dem. Rep. Congo",
+    "iso_numeric": "180",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "706": {
+    "name": "Somalia",
+    "iso_numeric": "706",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "404": {
+    "name": "Kenya",
+    "iso_numeric": "404",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "729": {
+    "name": "Sudan",
+    "iso_numeric": "729",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "148": {
+    "name": "Chad",
+    "iso_numeric": "148",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "332": {
+    "name": "Haiti",
+    "iso_numeric": "332",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "214": {
+    "name": "Dominican Rep.",
+    "iso_numeric": "214",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "643": {
+    "name": "Russia",
+    "iso_numeric": "643",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "044": {
+    "name": "Bahamas",
+    "iso_numeric": "044",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "238": {
+    "name": "Falkland Is.",
+    "iso_numeric": "238",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "578": {
+    "name": "Norway",
+    "iso_numeric": "578",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "304": {
+    "name": "Greenland",
+    "iso_numeric": "304",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "260": {
+    "name": "Fr. S. Antarctic Lands",
+    "iso_numeric": "260",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "626": {
+    "name": "Timor-Leste",
+    "iso_numeric": "626",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "710": {
+    "name": "South Africa",
+    "iso_numeric": "710",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "426": {
+    "name": "Lesotho",
+    "iso_numeric": "426",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "484": {
+    "name": "Mexico",
+    "iso_numeric": "484",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "858": {
+    "name": "Uruguay",
+    "iso_numeric": "858",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "076": {
+    "name": "Brazil",
+    "iso_numeric": "076",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "068": {
+    "name": "Bolivia",
+    "iso_numeric": "068",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "604": {
+    "name": "Peru",
+    "iso_numeric": "604",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "170": {
+    "name": "Colombia",
+    "iso_numeric": "170",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "591": {
+    "name": "Panama",
+    "iso_numeric": "591",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "188": {
+    "name": "Costa Rica",
+    "iso_numeric": "188",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "558": {
+    "name": "Nicaragua",
+    "iso_numeric": "558",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "340": {
+    "name": "Honduras",
+    "iso_numeric": "340",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "222": {
+    "name": "El Salvador",
+    "iso_numeric": "222",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "320": {
+    "name": "Guatemala",
+    "iso_numeric": "320",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "084": {
+    "name": "Belize",
+    "iso_numeric": "084",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "862": {
+    "name": "Venezuela",
+    "iso_numeric": "862",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "328": {
+    "name": "Guyana",
+    "iso_numeric": "328",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "740": {
+    "name": "Suriname",
+    "iso_numeric": "740",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "250": {
+    "name": "France",
+    "iso_numeric": "250",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "218": {
+    "name": "Ecuador",
+    "iso_numeric": "218",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "630": {
+    "name": "Puerto Rico",
+    "iso_numeric": "630",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "388": {
+    "name": "Jamaica",
+    "iso_numeric": "388",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "192": {
+    "name": "Cuba",
+    "iso_numeric": "192",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "716": {
+    "name": "Zimbabwe",
+    "iso_numeric": "716",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "072": {
+    "name": "Botswana",
+    "iso_numeric": "072",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "516": {
+    "name": "Namibia",
+    "iso_numeric": "516",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "686": {
+    "name": "Senegal",
+    "iso_numeric": "686",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "466": {
+    "name": "Mali",
+    "iso_numeric": "466",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "478": {
+    "name": "Mauritania",
+    "iso_numeric": "478",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "204": {
+    "name": "Benin",
+    "iso_numeric": "204",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "562": {
+    "name": "Niger",
+    "iso_numeric": "562",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "566": {
+    "name": "Nigeria",
+    "iso_numeric": "566",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "120": {
+    "name": "Cameroon",
+    "iso_numeric": "120",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "768": {
+    "name": "Togo",
+    "iso_numeric": "768",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "288": {
+    "name": "Ghana",
+    "iso_numeric": "288",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "384": {
+    "name": "C\u00f4te d'Ivoire",
+    "iso_numeric": "384",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "324": {
+    "name": "Guinea",
+    "iso_numeric": "324",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "624": {
+    "name": "Guinea-Bissau",
+    "iso_numeric": "624",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "430": {
+    "name": "Liberia",
+    "iso_numeric": "430",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "694": {
+    "name": "Sierra Leone",
+    "iso_numeric": "694",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "854": {
+    "name": "Burkina Faso",
+    "iso_numeric": "854",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "140": {
+    "name": "Central African Rep.",
+    "iso_numeric": "140",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "178": {
+    "name": "Congo",
+    "iso_numeric": "178",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "266": {
+    "name": "Gabon",
+    "iso_numeric": "266",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "226": {
+    "name": "Eq. Guinea",
+    "iso_numeric": "226",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "894": {
+    "name": "Zambia",
+    "iso_numeric": "894",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "454": {
+    "name": "Malawi",
+    "iso_numeric": "454",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "508": {
+    "name": "Mozambique",
+    "iso_numeric": "508",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "748": {
+    "name": "eSwatini",
+    "iso_numeric": "748",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "024": {
+    "name": "Angola",
+    "iso_numeric": "024",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "108": {
+    "name": "Burundi",
+    "iso_numeric": "108",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "376": {
+    "name": "Israel",
+    "iso_numeric": "376",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "422": {
+    "name": "Lebanon",
+    "iso_numeric": "422",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "450": {
+    "name": "Madagascar",
+    "iso_numeric": "450",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "275": {
+    "name": "Palestine",
+    "iso_numeric": "275",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "270": {
+    "name": "Gambia",
+    "iso_numeric": "270",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "788": {
+    "name": "Tunisia",
+    "iso_numeric": "788",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "012": {
+    "name": "Algeria",
+    "iso_numeric": "012",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "400": {
+    "name": "Jordan",
+    "iso_numeric": "400",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "784": {
+    "name": "United Arab Emirates",
+    "iso_numeric": "784",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "634": {
+    "name": "Qatar",
+    "iso_numeric": "634",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "414": {
+    "name": "Kuwait",
+    "iso_numeric": "414",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "368": {
+    "name": "Iraq",
+    "iso_numeric": "368",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "512": {
+    "name": "Oman",
+    "iso_numeric": "512",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "548": {
+    "name": "Vanuatu",
+    "iso_numeric": "548",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "116": {
+    "name": "Cambodia",
+    "iso_numeric": "116",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "764": {
+    "name": "Thailand",
+    "iso_numeric": "764",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "418": {
+    "name": "Laos",
+    "iso_numeric": "418",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "104": {
+    "name": "Myanmar",
+    "iso_numeric": "104",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "704": {
+    "name": "Vietnam",
+    "iso_numeric": "704",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "408": {
+    "name": "North Korea",
+    "iso_numeric": "408",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "410": {
+    "name": "South Korea",
+    "iso_numeric": "410",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "496": {
+    "name": "Mongolia",
+    "iso_numeric": "496",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "356": {
+    "name": "India",
+    "iso_numeric": "356",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "050": {
+    "name": "Bangladesh",
+    "iso_numeric": "050",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "064": {
+    "name": "Bhutan",
+    "iso_numeric": "064",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "524": {
+    "name": "Nepal",
+    "iso_numeric": "524",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "586": {
+    "name": "Pakistan",
+    "iso_numeric": "586",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "004": {
+    "name": "Afghanistan",
+    "iso_numeric": "004",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "762": {
+    "name": "Tajikistan",
+    "iso_numeric": "762",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "417": {
+    "name": "Kyrgyzstan",
+    "iso_numeric": "417",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "795": {
+    "name": "Turkmenistan",
+    "iso_numeric": "795",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "364": {
+    "name": "Iran",
+    "iso_numeric": "364",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "760": {
+    "name": "Syria",
+    "iso_numeric": "760",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "051": {
+    "name": "Armenia",
+    "iso_numeric": "051",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "752": {
+    "name": "Sweden",
+    "iso_numeric": "752",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "112": {
+    "name": "Belarus",
+    "iso_numeric": "112",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "804": {
+    "name": "Ukraine",
+    "iso_numeric": "804",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "616": {
+    "name": "Poland",
+    "iso_numeric": "616",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "040": {
+    "name": "Austria",
+    "iso_numeric": "040",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "348": {
+    "name": "Hungary",
+    "iso_numeric": "348",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "498": {
+    "name": "Moldova",
+    "iso_numeric": "498",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "642": {
+    "name": "Romania",
+    "iso_numeric": "642",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "440": {
+    "name": "Lithuania",
+    "iso_numeric": "440",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "428": {
+    "name": "Latvia",
+    "iso_numeric": "428",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "233": {
+    "name": "Estonia",
+    "iso_numeric": "233",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "276": {
+    "name": "Germany",
+    "iso_numeric": "276",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "100": {
+    "name": "Bulgaria",
+    "iso_numeric": "100",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "300": {
+    "name": "Greece",
+    "iso_numeric": "300",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "792": {
+    "name": "Turkey",
+    "iso_numeric": "792",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "008": {
+    "name": "Albania",
+    "iso_numeric": "008",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "191": {
+    "name": "Croatia",
+    "iso_numeric": "191",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "756": {
+    "name": "Switzerland",
+    "iso_numeric": "756",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "442": {
+    "name": "Luxembourg",
+    "iso_numeric": "442",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "056": {
+    "name": "Belgium",
+    "iso_numeric": "056",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "528": {
+    "name": "Netherlands",
+    "iso_numeric": "528",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "620": {
+    "name": "Portugal",
+    "iso_numeric": "620",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "724": {
+    "name": "Spain",
+    "iso_numeric": "724",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "372": {
+    "name": "Ireland",
+    "iso_numeric": "372",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "540": {
+    "name": "New Caledonia",
+    "iso_numeric": "540",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "090": {
+    "name": "Solomon Is.",
+    "iso_numeric": "090",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "554": {
+    "name": "New Zealand",
+    "iso_numeric": "554",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "036": {
+    "name": "Australia",
+    "iso_numeric": "036",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "144": {
+    "name": "Sri Lanka",
+    "iso_numeric": "144",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "156": {
+    "name": "China",
+    "iso_numeric": "156",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "158": {
+    "name": "Taiwan",
+    "iso_numeric": "158",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "380": {
+    "name": "Italy",
+    "iso_numeric": "380",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "208": {
+    "name": "Denmark",
+    "iso_numeric": "208",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "826": {
+    "name": "United Kingdom",
+    "iso_numeric": "826",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "352": {
+    "name": "Iceland",
+    "iso_numeric": "352",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "031": {
+    "name": "Azerbaijan",
+    "iso_numeric": "031",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "268": {
+    "name": "Georgia",
+    "iso_numeric": "268",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "608": {
+    "name": "Philippines",
+    "iso_numeric": "608",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "458": {
+    "name": "Malaysia",
+    "iso_numeric": "458",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "096": {
+    "name": "Brunei",
+    "iso_numeric": "096",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "705": {
+    "name": "Slovenia",
+    "iso_numeric": "705",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "246": {
+    "name": "Finland",
+    "iso_numeric": "246",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "703": {
+    "name": "Slovakia",
+    "iso_numeric": "703",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "203": {
+    "name": "Czechia",
+    "iso_numeric": "203",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "232": {
+    "name": "Eritrea",
+    "iso_numeric": "232",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "392": {
+    "name": "Japan",
+    "iso_numeric": "392",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "600": {
+    "name": "Paraguay",
+    "iso_numeric": "600",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "887": {
+    "name": "Yemen",
+    "iso_numeric": "887",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "682": {
+    "name": "Saudi Arabia",
+    "iso_numeric": "682",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "010": {
+    "name": "Antarctica",
+    "iso_numeric": "010",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "N. Cyprus": {
+    "name": "N. Cyprus",
+    "iso_numeric": null,
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "196": {
+    "name": "Cyprus",
+    "iso_numeric": "196",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "504": {
+    "name": "Morocco",
+    "iso_numeric": "504",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "818": {
+    "name": "Egypt",
+    "iso_numeric": "818",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "434": {
+    "name": "Libya",
+    "iso_numeric": "434",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "231": {
+    "name": "Ethiopia",
+    "iso_numeric": "231",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "262": {
+    "name": "Djibouti",
+    "iso_numeric": "262",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "Somaliland": {
+    "name": "Somaliland",
+    "iso_numeric": null,
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "800": {
+    "name": "Uganda",
+    "iso_numeric": "800",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "646": {
+    "name": "Rwanda",
+    "iso_numeric": "646",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "070": {
+    "name": "Bosnia and Herz.",
+    "iso_numeric": "070",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "807": {
+    "name": "Macedonia",
+    "iso_numeric": "807",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "688": {
+    "name": "Serbia",
+    "iso_numeric": "688",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "499": {
+    "name": "Montenegro",
+    "iso_numeric": "499",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "Kosovo": {
+    "name": "Kosovo",
+    "iso_numeric": null,
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "780": {
+    "name": "Trinidad and Tobago",
+    "iso_numeric": "780",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  },
+  "728": {
+    "name": "S. Sudan",
+    "iso_numeric": "728",
+    "gtbi": 0,
+    "etti": 0,
+    "evs": 0,
+    "tie": 0,
+    "pdl": 0,
+    "its": 0
+  }
+}
