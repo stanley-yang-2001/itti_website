@@ -1,5 +1,14 @@
 """
 User model and CRUD functions.
+
+Access tier lives on User.role, independent of status (which just tracks
+soft-delete) and independent of how the user authenticated (Google or
+email/password) — see docs/ACCESS_LEVELS.md for the full design.
+
+  ROLE_BASIC     — default for every account, regardless of signup method.
+  ROLE_PUBLISHER — fellows/staff who can upload/publish documents. Never
+                   set by /api/auth/google or /api/auth/signup; granted
+                   separately via promote_user.py.
 """
 
 from datetime import datetime
@@ -11,6 +20,10 @@ from .database import Base, Session
 
 STATUS_VISIBLE = 1
 STATUS_HIDDEN = 0
+
+ROLE_BASIC = "basic"
+ROLE_PUBLISHER = "publisher"
+VALID_ROLES = {ROLE_BASIC, ROLE_PUBLISHER}
 
 
 class User(Base):
@@ -24,6 +37,7 @@ class User(Base):
     password_hash = Column(String, nullable=True)
     name = Column(String, nullable=True)
     picture_url = Column(String, nullable=True)
+    role = Column(String(20), nullable=False, default=ROLE_BASIC, index=True)
     # 1 = visible/active (default), 0 = hidden (soft-deleted account).
     # The row is never removed; "deleting" an account just flips this to 0.
     status = Column(Integer, nullable=False, default=STATUS_VISIBLE, index=True)
@@ -33,18 +47,34 @@ class User(Base):
     events = relationship("UserEvent", back_populates="user", cascade="all, delete-orphan")
 
     def __repr__(self):
-        return f"<User id={self.id} email={self.email} status={self.status}>"
+        return f"<User id={self.id} email={self.email} role={self.role} status={self.status}>"
+
+    def to_public_dict(self):
+        """Fields safe to send to the client. google_sub/password_hash are
+        intentionally excluded."""
+        return {
+            "id": self.id,
+            "email": self.email,
+            "name": self.name,
+            "picture_url": self.picture_url,
+            "role": self.role,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
 
 
 # ---------- CRUD ----------
 
-def create_user(email, google_sub=None, password_hash=None, name=None, picture_url=None):
+def create_user(email, google_sub=None, password_hash=None, name=None, picture_url=None, role=ROLE_BASIC):
     """
-    Create and persist a new user with status=1 (visible). Either
-    google_sub (Google sign-in) or password_hash (email/password
-    sign-up) should be provided, but this isn't enforced at the DB
-    level so both auth methods can share a table. Returns the created
-    User.
+    Create and persist a new user with status=1 (visible) and, by
+    default, role=ROLE_BASIC. Either google_sub (Google sign-in) or
+    password_hash (email/password sign-up) should be provided, but this
+    isn't enforced at the DB level so both auth methods can share a
+    table. Returns the created User.
+
+    `role` should stay at its default for anything reachable from a
+    public sign-in/sign-up flow — app.py never passes it explicitly for
+    exactly this reason.
     """
     session = Session()
     try:
@@ -54,6 +84,7 @@ def create_user(email, google_sub=None, password_hash=None, name=None, picture_u
             password_hash=password_hash,
             name=name,
             picture_url=picture_url,
+            role=role,
             status=STATUS_VISIBLE,
         )
         session.add(user)

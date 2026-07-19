@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
-import "../styles/Signup.css";
+import { useAuth } from "../context/AuthContext.jsx";
+import "../styles/SignUp.css";
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const MIN_PASSWORD_LENGTH = 8;
@@ -13,6 +14,7 @@ const MIN_PASSWORD_LENGTH = 8;
  */
 export default function Signup() {
   const navigate = useNavigate();
+  const { signup, loginWithGoogle } = useAuth();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -58,30 +60,14 @@ export default function Signup() {
 
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/signup", {
-        method: "POST",
-        credentials: "include", // send/receive the session cookie
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: name.trim(),
-          email: email.trim().toLowerCase(),
-          password,
-        }),
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        if (res.status === 409) {
-          throw new Error("An account with this email already exists.");
-        }
-        throw new Error(body.description || "Sign up failed. Please try again.");
-      }
-
-      // Adjust this to whatever your app does after account creation —
-      // e.g. store user in context, then redirect to a dashboard.
+      await signup(name.trim(), email.trim().toLowerCase(), password);
       navigate("/");
     } catch (err) {
-      setFormError(err.message);
+      if (err.message.includes("already exists")) {
+        setFormError("An account with this email already exists.");
+      } else {
+        setFormError(err.message || "Sign up failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -91,18 +77,7 @@ export default function Signup() {
     setFormError(null);
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/google", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ credential: credentialResponse.credential }),
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.description || "Google sign-in failed");
-      }
-
+      await loginWithGoogle(credentialResponse.credential);
       navigate("/");
     } catch (err) {
       setFormError(err.message);

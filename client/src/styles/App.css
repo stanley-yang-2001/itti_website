@@ -1,4 +1,4 @@
-  :root{
+:root{
     --bg-deep:#080D16;
     --bg-panel:#0E1626;
     --line:#1D2A3E;
@@ -409,8 +409,67 @@
     border-radius:1px;
   }
 
+  .navbar-auth{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .navbar-user{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    color:var(--text-mid);
+    white-space:nowrap;
+  }
+  .role-badge{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    padding:3px 8px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    color:var(--text-low);
+  }
+  .role-badge.role-publisher{
+    color:var(--bg-deep);
+    background:var(--gold);
+    border-color:var(--gold);
+  }
+  .navbar-auth-btn{
+    display:inline-block;
+    padding:7px 14px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:transparent;
+    color:var(--text-mid);
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:500;
+    text-decoration:none;
+    cursor:pointer;
+    transition:color .15s ease, background .15s ease, border-color .15s ease;
+  }
+  .navbar-auth-btn:hover{
+    color:var(--text-hi);
+    border-color:var(--cyan);
+  }
+  .navbar-auth-btn.primary{
+    background:var(--cyan);
+    border-color:var(--cyan);
+    color:var(--bg-deep);
+  }
+  .navbar-auth-btn.primary:hover{
+    color:var(--bg-deep);
+    opacity:0.9;
+  }
+
   @media (max-width: 900px){
     .navbar-toggle{display:flex;}
+    .navbar-top{flex-wrap:wrap; row-gap:10px;}
+    .navbar-user span.role-badge{display:none;}
     .navbar-links{
       display:none;
       flex-direction:column;

@@ -1,15 +1,22 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
+import { useAuth } from "../context/AuthContext.jsx";
 import "../styles/Login.css";
 
 /**
- * Login page. Google Sign-In is one option; users who don't want to use
- * Google are sent to /signup (a separate page, not yet built) to create
- * an account another way (e.g. email/password).
+ * Login page. Supports both Google Sign-In and email/password (for
+ * accounts created via /signup) — previously only Google was wired up
+ * here even though the backend has always supported both.
  */
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { loginWithGoogle, loginWithPassword } = useAuth();
+  const redirectTo = location.state?.from?.pathname || "/";
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -17,22 +24,8 @@ export default function Login() {
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/google", {
-        method: "POST",
-        credentials: "include", // send/receive the session cookie
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ credential: credentialResponse.credential }),
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.description || "Google sign-in failed");
-      }
-
-      const user = await res.json();
-      // Adjust this to whatever your app does after login —
-      // e.g. store user in context, then redirect to a dashboard.
-      navigate("/");
+      await loginWithGoogle(credentialResponse.credential);
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -42,6 +35,20 @@ export default function Login() {
 
   function handleGoogleError() {
     setError("Google sign-in was cancelled or failed. Please try again.");
+  }
+
+  async function handlePasswordSubmit(e) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      await loginWithPassword(email, password);
+      navigate(redirectTo, { replace: true });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -64,13 +71,35 @@ export default function Login() {
           <span>or</span>
         </div>
 
-        <button
-          type="button"
-          className="login-signup-button"
-          onClick={() => navigate("/signup")}
-        >
-          Create an account with email
-        </button>
+        <form className="login-password-form" onSubmit={handlePasswordSubmit}>
+          <label className="login-field">
+            <span>Email</span>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              required
+            />
+          </label>
+          <label className="login-field">
+            <span>Password</span>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              required
+            />
+          </label>
+          <button type="submit" className="login-submit-button" disabled={loading}>
+            Log in
+          </button>
+        </form>
+
+        <p className="login-signup-link">
+          Don&rsquo;t have an account? <Link to="/signup">Sign up</Link>
+        </p>
       </div>
     </div>
   );

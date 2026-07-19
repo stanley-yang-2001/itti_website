@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/CountryProfiles.css";
+import { isDataPending, getNumericValue, getLatestYearRecord } from "../utils/countryData";
 
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
@@ -9,6 +10,12 @@ const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
  * fixed at the bottom of the page. Clicking a letter filters the list
  * above it to countries whose name starts with that letter. The grid
  * stays visible at all times so the user can switch letters freely.
+ *
+ * country_data.json fields are never assumed to be numbers - every
+ * ETTI/GTBI field can be the literal string "Data Pending" instead of
+ * a real value (see utils/countryData.js), so any place this component
+ * reads a numeric field goes through getNumericValue()/isDataPending()
+ * rather than comparing or doing math on the raw value directly.
  */
 export default function CountryProfiles() {
   const [countries, setCountries] = useState(null); // null = loading
@@ -27,11 +34,21 @@ export default function CountryProfiles() {
         if (cancelled) return;
         // data is keyed by ISO numeric code -> record. Normalize to a
         // flat array and expect each record to carry a "name" field;
-        // fall back to the key if a record has no name yet.
-        const list = Object.entries(data).map(([code, record]) => ({
-          code,
-          name: record?.name || code,
-        }));
+        // fall back to the key if a record has no name yet. Each
+        // record's ETTI/GTBI sections are year-keyed and may contain
+        // "Data Pending" fields - not read on this page today, but kept
+        // alongside the country in case a future summary (e.g. a small
+        // "Low/Data Pending" badge) is added here.
+        const list = Object.entries(data).map(([code, record]) => {
+          const latestGtbi = getLatestYearRecord(record?.GTBI);
+          const latestEtti = getLatestYearRecord(record?.ETTI);
+          return {
+            code,
+            name: record?.name || code,
+            gtbiScore: getNumericValue(latestGtbi?.gtbi),
+            ettiScore: getNumericValue(latestEtti?.etti),
+          };
+        });
         list.sort((a, b) => a.name.localeCompare(b.name));
         setCountries(list);
       })
