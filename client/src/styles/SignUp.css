@@ -1,0 +1,127 @@
+.signup-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.signup-card {
+  background: #fff;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.signup-card h1 {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  text-align: left;
+  margin-bottom: 1.5rem;
+}
+
+.signup-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: #333;
+}
+
+.signup-field input {
+  padding: 0.6rem 0.7rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.signup-field input:focus {
+  outline: none;
+  border-color: #4285f4;
+}
+
+.signup-field-error {
+  color: #b3261e;
+  font-size: 0.78rem;
+}
+
+.signup-submit-button {
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #4285f4;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 0.25rem;
+}
+
+.signup-submit-button:hover {
+  background: #3367d6;
+}
+
+.signup-submit-button:disabled {
+  background: #9db8ea;
+  cursor: not-allowed;
+}
+
+.signup-divider {
+  display: flex;
+  align-items: center;
+  color: #888;
+  font-size: 0.85rem;
+  margin: 1rem 0;
+}
+
+.signup-divider::before,
+.signup-divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #ddd;
+}
+
+.signup-divider span {
+  padding: 0 0.75rem;
+}
+
+.signup-google {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.signup-error {
+  color: #b3261e;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.signup-status {
+  color: #555;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.signup-login-link {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.signup-login-link a {
+  color: #4285f4;
+  text-decoration: none;
+}
+
+.signup-login-link a:hover {
+  text-decoration: underline;
+}

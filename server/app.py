@@ -15,17 +15,21 @@ available; nothing else needs to change.
 """
 import json
 import os
+import re
 import uuid
 
 from flask import Flask, jsonify, abort, request, session
 from flask_cors import CORS
+from werkzeug.security import generate_password_hash, check_password_hash
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 
 from models.database import Base, engine
-from models.user import create_user, get_user, get_user_by_google_sub
+from models.user import create_user, get_user, get_user_by_google_sub, get_user_by_email, update_user, delete_user
 from models.document import create_document, get_documents_by_user, get_document, delete_document
 from models.user_event import create_user_event, get_events_by_user, CRUDAction
+
+EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
@@ -92,7 +96,7 @@ def health():
 
 
 # ---------------------------------------------------------------------------
-# Auth (Google Sign-In)
+# Auth (Google Sign-In + email/password)
 # ---------------------------------------------------------------------------
 
 @app.post("/api/auth/google")
@@ -121,7 +125,72 @@ def auth_google():
 
     user = get_user_by_google_sub(google_sub)
     if user is None:
-        user = create_user(google_sub=google_sub, email=email, name=name, picture_url=picture_url)
+        # An account with this email may already exist from an email/password
+        # sign-up. Link the Google identity to it rather than erroring, since
+        # email is unique and it's the same person.
+        user = get_user_by_email(email)
+        if user is not None:
+            update_user(user.id, google_sub=google_sub, name=user.name or name, picture_url=user.picture_url or picture_url)
+            user = get_user(user.id)
+        else:
+            user = create_user(google_sub=google_sub, email=email, name=name, picture_url=picture_url)
+
+    session["user_id"] = user.id
+
+    return jsonify({
+        "id": user.id,
+        "email": user.email,
+        "name": user.name,
+        "picture_url": user.picture_url,
+    })
+
+
+@app.post("/api/auth/signup")
+def auth_signup():
+    """
+    Body: { "email": "...", "password": "...", "name": "..." (optional) }
+    Creates a new email/password account. Returns 409 if the email is
+    already taken.
+    """
+    body = request.get_json(silent=True) or {}
+    email = (body.get("email") or "").strip().lower()
+    password = body.get("password") or ""
+    name = (body.get("name") or "").strip() or None
+
+    if not email or not EMAIL_RE.match(email):
+        abort(400, description="A valid email is required")
+    if len(password) < 8:
+        abort(400, description="Password must be at least 8 characters")
+
+    if get_user_by_email(email) is not None:
+        abort(409, description="An account with this email already exists")
+
+    password_hash = generate_password_hash(password)
+    user = create_user(email=email, password_hash=password_hash, name=name)
+
+    session["user_id"] = user.id
+
+    return jsonify({
+        "id": user.id,
+        "email": user.email,
+        "name": user.name,
+        "picture_url": user.picture_url,
+    }), 201
+
+
+@app.post("/api/auth/login")
+def auth_login():
+    """
+    Body: { "email": "...", "password": "..." }
+    Logs in with an email/password account created via /api/auth/signup.
+    """
+    body = request.get_json(silent=True) or {}
+    email = (body.get("email") or "").strip().lower()
+    password = body.get("password") or ""
+
+    user = get_user_by_email(email)
+    if user is None or not user.password_hash or not check_password_hash(user.password_hash, password):
+        abort(401, description="Invalid email or password")
 
     session["user_id"] = user.id
 
@@ -139,6 +208,8 @@ def auth_me():
     user_id = require_login()
     user = get_user(user_id)
     if user is None:
+        # Account no longer visible (e.g. soft-deleted) - clear the stale session.
+        session.pop("user_id", None)
         abort(404, description="User not found")
     return jsonify({
         "id": user.id,
@@ -152,6 +223,21 @@ def auth_me():
 def auth_logout():
     session.pop("user_id", None)
     return jsonify({"status": "logged out"})
+
+
+@app.delete("/api/auth/me")
+def delete_account():
+    """
+    Soft-deletes the logged-in user's account: sets status to 0
+    (hidden) rather than removing the row. Their documents and event
+    history stay intact. Logs the deletion as a DELETE event, then
+    clears the session.
+    """
+    user_id = require_login()
+    delete_user(user_id)
+    create_user_event(user_id=user_id, document_id=None, action=CRUDAction.DELETE)
+    session.pop("user_id", None)
+    return jsonify({"status": "account deleted"})
 
 
 # ---------------------------------------------------------------------------
@@ -217,12 +303,12 @@ def list_documents():
 def remove_document(document_id):
     """
     Soft-deletes a document owned by the logged-in user: flips
-    is_visible to False rather than removing the file or DB row.
+    status to 0 (hidden) rather than removing the file or DB row.
     Logs a DELETE event.
     """
     user_id = require_login()
     doc = get_document(document_id)
-    if doc is None or doc.user_id != user_id or not doc.is_visible:
+    if doc is None or doc.user_id != user_id or doc.status == 0:
         abort(404, description="Document not found")
 
     delete_document(document_id)

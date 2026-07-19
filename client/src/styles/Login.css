@@ -1,0 +1,73 @@
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.login-card {
+  background: #fff;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+}
+
+.login-card h1 {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.login-google {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.login-divider {
+  display: flex;
+  align-items: center;
+  color: #888;
+  font-size: 0.85rem;
+  margin: 1rem 0;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #ddd;
+}
+
+.login-divider span {
+  padding: 0 0.75rem;
+}
+
+.login-signup-button {
+  width: 100%;
+  padding: 0.65rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.login-signup-button:hover {
+  background: #f0f0f0;
+}
+
+.login-error {
+  color: #b3261e;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.login-status {
+  color: #555;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}

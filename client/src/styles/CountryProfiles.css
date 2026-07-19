@@ -1,0 +1,131 @@
+.country-profiles-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #ffffff;
+  color: #1a1a1a;
+}
+
+.country-profiles-content {
+  flex: 1;
+  padding: 2.5rem 2rem 1.5rem;
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.country-profiles-heading {
+  font-size: 1.75rem;
+  margin-bottom: 0.4rem;
+}
+
+.country-profiles-subheading {
+  color: #555;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+.country-profiles-status {
+  color: #777;
+  font-size: 0.9rem;
+}
+
+.country-profiles-error {
+  color: #b3261e;
+  font-size: 0.9rem;
+}
+
+.country-profiles-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.5rem;
+}
+
+.country-profiles-list-item {
+  display: block;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #e2e2e2;
+  border-radius: 6px;
+  color: #1a1a1a;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.country-profiles-list-item:hover {
+  background: #f5f5f5;
+  border-color: #ccc;
+}
+
+.country-profiles-empty {
+  color: #777;
+  font-size: 0.9rem;
+  grid-column: 1 / -1;
+}
+
+/* Letter grid: two rows of 13, pinned at the bottom of the page */
+.country-letter-grid {
+  position: sticky;
+  bottom: 0;
+  background: #ffffff;
+  border-top: 1px solid #e2e2e2;
+  display: grid;
+  grid-template-columns: repeat(13, 1fr);
+  grid-auto-rows: minmax(2.5rem, auto);
+  gap: 6px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.country-letter-block {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  color: #1a1a1a;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.country-letter-block:hover:not(:disabled) {
+  background: #f0f0f0;
+  border-color: #999;
+}
+
+.country-letter-block--active {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #1a1a1a;
+}
+
+.country-letter-block--disabled {
+  color: #ccc;
+  border-color: #eee;
+  cursor: not-allowed;
+}
+
+/* Smaller screens: keep two rows of 13, just shrink the blocks rather
+   than wrapping to more rows, so the "two rows" layout always holds. */
+@media (max-width: 600px) {
+  .country-letter-grid {
+    gap: 4px;
+    padding: 0.5rem;
+  }
+
+  .country-letter-block {
+    font-size: 0.7rem;
+  }
+
+  .country-profiles-list {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}
