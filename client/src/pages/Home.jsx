@@ -6,11 +6,15 @@ import SidePanel from '../components/SidePanel.jsx';
 import { fetchWorldData, fetchCountry } from '../api.js';
 
 export default function Home() {
+  // Both fetchWorldData() and fetchCountry() below run fresh every time
+  // this component mounts (and fetchCountry also re-runs on every country
+  // click). Navigating to /publish-globe-data and back to / is enough to
+  // pick up newly uploaded GTBI/ETTI data - no caching to invalidate here.
   const [worldData, setWorldData] = useState(null);
   const [features, setFeatures] = useState([]);
   const [panelOpen, setPanelOpen] = useState(false);
   const [country, setCountry] = useState(null); // { name, iso }
-  const [metrics, setMetrics] = useState(null);
+  const [record, setRecord] = useState(null); // raw /api/countries/<code> response: { name, ETTI, GTBI }
   const globeRef = useRef(null);
 
   useEffect(() => {
@@ -25,8 +29,8 @@ export default function Home() {
     setCountry({ name, iso });
     setPanelOpen(true);
     fetchCountry(iso)
-      .then(setMetrics)
-      .catch(() => setMetrics(null)); // fall back to placeholder zeros in the panel
+      .then(setRecord)
+      .catch(() => setRecord(null)); // SidePanel renders "Data Pending" when record is null
   }
 
   function handleCountryClick(name, iso) {
@@ -52,7 +56,7 @@ export default function Home() {
           <span className="dot"></span>DRAG TO ROTATE<span className="dot"></span>SCROLL TO ZOOM
           <span className="dot"></span>CLICK A COUNTRY
         </div>
-        <SidePanel isOpen={panelOpen} country={country} metrics={metrics} onClose={handleClose} />
+        <SidePanel isOpen={panelOpen} country={country} record={record} onClose={handleClose} />
       </main>
     </>
   );

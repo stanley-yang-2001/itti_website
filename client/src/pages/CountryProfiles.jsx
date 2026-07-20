@@ -7,9 +7,10 @@ const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 /**
  * Country Profiles page. Shows an A-Z grid of letters (two rows of 13)
- * fixed at the bottom of the page. Clicking a letter filters the list
- * above it to countries whose name starts with that letter. The grid
- * stays visible at all times so the user can switch letters freely.
+ * fixed at the top of the page, with the country list below it.
+ * Clicking a letter filters the list to countries whose name starts
+ * with that letter. The grid stays visible at all times so the user
+ * can switch letters freely.
  *
  * country_data.json fields are never assumed to be numbers - every
  * ETTI/GTBI field can be the literal string "Data Pending" instead of
@@ -77,10 +78,29 @@ export default function CountryProfiles() {
 
   return (
     <div className="country-profiles-page">
+      <div className="country-letter-grid" role="navigation" aria-label="Filter countries by letter">
+        {ALPHABET.map((letter) => (
+          <button
+            key={letter}
+            type="button"
+            className={
+              "country-letter-block" +
+              (selectedLetter === letter ? " country-letter-block--active" : "") +
+              (!availableLetters.has(letter) && countries !== null ? " country-letter-block--disabled" : "")
+            }
+            onClick={() => handleLetterClick(letter)}
+            disabled={countries !== null && !availableLetters.has(letter)}
+            aria-pressed={selectedLetter === letter}
+          >
+            {letter}
+          </button>
+        ))}
+      </div>
+
       <div className="country-profiles-content">
         <h1 className="country-profiles-heading">Country Profiles</h1>
         <p className="country-profiles-subheading">
-          Select a letter below to browse countries by name.
+          Select a letter above to browse countries by name.
         </p>
 
         {loadError && <p className="country-profiles-error">{loadError}</p>}
@@ -103,31 +123,12 @@ export default function CountryProfiles() {
             {filteredCountries.map((c) => (
               <li key={c.code}>
                 <Link to="/unavailable" className="country-profiles-list-item">
-                  {c.name} Profile
+                  {c.name}
                 </Link>
               </li>
             ))}
           </ul>
         )}
-      </div>
-
-      <div className="country-letter-grid" role="navigation" aria-label="Filter countries by letter">
-        {ALPHABET.map((letter) => (
-          <button
-            key={letter}
-            type="button"
-            className={
-              "country-letter-block" +
-              (selectedLetter === letter ? " country-letter-block--active" : "") +
-              (!availableLetters.has(letter) && countries !== null ? " country-letter-block--disabled" : "")
-            }
-            onClick={() => handleLetterClick(letter)}
-            disabled={countries !== null && !availableLetters.has(letter)}
-            aria-pressed={selectedLetter === letter}
-          >
-            {letter}
-          </button>
-        ))}
       </div>
     </div>
   );

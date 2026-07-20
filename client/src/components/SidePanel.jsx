@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { getLatestYearRecord, getNumericValue, formatField } from '../utils/countryData.js';
 
-function fmt(n) {
-  return Number(n ?? 0).toFixed(2);
+/** Formats a numeric score to 2 decimals, or passes through "Data Pending" as-is. */
+function fmt(value) {
+  const num = getNumericValue(value);
+  return num === null ? formatField(value) : num.toFixed(2);
 }
 
-export default function SidePanel({ isOpen, country, metrics, onClose }) {
+export default function SidePanel({ isOpen, country, record, onClose }) {
   const [activeTab, setActiveTab] = useState('overview');
 
   // Reset to the overview tab whenever a new country is selected.
@@ -14,7 +17,13 @@ export default function SidePanel({ isOpen, country, metrics, onClose }) {
 
   const name = country?.name || 'Select a country';
   const iso = country?.iso || '—';
-  const m = metrics || { gtbi: 0, etti: 0, evs: 0, tie: 0, pdl: 0, its: 0 };
+
+  // record is the raw /api/countries/<code> response: { name, ETTI: {...}, GTBI: {...} }.
+  // Every field inside can be a real number/string or the literal "Data Pending" -
+  // always resolve through getLatestYearRecord/getNumericValue/formatField rather
+  // than reading record.GTBI.gtbi directly.
+  const gtbiLatest = getLatestYearRecord(record?.GTBI) || {};
+  const ettiLatest = getLatestYearRecord(record?.ETTI) || {};
 
   return (
     <aside id="side-panel" className={isOpen ? 'open' : ''}>
@@ -47,60 +56,82 @@ export default function SidePanel({ isOpen, country, metrics, onClose }) {
               {name}
             </div>
             <p className="score-desc">
-              This profile brings together two composite indices — the Global Trade Balance Index (GTBI) and the
-              Economic Trade &amp; Transformation Index (ETTI) — for a single country. Switch tabs above to explore
-              each index.
+              This profile brings together two composite indices — the Global Trauma Burden Index (GTBI) and the
+              Election Trauma &amp; Trust Index (ETTI) — for a single country. Switch tabs above to explore each
+              index.
             </p>
           </div>
           <div className="metric-grid">
             <div className="metric">
               <div className="k">GTBI Score</div>
-              <div className="v" id="ov-gtbi">{fmt(m.gtbi)}</div>
+              <div className="v" id="ov-gtbi">{fmt(gtbiLatest.gtbi)}</div>
             </div>
             <div className="metric">
               <div className="k">ETTI Score</div>
-              <div className="v" id="ov-etti">{fmt(m.etti)}</div>
+              <div className="v" id="ov-etti">{fmt(ettiLatest.etti)}</div>
             </div>
           </div>
         </div>
 
         <div className={`tab-pane${activeTab === 'gtbi' ? ' active' : ''}`} id="tab-gtbi">
           <div className="score-card">
-            <p className="score-label">GTBI — Global Trade Balance Index</p>
-            <div className="score-value" id="gtbi-value">{fmt(m.gtbi)}</div>
+            <p className="score-label">GTBI — Global Trauma Burden Index</p>
+            <div className="score-value" id="gtbi-value">{fmt(gtbiLatest.gtbi)}</div>
             <p className="score-desc">
-              A composite measure of a country&rsquo;s overall trade balance position. Data is currently a
-              placeholder and will populate once live figures are connected.
+              A composite measure of a country's collective trauma burden, combining mortality (Years of Life Lost)
+              and morbidity (Years Lived with Disability) from conflict-related harm.
             </p>
+          </div>
+          <div className="metric-grid">
+            <div className="metric">
+              <div className="k">Trauma Level</div>
+              <div className="v" id="m-trauma-level">{fmt(gtbiLatest.trauma_level)}</div>
+              <div className="full">Categorical severity band</div>
+            </div>
+            <div className="metric">
+              <div className="k">Burden Rate</div>
+              <div className="v" id="m-burden-rate">{fmt(gtbiLatest.burden_rate)}</div>
+              <div className="full">Per 100,000 population</div>
+            </div>
+            <div className="metric">
+              <div className="k">YLL</div>
+              <div className="v" id="m-yll">{fmt(gtbiLatest.yll)}</div>
+              <div className="full">Years of Life Lost</div>
+            </div>
+            <div className="metric">
+              <div className="k">YLD</div>
+              <div className="v" id="m-yld">{fmt(gtbiLatest.yld)}</div>
+              <div className="full">Years Lived with Disability</div>
+            </div>
           </div>
         </div>
 
         <div className={`tab-pane${activeTab === 'etti' ? ' active' : ''}`} id="tab-etti">
           <div className="score-card">
             <p className="score-label">ETTI — Composite Score</p>
-            <div className="score-value" id="etti-value">{fmt(m.etti)}</div>
+            <div className="score-value" id="etti-value">{fmt(ettiLatest.etti)}</div>
             <p className="score-desc">ETTI aggregates four underlying variables into a single composite score.</p>
           </div>
           <div className="metric-grid">
             <div className="metric">
               <div className="k">EVS</div>
-              <div className="v" id="m-evs">{fmt(m.evs)}</div>
-              <div className="full">Export Volatility Score</div>
+              <div className="v" id="m-evs">{fmt(ettiLatest.evs)}</div>
+              <div className="full">Election Violence Severity</div>
             </div>
             <div className="metric">
               <div className="k">TIE</div>
-              <div className="v" id="m-tie">{fmt(m.tie)}</div>
-              <div className="full">Trade Integration Efficiency</div>
+              <div className="v" id="m-tie">{fmt(ettiLatest.tie)}</div>
+              <div className="full">Trust in Electoral Institutions</div>
             </div>
             <div className="metric">
               <div className="k">PDL</div>
-              <div className="v" id="m-pdl">{fmt(m.pdl)}</div>
-              <div className="full">Production Diversification Level</div>
+              <div className="v" id="m-pdl">{fmt(ettiLatest.pdl)}</div>
+              <div className="full">Political Distrust Level</div>
             </div>
             <div className="metric">
               <div className="k">ITS</div>
-              <div className="v" id="m-its">{fmt(m.its)}</div>
-              <div className="full">Institutional Trade Stability</div>
+              <div className="v" id="m-its">{fmt(ettiLatest.its)}</div>
+              <div className="full">Institutional Trust Stability</div>
             </div>
           </div>
           <div className="placeholder-note">
@@ -109,7 +140,7 @@ export default function SidePanel({ isOpen, country, metrics, onClose }) {
               <line x1="12" y1="8" x2="12" y2="13" />
               <circle cx="12" cy="16" r="0.5" fill="currentColor" />
             </svg>
-            <span>All values shown are placeholders (0) pending live data integration.</span>
+            <span>Fields showing "Data Pending" are awaiting source data and are not yet computable.</span>
           </div>
         </div>
       </div>

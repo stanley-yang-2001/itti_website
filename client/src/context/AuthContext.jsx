@@ -53,6 +53,32 @@ export function AuthProvider({ children }) {
     return data;
   }
 
+  /** fields: { name } and/or { current_password, new_password } */
+  async function updateAccount(fields) {
+    const res = await fetch('/api/auth/me', {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(fields)
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(data.description || data.error || 'Update failed');
+    }
+    setUser(data);
+    return data;
+  }
+
+  async function deleteAccount() {
+    const res = await fetch('/api/auth/me', { method: 'DELETE', credentials: 'include' });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(data.description || data.error || 'Account deletion failed');
+    }
+    setUser(null);
+    return data;
+  }
+
   async function logout() {
     await postJson('/api/auth/logout', {}).catch(() => {}); // clear local state either way
     setUser(null);
@@ -66,6 +92,8 @@ export function AuthProvider({ children }) {
     loginWithGoogle,
     loginWithPassword,
     signup,
+    updateAccount,
+    deleteAccount,
     logout
   };
 

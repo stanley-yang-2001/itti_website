@@ -2,4 +2,7 @@ Flask==3.0.3
 Flask-Cors==4.0.1
 SQLAlchemy==2.0.35
 google-auth==2.34.0
+requests==2.32.3
 python-dotenv==1.0.1
+openpyxl==3.1.5
+pycountry==24.6.1

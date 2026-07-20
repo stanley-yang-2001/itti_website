@@ -21,6 +21,7 @@ import uuid
 from flask import Flask, jsonify, abort, request, session
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 
@@ -28,6 +29,8 @@ from models.database import Base, engine
 from models.user import create_user, get_user, get_user_by_google_sub, get_user_by_email, update_user, delete_user
 from models.document import create_document, get_documents_by_user, get_document, delete_document
 from models.user_event import create_user_event, get_events_by_user, CRUDAction
+from decorators import roles_required, login_required
+import globe_data
 
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
@@ -36,6 +39,7 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 WORLD_DATA_PATH = os.path.join(DATA_DIR, "world-110m.json")
 COUNTRY_DATA_PATH = os.path.join(DATA_DIR, "country_data.json")
 UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
+GLOBE_UPLOAD_TMP_DIR = os.path.join(BASE_DIR, "data_scripts", "_tmp_uploads")
 
 # Set this to the Client ID from your Google Cloud OAuth credentials.
 # Put it in an env var in production rather than hardcoding it.
@@ -48,6 +52,7 @@ CORS(app, supports_credentials=True)  # allow the React dev server (different po
 # Create all tables on startup if they don't exist yet.
 Base.metadata.create_all(engine)
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+os.makedirs(GLOBE_UPLOAD_TMP_DIR, exist_ok=True)
 
 
 def current_user_id():
@@ -88,6 +93,70 @@ def get_country(code):
     if record is None:
         abort(404, description=f"No data for country code '{code}'")
     return jsonify(record)
+
+
+# ---------------------------------------------------------------------------
+# Globe data (GTBI / ETTI spreadsheet upload) - publisher-only
+# ---------------------------------------------------------------------------
+
+@app.post("/api/globe-data/upload")
+@roles_required("publisher")
+def upload_globe_data():
+    """
+    Multipart form fields:
+      - "file": the .xlsx workbook
+      - "kind": "GTBI" or "ETTI"
+
+    Flow:
+      1. Save the upload to a temp location.
+      2. Validate it actually fits the expected shape for `kind`
+         (same extraction logic the CLI scripts use) - on failure,
+         delete the temp file and return 400 with the reason.
+      3. On success, archive the ORIGINAL file into
+         data_scripts/{kind}_storage/, timestamped.
+      4. Merge the extracted data into country_data.json, touching only
+         this kind's section per country (the other index's data for
+         those countries, and all other countries, is left untouched).
+
+    Gated by @roles_required("publisher") - this is the real enforcement.
+    The frontend's role check is UX only; do not rely on it alone.
+    """
+    kind = (request.form.get("kind") or "").strip().upper()
+    if kind not in globe_data.VALID_KINDS:
+        abort(400, description=f"'kind' must be one of {globe_data.VALID_KINDS}")
+
+    if "file" not in request.files:
+        abort(400, description="No file part in request")
+    file = request.files["file"]
+    if file.filename == "":
+        abort(400, description="No file selected")
+    if not file.filename.lower().endswith(".xlsx"):
+        abort(400, description="Only .xlsx files are accepted")
+
+    original_filename = secure_filename(file.filename)
+    tmp_path = os.path.join(GLOBE_UPLOAD_TMP_DIR, f"{uuid.uuid4().hex}_{original_filename}")
+    file.save(tmp_path)
+
+    try:
+        extracted = globe_data.validate_workbook(kind, tmp_path)
+    except globe_data.WorkbookValidationError as e:
+        os.remove(tmp_path)
+        abort(400, description=str(e))
+
+    archived_path = globe_data.archive_workbook(kind, tmp_path, original_filename)
+    result = globe_data.apply_workbook_to_country_data(kind, extracted)
+
+    user_id = current_user_id()
+    create_user_event(user_id=user_id, document_id=None, action=CRUDAction.CREATE)
+
+    return jsonify({
+        "status": "ok",
+        "kind": kind,
+        "archived_as": os.path.basename(archived_path),
+        "countries_updated": result["updated_codes"],
+        "unresolved_country_names": result["unresolved_country_names"],
+        "total_countries_in_file": result["total_countries_in_file"],
+    }), 201
 
 
 @app.get("/api/health")

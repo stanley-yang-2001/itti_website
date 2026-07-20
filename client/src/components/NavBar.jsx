@@ -24,7 +24,19 @@ export default function NavBar() {
     navigate('/');
   }
 
-  const links = isPublisher ? [...NAV_LINKS, { to: '/publish', label: 'Publish' }] : NAV_LINKS;
+  // Non-publishers (including guests) still need a way to find the
+  // globe-data upload page, since visiting it directly shows them a
+  // clear "you don't have access" explanation rather than hiding the
+  // feature - see PublishGlobeData.jsx. Publishers get the consolidated
+  // /publisher dashboard instead, which links to it from there, so the
+  // flat nav link is redundant once you're actually a publisher.
+  let links = NAV_LINKS;
+  if (isAuthenticated) links = [...links, { to: '/settings', label: 'Settings' }];
+  if (isPublisher) {
+    links = [...links, { to: '/publisher', label: 'Publisher' }];
+  } else {
+    links = [...links, { to: '/publish-globe-data', label: 'Update Globe Data' }];
+  }
 
   return (
     <nav className="navbar">

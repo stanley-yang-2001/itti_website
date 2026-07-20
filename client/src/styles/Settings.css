@@ -1,0 +1,161 @@
+.settings-page {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 40px 32px 80px;
+  max-width: 640px;
+  margin: 0 auto;
+  width: 100%;
+}
+.settings-page h2 {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  color: var(--text-hi);
+}
+.settings-page > p {
+  color: var(--text-mid);
+  font-size: 14px;
+  margin: 0 0 32px 0;
+}
+
+.settings-denied {
+  max-width: 480px;
+  margin: 80px auto 0;
+  text-align: center;
+}
+.settings-denied h1 {
+  font-size: 22px;
+  color: var(--text-hi);
+  margin: 0 0 12px 0;
+}
+.settings-denied p {
+  color: var(--text-mid);
+  font-size: 14px;
+}
+
+.settings-section {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.settings-section h3 {
+  margin: 0 0 14px 0;
+  font-size: 15px;
+  color: var(--text-hi);
+  font-weight: 600;
+}
+
+.settings-info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.settings-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+.settings-info-label {
+  color: var(--text-low);
+}
+.settings-info-value {
+  color: var(--text-hi);
+}
+
+.settings-form {
+  display: flex;
+  gap: 10px;
+}
+.settings-form--stacked {
+  flex-direction: column;
+  align-items: flex-start;
+}
+.settings-form input {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--bg-deep);
+  color: var(--text-hi);
+  font-size: 13px;
+}
+.settings-form--stacked input {
+  width: 100%;
+}
+.settings-form input:focus {
+  outline: none;
+  border-color: var(--cyan);
+}
+
+.settings-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text-mid);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  white-space: nowrap;
+}
+.settings-btn:hover:not(:disabled) {
+  color: var(--text-hi);
+  border-color: var(--cyan);
+}
+.settings-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.settings-btn--secondary {
+  color: var(--text-mid);
+}
+.settings-btn--danger {
+  color: #f2a9a9;
+  border-color: rgba(220, 90, 90, 0.4);
+}
+.settings-btn--danger:hover:not(:disabled) {
+  color: #fff;
+  background: rgba(220, 90, 90, 0.5);
+  border-color: rgba(220, 90, 90, 0.6);
+}
+
+.settings-muted {
+  color: var(--text-low);
+  font-size: 13px;
+  margin: 0;
+}
+
+.settings-status {
+  margin: 10px 0 0 0;
+  font-size: 12px;
+}
+.settings-status--success {
+  color: #8fd4a3;
+}
+.settings-status--error {
+  color: #f2a9a9;
+}
+
+.settings-section--danger {
+  border-color: rgba(220, 90, 90, 0.3);
+}
+.settings-delete-confirm {
+  margin-top: 10px;
+  padding: 12px;
+  background: rgba(220, 90, 90, 0.08);
+  border: 1px solid rgba(220, 90, 90, 0.3);
+  border-radius: 6px;
+}
+.settings-delete-confirm p {
+  font-size: 13px;
+  color: var(--text-mid);
+  margin: 0 0 12px 0;
+}
+.settings-delete-confirm-actions {
+  display: flex;
+  gap: 10px;
+}
