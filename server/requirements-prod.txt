@@ -1,0 +1,6 @@
+# Extra dependencies for the production deployment only.
+# gunicorn is Unix-only (no Windows support) - install this file on
+# your Linux/Mac host or inside your production Docker image, not on
+# a Windows dev machine.
+-r requirements.txt
+gunicorn==23.0.0

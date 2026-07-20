@@ -19,3 +19,6 @@ client/.env
 # venv
 .venv
 .venv/
+
+# Local Postgres data if run via docker-compose
+pgdata/

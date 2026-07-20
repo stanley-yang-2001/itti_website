@@ -10,27 +10,70 @@ Serves:
 
 All country metrics (GTBI / ETTI / EVS / TIE / PDL / ITS) currently live as
 placeholders (0) in data/country_data.json. Swap that file's values — or
-point load_country_data() at a real datasource/DB — once live figures are
+point load_json() at a real datasource/DB — once live figures are
 available; nothing else needs to change.
+
+Auth (Google Sign-In + email/password), server-side session:
+  POST /api/auth/google      -> verify a Google ID token, create/find user, start session
+  POST /api/auth/signup      -> create an email/password account (always basic tier)
+  POST /api/auth/login       -> log in with email/password
+  GET  /api/auth/me          -> current session's user record
+  POST /api/auth/logout      -> clear session
+  DELETE /api/auth/me        -> soft-delete the logged-in user's account
+
+Documents (upload / list / delete), with CRUD events logged for each
+action. Uploading/deleting requires the "publisher" tier
+(see decorators.py + docs/ACCESS_LEVELS.md); listing your own documents
+and event history just requires being logged in. Permanent (hard) delete
+is admin-only.
 """
+import logging
 import json
 import os
 import re
-import uuid
 
+from dotenv import load_dotenv
 from flask import Flask, jsonify, abort, request, session
 from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.utils import secure_filename
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 
-from models.database import Base, engine
-from models.user import create_user, get_user, get_user_by_google_sub, get_user_by_email, update_user, delete_user
-from models.document import create_document, get_documents_by_user, get_document, delete_document
+from decorators import get_current_user, login_required, roles_required
+from models.database import Base, DATABASE_URL, engine
+from models.user import (
+    create_user, get_user, get_user_by_google_sub, get_user_by_email,
+    update_user, delete_user, ROLE_ADMIN,
+)
+from models.document import (
+    create_document, get_documents_by_user, get_document, delete_document,
+    hard_delete_document,
+)
 from models.user_event import create_user_event, get_events_by_user, CRUDAction
-from decorators import roles_required, login_required
-import globe_data
+from storage import get_storage
+
+# Loads the repo-root .env (same file vite.config.js reads for
+# GOOGLE_CLIENT_ID) so `python app.py` picks up the same values without
+# needing them exported manually every time.
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env"))
+
+logging.basicConfig(
+    level=os.environ.get("LOG_LEVEL", "INFO"),
+    format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
+)
+logger = logging.getLogger("itti")
+
+# Optional error tracking - completely inert unless SENTRY_DSN is set, so
+# this is safe to leave in for local dev with no Sentry account at all.
+SENTRY_DSN = os.environ.get("SENTRY_DSN")
+if SENTRY_DSN:
+    import sentry_sdk
+    from sentry_sdk.integrations.flask import FlaskIntegration
+
+    sentry_sdk.init(dsn=SENTRY_DSN, integrations=[FlaskIntegration()], traces_sample_rate=0.1)
+    logger.info("Sentry error tracking enabled")
 
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
@@ -39,33 +82,80 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 WORLD_DATA_PATH = os.path.join(DATA_DIR, "world-110m.json")
 COUNTRY_DATA_PATH = os.path.join(DATA_DIR, "country_data.json")
 UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
-GLOBE_UPLOAD_TMP_DIR = os.path.join(BASE_DIR, "data_scripts", "_tmp_uploads")
+
+IS_PRODUCTION = os.environ.get("FLASK_ENV") == "production"
 
 # Set this to the Client ID from your Google Cloud OAuth credentials.
-# Put it in an env var in production rather than hardcoding it.
+# Put it in the repo-root .env in production rather than hardcoding it.
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
+CLIENT_ORIGIN = os.environ.get("CLIENT_ORIGIN", "http://localhost:5173")
+
+FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", "dev-secret-change-me")
+
+# Refuse to boot with dev-default secrets in production - a misconfigured
+# env var here is exactly the kind of mistake that's invisible until
+# someone exploits it. Fails loudly and immediately instead.
+if IS_PRODUCTION:
+    missing = []
+    if FLASK_SECRET_KEY == "dev-secret-change-me":
+        missing.append("FLASK_SECRET_KEY")
+    if not GOOGLE_CLIENT_ID:
+        missing.append("GOOGLE_CLIENT_ID")
+    if missing:
+        raise RuntimeError(
+            f"FLASK_ENV=production but these required env vars are unset/using dev "
+            f"defaults: {', '.join(missing)}. Refusing to start."
+        )
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-secret-change-me")
-CORS(app, supports_credentials=True)  # allow the React dev server (different port) to call this API, with cookies
+app.secret_key = FLASK_SECRET_KEY
 
-# Create all tables on startup if they don't exist yet.
-Base.metadata.create_all(engine)
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-os.makedirs(GLOBE_UPLOAD_TMP_DIR, exist_ok=True)
+# Session cookie: Lax is fine for localhost:5173 <-> localhost:5000 (same
+# registrable domain, different port = "same-site" for cookie purposes).
+# If frontend and backend end up on different domains in production this
+# needs SameSite=None + Secure instead - see docs/ACCESS_LEVELS.md.
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SECURE"] = IS_PRODUCTION
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+
+# Hard cap on request body size (defends against giant uploads before
+# they ever reach our own MAX_UPLOAD_BYTES check below).
+app.config["MAX_CONTENT_LENGTH"] = 25 * 1024 * 1024  # 25 MB
+
+# supports_credentials + an explicit origin (not a wildcard) is required
+# for the session cookie to actually be sent/accepted cross-port in the
+# browser. CLIENT_ORIGIN still needs updating to the real frontend domain
+# once one exists - that part isn't code-solvable yet.
+CORS(app, supports_credentials=True, origins=[CLIENT_ORIGIN])
+
+limiter = Limiter(get_remote_address, app=app, storage_uri="memory://", default_limits=[])
 
 
-def current_user_id():
-    """Returns the logged-in user's id from the session, or None."""
-    return session.get("user_id")
+@app.after_request
+def set_security_headers(response):
+    """Baseline hardening headers. This is a JSON API (not serving HTML
+    pages), so CSP is locked down hard by default."""
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'"
+    if request.is_secure:
+        response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains"
+    return response
 
 
-def require_login():
-    """Aborts with 401 if no user is logged in. Returns the user_id otherwise."""
-    user_id = current_user_id()
-    if user_id is None:
-        abort(401, description="Not logged in")
-    return user_id
+# Local SQLite dev DB: auto-create tables so `python app.py` just works
+# with zero setup. Any real database (DATABASE_URL set, e.g. Postgres) is
+# expected to be managed via migrations instead - see migrations/README
+# and `alembic upgrade head`, run once before first boot and again after
+# pulling any change with a new revision.
+if DATABASE_URL.startswith("sqlite"):
+    Base.metadata.create_all(engine)
+
+storage = get_storage(UPLOAD_DIR)
+
+MAX_UPLOAD_BYTES = 20 * 1024 * 1024  # 20 MB per file
+ALLOWED_UPLOAD_EXTENSIONS = {".pdf", ".doc", ".docx", ".ppt", ".pptx", ".xls", ".xlsx", ".csv", ".txt", ".png", ".jpg", ".jpeg"}
 
 
 def load_json(path):
@@ -95,70 +185,6 @@ def get_country(code):
     return jsonify(record)
 
 
-# ---------------------------------------------------------------------------
-# Globe data (GTBI / ETTI spreadsheet upload) - publisher-only
-# ---------------------------------------------------------------------------
-
-@app.post("/api/globe-data/upload")
-@roles_required("publisher")
-def upload_globe_data():
-    """
-    Multipart form fields:
-      - "file": the .xlsx workbook
-      - "kind": "GTBI" or "ETTI"
-
-    Flow:
-      1. Save the upload to a temp location.
-      2. Validate it actually fits the expected shape for `kind`
-         (same extraction logic the CLI scripts use) - on failure,
-         delete the temp file and return 400 with the reason.
-      3. On success, archive the ORIGINAL file into
-         data_scripts/{kind}_storage/, timestamped.
-      4. Merge the extracted data into country_data.json, touching only
-         this kind's section per country (the other index's data for
-         those countries, and all other countries, is left untouched).
-
-    Gated by @roles_required("publisher") - this is the real enforcement.
-    The frontend's role check is UX only; do not rely on it alone.
-    """
-    kind = (request.form.get("kind") or "").strip().upper()
-    if kind not in globe_data.VALID_KINDS:
-        abort(400, description=f"'kind' must be one of {globe_data.VALID_KINDS}")
-
-    if "file" not in request.files:
-        abort(400, description="No file part in request")
-    file = request.files["file"]
-    if file.filename == "":
-        abort(400, description="No file selected")
-    if not file.filename.lower().endswith(".xlsx"):
-        abort(400, description="Only .xlsx files are accepted")
-
-    original_filename = secure_filename(file.filename)
-    tmp_path = os.path.join(GLOBE_UPLOAD_TMP_DIR, f"{uuid.uuid4().hex}_{original_filename}")
-    file.save(tmp_path)
-
-    try:
-        extracted = globe_data.validate_workbook(kind, tmp_path)
-    except globe_data.WorkbookValidationError as e:
-        os.remove(tmp_path)
-        abort(400, description=str(e))
-
-    archived_path = globe_data.archive_workbook(kind, tmp_path, original_filename)
-    result = globe_data.apply_workbook_to_country_data(kind, extracted)
-
-    user_id = current_user_id()
-    create_user_event(user_id=user_id, document_id=None, action=CRUDAction.CREATE)
-
-    return jsonify({
-        "status": "ok",
-        "kind": kind,
-        "archived_as": os.path.basename(archived_path),
-        "countries_updated": result["updated_codes"],
-        "unresolved_country_names": result["unresolved_country_names"],
-        "total_countries_in_file": result["total_countries_in_file"],
-    }), 201
-
-
 @app.get("/api/health")
 def health():
     return jsonify({"status": "ok"})
@@ -172,13 +198,16 @@ def health():
 def auth_google():
     """
     Body: { "credential": "<Google ID token JWT from the frontend button>" }
-    Verifies the token with Google, creates the user if new, and starts
-    a Flask session (cookie-based).
+    Verifies the token with Google, creates the user if new (always at
+    ROLE_BASIC), and starts a Flask session (cookie-based).
     """
     body = request.get_json(silent=True) or {}
     credential = body.get("credential")
     if not credential:
         abort(400, description="Missing 'credential' in request body")
+
+    if not GOOGLE_CLIENT_ID:
+        abort(500, description="Server is missing GOOGLE_CLIENT_ID configuration")
 
     try:
         claims = id_token.verify_oauth2_token(
@@ -204,22 +233,22 @@ def auth_google():
         else:
             user = create_user(google_sub=google_sub, email=email, name=name, picture_url=picture_url)
 
+    session.clear()
     session["user_id"] = user.id
+    session.permanent = True
 
-    return jsonify({
-        "id": user.id,
-        "email": user.email,
-        "name": user.name,
-        "picture_url": user.picture_url,
-    })
+    logger.info("google login user_id=%s", user.id)
+    return jsonify(user.to_public_dict())
 
 
 @app.post("/api/auth/signup")
+@limiter.limit("5 per hour")
 def auth_signup():
     """
     Body: { "email": "...", "password": "...", "name": "..." (optional) }
-    Creates a new email/password account. Returns 409 if the email is
-    already taken.
+    Creates a new email/password account, always at ROLE_BASIC (see
+    models/user.py) - nothing in this request can set a different role.
+    Returns 409 if the email is already taken.
     """
     body = request.get_json(silent=True) or {}
     email = (body.get("email") or "").strip().lower()
@@ -237,17 +266,16 @@ def auth_signup():
     password_hash = generate_password_hash(password)
     user = create_user(email=email, password_hash=password_hash, name=name)
 
+    session.clear()
     session["user_id"] = user.id
+    session.permanent = True
 
-    return jsonify({
-        "id": user.id,
-        "email": user.email,
-        "name": user.name,
-        "picture_url": user.picture_url,
-    }), 201
+    logger.info("signup user_id=%s", user.id)
+    return jsonify(user.to_public_dict()), 201
 
 
 @app.post("/api/auth/login")
+@limiter.limit("10 per minute")
 def auth_login():
     """
     Body: { "email": "...", "password": "..." }
@@ -261,31 +289,22 @@ def auth_login():
     if user is None or not user.password_hash or not check_password_hash(user.password_hash, password):
         abort(401, description="Invalid email or password")
 
+    session.clear()
     session["user_id"] = user.id
+    session.permanent = True
 
-    return jsonify({
-        "id": user.id,
-        "email": user.email,
-        "name": user.name,
-        "picture_url": user.picture_url,
-    })
+    return jsonify(user.to_public_dict())
 
 
 @app.get("/api/auth/me")
+@login_required
 def auth_me():
     """Returns the logged-in user, or 401 if no session."""
-    user_id = require_login()
-    user = get_user(user_id)
+    user = get_current_user()
     if user is None:
-        # Account no longer visible (e.g. soft-deleted) - clear the stale session.
         session.pop("user_id", None)
         abort(404, description="User not found")
-    return jsonify({
-        "id": user.id,
-        "email": user.email,
-        "name": user.name,
-        "picture_url": user.picture_url,
-    })
+    return jsonify(user.to_public_dict())
 
 
 @app.post("/api/auth/logout")
@@ -295,6 +314,7 @@ def auth_logout():
 
 
 @app.delete("/api/auth/me")
+@login_required
 def delete_account():
     """
     Soft-deletes the logged-in user's account: sets status to 0
@@ -302,9 +322,9 @@ def delete_account():
     history stay intact. Logs the deletion as a DELETE event, then
     clears the session.
     """
-    user_id = require_login()
-    delete_user(user_id)
-    create_user_event(user_id=user_id, document_id=None, action=CRUDAction.DELETE)
+    user = get_current_user()
+    delete_user(user.id)
+    create_user_event(user_id=user.id, document_id=None, action=CRUDAction.DELETE)
     session.pop("user_id", None)
     return jsonify({"status": "account deleted"})
 
@@ -314,9 +334,10 @@ def delete_account():
 # ---------------------------------------------------------------------------
 
 @app.post("/api/documents")
+@roles_required("publisher", "admin")
 def upload_document():
-    """Uploads a file for the logged-in user and logs a CREATE event."""
-    user_id = require_login()
+    """Uploads a file for the logged-in publisher and logs a CREATE event."""
+    user = get_current_user()
 
     if "file" not in request.files:
         abort(400, description="No file part in request")
@@ -324,23 +345,29 @@ def upload_document():
     if file.filename == "":
         abort(400, description="No file selected")
 
-    user_dir = os.path.join(UPLOAD_DIR, str(user_id))
-    os.makedirs(user_dir, exist_ok=True)
+    ext = os.path.splitext(file.filename)[1].lower()
+    if ext not in ALLOWED_UPLOAD_EXTENSIONS:
+        abort(400, description=f"File type '{ext or 'unknown'}' is not allowed")
 
-    # Prefix with a uuid to avoid collisions/overwrites from same-named uploads.
-    stored_name = f"{uuid.uuid4().hex}_{file.filename}"
-    file_path = os.path.join(user_dir, stored_name)
-    file.save(file_path)
-    size_bytes = os.path.getsize(file_path)
+    # Measure size without loading the whole file into memory.
+    file.stream.seek(0, os.SEEK_END)
+    size = file.stream.tell()
+    file.stream.seek(0)
+    if size > MAX_UPLOAD_BYTES:
+        abort(400, description=f"File exceeds the {MAX_UPLOAD_BYTES // (1024 * 1024)}MB limit")
+    if size == 0:
+        abort(400, description="File is empty")
+
+    file_path, size_bytes = storage.save(user.id, file.filename, file)
 
     doc = create_document(
-        user_id=user_id,
+        user_id=user.id,
         filename=file.filename,
         file_path=file_path,
         mime_type=file.mimetype,
         size_bytes=size_bytes,
     )
-    create_user_event(user_id=user_id, document_id=doc.id, action=CRUDAction.CREATE)
+    create_user_event(user_id=user.id, document_id=doc.id, action=CRUDAction.CREATE)
 
     return jsonify({
         "id": doc.id,
@@ -351,11 +378,12 @@ def upload_document():
 
 
 @app.get("/api/documents")
+@login_required
 def list_documents():
     """Lists the logged-in user's documents and logs a READ event."""
-    user_id = require_login()
-    docs = get_documents_by_user(user_id)
-    create_user_event(user_id=user_id, document_id=None, action=CRUDAction.READ)
+    user = get_current_user()
+    docs = get_documents_by_user(user.id)
+    create_user_event(user_id=user.id, document_id=None, action=CRUDAction.READ)
     return jsonify([
         {
             "id": d.id,
@@ -369,28 +397,51 @@ def list_documents():
 
 
 @app.delete("/api/documents/<int:document_id>")
+@roles_required("publisher", "admin")
 def remove_document(document_id):
     """
-    Soft-deletes a document owned by the logged-in user: flips
+    Soft-deletes a document owned by the logged-in publisher: flips
     status to 0 (hidden) rather than removing the file or DB row.
-    Logs a DELETE event.
+    Logs a DELETE event. For permanent removal see
+    DELETE /api/documents/<id>/permanent (admin-only).
     """
-    user_id = require_login()
+    user = get_current_user()
     doc = get_document(document_id)
-    if doc is None or doc.user_id != user_id or doc.status == 0:
+    if doc is None or doc.user_id != user.id or doc.status == 0:
         abort(404, description="Document not found")
 
     delete_document(document_id)
-    create_user_event(user_id=user_id, document_id=document_id, action=CRUDAction.DELETE)
+    create_user_event(user_id=user.id, document_id=document_id, action=CRUDAction.DELETE)
 
     return jsonify({"status": "deleted", "id": document_id})
 
 
+@app.delete("/api/documents/<int:document_id>/permanent")
+@roles_required("admin")
+def remove_document_permanently(document_id):
+    """
+    Admin-only. Permanently deletes a document: removes the DB row (and,
+    via cascade, its events) AND the underlying file/object. This is
+    the route that finally wires up models/document.py's
+    hard_delete_document, previously unused - see remaining_work.docx.
+    """
+    doc = get_document(document_id)
+    if doc is None:
+        abort(404, description="Document not found")
+
+    storage.delete(doc.file_path)
+    hard_delete_document(document_id)
+
+    logger.warning("hard delete document_id=%s by admin_id=%s", document_id, get_current_user().id)
+    return jsonify({"status": "permanently deleted", "id": document_id})
+
+
 @app.get("/api/events")
+@login_required
 def list_events():
     """Lists the logged-in user's event history."""
-    user_id = require_login()
-    events = get_events_by_user(user_id)
+    user = get_current_user()
+    events = get_events_by_user(user.id)
     return jsonify([
         {
             "id": e.id,
@@ -403,4 +454,4 @@ def list_events():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=not IS_PRODUCTION, port=5000)
