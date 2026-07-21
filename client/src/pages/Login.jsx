@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../context/AuthContext.jsx";
+import { checkEmail } from "../utils/formValidation.js";
 import "../styles/Login.css";
 
 /**
@@ -40,6 +41,21 @@ export default function Login() {
   async function handlePasswordSubmit(e) {
     e.preventDefault();
     setError(null);
+
+    // Deliberately limited to format/presence only - this must never
+    // narrow down further than the server's own generic "Invalid email
+    // or password" response does, or it would leak which field was
+    // actually wrong before a single request is even sent.
+    const emailFormatError = checkEmail(email);
+    if (emailFormatError) {
+      setError(emailFormatError);
+      return;
+    }
+    if (!password) {
+      setError("Password is required.");
+      return;
+    }
+
     setLoading(true);
     try {
       await loginWithPassword(email, password);

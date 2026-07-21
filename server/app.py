@@ -37,6 +37,7 @@ from flask import Flask, jsonify, abort, request, session
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from werkzeug.exceptions import HTTPException
 from werkzeug.security import generate_password_hash, check_password_hash
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
@@ -144,6 +145,56 @@ def set_security_headers(response):
     if request.is_secure:
         response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains"
     return response
+
+
+@app.errorhandler(429)
+def handle_rate_limit_exceeded(e):
+    """
+    Flask-Limiter's default description for a 429 is its internal rate
+    spec string (e.g. "10 per 1 minute") - accurate but not a sentence
+    a visitor should have to parse. Swaps in a plain-language message;
+    the specific limit that was hit is logged instead, for whoever's
+    debugging.
+    """
+    logger.info("Rate limit exceeded on %s %s", request.method, request.path)
+    return jsonify({
+        "error": "Too Many Requests",
+        "description": "Too many attempts. Please wait a bit before trying again.",
+    }), 429
+
+
+@app.errorhandler(HTTPException)
+def handle_http_exception(e):
+    """
+    Flask/Werkzeug's default behavior for abort(...) is an HTML error
+    page, not JSON. Every fetch() caller on the frontend does
+    res.json().catch(() => ({})), so without this handler every
+    abort(status, description="...") in this file is invisible to the
+    UI - the real message gets silently discarded and every component
+    falls back to its own generic hardcoded string instead. This makes
+    every abort() response JSON, so the description text set throughout
+    this file actually reaches the person using the site.
+    description is always a short, safe, hand-written string at every
+    call site in this file - never raw exception text (see
+    globe_data.WorkbookValidationError and validation.py for the
+    pattern to follow when adding new checks).
+    """
+    return jsonify({"error": e.name, "description": e.description}), e.code
+
+
+@app.errorhandler(Exception)
+def handle_uncaught_exception(e):
+    """
+    Catches anything NOT already handled above or by a route's own
+    try/except - a real bug, a DB hiccup, etc. Logs the full exception
+    server-side and returns one generic message, regardless of debug
+    mode. Without this, an uncaught exception under app.run(debug=True)
+    serves Werkzeug's interactive debugger over HTTP: full stack trace,
+    source snippets, local variable values, and a remote code execution
+    console, to anyone who triggers it.
+    """
+    logger.exception("Unhandled exception on %s %s", request.method, request.path)
+    return jsonify({"error": "internal server error", "description": "Something went wrong. Please try again."}), 500
 
 
 # Local SQLite dev DB: auto-create tables so `python app.py` just works
@@ -366,6 +417,9 @@ def reset_password():
 
     logger.info("password reset completed user_id=%s", user.id)
     return jsonify(user.to_public_dict())
+
+
+@app.get("/api/auth/me")
 @login_required
 def auth_me():
     """Returns the logged-in user, or 401 if no session."""

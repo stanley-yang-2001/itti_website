@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import { checkPassword, checkPasswordsMatch } from "../utils/formValidation.js";
 import "../styles/Login.css";
-
-const MIN_PASSWORD_LENGTH = 8;
 
 /**
  * Redeems a reset token (from the emailed link's ?token=... query
@@ -25,12 +24,14 @@ export default function ResetPassword() {
     e.preventDefault();
     setError(null);
 
-    if (password.length < MIN_PASSWORD_LENGTH) {
-      setError(`Password must be at least ${MIN_PASSWORD_LENGTH} characters`);
+    const passwordError = checkPassword(password);
+    if (passwordError) {
+      setError(passwordError);
       return;
     }
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
+    const matchError = checkPasswordsMatch(password, confirmPassword);
+    if (matchError) {
+      setError(matchError);
       return;
     }
 

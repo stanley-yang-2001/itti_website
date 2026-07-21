@@ -1,18 +1,32 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { checkSearchQuery } from '../utils/formValidation.js';
 
 export default function SearchBar({ features, onSelectFeature }) {
   const [query, setQuery] = useState('');
   const [matches, setMatches] = useState([]);
   const [open, setOpen] = useState(false);
+  const [warning, setWarning] = useState(null);
   const wrapRef = useRef(null);
 
   useEffect(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) {
+    const rawQuery = query.trim();
+    if (!rawQuery) {
       setMatches([]);
       setOpen(false);
+      setWarning(null);
       return;
     }
+
+    const validationError = checkSearchQuery(rawQuery);
+    if (validationError) {
+      setMatches([]);
+      setOpen(false);
+      setWarning(validationError);
+      return;
+    }
+    setWarning(null);
+
+    const q = rawQuery.toLowerCase();
     const next = features
       .filter((f) => f.properties.name.toLowerCase().includes(q))
       .slice(0, 8);
@@ -57,6 +71,7 @@ export default function SearchBar({ features, onSelectFeature }) {
           </div>
         ))}
       </div>
+      {warning && <div className="search-warning">{warning}</div>}
     </div>
   );
 }

@@ -2,10 +2,8 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../context/AuthContext.jsx";
+import { checkEmail, checkPassword, checkPasswordsMatch, checkName } from "../utils/formValidation.js";
 import "../styles/SignUp.css";
-
-const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-const MIN_PASSWORD_LENGTH = 8;
 
 /**
  * Sign-up page for creating an account with name/email/password.
@@ -28,25 +26,17 @@ export default function Signup() {
   function validate() {
     const errors = {};
 
-    if (!name.trim()) {
-      errors.name = "Name is required";
-    }
+    const nameError = checkName(name);
+    if (nameError) errors.name = nameError;
 
-    if (!email.trim()) {
-      errors.email = "Email is required";
-    } else if (!EMAIL_RE.test(email.trim())) {
-      errors.email = "Enter a valid email address";
-    }
+    const emailError = checkEmail(email);
+    if (emailError) errors.email = emailError;
 
-    if (!password) {
-      errors.password = "Password is required";
-    } else if (password.length < MIN_PASSWORD_LENGTH) {
-      errors.password = `Password must be at least ${MIN_PASSWORD_LENGTH} characters`;
-    }
+    const passwordError = checkPassword(password);
+    if (passwordError) errors.password = passwordError;
 
-    if (confirmPassword !== password) {
-      errors.confirmPassword = "Passwords do not match";
-    }
+    const matchError = checkPasswordsMatch(password, confirmPassword);
+    if (matchError) errors.confirmPassword = matchError;
 
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
