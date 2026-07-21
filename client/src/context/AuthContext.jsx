@@ -53,29 +53,15 @@ export function AuthProvider({ children }) {
     return data;
   }
 
-  /** fields: { name } and/or { current_password, new_password } */
-  async function updateAccount(fields) {
-    const res = await fetch('/api/auth/me', {
-      method: 'PATCH',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(fields)
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      throw new Error(data.description || data.error || 'Update failed');
-    }
-    setUser(data);
-    return data;
+  /** Always resolves with a generic message, regardless of whether the email exists. */
+  async function requestPasswordReset(email) {
+    return postJson('/api/auth/forgot-password', { email });
   }
 
-  async function deleteAccount() {
-    const res = await fetch('/api/auth/me', { method: 'DELETE', credentials: 'include' });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      throw new Error(data.description || data.error || 'Account deletion failed');
-    }
-    setUser(null);
+  /** Resolves with the user and logs them in, since a valid token proves account ownership. */
+  async function resetPassword(token, password) {
+    const data = await postJson('/api/auth/reset-password', { token, password });
+    setUser(data);
     return data;
   }
 
@@ -92,8 +78,8 @@ export function AuthProvider({ children }) {
     loginWithGoogle,
     loginWithPassword,
     signup,
-    updateAccount,
-    deleteAccount,
+    requestPasswordReset,
+    resetPassword,
     logout
   };
 

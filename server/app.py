@@ -52,7 +52,9 @@ from models.document import (
     hard_delete_document,
 )
 from models.user_event import create_user_event, get_events_by_user, CRUDAction
+from models.password_reset_token import create_reset_token, get_valid_token, mark_token_used
 from storage import get_storage
+from email_backend import get_email_backend, send_password_reset_email
 
 # Loads the repo-root .env (same file vite.config.js reads for
 # GOOGLE_CLIENT_ID) so `python app.py` picks up the same values without
@@ -153,6 +155,7 @@ if DATABASE_URL.startswith("sqlite"):
     Base.metadata.create_all(engine)
 
 storage = get_storage(UPLOAD_DIR)
+email_backend = get_email_backend()
 
 MAX_UPLOAD_BYTES = 20 * 1024 * 1024  # 20 MB per file
 ALLOWED_UPLOAD_EXTENSIONS = {".pdf", ".doc", ".docx", ".ppt", ".pptx", ".xls", ".xlsx", ".csv", ".txt", ".png", ".jpg", ".jpeg"}
@@ -296,7 +299,73 @@ def auth_login():
     return jsonify(user.to_public_dict())
 
 
-@app.get("/api/auth/me")
+@app.post("/api/auth/forgot-password")
+@limiter.limit("5 per hour")
+def forgot_password():
+    """
+    Body: { "email": "..." }
+    Always returns the same generic message regardless of whether the
+    email is registered - this deliberately doesn't reveal which emails
+    have accounts. If the account exists, a reset link is emailed via
+    the configured backend (console-logged in dev by default, see
+    email_backend.py).
+    """
+    body = request.get_json(silent=True) or {}
+    email = (body.get("email") or "").strip().lower()
+
+    generic_response = jsonify({
+        "message": "If an account exists for that email, a password reset link has been sent."
+    })
+
+    if not email or not EMAIL_RE.match(email):
+        return generic_response
+
+    user = get_user_by_email(email)
+    if user is not None:
+        raw_token = create_reset_token(user.id)
+        reset_link = f"{CLIENT_ORIGIN}/reset-password?token={raw_token}"
+        send_password_reset_email(email_backend, user.email, reset_link)
+        logger.info("password reset requested user_id=%s", user.id)
+
+    return generic_response
+
+
+@app.post("/api/auth/reset-password")
+@limiter.limit("10 per hour")
+def reset_password():
+    """
+    Body: { "token": "...", "password": "..." }
+    Redeems a reset token (single-use, expires after 1 hour - see
+    models/password_reset_token.py) and sets a new password. Works even
+    for accounts that only ever signed in with Google, since it's just
+    setting password_hash - they'd gain the ability to also log in with
+    a password afterward.
+    """
+    body = request.get_json(silent=True) or {}
+    token = body.get("token") or ""
+    password = body.get("password") or ""
+
+    if len(password) < 8:
+        abort(400, description="Password must be at least 8 characters")
+
+    record = get_valid_token(token)
+    if record is None:
+        abort(400, description="This reset link is invalid or has expired")
+
+    update_user(record.user_id, password_hash=generate_password_hash(password))
+    mark_token_used(record.id)
+
+    user = get_user(record.user_id)
+    if user is None:
+        abort(404, description="User not found")
+
+    # Log them in immediately - they just proved account ownership via email.
+    session.clear()
+    session["user_id"] = user.id
+    session.permanent = True
+
+    logger.info("password reset completed user_id=%s", user.id)
+    return jsonify(user.to_public_dict())
 @login_required
 def auth_me():
     """Returns the logged-in user, or 401 if no session."""

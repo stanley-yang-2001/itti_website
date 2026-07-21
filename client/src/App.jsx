@@ -12,11 +12,10 @@ import Certifications from './pages/Certifications.jsx';
 import Contact from './pages/Contact.jsx';
 import Login from './pages/Login.jsx';
 import Signup from './pages/SignUp.jsx';
+import ForgotPassword from './pages/ForgotPassword.jsx';
+import ResetPassword from './pages/ResetPassword.jsx';
 import Unavailable from './pages/Unavailable.jsx';
 import Publish from './pages/Publish.jsx';
-import PublishGlobeData from './pages/PublishGlobeData.jsx';
-import PublisherDashboard from './pages/PublisherDashboard.jsx';
-import Settings from './pages/Settings.jsx';
 
 export default function App() {
   return (
@@ -34,17 +33,10 @@ export default function App() {
 
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/unavailable" element={<Unavailable />} />
-        <Route path="/settings" element={<Settings />} />
 
-        <Route
-          path="/publisher"
-          element={
-            <ProtectedRoute requireRole="publisher">
-              <PublisherDashboard />
-            </ProtectedRoute>
-          }
-        />
         <Route
           path="/publish"
           element={
@@ -53,14 +45,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
-        {/*
-          Intentionally NOT wrapped in <ProtectedRoute> - this page is
-          reachable by anyone, including guests, and shows its own
-          "you don't have access" explanation to non-publishers rather
-          than being redirected away silently. See PublishGlobeData.jsx.
-        */}
-        <Route path="/publish-globe-data" element={<PublishGlobeData />} />
       </Routes>
     </div>
   );

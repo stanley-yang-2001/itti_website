@@ -92,6 +92,9 @@ export default function Login() {
               required
             />
           </label>
+          <p className="login-forgot-link">
+            <Link to="/forgot-password">Forgot password?</Link>
+          </p>
           <button type="submit" className="login-submit-button" disabled={loading}>
             Log in
           </button>

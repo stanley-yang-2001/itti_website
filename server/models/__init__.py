@@ -1,4 +1,3 @@
-
 """
 Importing `models` (this package) guarantees every model class is
 registered with SQLAlchemy's mapper, regardless of which one you actually
@@ -13,3 +12,4 @@ from . import database  # noqa: F401
 from . import user  # noqa: F401
 from . import document  # noqa: F401
 from . import user_event  # noqa: F401
+from . import password_reset_token  # noqa: F401
