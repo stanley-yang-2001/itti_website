@@ -47,6 +47,17 @@ class LocalStorage:
         except OSError:
             pass
 
+    def get_file_response(self, storage_path, download_name, mimetype=None):
+        """
+        Returns a Flask response object that serves the file at
+        storage_path back to the client. Used for content meant to be
+        publicly downloadable (e.g. Report files/images) - Document
+        never needed this, since a user's own uploads were never served
+        back through the app.
+        """
+        from flask import send_file
+        return send_file(storage_path, download_name=download_name, mimetype=mimetype)
+
 
 class S3Storage:
     """Saves files to an S3-compatible bucket."""
@@ -79,11 +90,36 @@ class S3Storage:
         except Exception:
             pass
 
+    def get_file_response(self, storage_path, download_name, mimetype=None):
+        """
+        Redirects the client to a short-lived presigned S3 URL rather
+        than proxying the bytes through this server - standard practice
+        for S3-backed downloads (cheaper, faster, no memory spike on
+        this process for large files).
+        """
+        from flask import redirect
 
-def get_storage(upload_dir):
-    """Factory: reads STORAGE_BACKEND (and, for s3, STORAGE_S3_BUCKET /
-    STORAGE_S3_PREFIX / STORAGE_S3_ENDPOINT_URL) from the environment and
-    returns the configured backend."""
+        url = self.client.generate_presigned_url(
+            "get_object",
+            Params={
+                "Bucket": self.bucket,
+                "Key": storage_path,
+                "ResponseContentDisposition": f'attachment; filename="{download_name}"',
+            },
+            ExpiresIn=300,  # 5 minutes - plenty for a browser to start the download
+        )
+        return redirect(url)
+
+
+def get_storage(upload_dir, s3_prefix=None):
+    """
+    Factory: reads STORAGE_BACKEND (and, for s3, STORAGE_S3_BUCKET /
+    STORAGE_S3_ENDPOINT_URL) from the environment and returns the
+    configured backend. s3_prefix overrides STORAGE_S3_PREFIX for
+    callers that need a distinct namespace within the same bucket
+    (e.g. reports vs. documents) - if not given, falls back to
+    STORAGE_S3_PREFIX (default "documents"), preserving prior behavior.
+    """
     backend = os.environ.get("STORAGE_BACKEND", "local").lower()
 
     if backend == "s3":
@@ -92,7 +128,7 @@ def get_storage(upload_dir):
             raise RuntimeError("STORAGE_BACKEND=s3 requires STORAGE_S3_BUCKET to be set")
         return S3Storage(
             bucket=bucket,
-            prefix=os.environ.get("STORAGE_S3_PREFIX", "documents"),
+            prefix=s3_prefix if s3_prefix is not None else os.environ.get("STORAGE_S3_PREFIX", "documents"),
             endpoint_url=os.environ.get("STORAGE_S3_ENDPOINT_URL"),  # unset -> real AWS S3
         )
 

@@ -44,6 +44,8 @@ export const MAX_SEARCH_QUERY_LENGTH = 100;
 export const MAX_NAME_LENGTH = 100;
 export const MIN_PASSWORD_LENGTH = 8;
 export const MAX_PASSWORD_LENGTH = 128;
+export const MAX_REPORT_TITLE_LENGTH = 200;
+export const MAX_REPORT_DESCRIPTION_LENGTH = 2000;
 
 export function checkEmail(value) {
   if (!value || !value.trim()) return 'Email is required.';
@@ -88,11 +90,27 @@ export function checkSearchQuery(value) {
   return null;
 }
 
+export function checkReportTitle(value) {
+  if (value == null || !value.trim()) return 'Title is required.';
+  if (value.length > MAX_REPORT_TITLE_LENGTH) return `Title must be under ${MAX_REPORT_TITLE_LENGTH} characters.`;
+  return null;
+}
+
+export function checkReportDescription(value) {
+  if (value == null || !value.trim()) return 'Description is required.';
+  if (value.length > MAX_REPORT_DESCRIPTION_LENGTH) {
+    return `Description must be under ${MAX_REPORT_DESCRIPTION_LENGTH} characters.`;
+  }
+  return null;
+}
+
 const CHECKS = {
   email: checkEmail,
   password: checkPassword,
   name: checkName,
   searchQuery: checkSearchQuery,
+  reportTitle: checkReportTitle,
+  reportDescription: checkReportDescription,
 };
 
 /** Looks up a check by name and runs it. Returns null (valid) or an error message. */

@@ -1,0 +1,34 @@
+fix: restore GET /api/auth/me route and global JSON error handlers
+
+The forgot-password commit's merge accidentally deleted the
+@app.get("/api/auth/me") decorator, landing reset_password()'s
+closing lines directly on auth_me()'s body. Since AuthContext.jsx
+calls this endpoint on every page load to check for an existing
+session, this silently broke "stay logged in across refresh"
+site-wide. Restored and regression-tested in both auth states.
+
+Also restores two fixes that had regressed since the earlier error-
+message audit (dropped in the "public launch" rewrite):
+  - Global JSON error handlers: abort() previously returned HTML,
+    which every frontend fetch() call silently swallows via
+    res.json().catch(() => ({})) - no abort() description, past or
+    present, was actually reaching the UI. Added a HTTPException
+    handler (-> JSON), a catch-all Exception handler (generic 500,
+    no leaked stack trace regardless of debug mode), and a friendly
+    429 message in place of Flask-Limiter's raw rate-spec string.
+  - requirements.txt: re-added openpyxl and pycountry, needed by
+    data_scripts/etti_extract.py and gtbi_extract.py.
+
+Also adds a shared, extensible client-side validation module
+(client/src/utils/formValidation.js) and wires it into Login,
+SignUp, ResetPassword, and SearchBar - removing three duplicated
+copies of the same email regex / MIN_PASSWORD_LENGTH constant, and
+adding rejection (with a visible warning) for symbol/injection-style
+input in the globe search box.
+
+Files changed:
+  server/app.py, server/requirements.txt,
+  client/src/pages/{Login,SignUp,ResetPassword}.jsx,
+  client/src/components/SearchBar.jsx,
+  client/src/styles/App.css,
+  client/src/utils/formValidation.js (new)

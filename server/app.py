@@ -33,7 +33,7 @@ import os
 import re
 
 from dotenv import load_dotenv
-from flask import Flask, jsonify, abort, request, session
+from flask import Flask, jsonify, abort, request, session, send_file
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -52,10 +52,15 @@ from models.document import (
     create_document, get_documents_by_user, get_document, delete_document,
     hard_delete_document,
 )
+from models.report import (
+    create_report, get_report, get_all_reports, get_reports_by_uploader,
+    delete_report, hard_delete_report,
+)
 from models.user_event import create_user_event, get_events_by_user, CRUDAction
 from models.password_reset_token import create_reset_token, get_valid_token, mark_token_used
 from storage import get_storage
 from email_backend import get_email_backend, send_password_reset_email
+import validation
 
 # Loads the repo-root .env (same file vite.config.js reads for
 # GOOGLE_CLIENT_ID) so `python app.py` picks up the same values without
@@ -206,10 +211,20 @@ if DATABASE_URL.startswith("sqlite"):
     Base.metadata.create_all(engine)
 
 storage = get_storage(UPLOAD_DIR)
+REPORTS_UPLOAD_DIR = os.path.join(BASE_DIR, "report_uploads")
+report_storage = get_storage(REPORTS_UPLOAD_DIR, s3_prefix="reports")
 email_backend = get_email_backend()
 
 MAX_UPLOAD_BYTES = 20 * 1024 * 1024  # 20 MB per file
 ALLOWED_UPLOAD_EXTENSIONS = {".pdf", ".doc", ".docx", ".ppt", ".pptx", ".xls", ".xlsx", ".csv", ".txt", ".png", ".jpg", ".jpeg"}
+
+# Reports only accept a PDF or Word doc as the report itself, and a
+# real image (if provided at all) as the cover picture - narrower than
+# the general document upload above, since these are the two specific
+# file roles the Reports page actually renders.
+ALLOWED_REPORT_FILE_EXTENSIONS = {".pdf", ".doc", ".docx"}
+ALLOWED_REPORT_IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp"}
+MAX_REPORT_IMAGE_BYTES = 5 * 1024 * 1024  # 5 MB per cover image
 
 
 def load_json(path):
@@ -557,6 +572,167 @@ def remove_document_permanently(document_id):
 
     logger.warning("hard delete document_id=%s by admin_id=%s", document_id, get_current_user().id)
     return jsonify({"status": "permanently deleted", "id": document_id})
+
+
+# ---------------------------------------------------------------------------
+# Reports (public content: title, description, a PDF/DOCX, an optional
+# cover image). Read routes are open to everyone; only publishers/admins
+# can upload or remove.
+# ---------------------------------------------------------------------------
+
+@app.get("/api/reports")
+def list_reports():
+    """All visible reports, newest first. Public - no login required."""
+    reports = get_all_reports()
+    return jsonify([r.to_public_dict() for r in reports])
+
+
+@app.get("/api/reports/<int:report_id>")
+def get_report_route(report_id):
+    """A single report's metadata. Public - no login required."""
+    report = get_report(report_id)
+    if report is None or report.status == 0:
+        abort(404, description="Report not found")
+    return jsonify(report.to_public_dict())
+
+
+@app.get("/api/reports/<int:report_id>/file")
+def download_report_file(report_id):
+    """Streams/redirects to the report's actual PDF/DOCX. Public."""
+    report = get_report(report_id)
+    if report is None or report.status == 0:
+        abort(404, description="Report not found")
+    return report_storage.get_file_response(report.file_path, download_name=report.original_filename)
+
+
+@app.get("/api/reports/<int:report_id>/image")
+def get_report_image(report_id):
+    """Streams/redirects to the report's cover image, if one was provided. Public."""
+    report = get_report(report_id)
+    if report is None or report.status == 0 or report.image_path is None:
+        abort(404, description="No image for this report")
+    return report_storage.get_file_response(
+        report.image_path, download_name=f"report-{report.id}-cover", mimetype=report.image_mime_type
+    )
+
+
+@app.post("/api/reports")
+@roles_required("publisher", "admin")
+@limiter.limit("20 per hour")
+def upload_report():
+    """
+    Multipart form fields:
+      - "title": string, required
+      - "description": string, required
+      - "file": the report itself, .pdf/.doc/.docx, required
+      - "image": an optional cover image (.png/.jpg/.jpeg/.webp)
+    """
+    user = get_current_user()
+
+    title = (request.form.get("title") or "").strip()
+    description = (request.form.get("description") or "").strip()
+
+    error = validation.validate_all([
+        ("report_title", title),
+        ("report_description", description),
+    ])
+    if error:
+        abort(400, description=error)
+
+    if "file" not in request.files:
+        abort(400, description="No file part in request")
+    file = request.files["file"]
+    if file.filename == "":
+        abort(400, description="No file selected")
+
+    ext = os.path.splitext(file.filename)[1].lower()
+    if ext not in ALLOWED_REPORT_FILE_EXTENSIONS:
+        abort(400, description="Reports must be a PDF or Word document (.pdf, .doc, .docx)")
+
+    file.stream.seek(0, os.SEEK_END)
+    size = file.stream.tell()
+    file.stream.seek(0)
+    if size > MAX_UPLOAD_BYTES:
+        abort(400, description=f"File exceeds the {MAX_UPLOAD_BYTES // (1024 * 1024)}MB limit")
+    if size == 0:
+        abort(400, description="File is empty")
+
+    file_path, file_size_bytes = report_storage.save(user.id, file.filename, file)
+    file_type = ext.lstrip(".")
+
+    image_path = None
+    image_mime_type = None
+    image = request.files.get("image")
+    if image is not None and image.filename != "":
+        image_ext = os.path.splitext(image.filename)[1].lower()
+        if image_ext not in ALLOWED_REPORT_IMAGE_EXTENSIONS:
+            # The report file itself already saved successfully above; clean it
+            # up rather than leaving an orphaned file if the image is rejected.
+            report_storage.delete(file_path)
+            abort(400, description="Cover image must be a PNG, JPG, or WEBP file")
+
+        image.stream.seek(0, os.SEEK_END)
+        image_size = image.stream.tell()
+        image.stream.seek(0)
+        if image_size > MAX_REPORT_IMAGE_BYTES:
+            report_storage.delete(file_path)
+            abort(400, description=f"Cover image exceeds the {MAX_REPORT_IMAGE_BYTES // (1024 * 1024)}MB limit")
+
+        image_path, _ = report_storage.save(user.id, image.filename, image)
+        image_mime_type = image.mimetype
+
+    report = create_report(
+        uploaded_by=user.id,
+        title=title,
+        description=description,
+        file_path=file_path,
+        file_type=file_type,
+        original_filename=file.filename,
+        file_size_bytes=file_size_bytes,
+        image_path=image_path,
+        image_mime_type=image_mime_type,
+    )
+    create_user_event(user_id=user.id, document_id=None, action=CRUDAction.CREATE)
+    logger.info("report uploaded id=%s by user_id=%s", report.id, user.id)
+
+    return jsonify(report.to_public_dict()), 201
+
+
+@app.delete("/api/reports/<int:report_id>")
+@roles_required("publisher", "admin")
+def remove_report(report_id):
+    """
+    Soft-deletes a report: flips status to 0 (hidden) rather than
+    removing the files or DB row. Publishers may only remove their own
+    reports; admins may remove any.
+    """
+    user = get_current_user()
+    report = get_report(report_id)
+    if report is None or report.status == 0:
+        abort(404, description="Report not found")
+    if report.uploaded_by != user.id and user.role != ROLE_ADMIN:
+        abort(404, description="Report not found")  # same as "not found" - don't reveal it exists but isn't theirs
+
+    delete_report(report_id)
+    create_user_event(user_id=user.id, document_id=None, action=CRUDAction.DELETE)
+    return jsonify({"status": "deleted", "id": report_id})
+
+
+@app.delete("/api/reports/<int:report_id>/permanent")
+@roles_required("admin")
+def remove_report_permanently(report_id):
+    """Admin-only. Permanently deletes a report: removes the DB row and both underlying files."""
+    report = get_report(report_id)
+    if report is None:
+        abort(404, description="Report not found")
+
+    report_storage.delete(report.file_path)
+    if report.image_path:
+        report_storage.delete(report.image_path)
+    hard_delete_report(report_id)
+
+    logger.warning("hard delete report_id=%s by admin_id=%s", report_id, get_current_user().id)
+    return jsonify({"status": "permanently deleted", "id": report_id})
 
 
 @app.get("/api/events")
