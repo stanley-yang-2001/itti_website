@@ -13,3 +13,4 @@ from . import user  # noqa: F401
 from . import document  # noqa: F401
 from . import user_event  # noqa: F401
 from . import password_reset_token  # noqa: F401
+from . import saved_chart  # noqa: F401

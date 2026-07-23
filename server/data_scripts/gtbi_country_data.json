@@ -1,0 +1,1235 @@
+{
+  "countries": {
+    "156": {
+      "name": "China",
+      "GTBI": {
+        "2015": {
+          "trauma_level": "Low",
+          "burden_rate": 7.282016,
+          "yll": 99777.6,
+          "yld": 426.51,
+          "gtbi": 7.023198
+        },
+        "2016": {
+          "trauma_level": "Low",
+          "burden_rate": 7.248667,
+          "yll": 99777.6,
+          "yld": 450.45,
+          "gtbi": 6.992186
+        },
+        "2017": {
+          "trauma_level": "Low",
+          "burden_rate": 7.216551,
+          "yll": 99777.6,
+          "yld": 538.23,
+          "gtbi": 6.96231
+        },
+        "2018": {
+          "trauma_level": "Low",
+          "burden_rate": 7.20401,
+          "yll": 99777.6,
+          "yld": 745.71,
+          "gtbi": 6.950642
+        },
+        "2019": {
+          "trauma_level": "Low",
+          "burden_rate": 7.269883,
+          "yll": 100589.4,
+          "yld": 1192.59,
+          "gtbi": 7.011916
+        },
+        "2020": {
+          "trauma_level": "Low",
+          "burden_rate": 7.146091,
+          "yll": 99925.2,
+          "yld": 913.29,
+          "gtbi": 6.896733
+        },
+        "2021": {
+          "trauma_level": "Low",
+          "burden_rate": 7.107152,
+          "yll": 99777.6,
+          "yld": 618.03,
+          "gtbi": 6.860472
+        },
+        "2022": {
+          "trauma_level": "Low",
+          "burden_rate": 7.186045,
+          "yll": 99777.6,
+          "yld": 1671.39,
+          "gtbi": 6.933924
+        },
+        "2023": {
+          "trauma_level": "Low",
+          "burden_rate": 7.11966,
+          "yll": 99777.6,
+          "yld": 586.11,
+          "gtbi": 6.872122
+        },
+        "2024": {
+          "trauma_level": "Low",
+          "burden_rate": 7.126921,
+          "yll": 99777.6,
+          "yld": 530.25,
+          "gtbi": 6.878883
+        },
+        "2025": {
+          "trauma_level": "Low",
+          "burden_rate": 7.138213,
+          "yll": 99777.6,
+          "yld": 514.29,
+          "gtbi": 6.889398
+        }
+      }
+    },
+    "356": {
+      "name": "India",
+      "GTBI": {
+        "2015": {
+          "trauma_level": "Moderate",
+          "burden_rate": 28.802391,
+          "yll": 373723.2,
+          "yld": 3632.02,
+          "gtbi": 25.025633
+        },
+        "2016": {
+          "trauma_level": "Low",
+          "burden_rate": 28.497461,
+          "yll": 373723.2,
+          "yld": 3632.02,
+          "gtbi": 24.796665
+        },
+        "2017": {
+          "trauma_level": "Low",
+          "burden_rate": 28.188673,
+          "yll": 373723.2,
+          "yld": 3632.02,
+          "gtbi": 24.564087
+        },
+        "2018": {
+          "trauma_level": "Low",
+          "burden_rate": 27.897636,
+          "yll": 373723.2,
+          "yld": 3632.02,
+          "gtbi": 24.344221
+        },
+        "2019": {
+          "trauma_level": "Low",
+          "burden_rate": 27.75799,
+          "yll": 375051.6,
+          "yld": 4238.5,
+          "gtbi": 24.238497
+        },
+        "2020": {
+          "trauma_level": "Low",
+          "burden_rate": 27.69545,
+          "yll": 376970.4,
+          "yld": 5228.02,
+          "gtbi": 24.191101
+        },
+        "2021": {
+          "trauma_level": "Low",
+          "burden_rate": 27.081439,
+          "yll": 373723.2,
+          "yld": 3632.02,
+          "gtbi": 23.724194
+        },
+        "2022": {
+          "trauma_level": "Low",
+          "burden_rate": 26.826866,
+          "yll": 373723.2,
+          "yld": 3632.02,
+          "gtbi": 23.529769
+        },
+        "2023": {
+          "trauma_level": "Low",
+          "burden_rate": 26.413826,
+          "yll": 373723.2,
+          "yld": 3632.02,
+          "gtbi": 23.213263
+        },
+        "2024": {
+          "trauma_level": "Low",
+          "burden_rate": 26.173963,
+          "yll": 373723.2,
+          "yld": 3632.02,
+          "gtbi": 23.028859
+        },
+        "2025": {
+          "trauma_level": "Low",
+          "burden_rate": 25.935067,
+          "yll": 373723.2,
+          "yld": 3632.02,
+          "gtbi": 22.844758
+        }
+      }
+    },
+    "364": {
+      "name": "Iran",
+      "GTBI": {
+        "2015": {
+          "trauma_level": "High",
+          "burden_rate": 80.71947,
+          "yll": 23616.0,
+          "yld": 40240.58,
+          "gtbi": 55.389222
+        },
+        "2016": {
+          "trauma_level": "High",
+          "burden_rate": 78.953532,
+          "yll": 23173.2,
+          "yld": 40208.66,
+          "gtbi": 54.594426
+        },
+        "2017": {
+          "trauma_level": "High",
+          "burden_rate": 79.321061,
+          "yll": 24058.8,
+          "yld": 40320.38,
+          "gtbi": 54.760999
+        },
+        "2018": {
+          "trauma_level": "High",
+          "burden_rate": 79.735497,
+          "yll": 24944.4,
+          "yld": 40448.06,
+          "gtbi": 54.948097
+        },
+        "2019": {
+          "trauma_level": "Severe",
+          "burden_rate": 211.793453,
+          "yll": 132987.6,
+          "yld": 42618.62,
+          "gtbi": 87.972019
+        },
+        "2020": {
+          "trauma_level": "High",
+          "burden_rate": 75.665166,
+          "yll": 23320.8,
+          "yld": 40232.6,
+          "gtbi": 53.076504
+        },
+        "2021": {
+          "trauma_level": "High",
+          "burden_rate": 74.36809,
+          "yll": 23025.6,
+          "yld": 40208.66,
+          "gtbi": 52.463906
+        },
+        "2022": {
+          "trauma_level": "High",
+          "burden_rate": 122.989016,
+          "yll": 62951.4,
+          "yld": 43751.78,
+          "gtbi": 70.767532
+        },
+        "2023": {
+          "trauma_level": "High",
+          "burden_rate": 78.743678,
+          "yll": 28339.2,
+          "yld": 40894.94,
+          "gtbi": 54.499041
+        },
+        "2024": {
+          "trauma_level": "High",
+          "burden_rate": 74.182339,
+          "yll": 25534.8,
+          "yld": 40615.64,
+          "gtbi": 52.375526
+        },
+        "2025": {
+          "trauma_level": "High",
+          "burden_rate": 72.500926,
+          "yll": 25092.0,
+          "yld": 40511.9,
+          "gtbi": 51.567992
+        }
+      }
+    },
+    "376": {
+      "name": "Israel",
+      "GTBI": {
+        "2015": {
+          "trauma_level": "High",
+          "burden_rate": 127.204322,
+          "yll": 9741.6,
+          "yld": 516.156,
+          "gtbi": 71.974159
+        },
+        "2016": {
+          "trauma_level": "High",
+          "burden_rate": 125.216755,
+          "yll": 9741.6,
+          "yld": 516.156,
+          "gtbi": 71.411554
+        },
+        "2017": {
+          "trauma_level": "High",
+          "burden_rate": 123.260713,
+          "yll": 9741.6,
+          "yld": 516.156,
+          "gtbi": 70.846847
+        },
+        "2018": {
+          "trauma_level": "High",
+          "burden_rate": 121.364843,
+          "yll": 9741.6,
+          "yld": 516.156,
+          "gtbi": 70.288869
+        },
+        "2019": {
+          "trauma_level": "High",
+          "burden_rate": 119.554272,
+          "yll": 9741.6,
+          "yld": 516.156,
+          "gtbi": 69.746028
+        },
+        "2020": {
+          "trauma_level": "High",
+          "burden_rate": 118.504581,
+          "yll": 9741.6,
+          "yld": 516.156,
+          "gtbi": 69.426783
+        },
+        "2021": {
+          "trauma_level": "High",
+          "burden_rate": 116.711304,
+          "yll": 9741.6,
+          "yld": 516.156,
+          "gtbi": 68.873575
+        },
+        "2022": {
+          "trauma_level": "High",
+          "burden_rate": 115.255691,
+          "yll": 9741.6,
+          "yld": 516.156,
+          "gtbi": 68.417181
+        },
+        "2023": {
+          "trauma_level": "Severe",
+          "burden_rate": 1265.600806,
+          "yll": 112766.4,
+          "yld": 3346.396,
+          "gtbi": 99.999681
+        },
+        "2024": {
+          "trauma_level": "Severe",
+          "burden_rate": 788.642897,
+          "yll": 69076.8,
+          "yld": 3963.516,
+          "gtbi": 99.962419
+        },
+        "2025": {
+          "trauma_level": "Severe",
+          "burden_rate": 394.928749,
+          "yll": 34686.0,
+          "yld": 2239.836,
+          "gtbi": 98.073157
+        }
+      }
+    },
+    "566": {
+      "name": "Nigeria",
+      "GTBI": {
+        "2015": {
+          "trauma_level": "Severe",
+          "burden_rate": 426.818272,
+          "yll": 767667.6,
+          "yld": 5460.126,
+          "gtbi": 98.599278
+        },
+        "2016": {
+          "trauma_level": "Severe",
+          "burden_rate": 353.499544,
+          "yll": 652539.6,
+          "yld": 4829.174,
+          "gtbi": 97.084111
+        },
+        "2017": {
+          "trauma_level": "Severe",
+          "burden_rate": 308.369108,
+          "yll": 583905.6,
+          "yld": 4688.726,
+          "gtbi": 95.421007
+        },
+        "2018": {
+          "trauma_level": "Severe",
+          "burden_rate": 311.084734,
+          "yll": 603831.6,
+          "yld": 5504.814,
+          "gtbi": 95.543682
+        },
+        "2019": {
+          "trauma_level": "Severe",
+          "burden_rate": 355.485416,
+          "yll": 708627.6,
+          "yld": 5768.686,
+          "gtbi": 97.141446
+        },
+        "2020": {
+          "trauma_level": "Severe",
+          "burden_rate": 367.310233,
+          "yll": 750250.8,
+          "yld": 6920.998,
+          "gtbi": 97.460244
+        },
+        "2021": {
+          "trauma_level": "Severe",
+          "burden_rate": 394.125381,
+          "yll": 826707.6,
+          "yld": 6476.246,
+          "gtbi": 98.057615
+        },
+        "2022": {
+          "trauma_level": "Severe",
+          "burden_rate": 370.553393,
+          "yll": 796449.6,
+          "yld": 6713.518,
+          "gtbi": 97.541291
+        },
+        "2023": {
+          "trauma_level": "Severe",
+          "burden_rate": 370.899517,
+          "yll": 817113.6,
+          "yld": 6949.726,
+          "gtbi": 97.549787
+        },
+        "2024": {
+          "trauma_level": "Severe",
+          "burden_rate": 355.373907,
+          "yll": 802353.6,
+          "yld": 6807.15,
+          "gtbi": 97.138256
+        },
+        "2025": {
+          "trauma_level": "Severe",
+          "burden_rate": 333.835116,
+          "yll": 772833.6,
+          "yld": 6594.35,
+          "gtbi": 96.450456
+        }
+      }
+    },
+    "586": {
+      "name": "Pakistan",
+      "GTBI": {
+        "2015": {
+          "trauma_level": "Severe",
+          "burden_rate": 228.774436,
+          "yll": 428630.4,
+          "yld": 4623.8,
+          "gtbi": 89.850486
+        },
+        "2016": {
+          "trauma_level": "Severe",
+          "burden_rate": 223.722054,
+          "yll": 428630.4,
+          "yld": 4623.8,
+          "gtbi": 89.324519
+        },
+        "2017": {
+          "trauma_level": "Severe",
+          "burden_rate": 219.90818,
+          "yll": 428630.4,
+          "yld": 4623.8,
+          "gtbi": 88.909506
+        },
+        "2018": {
+          "trauma_level": "Severe",
+          "burden_rate": 204.145361,
+          "yll": 428630.4,
+          "yld": 4623.8,
+          "gtbi": 87.016016
+        },
+        "2019": {
+          "trauma_level": "Severe",
+          "burden_rate": 200.057056,
+          "yll": 428630.4,
+          "yld": 4623.8,
+          "gtbi": 86.474191
+        },
+        "2020": {
+          "trauma_level": "Severe",
+          "burden_rate": 196.138181,
+          "yll": 428630.4,
+          "yld": 4623.8,
+          "gtbi": 85.933608
+        },
+        "2021": {
+          "trauma_level": "Severe",
+          "burden_rate": 192.386466,
+          "yll": 428630.4,
+          "yld": 4623.8,
+          "gtbi": 85.395853
+        },
+        "2022": {
+          "trauma_level": "Severe",
+          "burden_rate": 229.289985,
+          "yll": 521544.6,
+          "yld": 4650.68,
+          "gtbi": 89.902677
+        },
+        "2023": {
+          "trauma_level": "Severe",
+          "burden_rate": 188.455873,
+          "yll": 429663.6,
+          "yld": 6427.28,
+          "gtbi": 84.810393
+        },
+        "2024": {
+          "trauma_level": "Severe",
+          "burden_rate": 180.315701,
+          "yll": 427892.4,
+          "yld": 5741.0,
+          "gtbi": 83.522214
+        },
+        "2025": {
+          "trauma_level": "Severe",
+          "burden_rate": 176.687136,
+          "yll": 428630.4,
+          "yld": 4623.8,
+          "gtbi": 82.913327
+        }
+      }
+    },
+    "275": {
+      "name": "Palestine",
+      "GTBI": {
+        "2015": {
+          "trauma_level": "Severe",
+          "burden_rate": 4309.007687,
+          "yll": 29224.8,
+          "yld": 161325.34,
+          "gtbi": 100.0
+        },
+        "2016": {
+          "trauma_level": "Severe",
+          "burden_rate": 4219.798288,
+          "yll": 30700.8,
+          "yld": 161365.772,
+          "gtbi": 100.0
+        },
+        "2017": {
+          "trauma_level": "Severe",
+          "burden_rate": 4057.942024,
+          "yll": 28782.0,
+          "yld": 161323.212,
+          "gtbi": 100.0
+        },
+        "2018": {
+          "trauma_level": "Severe",
+          "burden_rate": 4086.074439,
+          "yll": 34833.6,
+          "yld": 163834.252,
+          "gtbi": 100.0
+        },
+        "2019": {
+          "trauma_level": "Severe",
+          "burden_rate": 3891.785009,
+          "yll": 31734.0,
+          "yld": 162131.852,
+          "gtbi": 100.0
+        },
+        "2020": {
+          "trauma_level": "Severe",
+          "burden_rate": 3774.567388,
+          "yll": 30700.8,
+          "yld": 161855.212,
+          "gtbi": 100.0
+        },
+        "2021": {
+          "trauma_level": "Severe",
+          "burden_rate": 3798.353461,
+          "yll": 34095.6,
+          "yld": 164451.372,
+          "gtbi": 100.0
+        },
+        "2022": {
+          "trauma_level": "Severe",
+          "burden_rate": 3630.649588,
+          "yll": 30553.2,
+          "yld": 163834.252,
+          "gtbi": 100.0
+        },
+        "2023": {
+          "trauma_level": "Severe",
+          "burden_rate": 53074.684778,
+          "yll": 1673931.6,
+          "yld": 1236390.092,
+          "gtbi": 100.0
+        },
+        "2024": {
+          "trauma_level": "Severe",
+          "burden_rate": 90788.782343,
+          "yll": 3408231.6,
+          "yld": 1369071.692,
+          "gtbi": 100.0
+        },
+        "2025": {
+          "trauma_level": "Severe",
+          "burden_rate": 38954.98399,
+          "yll": 899031.6,
+          "yld": 1165580.492,
+          "gtbi": 100.0
+        }
+      }
+    },
+    "646": {
+      "name": "Rwanda",
+      "GTBI": {
+        "2015": {
+          "trauma_level": "High",
+          "burden_rate": 126.793492,
+          "yll": 14317.2,
+          "yld": 98.042,
+          "gtbi": 71.858784
+        },
+        "2016": {
+          "trauma_level": "High",
+          "burden_rate": 123.536438,
+          "yll": 14317.2,
+          "yld": 98.042,
+          "gtbi": 70.927119
+        },
+        "2017": {
+          "trauma_level": "High",
+          "burden_rate": 120.318153,
+          "yll": 14317.2,
+          "yld": 98.042,
+          "gtbi": 69.976252
+        },
+        "2018": {
+          "trauma_level": "High",
+          "burden_rate": 117.178618,
+          "yll": 14317.2,
+          "yld": 98.042,
+          "gtbi": 69.018694
+        },
+        "2019": {
+          "trauma_level": "High",
+          "burden_rate": 114.162502,
+          "yll": 14317.2,
+          "yld": 98.042,
+          "gtbi": 68.070027
+        },
+        "2020": {
+          "trauma_level": "High",
+          "burden_rate": 111.297989,
+          "yll": 14317.2,
+          "yld": 98.042,
+          "gtbi": 67.142163
+        },
+        "2021": {
+          "trauma_level": "High",
+          "burden_rate": 108.577019,
+          "yll": 14317.2,
+          "yld": 98.042,
+          "gtbi": 66.235836
+        },
+        "2022": {
+          "trauma_level": "High",
+          "burden_rate": 123.098934,
+          "yll": 16531.2,
+          "yld": 210.826,
+          "gtbi": 70.799646
+        },
+        "2023": {
+          "trauma_level": "High",
+          "burden_rate": 130.34354,
+          "yll": 17859.6,
+          "yld": 289.562,
+          "gtbi": 72.840286
+        },
+        "2024": {
+          "trauma_level": "High",
+          "burden_rate": 130.49937,
+          "yll": 18302.4,
+          "yld": 302.33,
+          "gtbi": 72.882576
+        },
+        "2025": {
+          "trauma_level": "High",
+          "burden_rate": 131.323995,
+          "yll": 18819.0,
+          "yld": 323.61,
+          "gtbi": 73.105273
+        }
+      }
+    },
+    "706": {
+      "name": "Somalia",
+      "GTBI": {
+        "2015": {
+          "trauma_level": "Severe",
+          "burden_rate": 18178.699611,
+          "yll": 709070.4,
+          "yld": 1799126.64,
+          "gtbi": 100.0
+        },
+        "2016": {
+          "trauma_level": "Severe",
+          "burden_rate": 17517.802195,
+          "yll": 709070.4,
+          "yld": 1799126.64,
+          "gtbi": 100.0
+        },
+        "2017": {
+          "trauma_level": "Severe",
+          "burden_rate": 17013.357779,
+          "yll": 709070.4,
+          "yld": 1799126.64,
+          "gtbi": 100.0
+        },
+        "2018": {
+          "trauma_level": "Severe",
+          "burden_rate": 16520.949422,
+          "yll": 709070.4,
+          "yld": 1799126.64,
+          "gtbi": 100.0
+        },
+        "2019": {
+          "trauma_level": "Severe",
+          "burden_rate": 16040.999541,
+          "yll": 709070.4,
+          "yld": 1799126.64,
+          "gtbi": 100.0
+        },
+        "2020": {
+          "trauma_level": "Severe",
+          "burden_rate": 15362.423018,
+          "yll": 709070.4,
+          "yld": 1799126.64,
+          "gtbi": 100.0
+        },
+        "2021": {
+          "trauma_level": "Severe",
+          "burden_rate": 14697.407771,
+          "yll": 709070.4,
+          "yld": 1799126.64,
+          "gtbi": 100.0
+        },
+        "2022": {
+          "trauma_level": "Severe",
+          "burden_rate": 14697.407771,
+          "yll": 709070.4,
+          "yld": 1799126.64,
+          "gtbi": 100.0
+        },
+        "2023": {
+          "trauma_level": "Severe",
+          "burden_rate": 13824.316339,
+          "yll": 709070.4,
+          "yld": 1799126.64,
+          "gtbi": 100.0
+        },
+        "2024": {
+          "trauma_level": "Severe",
+          "burden_rate": 13414.573569,
+          "yll": 709070.4,
+          "yld": 1799126.64,
+          "gtbi": 100.0
+        },
+        "2025": {
+          "trauma_level": "Severe",
+          "burden_rate": 13063.530824,
+          "yll": 709070.4,
+          "yld": 1799126.64,
+          "gtbi": 100.0
+        }
+      }
+    },
+    "710": {
+      "name": "South Africa",
+      "GTBI": {
+        "2015": {
+          "trauma_level": "Severe",
+          "burden_rate": 1247.286083,
+          "yll": 664495.2,
+          "yld": 15156.048,
+          "gtbi": 99.999617
+        },
+        "2016": {
+          "trauma_level": "Severe",
+          "burden_rate": 1229.220822,
+          "yll": 664495.2,
+          "yld": 15156.048,
+          "gtbi": 99.999541
+        },
+        "2017": {
+          "trauma_level": "Severe",
+          "burden_rate": 1213.321961,
+          "yll": 664495.2,
+          "yld": 15156.048,
+          "gtbi": 99.999462
+        },
+        "2018": {
+          "trauma_level": "Severe",
+          "burden_rate": 1198.316873,
+          "yll": 664495.2,
+          "yld": 15156.048,
+          "gtbi": 99.999375
+        },
+        "2019": {
+          "trauma_level": "Severe",
+          "burden_rate": 1176.281926,
+          "yll": 664495.2,
+          "yld": 15156.048,
+          "gtbi": 99.999221
+        },
+        "2020": {
+          "trauma_level": "Severe",
+          "burden_rate": 1155.831594,
+          "yll": 664495.2,
+          "yld": 15156.048,
+          "gtbi": 99.999044
+        },
+        "2021": {
+          "trauma_level": "Severe",
+          "burden_rate": 1187.414949,
+          "yll": 689144.4,
+          "yld": 16088.112,
+          "gtbi": 99.999303
+        },
+        "2022": {
+          "trauma_level": "Severe",
+          "burden_rate": 1181.116186,
+          "yll": 692244.0,
+          "yld": 15172.368,
+          "gtbi": 99.999258
+        },
+        "2023": {
+          "trauma_level": "Severe",
+          "burden_rate": 1124.980438,
+          "yll": 664495.2,
+          "yld": 15156.048,
+          "gtbi": 99.998699
+        },
+        "2024": {
+          "trauma_level": "Severe",
+          "burden_rate": 1115.006568,
+          "yll": 664495.2,
+          "yld": 15156.048,
+          "gtbi": 99.998563
+        },
+        "2025": {
+          "trauma_level": "Severe",
+          "burden_rate": 1104.925205,
+          "yll": 664495.2,
+          "yld": 15156.048,
+          "gtbi": 99.99841
+        }
+      }
+    },
+    "729": {
+      "name": "Sudan",
+      "GTBI": {
+        "2015": {
+          "trauma_level": "Severe",
+          "burden_rate": 4151.343545,
+          "yll": 268041.6,
+          "yld": 1346952.764,
+          "gtbi": 100.0
+        },
+        "2016": {
+          "trauma_level": "Severe",
+          "burden_rate": 4078.322646,
+          "yll": 268041.6,
+          "yld": 1346952.764,
+          "gtbi": 100.0
+        },
+        "2017": {
+          "trauma_level": "Severe",
+          "burden_rate": 3984.362192,
+          "yll": 268041.6,
+          "yld": 1346952.764,
+          "gtbi": 100.0
+        },
+        "2018": {
+          "trauma_level": "Severe",
+          "burden_rate": 3890.472897,
+          "yll": 268041.6,
+          "yld": 1346952.764,
+          "gtbi": 100.0
+        },
+        "2019": {
+          "trauma_level": "Severe",
+          "burden_rate": 3798.670774,
+          "yll": 268041.6,
+          "yld": 1346952.764,
+          "gtbi": 100.0
+        },
+        "2020": {
+          "trauma_level": "Severe",
+          "burden_rate": 3709.85974,
+          "yll": 268041.6,
+          "yld": 1346952.764,
+          "gtbi": 100.0
+        },
+        "2021": {
+          "trauma_level": "Severe",
+          "burden_rate": 3623.176397,
+          "yll": 268041.6,
+          "yld": 1346952.764,
+          "gtbi": 100.0
+        },
+        "2022": {
+          "trauma_level": "Severe",
+          "burden_rate": 3537.217722,
+          "yll": 268041.6,
+          "yld": 1346952.764,
+          "gtbi": 100.0
+        },
+        "2023": {
+          "trauma_level": "Severe",
+          "burden_rate": 12941.473172,
+          "yll": 808257.6,
+          "yld": 5257953.884,
+          "gtbi": 100.0
+        },
+        "2024": {
+          "trauma_level": "Severe",
+          "burden_rate": 19667.019577,
+          "yll": 2151417.6,
+          "yld": 7310188.604,
+          "gtbi": 100.0
+        },
+        "2025": {
+          "trauma_level": "Severe",
+          "burden_rate": 17618.581895,
+          "yll": 1708617.6,
+          "yld": 6924486.204,
+          "gtbi": 100.0
+        }
+      }
+    },
+    "760": {
+      "name": "Syria",
+      "GTBI": {
+        "2015": {
+          "trauma_level": "Severe",
+          "burden_rate": 43732.658327,
+          "yll": 3708007.2,
+          "yld": 4383587.64,
+          "gtbi": 100.0
+        },
+        "2016": {
+          "trauma_level": "Severe",
+          "burden_rate": 41440.037673,
+          "yll": 3257827.2,
+          "yld": 4379757.24,
+          "gtbi": 100.0
+        },
+        "2017": {
+          "trauma_level": "Severe",
+          "burden_rate": 37848.478834,
+          "yll": 2541967.2,
+          "yld": 4372947.64,
+          "gtbi": 100.0
+        },
+        "2018": {
+          "trauma_level": "Severe",
+          "burden_rate": 35439.819311,
+          "yll": 1833487.2,
+          "yld": 4368478.84,
+          "gtbi": 100.0
+        },
+        "2019": {
+          "trauma_level": "Severe",
+          "burden_rate": 31018.646258,
+          "yll": 1065967.2,
+          "yld": 4362328.92,
+          "gtbi": 100.0
+        },
+        "2020": {
+          "trauma_level": "Severe",
+          "burden_rate": 29656.108202,
+          "yll": 829807.2,
+          "yld": 4360009.4,
+          "gtbi": 100.0
+        },
+        "2021": {
+          "trauma_level": "Severe",
+          "burden_rate": 23955.228458,
+          "yll": 748627.2,
+          "yld": 4359583.8,
+          "gtbi": 100.0
+        },
+        "2022": {
+          "trauma_level": "Severe",
+          "burden_rate": 23710.362686,
+          "yll": 696967.2,
+          "yld": 4359115.64,
+          "gtbi": 100.0
+        },
+        "2023": {
+          "trauma_level": "Severe",
+          "burden_rate": 41771.09567,
+          "yll": 4882608.0,
+          "yld": 4359349.08,
+          "gtbi": 100.0
+        },
+        "2024": {
+          "trauma_level": "Severe",
+          "burden_rate": 23281.151778,
+          "yll": 874087.2,
+          "yld": 4362307.64,
+          "gtbi": 100.0
+        },
+        "2025": {
+          "trauma_level": "Severe",
+          "burden_rate": 22031.79553,
+          "yll": 489441.6,
+          "yld": 4357551.56,
+          "gtbi": 100.0
+        }
+      }
+    },
+    "804": {
+      "name": "Ukraine",
+      "GTBI": {
+        "2015": {
+          "trauma_level": "Severe",
+          "burden_rate": 3607.5894,
+          "yll": 456084.0,
+          "yld": 1160988.268,
+          "gtbi": 100.0
+        },
+        "2016": {
+          "trauma_level": "Severe",
+          "burden_rate": 3133.648311,
+          "yll": 242064.0,
+          "yld": 1156306.668,
+          "gtbi": 100.0
+        },
+        "2017": {
+          "trauma_level": "Severe",
+          "burden_rate": 3027.738243,
+          "yll": 188928.0,
+          "yld": 1155540.588,
+          "gtbi": 100.0
+        },
+        "2018": {
+          "trauma_level": "Severe",
+          "burden_rate": 2974.556508,
+          "yll": 160884.0,
+          "yld": 1155242.668,
+          "gtbi": 100.0
+        },
+        "2019": {
+          "trauma_level": "Severe",
+          "burden_rate": 2914.496687,
+          "yll": 138744.0,
+          "yld": 1154859.628,
+          "gtbi": 100.0
+        },
+        "2020": {
+          "trauma_level": "Severe",
+          "burden_rate": 2880.003795,
+          "yll": 116604.0,
+          "yld": 1154476.588,
+          "gtbi": 100.0
+        },
+        "2021": {
+          "trauma_level": "Severe",
+          "burden_rate": 2976.932582,
+          "yll": 138744.0,
+          "yld": 1155242.668,
+          "gtbi": 100.0
+        },
+        "2022": {
+          "trauma_level": "Severe",
+          "burden_rate": 17196.116481,
+          "yll": 2256804.0,
+          "yld": 5228908.908,
+          "gtbi": 100.0
+        },
+        "2023": {
+          "trauma_level": "Severe",
+          "burden_rate": 15758.333977,
+          "yll": 1629504.0,
+          "yld": 4201078.508,
+          "gtbi": 100.0
+        },
+        "2024": {
+          "trauma_level": "Severe",
+          "burden_rate": 15755.138797,
+          "yll": 1777104.0,
+          "yld": 4012057.708,
+          "gtbi": 100.0
+        },
+        "2025": {
+          "trauma_level": "Severe",
+          "burden_rate": 14540.438567,
+          "yll": 1481904.0,
+          "yld": 3752652.908,
+          "gtbi": 100.0
+        }
+      }
+    },
+    "840": {
+      "name": "United States",
+      "GTBI": {
+        "2015": {
+          "trauma_level": "Severe",
+          "burden_rate": 948.893265,
+          "yll": 2734511.4,
+          "yld": 310281.265,
+          "gtbi": 99.992432
+        },
+        "2016": {
+          "trauma_level": "Severe",
+          "burden_rate": 980.071521,
+          "yll": 2908900.8,
+          "yld": 257979.923,
+          "gtbi": 99.994459
+        },
+        "2017": {
+          "trauma_level": "Severe",
+          "burden_rate": 945.391321,
+          "yll": 3021814.8,
+          "yld": 51508.267,
+          "gtbi": 99.992162
+        },
+        "2018": {
+          "trauma_level": "Severe",
+          "burden_rate": 928.120391,
+          "yll": 2987645.4,
+          "yld": 45806.568,
+          "gtbi": 99.990684
+        },
+        "2019": {
+          "trauma_level": "Severe",
+          "burden_rate": 372.977374,
+          "yll": 1181980.8,
+          "yld": 42615.637,
+          "gtbi": 97.600173
+        },
+        "2020": {
+          "trauma_level": "Severe",
+          "burden_rate": 482.15529,
+          "yll": 1534744.8,
+          "yld": 53880.328,
+          "gtbi": 99.194573
+        },
+        "2021": {
+          "trauma_level": "Severe",
+          "burden_rate": 1137.41287,
+          "yll": 3706309.8,
+          "yld": 68692.37,
+          "gtbi": 99.998851
+        },
+        "2022": {
+          "trauma_level": "Severe",
+          "burden_rate": 493.606853,
+          "yll": 1579836.6,
+          "yld": 65213.922,
+          "gtbi": 99.281722
+        },
+        "2023": {
+          "trauma_level": "Severe",
+          "burden_rate": 1070.939181,
+          "yll": 3499743.6,
+          "yld": 86991.232,
+          "gtbi": 99.997767
+        },
+        "2024": {
+          "trauma_level": "Severe",
+          "burden_rate": 1006.384833,
+          "yll": 3329856.0,
+          "yld": 57611.434,
+          "gtbi": 99.995741
+        },
+        "2025": {
+          "trauma_level": "Severe",
+          "burden_rate": 874.734986,
+          "yll": 2910376.8,
+          "yld": 48762.932,
+          "gtbi": 99.984112
+        }
+      }
+    },
+    "887": {
+      "name": "Yemen",
+      "GTBI": {
+        "2015": {
+          "trauma_level": "Severe",
+          "burden_rate": 12575.686363,
+          "yll": 636303.6,
+          "yld": 2695986.86,
+          "gtbi": 100.0
+        },
+        "2016": {
+          "trauma_level": "Severe",
+          "burden_rate": 12359.330961,
+          "yll": 661395.6,
+          "yld": 2696412.46,
+          "gtbi": 100.0
+        },
+        "2017": {
+          "trauma_level": "Severe",
+          "burden_rate": 12427.288599,
+          "yll": 761763.6,
+          "yld": 2697348.78,
+          "gtbi": 100.0
+        },
+        "2018": {
+          "trauma_level": "Severe",
+          "burden_rate": 12465.329885,
+          "yll": 853275.6,
+          "yld": 2699178.86,
+          "gtbi": 100.0
+        },
+        "2019": {
+          "trauma_level": "Severe",
+          "burden_rate": 12365.498157,
+          "yll": 906411.6,
+          "yld": 2699604.46,
+          "gtbi": 100.0
+        },
+        "2020": {
+          "trauma_level": "Severe",
+          "burden_rate": 11748.971325,
+          "yll": 806043.6,
+          "yld": 2698199.98,
+          "gtbi": 100.0
+        },
+        "2021": {
+          "trauma_level": "Severe",
+          "burden_rate": 12318.389854,
+          "yll": 1054011.6,
+          "yld": 2701987.82,
+          "gtbi": 100.0
+        },
+        "2022": {
+          "trauma_level": "Severe",
+          "burden_rate": 9814.81247,
+          "yll": 611211.6,
+          "yld": 2695986.86,
+          "gtbi": 100.0
+        },
+        "2023": {
+          "trauma_level": "Severe",
+          "burden_rate": 9208.156496,
+          "yll": 478371.6,
+          "yld": 2693837.58,
+          "gtbi": 100.0
+        },
+        "2024": {
+          "trauma_level": "Severe",
+          "burden_rate": 9022.637959,
+          "yll": 507891.6,
+          "yld": 2694241.9,
+          "gtbi": 100.0
+        },
+        "2025": {
+          "trauma_level": "Severe",
+          "burden_rate": 8770.635004,
+          "yll": 463611.6,
+          "yld": 2693816.3,
+          "gtbi": 100.0
+        }
+      }
+    }
+  },
+  "_unresolved_country_names": []
+}

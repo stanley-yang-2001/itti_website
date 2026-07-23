@@ -1,9 +1,8 @@
 """
 gtbi_extract.py
 
-Reads a GTBI workbook (7_YLL_Calculation, 8_YLD_Calculation,
-11_Burden_Rate, 12_GTBI_Score sheets) and produces a dict keyed by
-zero-padded 3-digit ISO numeric country code:
+Reads a GTBI workbook and produces a dict keyed by zero-padded 3-digit
+ISO numeric country code:
 
     {
       "<iso_numeric>": {
@@ -22,21 +21,49 @@ zero-padded 3-digit ISO numeric country code:
       ...
     }
 
-Every country keeps ALL of its election years on file, each nested under
-its own year key inside "GTBI". Only these five fields are kept per the
-current spec - population/region/income_group/gtbi_change are dropped
-from this output (they're still in the source workbook if needed later).
+Every country keeps ALL of its years on file, each nested under its own
+year key inside "GTBI".
+
+Source workbook shape (as of GTBI_DataPanel updated (2).xlsx):
+    A single "GTBI Panel" sheet, one row per (Country, Year, Exposure
+    Type) - e.g. a country/year has separate rows for "Armed Conflict",
+    "Political Repression", "Communal Violence", "Terrorism", etc. This
+    is NOT the same shape the previous version of this script expected
+    (separate 7_YLL_Calculation / 8_YLD_Calculation / 11_Burden_Rate /
+    12_GTBI_Score sheets with one row per country/year already
+    aggregated) - that shape doesn't exist in this workbook, so this
+    script aggregates the exposure-type rows itself instead, following
+    the formulas given on the "Notes and Formula" sheet:
+
+        YLD = Incidents(I) x Disability_Weight(DW) x Duration(Ls)      [per row]
+        YLL = Deaths(S) x 73.8                                         [per row]
+        TBU = Sum(YLL) + Sum(YLD) + Sum(Severity x Exposure%/100)      [per country-year]
+        burden_rate = (TBU / Population) x 100,000                     [per country-year]
+        gtbi = 100 x (1 - e^(-burden_rate / K)), K = 100
+
+    K = 100 was reverse-derived from the workbook's own row-level "Final
+    GTBI Score" / "Per Capita Burden Rate" pairs (matches to >12 decimal
+    places across every row checked) since the "Notes and Formula" sheet
+    references a K cell that isn't included in this export.
+
+    yll/yld in the output are the country-year SUMS of the "Trauma
+    Mortality (YLL)" / "Trauma Morbidity (YLD)" columns across all of
+    that country-year's exposure-type rows (i.e. total years of life
+    lost/lived with disability for that country that year, not one
+    exposure type's share of it) - burden_rate and gtbi are the
+    aggregate country-year figures per the formula above, not any
+    single row's value.
+
+    trauma_level thresholds (Low <25, Moderate <50, High <75, Severe
+    >=75 on the 0-100 gtbi scale) are an ASSUMPTION - the workbook's
+    "Severity Scale" sheet only grades individual exposure-type events
+    1-10, it does not define country-year trauma_level bands. Confirm
+    against the eventual spec and adjust here if wrong; nothing else in
+    the pipeline needs to change if these thresholds move.
 
 Missing-value convention:
     Any variable with no usable number is written as the string
-    "Data Pending" (not null, not a numeric sentinel like -1.0). All
-    five fields in this workbook are actually populated for every
-    country/year that has a GTBI score at all, since the source
-    workbook has zero formula errors - "Data Pending" here mainly
-    guards against a field being genuinely blank in some future
-    version of the workbook, so the rest of the pipeline never has to
-    special-case a missing GTBI field differently from a missing ETTI
-    one.
+    "Data Pending" (not null, not a numeric sentinel like -1.0).
 
 This script only ever produces output for countries actually present in
 the workbook. Filling in every world country (with "Data Pending"
@@ -57,6 +84,7 @@ Usage:
 
 import argparse
 import json
+import math
 import sys
 from pathlib import Path
 
@@ -72,7 +100,22 @@ MISSING = "Data Pending"
 
 COUNTRY_NAME_ALIASES = {
     "Iran": "Iran, Islamic Republic of",
+    "Palestine": "Palestine, State of",
+    "Syria": "Syrian Arab Republic",
 }
+
+K = 100  # see module docstring: reverse-derived from the workbook's own figures
+
+SHEET_NAME = "GTBI Panel"
+
+# 0-based column indices in the "GTBI Panel" sheet.
+COL_COUNTRY = 0
+COL_POPULATION = 2
+COL_YEAR = 3
+COL_EXPOSURE_PCT = 5
+COL_SEVERITY_WEIGHT = 6
+COL_YLD = 11
+COL_YLL = 14
 
 
 def resolve_workbook_path(path_arg):
@@ -118,111 +161,90 @@ def resolve_iso_numeric(country_name):
     return country.numeric
 
 
-def read_per_election_values(ws, value_columns):
+def trauma_level_for(gtbi_score):
+    if gtbi_score < 25:
+        return "Low"
+    if gtbi_score < 50:
+        return "Moderate"
+    if gtbi_score < 75:
+        return "High"
+    return "Severe"
+
+
+def as_number(value, default=0.0):
+    return value if isinstance(value, (int, float)) else default
+
+
+def aggregate_by_country_year(ws):
     """
-    Generic reader for sheets shaped like:
-        Country | Election Year | <value columns...>
-    Returns { (country_name, year): {field_name: value, ...} }.
-
-    value_columns: dict mapping output field name -> 0-based column index.
-    """
-    results = {}
-    for row in ws.iter_rows(min_row=1, values_only=False):
-        country_cell = row[0]
-        if country_cell.value is None or str(country_cell.value).strip() == "":
-            continue
-        year_cell = row[1]
-        if not isinstance(year_cell.value, (int, float)):
-            continue  # skip header/title rows
-
-        country_name = str(country_cell.value).strip()
-        year = int(year_cell.value)
-
-        record = {}
-        for field_name, col_index in value_columns.items():
-            record[field_name] = row[col_index].value
-
-        results[(country_name, year)] = record
-
-    return results
-
-
-def read_yld_totals(ws):
-    """
-    8_YLD_Calculation has multiple disorder rows per country/year
-    (PTSD, Depression, Anxiety, ...), so this sums column G (YLD)
-    across all rows sharing the same (country, year).
-    Returns { (country_name, year): total_yld }.
+    Sums YLD, YLL, and the severity/exposure term across every
+    exposure-type row sharing the same (country, year), and keeps that
+    country-year's population (constant across its rows). Returns:
+        { (country_name, year): {"population", "yld", "yll", "severity_term"} }
     """
     totals = {}
-    for row in ws.iter_rows(min_row=3, values_only=False):
-        country_cell = row[0]
-        if country_cell.value is None:
+    for row in ws.iter_rows(min_row=2, values_only=True):
+        country_name = row[COL_COUNTRY]
+        if country_name is None or str(country_name).strip() == "":
             continue
-        year_cell = row[1]
-        if not isinstance(year_cell.value, (int, float)):
-            continue
-
-        country_name = str(country_cell.value).strip()
-        year = int(year_cell.value)
-        yld_value = row[6].value  # column G
-
-        if not isinstance(yld_value, (int, float)):
+        year = row[COL_YEAR]
+        if not isinstance(year, (int, float)):
             continue
 
+        country_name = str(country_name).strip()
+        year = int(year)
         key = (country_name, year)
-        totals[key] = totals.get(key, 0) + yld_value
+
+        population = as_number(row[COL_POPULATION], default=None)
+        yld = as_number(row[COL_YLD])
+        yll = as_number(row[COL_YLL])
+        exposure_pct = as_number(row[COL_EXPOSURE_PCT])
+        severity_weight = as_number(row[COL_SEVERITY_WEIGHT])
+        severity_term = severity_weight * (exposure_pct / 100)
+
+        if key not in totals:
+            totals[key] = {"population": population, "yld": 0.0, "yll": 0.0, "severity_term": 0.0}
+        totals[key]["yld"] += yld
+        totals[key]["yll"] += yll
+        totals[key]["severity_term"] += severity_term
+        if totals[key]["population"] is None:
+            totals[key]["population"] = population
 
     return totals
 
 
-def value_or_missing(mapping, key, field=None):
-    record = mapping.get(key)
-    if record is None:
-        return MISSING
-    value = record if field is None else record.get(field)
-    if value is None or isinstance(value, str) and value.startswith("#"):
-        return MISSING
-    return value
-
-
 def build_country_data(workbook_path):
     wb = openpyxl.load_workbook(workbook_path, data_only=True)
-
-    # 7_YLL_Calculation:  A Country | B Year | C Deaths | D LifeExpectancy | E YLL | F Source
-    yll_by_key = read_per_election_values(wb["7_YLL_Calculation"], {"yll": 4})
-
-    # 11_Burden_Rate:     A Country | B Year | C TBU | D Population | E BurdenRate
-    burden_by_key = read_per_election_values(wb["11_Burden_Rate"], {"burden_rate": 4})
-
-    # 12_GTBI_Score:      A Country | B Year | C BurdenRate | D kappa | E GTBIScore | F TraumaLevel
-    gtbi_by_key = read_per_election_values(wb["12_GTBI_Score"], {"gtbi": 4, "trauma_level": 5})
-
-    yld_totals_by_key = read_yld_totals(wb["8_YLD_Calculation"])
+    totals = aggregate_by_country_year(wb[SHEET_NAME])
 
     country_data = {}
     unresolved_names = set()
 
-    all_keys = set(gtbi_by_key)  # GTBI score sheet defines which country/years actually have a final score
-
-    for country_name, year in sorted(all_keys, key=lambda k: (k[0], k[1])):
+    for (country_name, year), totals_for_key in sorted(totals.items(), key=lambda kv: (kv[0][0], kv[0][1])):
         code = resolve_iso_numeric(country_name)
         if code is None:
             unresolved_names.add(country_name)
             continue
 
-        year_key = str(year)
+        population = totals_for_key["population"]
+        tbu = totals_for_key["yll"] + totals_for_key["yld"] + totals_for_key["severity_term"]
+
+        if not population:
+            burden_rate = MISSING
+            gtbi_score = MISSING
+            level = MISSING
+        else:
+            burden_rate = round((tbu / population) * 100000, 6)
+            gtbi_score = round(100 * (1 - math.exp(-burden_rate / K)), 6)
+            level = trauma_level_for(gtbi_score)
+
         entry = country_data.setdefault(code, {"name": country_name, "GTBI": {}})
-        key = (country_name, year)
-
-        yld_value = yld_totals_by_key.get(key)
-
-        entry["GTBI"][year_key] = {
-            "trauma_level": value_or_missing(gtbi_by_key, key, "trauma_level"),
-            "burden_rate": value_or_missing(burden_by_key, key, "burden_rate"),
-            "yll": value_or_missing(yll_by_key, key, "yll"),
-            "yld": MISSING if yld_value is None else yld_value,
-            "gtbi": value_or_missing(gtbi_by_key, key, "gtbi"),
+        entry["GTBI"][str(year)] = {
+            "trauma_level": level,
+            "burden_rate": burden_rate,
+            "yll": round(totals_for_key["yll"], 3),
+            "yld": round(totals_for_key["yld"], 3),
+            "gtbi": gtbi_score,
         }
 
     return {

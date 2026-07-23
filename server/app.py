@@ -58,6 +58,9 @@ from models.report import (
 )
 from models.user_event import create_user_event, get_events_by_user, CRUDAction
 from models.password_reset_token import create_reset_token, get_valid_token, mark_token_used
+from models.saved_chart import (
+    create_saved_chart, get_saved_chart, get_saved_charts_by_user, delete_saved_chart,
+)
 from storage import get_storage
 from email_backend import get_email_backend, send_password_reset_email
 import validation
@@ -750,6 +753,67 @@ def list_events():
         }
         for e in events
     ])
+
+
+# ---------------------------------------------------------------------------
+# Observatory saved charts - lets a logged-in user save a chart built in the
+# Observatory's data query tool to their profile, and re-list it later. Only
+# the chart's config (indicator/variable/chart type/which country-year
+# panels) is stored; the actual figures are re-read from /api/countries at
+# render time, so a saved chart always reflects the latest published data.
+# ---------------------------------------------------------------------------
+
+MAX_SAVED_CHARTS_PER_USER = 200
+
+
+@app.post("/api/observatory/saved-charts")
+@login_required
+def save_observatory_chart():
+    user = get_current_user()
+    body = request.get_json(silent=True) or {}
+
+    title = (body.get("title") or "").strip()
+    indicator = (body.get("indicator") or "").strip()
+    config = body.get("config")
+
+    if not title:
+        abort(400, description="A chart title is required")
+    if indicator not in {"ETTI", "GTBI", "mixed"}:
+        abort(400, description="indicator must be 'ETTI', 'GTBI', or 'mixed'")
+    if not isinstance(config, dict):
+        abort(400, description="config must be an object")
+
+    existing = get_saved_charts_by_user(user.id)
+    if len(existing) >= MAX_SAVED_CHARTS_PER_USER:
+        abort(400, description=f"You can save at most {MAX_SAVED_CHARTS_PER_USER} charts")
+
+    chart = create_saved_chart(
+        user_id=user.id,
+        title=title,
+        indicator=indicator,
+        config_json=json.dumps(config),
+    )
+    return jsonify(chart.to_dict()), 201
+
+
+@app.get("/api/observatory/saved-charts")
+@login_required
+def list_observatory_charts():
+    user = get_current_user()
+    charts = get_saved_charts_by_user(user.id)
+    return jsonify([c.to_dict() for c in charts])
+
+
+@app.delete("/api/observatory/saved-charts/<int:chart_id>")
+@login_required
+def remove_observatory_chart(chart_id):
+    user = get_current_user()
+    chart = get_saved_chart(chart_id)
+    if chart is None or chart.user_id != user.id:
+        abort(404, description="Saved chart not found")
+
+    delete_saved_chart(chart_id)
+    return jsonify({"status": "deleted", "id": chart_id})
 
 
 if __name__ == "__main__":

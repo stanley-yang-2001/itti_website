@@ -1,0 +1,283 @@
+{
+  "countries": {
+    "076": {
+      "name": "Brazil",
+      "ETTI": {
+        "2018": {
+          "evs": "Data Pending",
+          "tie": 36.01349,
+          "pdl": 17.45515651,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        },
+        "2022": {
+          "evs": "Data Pending",
+          "tie": 48.57180053,
+          "pdl": 24.91799718,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        }
+      }
+    },
+    "178": {
+      "name": "Congo",
+      "ETTI": {
+        "2021": {
+          "evs": "Data Pending",
+          "tie": 0.04784643384,
+          "pdl": 0.05577920092,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        },
+        "2026": {
+          "evs": "Data Pending",
+          "tie": 0.0477326969,
+          "pdl": 0,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        }
+      }
+    },
+    "288": {
+      "name": "Ghana",
+      "ETTI": {
+        "2020": {
+          "evs": "Data Pending",
+          "tie": 1.097978808,
+          "pdl": 2.023679179,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        },
+        "2024": {
+          "evs": "Data Pending",
+          "tie": 2.651543709,
+          "pdl": 4.179597679,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        }
+      }
+    },
+    "356": {
+      "name": "India",
+      "ETTI": {
+        "2019": {
+          "evs": "Data Pending",
+          "tie": 43.12127013,
+          "pdl": 99.7405104,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        },
+        "2024": {
+          "evs": "Data Pending",
+          "tie": 57.96587758,
+          "pdl": 98.44353144,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        }
+      }
+    },
+    "360": {
+      "name": "Indonesia",
+      "ETTI": {
+        "2019": {
+          "evs": "Data Pending",
+          "tie": 4.328752817,
+          "pdl": 5.094207404,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        },
+        "2024": {
+          "evs": "Data Pending",
+          "tie": 6.317882233,
+          "pdl": 8.647860853,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        }
+      }
+    },
+    "364": {
+      "name": "Iran",
+      "ETTI": {
+        "2021": {
+          "evs": "Data Pending",
+          "tie": 1.909576922,
+          "pdl": 5.084506558,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        },
+        "2024": {
+          "evs": "Data Pending",
+          "tie": 3.327354731,
+          "pdl": 5.249868461,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        }
+      }
+    },
+    "376": {
+      "name": "Israel",
+      "ETTI": {
+        "2021": {
+          "evs": "Data Pending",
+          "tie": 4.256488633,
+          "pdl": 8.921995261,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        },
+        "2022": {
+          "evs": "Data Pending",
+          "tie": 4.956242781,
+          "pdl": 8.147418646,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        }
+      }
+    },
+    "404": {
+      "name": "Kenya",
+      "ETTI": {
+        "2017": {
+          "evs": "Data Pending",
+          "tie": 3.25977731,
+          "pdl": 6.227918603,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        },
+        "2022": {
+          "evs": "Data Pending",
+          "tie": 8.17077997,
+          "pdl": 11.39038724,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        }
+      }
+    },
+    "484": {
+      "name": "Mexico",
+      "ETTI": {
+        "2021": {
+          "evs": "Data Pending",
+          "tie": 63.87816225,
+          "pdl": 28.81462431,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        },
+        "2024": {
+          "evs": "Data Pending",
+          "tie": 82.16278392,
+          "pdl": 31.22404609,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        }
+      }
+    },
+    "566": {
+      "name": "Nigeria",
+      "ETTI": {
+        "2019": {
+          "evs": "Data Pending",
+          "tie": 12.54932968,
+          "pdl": 8.082803301,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        },
+        "2023": {
+          "evs": "Data Pending",
+          "tie": 44.98553064,
+          "pdl": 23.07534822,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        }
+      }
+    },
+    "710": {
+      "name": "South Africa",
+      "ETTI": {
+        "2019": {
+          "evs": "Data Pending",
+          "tie": 3.467850314,
+          "pdl": 13.44325174,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        },
+        "2024": {
+          "evs": "Data Pending",
+          "tie": 6.561911993,
+          "pdl": 14.71303522,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        }
+      }
+    },
+    "144": {
+      "name": "Sri Lanka",
+      "ETTI": {
+        "2024": {
+          "evs": "Data Pending",
+          "tie": 2.133543453,
+          "pdl": 1.761517406,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        }
+      }
+    },
+    "764": {
+      "name": "Thailand",
+      "ETTI": {
+        "2019": {
+          "evs": "Data Pending",
+          "tie": 8.167085633,
+          "pdl": 1.837399487,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        },
+        "2023": {
+          "evs": "Data Pending",
+          "tie": 12.03478419,
+          "pdl": 2.801273849,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        }
+      }
+    },
+    "788": {
+      "name": "Tunisia",
+      "ETTI": {
+        "2022": {
+          "evs": "Data Pending",
+          "tie": 1.16561093,
+          "pdl": 4.66906924,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        },
+        "2024": {
+          "evs": "Data Pending",
+          "tie": 1.164157353,
+          "pdl": 1.479484912,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        }
+      }
+    },
+    "840": {
+      "name": "United States",
+      "ETTI": {
+        "2020": {
+          "evs": "Data Pending",
+          "tie": 4.856443685,
+          "pdl": 23.19136947,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        },
+        "2024": {
+          "evs": "Data Pending",
+          "tie": 8.269192839,
+          "pdl": 16.00060943,
+          "its": "Data Pending",
+          "etti": "Data Pending"
+        }
+      }
+    }
+  },
+  "_unresolved_country_names": []
+}

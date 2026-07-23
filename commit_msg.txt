@@ -1,34 +1,49 @@
-fix: restore GET /api/auth/me route and global JSON error handlers
+Add Observatory data query tool (ETTI/GTBI) and wire up real workbook data
 
-The forgot-password commit's merge accidentally deleted the
-@app.get("/api/auth/me") decorator, landing reset_password()'s
-closing lines directly on auth_me()'s body. Since AuthContext.jsx
-calls this endpoint on every page load to check for an existing
-session, this silently broke "stay logged in across refresh"
-site-wide. Restored and regression-tested in both auth states.
+Build out the previously-placeholder Observatory page into a full data
+query tool, and fix the GTBI extraction pipeline to match the real
+source workbook that was just added.
 
-Also restores two fixes that had regressed since the earlier error-
-message audit (dropped in the "public launch" rewrite):
-  - Global JSON error handlers: abort() previously returned HTML,
-    which every frontend fetch() call silently swallows via
-    res.json().catch(() => ({})) - no abort() description, past or
-    present, was actually reaching the UI. Added a HTTPException
-    handler (-> JSON), a catch-all Exception handler (generic 500,
-    no leaked stack trace regardless of debug mode), and a friendly
-    429 message in place of Flask-Limiter's raw rate-spec string.
-  - requirements.txt: re-added openpyxl and pycountry, needed by
-    data_scripts/etti_extract.py and gtbi_extract.py.
+Frontend (client/):
+- New Observatory page with two top-level views: a static "Nigeria
+  Observatory" example and an interactive "Global Data Explorer"
+- Global Data Explorer: separate ETTI/GTBI tabs, each with a country+year
+  picker (country checkbox selects all years, individual year checkboxes
+  for partial selection), a Selected Data slideshow (select-all, click-
+  to-edit, remove with confirmation), and a shared chart builder that can
+  combine panels from both tabs into one bar/line chart
+- Charts support single-panel "all variables" view, cross-indicator
+  composite comparisons, and per-chart delete/download(SVG)/save-to-
+  profile actions, kept as a slideshow across multiple created charts
+- Nigeria Observatory: every recorded ETTI/GTBI year for Nigeria as
+  static panels, trend charts, and a comparison chart against every
+  other country with data on file
+- Add recharts dependency; add observatoryData.js helpers and saved-
+  chart API client functions
 
-Also adds a shared, extensible client-side validation module
-(client/src/utils/formValidation.js) and wires it into Login,
-SignUp, ResetPassword, and SearchBar - removing three duplicated
-copies of the same email regex / MIN_PASSWORD_LENGTH constant, and
-adding rejection (with a visible warning) for symbol/injection-style
-input in the globe search box.
+Backend (server/):
+- Add SavedChart model + saved_charts relationship on User, so a chart
+  built in the query tool can be saved to a user's profile (stores only
+  the chart config, not raw figures, so it stays current automatically)
+- Add POST/GET /api/observatory/saved-charts and DELETE .../<id> routes
+  (login-required)
+- Add matching Alembic migration, chained after add_reports_table
 
-Files changed:
-  server/app.py, server/requirements.txt,
-  client/src/pages/{Login,SignUp,ResetPassword}.jsx,
-  client/src/components/SearchBar.jsx,
-  client/src/styles/App.css,
-  client/src/utils/formValidation.js (new)
+Data pipeline (server/data_scripts/):
+- Rewrite gtbi_extract.py: the newly-added GTBI_DataPanel workbook uses a
+  single flat per-(country, year, exposure-type) sheet, not the four
+  pre-aggregated sheets the old script expected. Aggregate YLD/YLL/
+  severity terms per country-year per the workbook's own formulas
+  (burden_rate, then gtbi = 100*(1 - e^(-burden_rate/K)), K=100,
+  reverse-derived and verified against the workbook's own values)
+- Add Syria/Palestine/Iran name aliases so pycountry resolves cleanly
+- Regenerate etti_country_data.json, gtbi_country_data.json, and the
+  combined country_data.json from the real source spreadsheets (15
+  countries with real ETTI/GTBI data, incl. full Nigeria history)
+- Known gap carried over from the source workbook itself: EVS, ITS, and
+  the ETTI composite are "Data Pending" for every country (only TIE/PDL
+  are populated); frontend now auto-falls-back to the first populated
+  variable rather than defaulting to an all-pending composite
+
+Merged in origin/database's new commit (footer, home/contact updates,
+Reports feature + backend) as the base for this work.

@@ -1,1772 +1,6379 @@
 {
-  "242": {
-    "name": "Fiji",
-    "iso_numeric": "242",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "834": {
-    "name": "Tanzania",
-    "iso_numeric": "834",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "732": {
-    "name": "W. Sahara",
-    "iso_numeric": "732",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "124": {
-    "name": "Canada",
-    "iso_numeric": "124",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "840": {
-    "name": "United States of America",
-    "iso_numeric": "840",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "398": {
-    "name": "Kazakhstan",
-    "iso_numeric": "398",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "860": {
-    "name": "Uzbekistan",
-    "iso_numeric": "860",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "598": {
-    "name": "Papua New Guinea",
-    "iso_numeric": "598",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "360": {
-    "name": "Indonesia",
-    "iso_numeric": "360",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "032": {
-    "name": "Argentina",
-    "iso_numeric": "032",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "152": {
-    "name": "Chile",
-    "iso_numeric": "152",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "180": {
-    "name": "Dem. Rep. Congo",
-    "iso_numeric": "180",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "706": {
-    "name": "Somalia",
-    "iso_numeric": "706",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "404": {
-    "name": "Kenya",
-    "iso_numeric": "404",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "729": {
-    "name": "Sudan",
-    "iso_numeric": "729",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "148": {
-    "name": "Chad",
-    "iso_numeric": "148",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "332": {
-    "name": "Haiti",
-    "iso_numeric": "332",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "214": {
-    "name": "Dominican Rep.",
-    "iso_numeric": "214",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "643": {
-    "name": "Russia",
-    "iso_numeric": "643",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "044": {
-    "name": "Bahamas",
-    "iso_numeric": "044",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "238": {
-    "name": "Falkland Is.",
-    "iso_numeric": "238",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "578": {
-    "name": "Norway",
-    "iso_numeric": "578",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "304": {
-    "name": "Greenland",
-    "iso_numeric": "304",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "260": {
-    "name": "Fr. S. Antarctic Lands",
-    "iso_numeric": "260",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "626": {
-    "name": "Timor-Leste",
-    "iso_numeric": "626",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "710": {
-    "name": "South Africa",
-    "iso_numeric": "710",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "426": {
-    "name": "Lesotho",
-    "iso_numeric": "426",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "484": {
-    "name": "Mexico",
-    "iso_numeric": "484",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "858": {
-    "name": "Uruguay",
-    "iso_numeric": "858",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "076": {
-    "name": "Brazil",
-    "iso_numeric": "076",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "068": {
-    "name": "Bolivia",
-    "iso_numeric": "068",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "604": {
-    "name": "Peru",
-    "iso_numeric": "604",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "170": {
-    "name": "Colombia",
-    "iso_numeric": "170",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "591": {
-    "name": "Panama",
-    "iso_numeric": "591",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "188": {
-    "name": "Costa Rica",
-    "iso_numeric": "188",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "558": {
-    "name": "Nicaragua",
-    "iso_numeric": "558",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "340": {
-    "name": "Honduras",
-    "iso_numeric": "340",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "222": {
-    "name": "El Salvador",
-    "iso_numeric": "222",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "320": {
-    "name": "Guatemala",
-    "iso_numeric": "320",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "084": {
-    "name": "Belize",
-    "iso_numeric": "084",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "862": {
-    "name": "Venezuela",
-    "iso_numeric": "862",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "328": {
-    "name": "Guyana",
-    "iso_numeric": "328",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "740": {
-    "name": "Suriname",
-    "iso_numeric": "740",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "250": {
-    "name": "France",
-    "iso_numeric": "250",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "218": {
-    "name": "Ecuador",
-    "iso_numeric": "218",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "630": {
-    "name": "Puerto Rico",
-    "iso_numeric": "630",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "388": {
-    "name": "Jamaica",
-    "iso_numeric": "388",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "192": {
-    "name": "Cuba",
-    "iso_numeric": "192",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "716": {
-    "name": "Zimbabwe",
-    "iso_numeric": "716",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "072": {
-    "name": "Botswana",
-    "iso_numeric": "072",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "516": {
-    "name": "Namibia",
-    "iso_numeric": "516",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "686": {
-    "name": "Senegal",
-    "iso_numeric": "686",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "466": {
-    "name": "Mali",
-    "iso_numeric": "466",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "478": {
-    "name": "Mauritania",
-    "iso_numeric": "478",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "204": {
-    "name": "Benin",
-    "iso_numeric": "204",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "562": {
-    "name": "Niger",
-    "iso_numeric": "562",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "566": {
-    "name": "Nigeria",
-    "iso_numeric": "566",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "120": {
-    "name": "Cameroon",
-    "iso_numeric": "120",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "768": {
-    "name": "Togo",
-    "iso_numeric": "768",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "288": {
-    "name": "Ghana",
-    "iso_numeric": "288",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "384": {
-    "name": "C\u00f4te d'Ivoire",
-    "iso_numeric": "384",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "324": {
-    "name": "Guinea",
-    "iso_numeric": "324",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "624": {
-    "name": "Guinea-Bissau",
-    "iso_numeric": "624",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "430": {
-    "name": "Liberia",
-    "iso_numeric": "430",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "694": {
-    "name": "Sierra Leone",
-    "iso_numeric": "694",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "854": {
-    "name": "Burkina Faso",
-    "iso_numeric": "854",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "140": {
-    "name": "Central African Rep.",
-    "iso_numeric": "140",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "178": {
-    "name": "Congo",
-    "iso_numeric": "178",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "266": {
-    "name": "Gabon",
-    "iso_numeric": "266",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "226": {
-    "name": "Eq. Guinea",
-    "iso_numeric": "226",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "894": {
-    "name": "Zambia",
-    "iso_numeric": "894",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "454": {
-    "name": "Malawi",
-    "iso_numeric": "454",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "508": {
-    "name": "Mozambique",
-    "iso_numeric": "508",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "748": {
-    "name": "eSwatini",
-    "iso_numeric": "748",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "024": {
-    "name": "Angola",
-    "iso_numeric": "024",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "108": {
-    "name": "Burundi",
-    "iso_numeric": "108",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "376": {
-    "name": "Israel",
-    "iso_numeric": "376",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "422": {
-    "name": "Lebanon",
-    "iso_numeric": "422",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "450": {
-    "name": "Madagascar",
-    "iso_numeric": "450",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "275": {
-    "name": "Palestine",
-    "iso_numeric": "275",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "270": {
-    "name": "Gambia",
-    "iso_numeric": "270",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "788": {
-    "name": "Tunisia",
-    "iso_numeric": "788",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "012": {
-    "name": "Algeria",
-    "iso_numeric": "012",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "400": {
-    "name": "Jordan",
-    "iso_numeric": "400",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "784": {
-    "name": "United Arab Emirates",
-    "iso_numeric": "784",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "634": {
-    "name": "Qatar",
-    "iso_numeric": "634",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "414": {
-    "name": "Kuwait",
-    "iso_numeric": "414",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "368": {
-    "name": "Iraq",
-    "iso_numeric": "368",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "512": {
-    "name": "Oman",
-    "iso_numeric": "512",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "548": {
-    "name": "Vanuatu",
-    "iso_numeric": "548",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "116": {
-    "name": "Cambodia",
-    "iso_numeric": "116",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "764": {
-    "name": "Thailand",
-    "iso_numeric": "764",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "418": {
-    "name": "Laos",
-    "iso_numeric": "418",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "104": {
-    "name": "Myanmar",
-    "iso_numeric": "104",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "704": {
-    "name": "Vietnam",
-    "iso_numeric": "704",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "408": {
-    "name": "North Korea",
-    "iso_numeric": "408",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "410": {
-    "name": "South Korea",
-    "iso_numeric": "410",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "496": {
-    "name": "Mongolia",
-    "iso_numeric": "496",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "356": {
-    "name": "India",
-    "iso_numeric": "356",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "050": {
-    "name": "Bangladesh",
-    "iso_numeric": "050",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "064": {
-    "name": "Bhutan",
-    "iso_numeric": "064",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "524": {
-    "name": "Nepal",
-    "iso_numeric": "524",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "586": {
-    "name": "Pakistan",
-    "iso_numeric": "586",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+  "533": {
+    "name": "Aruba",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
   "004": {
     "name": "Afghanistan",
-    "iso_numeric": "004",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
-  "762": {
-    "name": "Tajikistan",
-    "iso_numeric": "762",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+  "024": {
+    "name": "Angola",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
-  "417": {
-    "name": "Kyrgyzstan",
-    "iso_numeric": "417",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+  "660": {
+    "name": "Anguilla",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
-  "795": {
-    "name": "Turkmenistan",
-    "iso_numeric": "795",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "364": {
-    "name": "Iran",
-    "iso_numeric": "364",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "760": {
-    "name": "Syria",
-    "iso_numeric": "760",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "051": {
-    "name": "Armenia",
-    "iso_numeric": "051",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "752": {
-    "name": "Sweden",
-    "iso_numeric": "752",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "112": {
-    "name": "Belarus",
-    "iso_numeric": "112",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "804": {
-    "name": "Ukraine",
-    "iso_numeric": "804",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "616": {
-    "name": "Poland",
-    "iso_numeric": "616",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "040": {
-    "name": "Austria",
-    "iso_numeric": "040",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "348": {
-    "name": "Hungary",
-    "iso_numeric": "348",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "498": {
-    "name": "Moldova",
-    "iso_numeric": "498",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "642": {
-    "name": "Romania",
-    "iso_numeric": "642",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "440": {
-    "name": "Lithuania",
-    "iso_numeric": "440",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "428": {
-    "name": "Latvia",
-    "iso_numeric": "428",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "233": {
-    "name": "Estonia",
-    "iso_numeric": "233",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "276": {
-    "name": "Germany",
-    "iso_numeric": "276",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "100": {
-    "name": "Bulgaria",
-    "iso_numeric": "100",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "300": {
-    "name": "Greece",
-    "iso_numeric": "300",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "792": {
-    "name": "Turkey",
-    "iso_numeric": "792",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+  "248": {
+    "name": "Åland Islands",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
   "008": {
     "name": "Albania",
-    "iso_numeric": "008",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
-  "191": {
-    "name": "Croatia",
-    "iso_numeric": "191",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+  "020": {
+    "name": "Andorra",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
-  "756": {
-    "name": "Switzerland",
-    "iso_numeric": "756",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+  "784": {
+    "name": "United Arab Emirates",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
-  "442": {
-    "name": "Luxembourg",
-    "iso_numeric": "442",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+  "032": {
+    "name": "Argentina",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
-  "056": {
-    "name": "Belgium",
-    "iso_numeric": "056",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+  "051": {
+    "name": "Armenia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
-  "528": {
-    "name": "Netherlands",
-    "iso_numeric": "528",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "620": {
-    "name": "Portugal",
-    "iso_numeric": "620",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "724": {
-    "name": "Spain",
-    "iso_numeric": "724",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "372": {
-    "name": "Ireland",
-    "iso_numeric": "372",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "540": {
-    "name": "New Caledonia",
-    "iso_numeric": "540",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "090": {
-    "name": "Solomon Is.",
-    "iso_numeric": "090",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "554": {
-    "name": "New Zealand",
-    "iso_numeric": "554",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "036": {
-    "name": "Australia",
-    "iso_numeric": "036",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "144": {
-    "name": "Sri Lanka",
-    "iso_numeric": "144",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "156": {
-    "name": "China",
-    "iso_numeric": "156",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "158": {
-    "name": "Taiwan",
-    "iso_numeric": "158",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "380": {
-    "name": "Italy",
-    "iso_numeric": "380",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "208": {
-    "name": "Denmark",
-    "iso_numeric": "208",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "826": {
-    "name": "United Kingdom",
-    "iso_numeric": "826",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "352": {
-    "name": "Iceland",
-    "iso_numeric": "352",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "031": {
-    "name": "Azerbaijan",
-    "iso_numeric": "031",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "268": {
-    "name": "Georgia",
-    "iso_numeric": "268",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "608": {
-    "name": "Philippines",
-    "iso_numeric": "608",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "458": {
-    "name": "Malaysia",
-    "iso_numeric": "458",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "096": {
-    "name": "Brunei",
-    "iso_numeric": "096",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "705": {
-    "name": "Slovenia",
-    "iso_numeric": "705",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "246": {
-    "name": "Finland",
-    "iso_numeric": "246",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "703": {
-    "name": "Slovakia",
-    "iso_numeric": "703",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "203": {
-    "name": "Czechia",
-    "iso_numeric": "203",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "232": {
-    "name": "Eritrea",
-    "iso_numeric": "232",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "392": {
-    "name": "Japan",
-    "iso_numeric": "392",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "600": {
-    "name": "Paraguay",
-    "iso_numeric": "600",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "887": {
-    "name": "Yemen",
-    "iso_numeric": "887",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "682": {
-    "name": "Saudi Arabia",
-    "iso_numeric": "682",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+  "016": {
+    "name": "American Samoa",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
   "010": {
     "name": "Antarctica",
-    "iso_numeric": "010",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
-  "N. Cyprus": {
-    "name": "N. Cyprus",
-    "iso_numeric": null,
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+  "260": {
+    "name": "French Southern Territories",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "028": {
+    "name": "Antigua and Barbuda",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "036": {
+    "name": "Australia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "040": {
+    "name": "Austria",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "031": {
+    "name": "Azerbaijan",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "108": {
+    "name": "Burundi",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "056": {
+    "name": "Belgium",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "204": {
+    "name": "Benin",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "535": {
+    "name": "Bonaire, Sint Eustatius and Saba",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "854": {
+    "name": "Burkina Faso",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "050": {
+    "name": "Bangladesh",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "100": {
+    "name": "Bulgaria",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "048": {
+    "name": "Bahrain",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "044": {
+    "name": "Bahamas",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "070": {
+    "name": "Bosnia and Herzegovina",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "652": {
+    "name": "Saint Barthélemy",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "112": {
+    "name": "Belarus",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "084": {
+    "name": "Belize",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "060": {
+    "name": "Bermuda",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "068": {
+    "name": "Bolivia, Plurinational State of",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "076": {
+    "name": "Brazil",
+    "ETTI": {
+      "2018": {
+        "evs": "Data Pending",
+        "tie": 36.01349,
+        "pdl": 17.45515651,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      },
+      "2022": {
+        "evs": "Data Pending",
+        "tie": 48.57180053,
+        "pdl": 24.91799718,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "052": {
+    "name": "Barbados",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "096": {
+    "name": "Brunei Darussalam",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "064": {
+    "name": "Bhutan",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "074": {
+    "name": "Bouvet Island",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "072": {
+    "name": "Botswana",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "140": {
+    "name": "Central African Republic",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "124": {
+    "name": "Canada",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "166": {
+    "name": "Cocos (Keeling) Islands",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "756": {
+    "name": "Switzerland",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "152": {
+    "name": "Chile",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "156": {
+    "name": "China",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "2015": {
+        "trauma_level": "Low",
+        "burden_rate": 7.282016,
+        "yll": 99777.6,
+        "yld": 426.51,
+        "gtbi": 7.023198
+      },
+      "2016": {
+        "trauma_level": "Low",
+        "burden_rate": 7.248667,
+        "yll": 99777.6,
+        "yld": 450.45,
+        "gtbi": 6.992186
+      },
+      "2017": {
+        "trauma_level": "Low",
+        "burden_rate": 7.216551,
+        "yll": 99777.6,
+        "yld": 538.23,
+        "gtbi": 6.96231
+      },
+      "2018": {
+        "trauma_level": "Low",
+        "burden_rate": 7.20401,
+        "yll": 99777.6,
+        "yld": 745.71,
+        "gtbi": 6.950642
+      },
+      "2019": {
+        "trauma_level": "Low",
+        "burden_rate": 7.269883,
+        "yll": 100589.4,
+        "yld": 1192.59,
+        "gtbi": 7.011916
+      },
+      "2020": {
+        "trauma_level": "Low",
+        "burden_rate": 7.146091,
+        "yll": 99925.2,
+        "yld": 913.29,
+        "gtbi": 6.896733
+      },
+      "2021": {
+        "trauma_level": "Low",
+        "burden_rate": 7.107152,
+        "yll": 99777.6,
+        "yld": 618.03,
+        "gtbi": 6.860472
+      },
+      "2022": {
+        "trauma_level": "Low",
+        "burden_rate": 7.186045,
+        "yll": 99777.6,
+        "yld": 1671.39,
+        "gtbi": 6.933924
+      },
+      "2023": {
+        "trauma_level": "Low",
+        "burden_rate": 7.11966,
+        "yll": 99777.6,
+        "yld": 586.11,
+        "gtbi": 6.872122
+      },
+      "2024": {
+        "trauma_level": "Low",
+        "burden_rate": 7.126921,
+        "yll": 99777.6,
+        "yld": 530.25,
+        "gtbi": 6.878883
+      },
+      "2025": {
+        "trauma_level": "Low",
+        "burden_rate": 7.138213,
+        "yll": 99777.6,
+        "yld": 514.29,
+        "gtbi": 6.889398
+      }
+    }
+  },
+  "384": {
+    "name": "Côte d'Ivoire",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "120": {
+    "name": "Cameroon",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "180": {
+    "name": "Congo, The Democratic Republic of the",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "178": {
+    "name": "Congo",
+    "ETTI": {
+      "2021": {
+        "evs": "Data Pending",
+        "tie": 0.04784643384,
+        "pdl": 0.05577920092,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      },
+      "2026": {
+        "evs": "Data Pending",
+        "tie": 0.0477326969,
+        "pdl": 0,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "184": {
+    "name": "Cook Islands",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "170": {
+    "name": "Colombia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "174": {
+    "name": "Comoros",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "132": {
+    "name": "Cabo Verde",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "188": {
+    "name": "Costa Rica",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "192": {
+    "name": "Cuba",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "531": {
+    "name": "Curaçao",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "162": {
+    "name": "Christmas Island",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "136": {
+    "name": "Cayman Islands",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
   "196": {
     "name": "Cyprus",
-    "iso_numeric": "196",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
-  "504": {
-    "name": "Morocco",
-    "iso_numeric": "504",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+  "203": {
+    "name": "Czechia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
-  "818": {
-    "name": "Egypt",
-    "iso_numeric": "818",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "434": {
-    "name": "Libya",
-    "iso_numeric": "434",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
-  },
-  "231": {
-    "name": "Ethiopia",
-    "iso_numeric": "231",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+  "276": {
+    "name": "Germany",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
   "262": {
     "name": "Djibouti",
-    "iso_numeric": "262",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
-  "Somaliland": {
-    "name": "Somaliland",
-    "iso_numeric": null,
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+  "212": {
+    "name": "Dominica",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
-  "800": {
-    "name": "Uganda",
-    "iso_numeric": "800",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+  "208": {
+    "name": "Denmark",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
-  "646": {
-    "name": "Rwanda",
-    "iso_numeric": "646",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+  "214": {
+    "name": "Dominican Republic",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
-  "070": {
-    "name": "Bosnia and Herz.",
-    "iso_numeric": "070",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+  "012": {
+    "name": "Algeria",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "218": {
+    "name": "Ecuador",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "818": {
+    "name": "Egypt",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "232": {
+    "name": "Eritrea",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "732": {
+    "name": "Western Sahara",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "724": {
+    "name": "Spain",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "233": {
+    "name": "Estonia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "231": {
+    "name": "Ethiopia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "246": {
+    "name": "Finland",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "242": {
+    "name": "Fiji",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "238": {
+    "name": "Falkland Islands (Malvinas)",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "250": {
+    "name": "France",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "234": {
+    "name": "Faroe Islands",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "583": {
+    "name": "Micronesia, Federated States of",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "266": {
+    "name": "Gabon",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "826": {
+    "name": "United Kingdom",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "268": {
+    "name": "Georgia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "831": {
+    "name": "Guernsey",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "288": {
+    "name": "Ghana",
+    "ETTI": {
+      "2020": {
+        "evs": "Data Pending",
+        "tie": 1.097978808,
+        "pdl": 2.023679179,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      },
+      "2024": {
+        "evs": "Data Pending",
+        "tie": 2.651543709,
+        "pdl": 4.179597679,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "292": {
+    "name": "Gibraltar",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "324": {
+    "name": "Guinea",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "312": {
+    "name": "Guadeloupe",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "270": {
+    "name": "Gambia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "624": {
+    "name": "Guinea-Bissau",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "226": {
+    "name": "Equatorial Guinea",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "300": {
+    "name": "Greece",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "308": {
+    "name": "Grenada",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "304": {
+    "name": "Greenland",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "320": {
+    "name": "Guatemala",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "254": {
+    "name": "French Guiana",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "316": {
+    "name": "Guam",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "328": {
+    "name": "Guyana",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "344": {
+    "name": "Hong Kong",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "334": {
+    "name": "Heard Island and McDonald Islands",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "340": {
+    "name": "Honduras",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "191": {
+    "name": "Croatia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "332": {
+    "name": "Haiti",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "348": {
+    "name": "Hungary",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "360": {
+    "name": "Indonesia",
+    "ETTI": {
+      "2019": {
+        "evs": "Data Pending",
+        "tie": 4.328752817,
+        "pdl": 5.094207404,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      },
+      "2024": {
+        "evs": "Data Pending",
+        "tie": 6.317882233,
+        "pdl": 8.647860853,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "833": {
+    "name": "Isle of Man",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "356": {
+    "name": "India",
+    "ETTI": {
+      "2019": {
+        "evs": "Data Pending",
+        "tie": 43.12127013,
+        "pdl": 99.7405104,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      },
+      "2024": {
+        "evs": "Data Pending",
+        "tie": 57.96587758,
+        "pdl": 98.44353144,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "2015": {
+        "trauma_level": "Moderate",
+        "burden_rate": 28.802391,
+        "yll": 373723.2,
+        "yld": 3632.02,
+        "gtbi": 25.025633
+      },
+      "2016": {
+        "trauma_level": "Low",
+        "burden_rate": 28.497461,
+        "yll": 373723.2,
+        "yld": 3632.02,
+        "gtbi": 24.796665
+      },
+      "2017": {
+        "trauma_level": "Low",
+        "burden_rate": 28.188673,
+        "yll": 373723.2,
+        "yld": 3632.02,
+        "gtbi": 24.564087
+      },
+      "2018": {
+        "trauma_level": "Low",
+        "burden_rate": 27.897636,
+        "yll": 373723.2,
+        "yld": 3632.02,
+        "gtbi": 24.344221
+      },
+      "2019": {
+        "trauma_level": "Low",
+        "burden_rate": 27.75799,
+        "yll": 375051.6,
+        "yld": 4238.5,
+        "gtbi": 24.238497
+      },
+      "2020": {
+        "trauma_level": "Low",
+        "burden_rate": 27.69545,
+        "yll": 376970.4,
+        "yld": 5228.02,
+        "gtbi": 24.191101
+      },
+      "2021": {
+        "trauma_level": "Low",
+        "burden_rate": 27.081439,
+        "yll": 373723.2,
+        "yld": 3632.02,
+        "gtbi": 23.724194
+      },
+      "2022": {
+        "trauma_level": "Low",
+        "burden_rate": 26.826866,
+        "yll": 373723.2,
+        "yld": 3632.02,
+        "gtbi": 23.529769
+      },
+      "2023": {
+        "trauma_level": "Low",
+        "burden_rate": 26.413826,
+        "yll": 373723.2,
+        "yld": 3632.02,
+        "gtbi": 23.213263
+      },
+      "2024": {
+        "trauma_level": "Low",
+        "burden_rate": 26.173963,
+        "yll": 373723.2,
+        "yld": 3632.02,
+        "gtbi": 23.028859
+      },
+      "2025": {
+        "trauma_level": "Low",
+        "burden_rate": 25.935067,
+        "yll": 373723.2,
+        "yld": 3632.02,
+        "gtbi": 22.844758
+      }
+    }
+  },
+  "086": {
+    "name": "British Indian Ocean Territory",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "372": {
+    "name": "Ireland",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "364": {
+    "name": "Iran",
+    "ETTI": {
+      "2021": {
+        "evs": "Data Pending",
+        "tie": 1.909576922,
+        "pdl": 5.084506558,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      },
+      "2024": {
+        "evs": "Data Pending",
+        "tie": 3.327354731,
+        "pdl": 5.249868461,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "2015": {
+        "trauma_level": "High",
+        "burden_rate": 80.71947,
+        "yll": 23616.0,
+        "yld": 40240.58,
+        "gtbi": 55.389222
+      },
+      "2016": {
+        "trauma_level": "High",
+        "burden_rate": 78.953532,
+        "yll": 23173.2,
+        "yld": 40208.66,
+        "gtbi": 54.594426
+      },
+      "2017": {
+        "trauma_level": "High",
+        "burden_rate": 79.321061,
+        "yll": 24058.8,
+        "yld": 40320.38,
+        "gtbi": 54.760999
+      },
+      "2018": {
+        "trauma_level": "High",
+        "burden_rate": 79.735497,
+        "yll": 24944.4,
+        "yld": 40448.06,
+        "gtbi": 54.948097
+      },
+      "2019": {
+        "trauma_level": "Severe",
+        "burden_rate": 211.793453,
+        "yll": 132987.6,
+        "yld": 42618.62,
+        "gtbi": 87.972019
+      },
+      "2020": {
+        "trauma_level": "High",
+        "burden_rate": 75.665166,
+        "yll": 23320.8,
+        "yld": 40232.6,
+        "gtbi": 53.076504
+      },
+      "2021": {
+        "trauma_level": "High",
+        "burden_rate": 74.36809,
+        "yll": 23025.6,
+        "yld": 40208.66,
+        "gtbi": 52.463906
+      },
+      "2022": {
+        "trauma_level": "High",
+        "burden_rate": 122.989016,
+        "yll": 62951.4,
+        "yld": 43751.78,
+        "gtbi": 70.767532
+      },
+      "2023": {
+        "trauma_level": "High",
+        "burden_rate": 78.743678,
+        "yll": 28339.2,
+        "yld": 40894.94,
+        "gtbi": 54.499041
+      },
+      "2024": {
+        "trauma_level": "High",
+        "burden_rate": 74.182339,
+        "yll": 25534.8,
+        "yld": 40615.64,
+        "gtbi": 52.375526
+      },
+      "2025": {
+        "trauma_level": "High",
+        "burden_rate": 72.500926,
+        "yll": 25092.0,
+        "yld": 40511.9,
+        "gtbi": 51.567992
+      }
+    }
+  },
+  "368": {
+    "name": "Iraq",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "352": {
+    "name": "Iceland",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "376": {
+    "name": "Israel",
+    "ETTI": {
+      "2021": {
+        "evs": "Data Pending",
+        "tie": 4.256488633,
+        "pdl": 8.921995261,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      },
+      "2022": {
+        "evs": "Data Pending",
+        "tie": 4.956242781,
+        "pdl": 8.147418646,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "2015": {
+        "trauma_level": "High",
+        "burden_rate": 127.204322,
+        "yll": 9741.6,
+        "yld": 516.156,
+        "gtbi": 71.974159
+      },
+      "2016": {
+        "trauma_level": "High",
+        "burden_rate": 125.216755,
+        "yll": 9741.6,
+        "yld": 516.156,
+        "gtbi": 71.411554
+      },
+      "2017": {
+        "trauma_level": "High",
+        "burden_rate": 123.260713,
+        "yll": 9741.6,
+        "yld": 516.156,
+        "gtbi": 70.846847
+      },
+      "2018": {
+        "trauma_level": "High",
+        "burden_rate": 121.364843,
+        "yll": 9741.6,
+        "yld": 516.156,
+        "gtbi": 70.288869
+      },
+      "2019": {
+        "trauma_level": "High",
+        "burden_rate": 119.554272,
+        "yll": 9741.6,
+        "yld": 516.156,
+        "gtbi": 69.746028
+      },
+      "2020": {
+        "trauma_level": "High",
+        "burden_rate": 118.504581,
+        "yll": 9741.6,
+        "yld": 516.156,
+        "gtbi": 69.426783
+      },
+      "2021": {
+        "trauma_level": "High",
+        "burden_rate": 116.711304,
+        "yll": 9741.6,
+        "yld": 516.156,
+        "gtbi": 68.873575
+      },
+      "2022": {
+        "trauma_level": "High",
+        "burden_rate": 115.255691,
+        "yll": 9741.6,
+        "yld": 516.156,
+        "gtbi": 68.417181
+      },
+      "2023": {
+        "trauma_level": "Severe",
+        "burden_rate": 1265.600806,
+        "yll": 112766.4,
+        "yld": 3346.396,
+        "gtbi": 99.999681
+      },
+      "2024": {
+        "trauma_level": "Severe",
+        "burden_rate": 788.642897,
+        "yll": 69076.8,
+        "yld": 3963.516,
+        "gtbi": 99.962419
+      },
+      "2025": {
+        "trauma_level": "Severe",
+        "burden_rate": 394.928749,
+        "yll": 34686.0,
+        "yld": 2239.836,
+        "gtbi": 98.073157
+      }
+    }
+  },
+  "380": {
+    "name": "Italy",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "388": {
+    "name": "Jamaica",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "832": {
+    "name": "Jersey",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "400": {
+    "name": "Jordan",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "392": {
+    "name": "Japan",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "398": {
+    "name": "Kazakhstan",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "404": {
+    "name": "Kenya",
+    "ETTI": {
+      "2017": {
+        "evs": "Data Pending",
+        "tie": 3.25977731,
+        "pdl": 6.227918603,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      },
+      "2022": {
+        "evs": "Data Pending",
+        "tie": 8.17077997,
+        "pdl": 11.39038724,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "417": {
+    "name": "Kyrgyzstan",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "116": {
+    "name": "Cambodia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "296": {
+    "name": "Kiribati",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "659": {
+    "name": "Saint Kitts and Nevis",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "410": {
+    "name": "Korea, Republic of",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "414": {
+    "name": "Kuwait",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "418": {
+    "name": "Lao People's Democratic Republic",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "422": {
+    "name": "Lebanon",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "430": {
+    "name": "Liberia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "434": {
+    "name": "Libya",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "662": {
+    "name": "Saint Lucia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "438": {
+    "name": "Liechtenstein",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "144": {
+    "name": "Sri Lanka",
+    "ETTI": {
+      "2024": {
+        "evs": "Data Pending",
+        "tie": 2.133543453,
+        "pdl": 1.761517406,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "426": {
+    "name": "Lesotho",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "440": {
+    "name": "Lithuania",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "442": {
+    "name": "Luxembourg",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "428": {
+    "name": "Latvia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "446": {
+    "name": "Macao",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "663": {
+    "name": "Saint Martin (French part)",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "504": {
+    "name": "Morocco",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "492": {
+    "name": "Monaco",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "498": {
+    "name": "Moldova, Republic of",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "450": {
+    "name": "Madagascar",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "462": {
+    "name": "Maldives",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "484": {
+    "name": "Mexico",
+    "ETTI": {
+      "2021": {
+        "evs": "Data Pending",
+        "tie": 63.87816225,
+        "pdl": 28.81462431,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      },
+      "2024": {
+        "evs": "Data Pending",
+        "tie": 82.16278392,
+        "pdl": 31.22404609,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "584": {
+    "name": "Marshall Islands",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
   "807": {
-    "name": "Macedonia",
-    "iso_numeric": "807",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+    "name": "North Macedonia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
-  "688": {
-    "name": "Serbia",
-    "iso_numeric": "688",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+  "466": {
+    "name": "Mali",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "470": {
+    "name": "Malta",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "104": {
+    "name": "Myanmar",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
   "499": {
     "name": "Montenegro",
-    "iso_numeric": "499",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
-  "Kosovo": {
-    "name": "Kosovo",
-    "iso_numeric": null,
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+  "496": {
+    "name": "Mongolia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "580": {
+    "name": "Northern Mariana Islands",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "508": {
+    "name": "Mozambique",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "478": {
+    "name": "Mauritania",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "500": {
+    "name": "Montserrat",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "474": {
+    "name": "Martinique",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "480": {
+    "name": "Mauritius",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "454": {
+    "name": "Malawi",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "458": {
+    "name": "Malaysia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "175": {
+    "name": "Mayotte",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "516": {
+    "name": "Namibia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "540": {
+    "name": "New Caledonia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "562": {
+    "name": "Niger",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "574": {
+    "name": "Norfolk Island",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "566": {
+    "name": "Nigeria",
+    "ETTI": {
+      "2019": {
+        "evs": "Data Pending",
+        "tie": 12.54932968,
+        "pdl": 8.082803301,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      },
+      "2023": {
+        "evs": "Data Pending",
+        "tie": 44.98553064,
+        "pdl": 23.07534822,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "2015": {
+        "trauma_level": "Severe",
+        "burden_rate": 426.818272,
+        "yll": 767667.6,
+        "yld": 5460.126,
+        "gtbi": 98.599278
+      },
+      "2016": {
+        "trauma_level": "Severe",
+        "burden_rate": 353.499544,
+        "yll": 652539.6,
+        "yld": 4829.174,
+        "gtbi": 97.084111
+      },
+      "2017": {
+        "trauma_level": "Severe",
+        "burden_rate": 308.369108,
+        "yll": 583905.6,
+        "yld": 4688.726,
+        "gtbi": 95.421007
+      },
+      "2018": {
+        "trauma_level": "Severe",
+        "burden_rate": 311.084734,
+        "yll": 603831.6,
+        "yld": 5504.814,
+        "gtbi": 95.543682
+      },
+      "2019": {
+        "trauma_level": "Severe",
+        "burden_rate": 355.485416,
+        "yll": 708627.6,
+        "yld": 5768.686,
+        "gtbi": 97.141446
+      },
+      "2020": {
+        "trauma_level": "Severe",
+        "burden_rate": 367.310233,
+        "yll": 750250.8,
+        "yld": 6920.998,
+        "gtbi": 97.460244
+      },
+      "2021": {
+        "trauma_level": "Severe",
+        "burden_rate": 394.125381,
+        "yll": 826707.6,
+        "yld": 6476.246,
+        "gtbi": 98.057615
+      },
+      "2022": {
+        "trauma_level": "Severe",
+        "burden_rate": 370.553393,
+        "yll": 796449.6,
+        "yld": 6713.518,
+        "gtbi": 97.541291
+      },
+      "2023": {
+        "trauma_level": "Severe",
+        "burden_rate": 370.899517,
+        "yll": 817113.6,
+        "yld": 6949.726,
+        "gtbi": 97.549787
+      },
+      "2024": {
+        "trauma_level": "Severe",
+        "burden_rate": 355.373907,
+        "yll": 802353.6,
+        "yld": 6807.15,
+        "gtbi": 97.138256
+      },
+      "2025": {
+        "trauma_level": "Severe",
+        "burden_rate": 333.835116,
+        "yll": 772833.6,
+        "yld": 6594.35,
+        "gtbi": 96.450456
+      }
+    }
+  },
+  "558": {
+    "name": "Nicaragua",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "570": {
+    "name": "Niue",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "528": {
+    "name": "Netherlands",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "578": {
+    "name": "Norway",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "524": {
+    "name": "Nepal",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "520": {
+    "name": "Nauru",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "554": {
+    "name": "New Zealand",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "512": {
+    "name": "Oman",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "586": {
+    "name": "Pakistan",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "2015": {
+        "trauma_level": "Severe",
+        "burden_rate": 228.774436,
+        "yll": 428630.4,
+        "yld": 4623.8,
+        "gtbi": 89.850486
+      },
+      "2016": {
+        "trauma_level": "Severe",
+        "burden_rate": 223.722054,
+        "yll": 428630.4,
+        "yld": 4623.8,
+        "gtbi": 89.324519
+      },
+      "2017": {
+        "trauma_level": "Severe",
+        "burden_rate": 219.90818,
+        "yll": 428630.4,
+        "yld": 4623.8,
+        "gtbi": 88.909506
+      },
+      "2018": {
+        "trauma_level": "Severe",
+        "burden_rate": 204.145361,
+        "yll": 428630.4,
+        "yld": 4623.8,
+        "gtbi": 87.016016
+      },
+      "2019": {
+        "trauma_level": "Severe",
+        "burden_rate": 200.057056,
+        "yll": 428630.4,
+        "yld": 4623.8,
+        "gtbi": 86.474191
+      },
+      "2020": {
+        "trauma_level": "Severe",
+        "burden_rate": 196.138181,
+        "yll": 428630.4,
+        "yld": 4623.8,
+        "gtbi": 85.933608
+      },
+      "2021": {
+        "trauma_level": "Severe",
+        "burden_rate": 192.386466,
+        "yll": 428630.4,
+        "yld": 4623.8,
+        "gtbi": 85.395853
+      },
+      "2022": {
+        "trauma_level": "Severe",
+        "burden_rate": 229.289985,
+        "yll": 521544.6,
+        "yld": 4650.68,
+        "gtbi": 89.902677
+      },
+      "2023": {
+        "trauma_level": "Severe",
+        "burden_rate": 188.455873,
+        "yll": 429663.6,
+        "yld": 6427.28,
+        "gtbi": 84.810393
+      },
+      "2024": {
+        "trauma_level": "Severe",
+        "burden_rate": 180.315701,
+        "yll": 427892.4,
+        "yld": 5741.0,
+        "gtbi": 83.522214
+      },
+      "2025": {
+        "trauma_level": "Severe",
+        "burden_rate": 176.687136,
+        "yll": 428630.4,
+        "yld": 4623.8,
+        "gtbi": 82.913327
+      }
+    }
+  },
+  "591": {
+    "name": "Panama",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "612": {
+    "name": "Pitcairn",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "604": {
+    "name": "Peru",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "608": {
+    "name": "Philippines",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "585": {
+    "name": "Palau",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "598": {
+    "name": "Papua New Guinea",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "616": {
+    "name": "Poland",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "630": {
+    "name": "Puerto Rico",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "408": {
+    "name": "Korea, Democratic People's Republic of",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "620": {
+    "name": "Portugal",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "600": {
+    "name": "Paraguay",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "275": {
+    "name": "Palestine",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "2015": {
+        "trauma_level": "Severe",
+        "burden_rate": 4309.007687,
+        "yll": 29224.8,
+        "yld": 161325.34,
+        "gtbi": 100.0
+      },
+      "2016": {
+        "trauma_level": "Severe",
+        "burden_rate": 4219.798288,
+        "yll": 30700.8,
+        "yld": 161365.772,
+        "gtbi": 100.0
+      },
+      "2017": {
+        "trauma_level": "Severe",
+        "burden_rate": 4057.942024,
+        "yll": 28782.0,
+        "yld": 161323.212,
+        "gtbi": 100.0
+      },
+      "2018": {
+        "trauma_level": "Severe",
+        "burden_rate": 4086.074439,
+        "yll": 34833.6,
+        "yld": 163834.252,
+        "gtbi": 100.0
+      },
+      "2019": {
+        "trauma_level": "Severe",
+        "burden_rate": 3891.785009,
+        "yll": 31734.0,
+        "yld": 162131.852,
+        "gtbi": 100.0
+      },
+      "2020": {
+        "trauma_level": "Severe",
+        "burden_rate": 3774.567388,
+        "yll": 30700.8,
+        "yld": 161855.212,
+        "gtbi": 100.0
+      },
+      "2021": {
+        "trauma_level": "Severe",
+        "burden_rate": 3798.353461,
+        "yll": 34095.6,
+        "yld": 164451.372,
+        "gtbi": 100.0
+      },
+      "2022": {
+        "trauma_level": "Severe",
+        "burden_rate": 3630.649588,
+        "yll": 30553.2,
+        "yld": 163834.252,
+        "gtbi": 100.0
+      },
+      "2023": {
+        "trauma_level": "Severe",
+        "burden_rate": 53074.684778,
+        "yll": 1673931.6,
+        "yld": 1236390.092,
+        "gtbi": 100.0
+      },
+      "2024": {
+        "trauma_level": "Severe",
+        "burden_rate": 90788.782343,
+        "yll": 3408231.6,
+        "yld": 1369071.692,
+        "gtbi": 100.0
+      },
+      "2025": {
+        "trauma_level": "Severe",
+        "burden_rate": 38954.98399,
+        "yll": 899031.6,
+        "yld": 1165580.492,
+        "gtbi": 100.0
+      }
+    }
+  },
+  "258": {
+    "name": "French Polynesia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "634": {
+    "name": "Qatar",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "638": {
+    "name": "Réunion",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "642": {
+    "name": "Romania",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "643": {
+    "name": "Russian Federation",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "646": {
+    "name": "Rwanda",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "2015": {
+        "trauma_level": "High",
+        "burden_rate": 126.793492,
+        "yll": 14317.2,
+        "yld": 98.042,
+        "gtbi": 71.858784
+      },
+      "2016": {
+        "trauma_level": "High",
+        "burden_rate": 123.536438,
+        "yll": 14317.2,
+        "yld": 98.042,
+        "gtbi": 70.927119
+      },
+      "2017": {
+        "trauma_level": "High",
+        "burden_rate": 120.318153,
+        "yll": 14317.2,
+        "yld": 98.042,
+        "gtbi": 69.976252
+      },
+      "2018": {
+        "trauma_level": "High",
+        "burden_rate": 117.178618,
+        "yll": 14317.2,
+        "yld": 98.042,
+        "gtbi": 69.018694
+      },
+      "2019": {
+        "trauma_level": "High",
+        "burden_rate": 114.162502,
+        "yll": 14317.2,
+        "yld": 98.042,
+        "gtbi": 68.070027
+      },
+      "2020": {
+        "trauma_level": "High",
+        "burden_rate": 111.297989,
+        "yll": 14317.2,
+        "yld": 98.042,
+        "gtbi": 67.142163
+      },
+      "2021": {
+        "trauma_level": "High",
+        "burden_rate": 108.577019,
+        "yll": 14317.2,
+        "yld": 98.042,
+        "gtbi": 66.235836
+      },
+      "2022": {
+        "trauma_level": "High",
+        "burden_rate": 123.098934,
+        "yll": 16531.2,
+        "yld": 210.826,
+        "gtbi": 70.799646
+      },
+      "2023": {
+        "trauma_level": "High",
+        "burden_rate": 130.34354,
+        "yll": 17859.6,
+        "yld": 289.562,
+        "gtbi": 72.840286
+      },
+      "2024": {
+        "trauma_level": "High",
+        "burden_rate": 130.49937,
+        "yll": 18302.4,
+        "yld": 302.33,
+        "gtbi": 72.882576
+      },
+      "2025": {
+        "trauma_level": "High",
+        "burden_rate": 131.323995,
+        "yll": 18819.0,
+        "yld": 323.61,
+        "gtbi": 73.105273
+      }
+    }
+  },
+  "682": {
+    "name": "Saudi Arabia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "729": {
+    "name": "Sudan",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "2015": {
+        "trauma_level": "Severe",
+        "burden_rate": 4151.343545,
+        "yll": 268041.6,
+        "yld": 1346952.764,
+        "gtbi": 100.0
+      },
+      "2016": {
+        "trauma_level": "Severe",
+        "burden_rate": 4078.322646,
+        "yll": 268041.6,
+        "yld": 1346952.764,
+        "gtbi": 100.0
+      },
+      "2017": {
+        "trauma_level": "Severe",
+        "burden_rate": 3984.362192,
+        "yll": 268041.6,
+        "yld": 1346952.764,
+        "gtbi": 100.0
+      },
+      "2018": {
+        "trauma_level": "Severe",
+        "burden_rate": 3890.472897,
+        "yll": 268041.6,
+        "yld": 1346952.764,
+        "gtbi": 100.0
+      },
+      "2019": {
+        "trauma_level": "Severe",
+        "burden_rate": 3798.670774,
+        "yll": 268041.6,
+        "yld": 1346952.764,
+        "gtbi": 100.0
+      },
+      "2020": {
+        "trauma_level": "Severe",
+        "burden_rate": 3709.85974,
+        "yll": 268041.6,
+        "yld": 1346952.764,
+        "gtbi": 100.0
+      },
+      "2021": {
+        "trauma_level": "Severe",
+        "burden_rate": 3623.176397,
+        "yll": 268041.6,
+        "yld": 1346952.764,
+        "gtbi": 100.0
+      },
+      "2022": {
+        "trauma_level": "Severe",
+        "burden_rate": 3537.217722,
+        "yll": 268041.6,
+        "yld": 1346952.764,
+        "gtbi": 100.0
+      },
+      "2023": {
+        "trauma_level": "Severe",
+        "burden_rate": 12941.473172,
+        "yll": 808257.6,
+        "yld": 5257953.884,
+        "gtbi": 100.0
+      },
+      "2024": {
+        "trauma_level": "Severe",
+        "burden_rate": 19667.019577,
+        "yll": 2151417.6,
+        "yld": 7310188.604,
+        "gtbi": 100.0
+      },
+      "2025": {
+        "trauma_level": "Severe",
+        "burden_rate": 17618.581895,
+        "yll": 1708617.6,
+        "yld": 6924486.204,
+        "gtbi": 100.0
+      }
+    }
+  },
+  "686": {
+    "name": "Senegal",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "702": {
+    "name": "Singapore",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "239": {
+    "name": "South Georgia and the South Sandwich Islands",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "654": {
+    "name": "Saint Helena, Ascension and Tristan da Cunha",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "744": {
+    "name": "Svalbard and Jan Mayen",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "090": {
+    "name": "Solomon Islands",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "694": {
+    "name": "Sierra Leone",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "222": {
+    "name": "El Salvador",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "674": {
+    "name": "San Marino",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "706": {
+    "name": "Somalia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "2015": {
+        "trauma_level": "Severe",
+        "burden_rate": 18178.699611,
+        "yll": 709070.4,
+        "yld": 1799126.64,
+        "gtbi": 100.0
+      },
+      "2016": {
+        "trauma_level": "Severe",
+        "burden_rate": 17517.802195,
+        "yll": 709070.4,
+        "yld": 1799126.64,
+        "gtbi": 100.0
+      },
+      "2017": {
+        "trauma_level": "Severe",
+        "burden_rate": 17013.357779,
+        "yll": 709070.4,
+        "yld": 1799126.64,
+        "gtbi": 100.0
+      },
+      "2018": {
+        "trauma_level": "Severe",
+        "burden_rate": 16520.949422,
+        "yll": 709070.4,
+        "yld": 1799126.64,
+        "gtbi": 100.0
+      },
+      "2019": {
+        "trauma_level": "Severe",
+        "burden_rate": 16040.999541,
+        "yll": 709070.4,
+        "yld": 1799126.64,
+        "gtbi": 100.0
+      },
+      "2020": {
+        "trauma_level": "Severe",
+        "burden_rate": 15362.423018,
+        "yll": 709070.4,
+        "yld": 1799126.64,
+        "gtbi": 100.0
+      },
+      "2021": {
+        "trauma_level": "Severe",
+        "burden_rate": 14697.407771,
+        "yll": 709070.4,
+        "yld": 1799126.64,
+        "gtbi": 100.0
+      },
+      "2022": {
+        "trauma_level": "Severe",
+        "burden_rate": 14697.407771,
+        "yll": 709070.4,
+        "yld": 1799126.64,
+        "gtbi": 100.0
+      },
+      "2023": {
+        "trauma_level": "Severe",
+        "burden_rate": 13824.316339,
+        "yll": 709070.4,
+        "yld": 1799126.64,
+        "gtbi": 100.0
+      },
+      "2024": {
+        "trauma_level": "Severe",
+        "burden_rate": 13414.573569,
+        "yll": 709070.4,
+        "yld": 1799126.64,
+        "gtbi": 100.0
+      },
+      "2025": {
+        "trauma_level": "Severe",
+        "burden_rate": 13063.530824,
+        "yll": 709070.4,
+        "yld": 1799126.64,
+        "gtbi": 100.0
+      }
+    }
+  },
+  "666": {
+    "name": "Saint Pierre and Miquelon",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "688": {
+    "name": "Serbia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "728": {
+    "name": "South Sudan",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "678": {
+    "name": "Sao Tome and Principe",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "740": {
+    "name": "Suriname",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "703": {
+    "name": "Slovakia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "705": {
+    "name": "Slovenia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "752": {
+    "name": "Sweden",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "748": {
+    "name": "Eswatini",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "534": {
+    "name": "Sint Maarten (Dutch part)",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "690": {
+    "name": "Seychelles",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "760": {
+    "name": "Syria",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "2015": {
+        "trauma_level": "Severe",
+        "burden_rate": 43732.658327,
+        "yll": 3708007.2,
+        "yld": 4383587.64,
+        "gtbi": 100.0
+      },
+      "2016": {
+        "trauma_level": "Severe",
+        "burden_rate": 41440.037673,
+        "yll": 3257827.2,
+        "yld": 4379757.24,
+        "gtbi": 100.0
+      },
+      "2017": {
+        "trauma_level": "Severe",
+        "burden_rate": 37848.478834,
+        "yll": 2541967.2,
+        "yld": 4372947.64,
+        "gtbi": 100.0
+      },
+      "2018": {
+        "trauma_level": "Severe",
+        "burden_rate": 35439.819311,
+        "yll": 1833487.2,
+        "yld": 4368478.84,
+        "gtbi": 100.0
+      },
+      "2019": {
+        "trauma_level": "Severe",
+        "burden_rate": 31018.646258,
+        "yll": 1065967.2,
+        "yld": 4362328.92,
+        "gtbi": 100.0
+      },
+      "2020": {
+        "trauma_level": "Severe",
+        "burden_rate": 29656.108202,
+        "yll": 829807.2,
+        "yld": 4360009.4,
+        "gtbi": 100.0
+      },
+      "2021": {
+        "trauma_level": "Severe",
+        "burden_rate": 23955.228458,
+        "yll": 748627.2,
+        "yld": 4359583.8,
+        "gtbi": 100.0
+      },
+      "2022": {
+        "trauma_level": "Severe",
+        "burden_rate": 23710.362686,
+        "yll": 696967.2,
+        "yld": 4359115.64,
+        "gtbi": 100.0
+      },
+      "2023": {
+        "trauma_level": "Severe",
+        "burden_rate": 41771.09567,
+        "yll": 4882608.0,
+        "yld": 4359349.08,
+        "gtbi": 100.0
+      },
+      "2024": {
+        "trauma_level": "Severe",
+        "burden_rate": 23281.151778,
+        "yll": 874087.2,
+        "yld": 4362307.64,
+        "gtbi": 100.0
+      },
+      "2025": {
+        "trauma_level": "Severe",
+        "burden_rate": 22031.79553,
+        "yll": 489441.6,
+        "yld": 4357551.56,
+        "gtbi": 100.0
+      }
+    }
+  },
+  "796": {
+    "name": "Turks and Caicos Islands",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "148": {
+    "name": "Chad",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "768": {
+    "name": "Togo",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "764": {
+    "name": "Thailand",
+    "ETTI": {
+      "2019": {
+        "evs": "Data Pending",
+        "tie": 8.167085633,
+        "pdl": 1.837399487,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      },
+      "2023": {
+        "evs": "Data Pending",
+        "tie": 12.03478419,
+        "pdl": 2.801273849,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "762": {
+    "name": "Tajikistan",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "772": {
+    "name": "Tokelau",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "795": {
+    "name": "Turkmenistan",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "626": {
+    "name": "Timor-Leste",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "776": {
+    "name": "Tonga",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
   "780": {
     "name": "Trinidad and Tobago",
-    "iso_numeric": "780",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   },
-  "728": {
-    "name": "S. Sudan",
-    "iso_numeric": "728",
-    "gtbi": 0,
-    "etti": 0,
-    "evs": 0,
-    "tie": 0,
-    "pdl": 0,
-    "its": 0
+  "788": {
+    "name": "Tunisia",
+    "ETTI": {
+      "2022": {
+        "evs": "Data Pending",
+        "tie": 1.16561093,
+        "pdl": 4.66906924,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      },
+      "2024": {
+        "evs": "Data Pending",
+        "tie": 1.164157353,
+        "pdl": 1.479484912,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "792": {
+    "name": "Türkiye",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "798": {
+    "name": "Tuvalu",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "158": {
+    "name": "Taiwan, Province of China",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "834": {
+    "name": "Tanzania, United Republic of",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "800": {
+    "name": "Uganda",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "804": {
+    "name": "Ukraine",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "2015": {
+        "trauma_level": "Severe",
+        "burden_rate": 3607.5894,
+        "yll": 456084.0,
+        "yld": 1160988.268,
+        "gtbi": 100.0
+      },
+      "2016": {
+        "trauma_level": "Severe",
+        "burden_rate": 3133.648311,
+        "yll": 242064.0,
+        "yld": 1156306.668,
+        "gtbi": 100.0
+      },
+      "2017": {
+        "trauma_level": "Severe",
+        "burden_rate": 3027.738243,
+        "yll": 188928.0,
+        "yld": 1155540.588,
+        "gtbi": 100.0
+      },
+      "2018": {
+        "trauma_level": "Severe",
+        "burden_rate": 2974.556508,
+        "yll": 160884.0,
+        "yld": 1155242.668,
+        "gtbi": 100.0
+      },
+      "2019": {
+        "trauma_level": "Severe",
+        "burden_rate": 2914.496687,
+        "yll": 138744.0,
+        "yld": 1154859.628,
+        "gtbi": 100.0
+      },
+      "2020": {
+        "trauma_level": "Severe",
+        "burden_rate": 2880.003795,
+        "yll": 116604.0,
+        "yld": 1154476.588,
+        "gtbi": 100.0
+      },
+      "2021": {
+        "trauma_level": "Severe",
+        "burden_rate": 2976.932582,
+        "yll": 138744.0,
+        "yld": 1155242.668,
+        "gtbi": 100.0
+      },
+      "2022": {
+        "trauma_level": "Severe",
+        "burden_rate": 17196.116481,
+        "yll": 2256804.0,
+        "yld": 5228908.908,
+        "gtbi": 100.0
+      },
+      "2023": {
+        "trauma_level": "Severe",
+        "burden_rate": 15758.333977,
+        "yll": 1629504.0,
+        "yld": 4201078.508,
+        "gtbi": 100.0
+      },
+      "2024": {
+        "trauma_level": "Severe",
+        "burden_rate": 15755.138797,
+        "yll": 1777104.0,
+        "yld": 4012057.708,
+        "gtbi": 100.0
+      },
+      "2025": {
+        "trauma_level": "Severe",
+        "burden_rate": 14540.438567,
+        "yll": 1481904.0,
+        "yld": 3752652.908,
+        "gtbi": 100.0
+      }
+    }
+  },
+  "581": {
+    "name": "United States Minor Outlying Islands",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "858": {
+    "name": "Uruguay",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "840": {
+    "name": "United States",
+    "ETTI": {
+      "2020": {
+        "evs": "Data Pending",
+        "tie": 4.856443685,
+        "pdl": 23.19136947,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      },
+      "2024": {
+        "evs": "Data Pending",
+        "tie": 8.269192839,
+        "pdl": 16.00060943,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "2015": {
+        "trauma_level": "Severe",
+        "burden_rate": 948.893265,
+        "yll": 2734511.4,
+        "yld": 310281.265,
+        "gtbi": 99.992432
+      },
+      "2016": {
+        "trauma_level": "Severe",
+        "burden_rate": 980.071521,
+        "yll": 2908900.8,
+        "yld": 257979.923,
+        "gtbi": 99.994459
+      },
+      "2017": {
+        "trauma_level": "Severe",
+        "burden_rate": 945.391321,
+        "yll": 3021814.8,
+        "yld": 51508.267,
+        "gtbi": 99.992162
+      },
+      "2018": {
+        "trauma_level": "Severe",
+        "burden_rate": 928.120391,
+        "yll": 2987645.4,
+        "yld": 45806.568,
+        "gtbi": 99.990684
+      },
+      "2019": {
+        "trauma_level": "Severe",
+        "burden_rate": 372.977374,
+        "yll": 1181980.8,
+        "yld": 42615.637,
+        "gtbi": 97.600173
+      },
+      "2020": {
+        "trauma_level": "Severe",
+        "burden_rate": 482.15529,
+        "yll": 1534744.8,
+        "yld": 53880.328,
+        "gtbi": 99.194573
+      },
+      "2021": {
+        "trauma_level": "Severe",
+        "burden_rate": 1137.41287,
+        "yll": 3706309.8,
+        "yld": 68692.37,
+        "gtbi": 99.998851
+      },
+      "2022": {
+        "trauma_level": "Severe",
+        "burden_rate": 493.606853,
+        "yll": 1579836.6,
+        "yld": 65213.922,
+        "gtbi": 99.281722
+      },
+      "2023": {
+        "trauma_level": "Severe",
+        "burden_rate": 1070.939181,
+        "yll": 3499743.6,
+        "yld": 86991.232,
+        "gtbi": 99.997767
+      },
+      "2024": {
+        "trauma_level": "Severe",
+        "burden_rate": 1006.384833,
+        "yll": 3329856.0,
+        "yld": 57611.434,
+        "gtbi": 99.995741
+      },
+      "2025": {
+        "trauma_level": "Severe",
+        "burden_rate": 874.734986,
+        "yll": 2910376.8,
+        "yld": 48762.932,
+        "gtbi": 99.984112
+      }
+    }
+  },
+  "860": {
+    "name": "Uzbekistan",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "336": {
+    "name": "Holy See (Vatican City State)",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "670": {
+    "name": "Saint Vincent and the Grenadines",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "862": {
+    "name": "Venezuela, Bolivarian Republic of",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "092": {
+    "name": "Virgin Islands, British",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "850": {
+    "name": "Virgin Islands, U.S.",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "704": {
+    "name": "Viet Nam",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "548": {
+    "name": "Vanuatu",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "876": {
+    "name": "Wallis and Futuna",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "882": {
+    "name": "Samoa",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "887": {
+    "name": "Yemen",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "2015": {
+        "trauma_level": "Severe",
+        "burden_rate": 12575.686363,
+        "yll": 636303.6,
+        "yld": 2695986.86,
+        "gtbi": 100.0
+      },
+      "2016": {
+        "trauma_level": "Severe",
+        "burden_rate": 12359.330961,
+        "yll": 661395.6,
+        "yld": 2696412.46,
+        "gtbi": 100.0
+      },
+      "2017": {
+        "trauma_level": "Severe",
+        "burden_rate": 12427.288599,
+        "yll": 761763.6,
+        "yld": 2697348.78,
+        "gtbi": 100.0
+      },
+      "2018": {
+        "trauma_level": "Severe",
+        "burden_rate": 12465.329885,
+        "yll": 853275.6,
+        "yld": 2699178.86,
+        "gtbi": 100.0
+      },
+      "2019": {
+        "trauma_level": "Severe",
+        "burden_rate": 12365.498157,
+        "yll": 906411.6,
+        "yld": 2699604.46,
+        "gtbi": 100.0
+      },
+      "2020": {
+        "trauma_level": "Severe",
+        "burden_rate": 11748.971325,
+        "yll": 806043.6,
+        "yld": 2698199.98,
+        "gtbi": 100.0
+      },
+      "2021": {
+        "trauma_level": "Severe",
+        "burden_rate": 12318.389854,
+        "yll": 1054011.6,
+        "yld": 2701987.82,
+        "gtbi": 100.0
+      },
+      "2022": {
+        "trauma_level": "Severe",
+        "burden_rate": 9814.81247,
+        "yll": 611211.6,
+        "yld": 2695986.86,
+        "gtbi": 100.0
+      },
+      "2023": {
+        "trauma_level": "Severe",
+        "burden_rate": 9208.156496,
+        "yll": 478371.6,
+        "yld": 2693837.58,
+        "gtbi": 100.0
+      },
+      "2024": {
+        "trauma_level": "Severe",
+        "burden_rate": 9022.637959,
+        "yll": 507891.6,
+        "yld": 2694241.9,
+        "gtbi": 100.0
+      },
+      "2025": {
+        "trauma_level": "Severe",
+        "burden_rate": 8770.635004,
+        "yll": 463611.6,
+        "yld": 2693816.3,
+        "gtbi": 100.0
+      }
+    }
+  },
+  "710": {
+    "name": "South Africa",
+    "ETTI": {
+      "2019": {
+        "evs": "Data Pending",
+        "tie": 3.467850314,
+        "pdl": 13.44325174,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      },
+      "2024": {
+        "evs": "Data Pending",
+        "tie": 6.561911993,
+        "pdl": 14.71303522,
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "2015": {
+        "trauma_level": "Severe",
+        "burden_rate": 1247.286083,
+        "yll": 664495.2,
+        "yld": 15156.048,
+        "gtbi": 99.999617
+      },
+      "2016": {
+        "trauma_level": "Severe",
+        "burden_rate": 1229.220822,
+        "yll": 664495.2,
+        "yld": 15156.048,
+        "gtbi": 99.999541
+      },
+      "2017": {
+        "trauma_level": "Severe",
+        "burden_rate": 1213.321961,
+        "yll": 664495.2,
+        "yld": 15156.048,
+        "gtbi": 99.999462
+      },
+      "2018": {
+        "trauma_level": "Severe",
+        "burden_rate": 1198.316873,
+        "yll": 664495.2,
+        "yld": 15156.048,
+        "gtbi": 99.999375
+      },
+      "2019": {
+        "trauma_level": "Severe",
+        "burden_rate": 1176.281926,
+        "yll": 664495.2,
+        "yld": 15156.048,
+        "gtbi": 99.999221
+      },
+      "2020": {
+        "trauma_level": "Severe",
+        "burden_rate": 1155.831594,
+        "yll": 664495.2,
+        "yld": 15156.048,
+        "gtbi": 99.999044
+      },
+      "2021": {
+        "trauma_level": "Severe",
+        "burden_rate": 1187.414949,
+        "yll": 689144.4,
+        "yld": 16088.112,
+        "gtbi": 99.999303
+      },
+      "2022": {
+        "trauma_level": "Severe",
+        "burden_rate": 1181.116186,
+        "yll": 692244.0,
+        "yld": 15172.368,
+        "gtbi": 99.999258
+      },
+      "2023": {
+        "trauma_level": "Severe",
+        "burden_rate": 1124.980438,
+        "yll": 664495.2,
+        "yld": 15156.048,
+        "gtbi": 99.998699
+      },
+      "2024": {
+        "trauma_level": "Severe",
+        "burden_rate": 1115.006568,
+        "yll": 664495.2,
+        "yld": 15156.048,
+        "gtbi": 99.998563
+      },
+      "2025": {
+        "trauma_level": "Severe",
+        "burden_rate": 1104.925205,
+        "yll": 664495.2,
+        "yld": 15156.048,
+        "gtbi": 99.99841
+      }
+    }
+  },
+  "894": {
+    "name": "Zambia",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
+  },
+  "716": {
+    "name": "Zimbabwe",
+    "ETTI": {
+      "Data Pending": {
+        "evs": "Data Pending",
+        "tie": "Data Pending",
+        "pdl": "Data Pending",
+        "its": "Data Pending",
+        "etti": "Data Pending"
+      }
+    },
+    "GTBI": {
+      "Data Pending": {
+        "trauma_level": "Data Pending",
+        "burden_rate": "Data Pending",
+        "yll": "Data Pending",
+        "yld": "Data Pending",
+        "gtbi": "Data Pending"
+      }
+    }
   }
 }
