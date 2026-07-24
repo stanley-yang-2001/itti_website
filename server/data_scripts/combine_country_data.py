@@ -68,6 +68,20 @@ EMPTY_ETTI_SECTION = {
         "pdl": MISSING,
         "its": MISSING,
         "etti": MISSING,
+        "evs_deaths": MISSING,
+        "evs_injuries": MISSING,
+        "evs_kidnappings": MISSING,
+        "evs_attacks": MISSING,
+        "tie_political_intimidation": MISSING,
+        "tie_threats": MISSING,
+        "tie_harassment": MISSING,
+        "tie_arrests": MISSING,
+        "pdl_societal_distress": MISSING,
+        "its_court_challenges": MISSING,
+        "its_legal_disputes": MISSING,
+        "its_protests": MISSING,
+        "its_security_interventions": MISSING,
+        "election": MISSING,
     }
 }
 
@@ -78,6 +92,7 @@ EMPTY_GTBI_SECTION = {
         "yll": MISSING,
         "yld": MISSING,
         "gtbi": MISSING,
+        "key_events": MISSING,
     }
 }
 

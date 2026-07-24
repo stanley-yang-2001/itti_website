@@ -6,6 +6,7 @@ const YEAR = new Date().getFullYear();
 const FOOTER_LINKS = [
   { to: '/about', label: 'About' },
   { to: '/observatory', label: 'Observatory' },
+  { to: '/docs', label: 'Docs' },
   { to: '/reports', label: 'Reports' },
   { to: '/country-profiles', label: 'Country Profiles' },
   { to: '/fellows', label: 'Fellows' },

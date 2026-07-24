@@ -14,6 +14,7 @@ ISO numeric country code:
             "yll": <float or "Data Pending">,
             "yld": <float or "Data Pending">,
             "gtbi": <float or "Data Pending">
+            "key_events": <str or "Data Pending">
           },
           ...
         }
@@ -102,9 +103,24 @@ COUNTRY_NAME_ALIASES = {
     "Iran": "Iran, Islamic Republic of",
     "Palestine": "Palestine, State of",
     "Syria": "Syrian Arab Republic",
+    # The finalized workbook has a data-entry artifact where "China" reads
+    # as "Chi-" (looks like a stray find/replace elsewhere in the sheet
+    # accidentally caught this cell too - "Communal" -> "Commu-l" and
+    # "Final" -> "Fi-l" show the same pattern in other columns). Aliased
+    # here rather than silently dropping India's/the region's largest
+    # country from the dataset; worth flagging back to the data owner.
+    "Chi-": "China",
 }
 
 K = 100  # see module docstring: reverse-derived from the workbook's own figures
+
+# Corrected display name for entries whose raw name is itself corrupted
+# (see COUNTRY_NAME_ALIASES above for "Chi-" -> China) - the ISO code
+# resolves fine via the alias, but the country's DISPLAYED name should be
+# the real one, not the corrupted workbook text.
+DISPLAY_NAME_OVERRIDES = {
+    "Chi-": "China",
+}
 
 SHEET_NAME = "GTBI Panel"
 
@@ -116,6 +132,7 @@ COL_EXPOSURE_PCT = 5
 COL_SEVERITY_WEIGHT = 6
 COL_YLD = 11
 COL_YLL = 14
+COL_KEY_EVENT = 17
 
 
 def resolve_workbook_path(path_arg):
@@ -178,9 +195,13 @@ def as_number(value, default=0.0):
 def aggregate_by_country_year(ws):
     """
     Sums YLD, YLL, and the severity/exposure term across every
-    exposure-type row sharing the same (country, year), and keeps that
-    country-year's population (constant across its rows). Returns:
-        { (country_name, year): {"population", "yld", "yll", "severity_term"} }
+    exposure-type row sharing the same (country, year), keeps that
+    country-year's population (constant across its rows), and collects
+    every distinct "Key Event" label mentioned across that country-year's
+    exposure-type rows (e.g. a country-year might have one row for "Armed
+    Conflict" naming one event and another row for "Terrorism" naming a
+    different one - both are kept, in the order first seen). Returns:
+        { (country_name, year): {"population", "yld", "yll", "severity_term", "key_events": [str, ...]} }
     """
     totals = {}
     for row in ws.iter_rows(min_row=2, values_only=True):
@@ -201,14 +222,23 @@ def aggregate_by_country_year(ws):
         exposure_pct = as_number(row[COL_EXPOSURE_PCT])
         severity_weight = as_number(row[COL_SEVERITY_WEIGHT])
         severity_term = severity_weight * (exposure_pct / 100)
+        key_event = row[COL_KEY_EVENT] if COL_KEY_EVENT < len(row) else None
+        if isinstance(key_event, str):
+            key_event = key_event.strip()
+            if key_event == "" or key_event.upper() == "N/A" or key_event.startswith("#"):
+                key_event = None
+        else:
+            key_event = None
 
         if key not in totals:
-            totals[key] = {"population": population, "yld": 0.0, "yll": 0.0, "severity_term": 0.0}
+            totals[key] = {"population": population, "yld": 0.0, "yll": 0.0, "severity_term": 0.0, "key_events": []}
         totals[key]["yld"] += yld
         totals[key]["yll"] += yll
         totals[key]["severity_term"] += severity_term
         if totals[key]["population"] is None:
             totals[key]["population"] = population
+        if key_event and key_event not in totals[key]["key_events"]:
+            totals[key]["key_events"].append(key_event)
 
     return totals
 
@@ -238,13 +268,14 @@ def build_country_data(workbook_path):
             gtbi_score = round(100 * (1 - math.exp(-burden_rate / K)), 6)
             level = trauma_level_for(gtbi_score)
 
-        entry = country_data.setdefault(code, {"name": country_name, "GTBI": {}})
+        entry = country_data.setdefault(code, {"name": DISPLAY_NAME_OVERRIDES.get(country_name, country_name), "GTBI": {}})
         entry["GTBI"][str(year)] = {
             "trauma_level": level,
             "burden_rate": burden_rate,
             "yll": round(totals_for_key["yll"], 3),
             "yld": round(totals_for_key["yld"], 3),
             "gtbi": gtbi_score,
+            "key_events": "; ".join(totals_for_key["key_events"]) if totals_for_key["key_events"] else MISSING,
         }
 
     return {

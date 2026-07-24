@@ -1,11 +1,32 @@
 import { INDICATOR_VARIABLES, getValueOrNull, getNumericValue } from "../../utils/ObservatoryData";
+import { colorForCountry } from "../../utils/countryColors";
+import Sparkline from "./Sparkline.jsx";
 
-export default function DataPanelCard({ panel, yearRecord, selected, onToggleSelect, onEdit, onRemove, readOnly }) {
+function CountryTag({ countryCode, countryName }) {
+  const color = colorForCountry(countryCode);
+  return (
+    <span className="obs-country-tag">
+      <span className="obs-country-dot" style={{ background: color }} aria-hidden="true" />
+      <span className="obs-data-panel-country">{countryName}</span>
+    </span>
+  );
+}
+
+export default function DataPanelCard({ panel, yearRecord, selected, onToggleSelect, onEdit, onRemove, readOnly, trendValues }) {
   const variables = INDICATOR_VARIABLES[panel.indicator] || [];
+  const color = colorForCountry(panel.countryCode);
+  const cardStyle = { borderLeft: `4px solid ${color}` };
+
+  const trend = trendValues && trendValues.length >= 2 ? (
+    <div className="obs-data-panel-trend">
+      <span className="obs-data-panel-trend-label">Trend</span>
+      <Sparkline points={trendValues} color={color} />
+    </div>
+  ) : null;
 
   if (readOnly) {
     return (
-      <div className="obs-data-panel obs-data-panel--readonly">
+      <div className="obs-data-panel obs-data-panel--readonly" style={cardStyle}>
         <div className="obs-data-panel-topbar">
           <span className={`obs-indicator-badge obs-indicator-badge--${panel.indicator.toLowerCase()}`}>
             {panel.indicator}
@@ -13,7 +34,7 @@ export default function DataPanelCard({ panel, yearRecord, selected, onToggleSel
         </div>
         <div className="obs-data-panel-body">
           <div className="obs-data-panel-title">
-            <span className="obs-data-panel-country">{panel.countryName}</span>
+            <CountryTag countryCode={panel.countryCode} countryName={panel.countryName} />
             <span className="obs-data-panel-year">{panel.year}</span>
           </div>
           <dl className="obs-data-panel-values">
@@ -30,13 +51,14 @@ export default function DataPanelCard({ panel, yearRecord, selected, onToggleSel
               );
             })}
           </dl>
+          {trend}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="obs-data-panel">
+    <div className="obs-data-panel" style={cardStyle}>
       <div className="obs-data-panel-topbar">
         <input
           type="checkbox"
@@ -60,7 +82,7 @@ export default function DataPanelCard({ panel, yearRecord, selected, onToggleSel
 
       <button type="button" className="obs-data-panel-body" onClick={onEdit}>
         <div className="obs-data-panel-title">
-          <span className="obs-data-panel-country">{panel.countryName}</span>
+          <CountryTag countryCode={panel.countryCode} countryName={panel.countryName} />
           <span className="obs-data-panel-year">{panel.year}</span>
         </div>
         <dl className="obs-data-panel-values">
@@ -77,6 +99,7 @@ export default function DataPanelCard({ panel, yearRecord, selected, onToggleSel
             );
           })}
         </dl>
+        {trend}
         <span className="obs-data-panel-edit-hint">Click to edit selection</span>
       </button>
     </div>

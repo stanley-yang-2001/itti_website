@@ -1,36 +1,57 @@
-Add interactive About page, site branding, and fix broken Observatory imports
+Reconcile Observatory with GTBI v2, real ETTI sub-variables, and a
+diversified data-presentation layer
 
-About page (client/src/pages/About.jsx, styles/About.css)
-- Replace the ITTI placeholder with a full About page built from the
-  institute's About PDF: overview, parent-org relationship, mission,
-  trauma observatories, analytic frameworks (GTBI/ETTI/ITCS), advisory
-  services, who we serve, ethics, why it matters, partnership/funding,
-  and contact.
-- Sticky in-page nav with scrollspy (IntersectionObserver) that jumps to
-  and highlights the active section; collapses to a horizontal pill bar
-  on mobile.
-- Expandable accordion panels for the three analytic frameworks and the
-  "Who We Serve" categories.
-- Adds a dedicated "A Division of Outlets for Hope, Inc." section linking
-  to https://ofhusa.org/#itti.
+The last import-path fix (case-sensitive ObservatoryData rename) didn't
+re-run the extraction pipeline, so etti_extract.py was still parsing
+ETTI_final_v1.xlsx with the old (year-keyed) logic instead of the
+workbook's actual election-based EVS/TIE/PDL/ITS/Final-ETTI sheet
+structure - producing silently wrong output (e.g. a nonexistent
+"Congo 2026" row, EVS/ITS/composite ETTI stuck on "Data Pending" for
+every country). This fixes that at the source and builds the previously
+agreed-upon diversification work on top of the corrected data.
 
-Branding
-- Rename "About ITTI" -> "About" in the navbar, footer, and homepage
-  explore cards.
-- Add the ITTI seal logo to the top-left navbar (now a home link) and to
-  the footer; add a favicon.
-- Footer now credits "A division of Outlets for Hope, Inc." with a link.
-- Re-cut the supplied logo PNG with a proper circular alpha mask — the
-  original had a checkerboard baked into its pixels rather than real
-  transparency (public/itti-logo.png, public/favicon.png).
+Data pipeline:
+- Rewrite etti_extract.py for the real workbook shape: joins the EVS/
+  TIE/PDL/ITS detail sheets to Final ETTI by (country, election), derives
+  year from the election label, and now exposes each domain's raw
+  sub-variables (deaths, kidnappings, attacks, political intimidation,
+  threats, harassment, arrests, etc.) alongside the normalized composite
+- Swap GTBI_final_v1.xlsx -> v2 (country coverage changed substantially:
+  drops China/India/Israel/Pakistan/Palestine/Somalia/Sudan/Syria/Ukraine/
+  Yemen, adds Brazil/Congo/Ghana/Indonesia/Kenya/Mexico/Sri Lanka/
+  Thailand/Tunisia - 14 countries, 13 now overlapping with ETTI's 15)
+- Extend gtbi_extract.py to capture the "Key Event" column, previously
+  discarded during per-country-year aggregation, into a new key_events
+  field
+- Regenerate etti_country_data.json/gtbi_country_data.json/
+  country_data.json from the corrected pipeline
 
-Typography
-- Switch headers and page titles (.display, h1/h2/h3, navbar-page-title,
-  country-name) to Times New Roman across the site; body copy stays on
-  Inter.
+Frontend - diversified data presentation:
+- Replace the standalone chart section with a Chart/Map/Table/Stats/
+  Timeline tab bar (AnalysisViews.jsx) so new visualizations slot into
+  existing tabs instead of stacking new sections down the page
+- Map: flat choropleth reusing the existing world-110m.json/
+  topojson-client, own year+variable pickers
+- Table: sortable columns + CSV export
+- Stats: mean/median/min/max + ranked list (2+ panels selected)
+- Timeline: one track per country/indicator on a shared axis, surfacing
+  GTBI's Key Events / ETTI's election label via hover tooltips
+- Chart: scatter plot and an ETTI domain stacked-bar breakdown folded
+  into the existing chart-type dropdown; "split by country" small-
+  multiples toggle for bar/line
+- Data panel cards: opt-in "Show trend" sparkline (full per-country
+  history, not just selected years) and a collapsible interpretation
+  blurb (2-line clamp + "Read more") per indicator section
+- Add Docs page (/docs, linked from footer): methodology, corrected
+  variable definitions, and full source citations for ETTI and GTBI
 
-Fixes (pre-existing, discovered while verifying the build)
-- Correct Observatory.jsx gadgets, they are now placed in the correct directory
-- Add missing recharts dependency required by the Observatory page.
-- Fix case-sensitive import mismatches (observatoryData -> ObservatoryData)
-  that only broke on case-sensitive filesystems.
+Housekeeping:
+- Rename utils/observatoryData.js -> ObservatoryData.js to match the
+  established case-sensitive-safe convention; fix every import
+- Confirmed compatible with recharts@3.10.0 (built and verified against
+  the actual installed version, not the 2.x this was originally written
+  against)
+
+Verified: npm run build succeeds against recharts@3.10.0; backend
+imports cleanly; /api/countries returns correct ETTI sub-variables and
+GTBI key_events; /api/world-data (used by the new Map view) returns 200.

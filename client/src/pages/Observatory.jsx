@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import "../styles/Observatory.css";
 import { fetchAllCountries } from "../api.js";
 import DataExplorerPanel from "../components/observatory/DataExplorerPanel.jsx";
-import ChartsSection from "../components/observatory/ChartsSection.jsx";
+import AnalysisViews from "../components/observatory/AnalysisViews.jsx";
 import NigeriaObservatory from "../components/observatory/NigeriaObservatory.jsx";
 
+// International first: the Observatory's primary purpose is the global
+// query tool, with the Nigeria page as a worked example alongside it.
 const MAIN_TABS = [
-  { key: "nigeria", label: "Nigeria Observatory" },
-  { key: "explorer", label: "Global Data Explorer" },
+  { key: "international", label: "International Trauma Observatory" },
+  { key: "nigeria", label: "Nigeria Trauma Observatory (NTO)" },
 ];
 
 const INDICATOR_TABS = ["ETTI", "GTBI"];
@@ -23,7 +26,7 @@ const INDICATOR_TABS = ["ETTI", "GTBI"];
 export default function Observatory() {
   const [countries, setCountries] = useState(null);
   const [loadError, setLoadError] = useState(null);
-  const [mainTab, setMainTab] = useState("nigeria");
+  const [mainTab, setMainTab] = useState("international");
   const [indicatorTab, setIndicatorTab] = useState("ETTI");
   const [panels, setPanels] = useState([]);
   const nextPanelId = useRef(1);
@@ -95,11 +98,7 @@ export default function Observatory() {
 
       {!loadError && countries === null && <p className="obs-explorer-empty">Loading Observatory data…</p>}
 
-      {!loadError && countries !== null && mainTab === "nigeria" && (
-        <NigeriaObservatory countries={countries} />
-      )}
-
-      {!loadError && countries !== null && mainTab === "explorer" && (
+      {!loadError && countries !== null && mainTab === "international" && (
         <div className="obs-explorer">
           <div className="obs-indicator-tabs" role="tablist">
             {INDICATOR_TABS.map((indicator) => (
@@ -128,12 +127,21 @@ export default function Observatory() {
           />
 
           <p className="obs-cross-tab-note">
-            Data panels from both the ETTI and GTBI tabs can be checked and combined into a single chart below.
+            Data panels from both the ETTI and GTBI tabs can be checked and combined into a single chart, table, or
+            stats summary below. The map uses the current {indicatorTab} tab regardless of what's checked.
           </p>
 
-          <ChartsSection chartablePanels={chartablePanels} countries={countries} />
+          <AnalysisViews chartablePanels={chartablePanels} countries={countries} activeIndicator={indicatorTab} />
         </div>
       )}
+
+      {!loadError && countries !== null && mainTab === "nigeria" && (
+        <NigeriaObservatory countries={countries} />
+      )}
+
+      <p className="obs-references-link">
+        Data sources and methodology references: <Link to="/docs">Documentation &amp; References</Link>
+      </p>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { colorForCountry } from "../../utils/countryColors";
 
 /**
  * Popout picker used by the "Select Data" button. Shows every country that
@@ -103,7 +104,10 @@ export default function CountryPicker({ indicator, countries, existingKeys, onCo
                     className="obs-picker-country-btn"
                     onClick={() => setExpanded(isExpanded ? null : country.code)}
                   >
-                    <span>{country.name}</span>
+                    <span className="obs-country-tag">
+                      <span className="obs-country-dot" style={{ background: colorForCountry(country.code) }} aria-hidden="true" />
+                      {country.name}
+                    </span>
                     <span className={`obs-picker-caret${isExpanded ? " open" : ""}`}>▾</span>
                   </button>
                 </div>

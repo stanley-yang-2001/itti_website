@@ -1,166 +1,374 @@
 {
   "countries": {
-    "156": {
-      "name": "China",
+    "076": {
+      "name": "Brazil",
       "GTBI": {
         "2015": {
-          "trauma_level": "Low",
-          "burden_rate": 7.282016,
-          "yll": 99777.6,
-          "yld": 426.51,
-          "gtbi": 7.023198
+          "trauma_level": "Severe",
+          "burden_rate": 1567.479646,
+          "yll": 3178861.2,
+          "yld": 48680.148,
+          "gtbi": 99.999984,
+          "key_events": "No active armed conflict; Protest policing incidents; 2013-style unrest recurrence; Gang and favela-related urban violence; organized crime homicides; No significant domestic terrorism incidents; Venezuelan migrant/refugee inflow via Roraima border; Seasonal flooding and landslides; Rio de Janeiro state"
         },
         "2016": {
-          "trauma_level": "Low",
-          "burden_rate": 7.248667,
-          "yll": 99777.6,
-          "yld": 450.45,
-          "gtbi": 6.992186
+          "trauma_level": "Severe",
+          "burden_rate": 1634.277311,
+          "yll": 3342254.4,
+          "yld": 43018.134,
+          "gtbi": 99.999992,
+          "key_events": "No active armed conflict; Protest policing incidents; 2013-style unrest recurrence; Gang and favela-related urban violence; organized crime homicides; No significant domestic terrorism incidents; Venezuelan migrant/refugee inflow via Roraima border; Seasonal flooding and landslides; Rio de Janeiro state"
         },
         "2017": {
-          "trauma_level": "Low",
-          "burden_rate": 7.216551,
-          "yll": 99777.6,
-          "yld": 538.23,
-          "gtbi": 6.96231
+          "trauma_level": "Severe",
+          "burden_rate": 1406.37622,
+          "yll": 2885727.6,
+          "yld": 44945.52,
+          "gtbi": 99.999922,
+          "key_events": "No active armed conflict; Protest policing incidents; 2013-style unrest recurrence; Gang and favela-related urban violence; organized crime homicides; No significant domestic terrorism incidents; Venezuelan migrant/refugee inflow via Roraima border; Seasonal flooding and landslides; Rio de Janeiro state"
         },
         "2018": {
-          "trauma_level": "Low",
-          "burden_rate": 7.20401,
-          "yll": 99777.6,
-          "yld": 745.71,
-          "gtbi": 6.950642
+          "trauma_level": "Severe",
+          "burden_rate": 1403.322314,
+          "yll": 2896207.2,
+          "yld": 45647.898,
+          "gtbi": 99.99992,
+          "key_events": "No active armed conflict; Protest policing incidents; 2013-style unrest recurrence; Gang and favela-related urban violence; organized crime homicides; No significant domestic terrorism incidents; Venezuelan migrant/refugee inflow via Roraima border; Seasonal flooding and landslides; Rio de Janeiro state"
         },
         "2019": {
-          "trauma_level": "Low",
-          "burden_rate": 7.269883,
-          "yll": 100589.4,
-          "yld": 1192.59,
-          "gtbi": 7.011916
+          "trauma_level": "Severe",
+          "burden_rate": 1530.859117,
+          "yll": 3178787.4,
+          "yld": 49684.822,
+          "gtbi": 99.999978,
+          "key_events": "No active armed conflict; Protest policing incidents; 2013-style unrest recurrence; Gang and favela-related urban violence; organized crime homicides; No significant domestic terrorism incidents; Venezuelan migrant/refugee inflow via Roraima border; Seasonal flooding and landslides; Rio de Janeiro state"
         },
         "2020": {
-          "trauma_level": "Low",
-          "burden_rate": 7.146091,
-          "yll": 99925.2,
-          "yld": 913.29,
-          "gtbi": 6.896733
+          "trauma_level": "Severe",
+          "burden_rate": 1393.315499,
+          "yll": 2917683.0,
+          "yld": 38350.0,
+          "gtbi": 99.999911,
+          "key_events": "No active armed conflict; Protest policing incidents; 2013-style unrest recurrence; Gang and favela-related urban violence; organized crime homicides; No significant domestic terrorism incidents; Venezuelan migrant/refugee inflow via Roraima border; Seasonal flooding and landslides; Rio de Janeiro state"
         },
         "2021": {
-          "trauma_level": "Low",
-          "burden_rate": 7.107152,
-          "yll": 99777.6,
-          "yld": 618.03,
-          "gtbi": 6.860472
+          "trauma_level": "Severe",
+          "burden_rate": 1328.852092,
+          "yll": 2797462.8,
+          "yld": 38721.408,
+          "gtbi": 99.999831,
+          "key_events": "No active armed conflict; Protest policing incidents; 2013-style unrest recurrence; Gang and favela-related urban violence; organized crime homicides; No significant domestic terrorism incidents; Venezuelan migrant/refugee inflow via Roraima border; Seasonal flooding and landslides; Rio de Janeiro state"
         },
         "2022": {
-          "trauma_level": "Low",
-          "burden_rate": 7.186045,
-          "yll": 99777.6,
-          "yld": 1671.39,
-          "gtbi": 6.933924
+          "trauma_level": "Severe",
+          "burden_rate": 1356.502293,
+          "yll": 2866170.6,
+          "yld": 46398.94,
+          "gtbi": 99.999872,
+          "key_events": "No active armed conflict; Protest policing incidents; 2013-style unrest recurrence; Gang and favela-related urban violence; organized crime homicides; No significant domestic terrorism incidents; Venezuelan migrant/refugee inflow via Roraima border; Petropolis landslides (Feb 2022), 233+ deaths"
         },
         "2023": {
-          "trauma_level": "Low",
-          "burden_rate": 7.11966,
-          "yll": 99777.6,
-          "yld": 586.11,
-          "gtbi": 6.872122
+          "trauma_level": "Severe",
+          "burden_rate": 1198.308818,
+          "yll": 2552520.6,
+          "yld": 35826.446,
+          "gtbi": 99.999375,
+          "key_events": "No active armed conflict; Protest policing incidents; 2013-style unrest recurrence; Gang and favela-related urban violence; organized crime homicides; No significant domestic terrorism incidents; Venezuelan migrant/refugee inflow via Roraima border; Seasonal flooding and landslides; Rio de Janeiro state"
         },
         "2024": {
-          "trauma_level": "Low",
-          "burden_rate": 7.126921,
-          "yll": 99777.6,
-          "yld": 530.25,
-          "gtbi": 6.878883
+          "trauma_level": "Severe",
+          "burden_rate": 1279.871601,
+          "yll": 2737242.0,
+          "yld": 43867.794,
+          "gtbi": 99.999724,
+          "key_events": "No active armed conflict; Protest policing incidents; 2013-style unrest recurrence; Gang and favela-related urban violence; organized crime homicides; No significant domestic terrorism incidents; Venezuelan migrant/refugee inflow via Roraima border; Seasonal flooding and landslides; Rio de Janeiro state"
         },
         "2025": {
-          "trauma_level": "Low",
-          "burden_rate": 7.138213,
-          "yll": 99777.6,
-          "yld": 514.29,
-          "gtbi": 6.889398
+          "trauma_level": "Severe",
+          "burden_rate": 1392.617341,
+          "yll": 3001593.6,
+          "yld": 42664.788,
+          "gtbi": 99.99991,
+          "key_events": "No active armed conflict; Protest policing incidents; 2013-style unrest recurrence; Gang and favela-related urban violence; organized crime homicides; No significant domestic terrorism incidents; Venezuelan migrant/refugee inflow via Roraima border; Seasonal flooding and landslides; Rio de Janeiro state"
         }
       }
     },
-    "356": {
-      "name": "India",
+    "178": {
+      "name": "Congo",
       "GTBI": {
         "2015": {
-          "trauma_level": "Moderate",
-          "burden_rate": 28.802391,
-          "yll": 373723.2,
-          "yld": 3632.02,
-          "gtbi": 25.025633
+          "trauma_level": "Severe",
+          "burden_rate": 3457.206149,
+          "yll": 192027.6,
+          "yld": 2488937.443,
+          "gtbi": 100.0,
+          "key_events": "Eastern DRC militia conflict; ADF, CODECO, Mai-Mai groups; Electoral unrest; opposition crackdowns (2018, 2023 elections); Ituri ethnic violence (Hema-Lendu); inter-communal clashes; ADF (ISIS-CAP) attacks in North Kivu/Ituri; 6M+ internally displaced; eastern Congo humanitarian crisis; Seasonal flooding; Congo River basin"
+        },
+        "2016": {
+          "trauma_level": "Severe",
+          "burden_rate": 3620.197051,
+          "yll": 213651.0,
+          "yld": 2680736.977,
+          "gtbi": 100.0,
+          "key_events": "Eastern DRC militia conflict; ADF, CODECO, Mai-Mai groups; Electoral unrest; opposition crackdowns (2018, 2023 elections); Ituri ethnic violence (Hema-Lendu); inter-communal clashes; ADF (ISIS-CAP) attacks in North Kivu/Ituri; 6M+ internally displaced; eastern Congo humanitarian crisis; Seasonal flooding; Congo River basin"
+        },
+        "2017": {
+          "trauma_level": "Severe",
+          "burden_rate": 3769.611839,
+          "yll": 233429.4,
+          "yld": 2873846.633,
+          "gtbi": 100.0,
+          "key_events": "Eastern DRC militia conflict; ADF, CODECO, Mai-Mai groups; Electoral unrest; opposition crackdowns (2018, 2023 elections); Ituri ethnic violence (Hema-Lendu); inter-communal clashes; ADF (ISIS-CAP) attacks in North Kivu/Ituri; 6M+ internally displaced; eastern Congo humanitarian crisis; Seasonal flooding; Congo River basin"
+        },
+        "2018": {
+          "trauma_level": "Severe",
+          "burden_rate": 3418.99698,
+          "yll": 256897.8,
+          "yld": 2648734.045,
+          "gtbi": 100.0,
+          "key_events": "Eastern DRC militia conflict; ADF, CODECO, Mai-Mai groups; Electoral unrest; opposition crackdowns (2018, 2023 elections); Ituri ethnic violence (Hema-Lendu); inter-communal clashes; ADF (ISIS-CAP) attacks in North Kivu/Ituri; 6M+ internally displaced; eastern Congo humanitarian crisis; Seasonal flooding; Congo River basin"
+        },
+        "2019": {
+          "trauma_level": "Severe",
+          "burden_rate": 3991.208002,
+          "yll": 266713.2,
+          "yld": 3230361.376,
+          "gtbi": 100.0,
+          "key_events": "Eastern DRC militia conflict; ADF, CODECO, Mai-Mai groups; Electoral unrest; opposition crackdowns (2018, 2023 elections); Ituri ethnic violence (Hema-Lendu); inter-communal clashes; ADF (ISIS-CAP) attacks in North Kivu/Ituri; 6M+ internally displaced; eastern Congo humanitarian crisis; Seasonal flooding; Congo River basin"
+        },
+        "2020": {
+          "trauma_level": "Severe",
+          "burden_rate": 3910.218717,
+          "yll": 284056.2,
+          "yld": 3248265.486,
+          "gtbi": 100.0,
+          "key_events": "Eastern DRC militia conflict; ADF, CODECO, Mai-Mai groups; Electoral unrest; opposition crackdowns (2018, 2023 elections); Ituri ethnic violence (Hema-Lendu); inter-communal clashes; ADF (ISIS-CAP) attacks in North Kivu/Ituri; 6M+ internally displaced; eastern Congo humanitarian crisis; Seasonal flooding; Congo River basin"
+        },
+        "2021": {
+          "trauma_level": "Severe",
+          "burden_rate": 4769.290965,
+          "yll": 289738.8,
+          "yld": 4152190.891,
+          "gtbi": 100.0,
+          "key_events": "Eastern DRC militia conflict; ADF, CODECO, Mai-Mai groups; Electoral unrest; opposition crackdowns (2018, 2023 elections); Ituri ethnic violence (Hema-Lendu); inter-communal clashes; ADF (ISIS-CAP) attacks in North Kivu/Ituri; 6M+ internally displaced; eastern Congo humanitarian crisis; Nyiragongo volcanic eruption (May 2021)"
+        },
+        "2022": {
+          "trauma_level": "Severe",
+          "burden_rate": 5247.83505,
+          "yll": 504865.8,
+          "yld": 4534277.435,
+          "gtbi": 100.0,
+          "key_events": "M23 resurgence; eastern DRC clashes intensify; Electoral unrest; opposition crackdowns (2018, 2023 elections); Ituri ethnic violence (Hema-Lendu); inter-communal clashes; ADF (ISIS-CAP) attacks in North Kivu/Ituri; 6M+ internally displaced; eastern Congo humanitarian crisis; Seasonal flooding; Congo River basin"
+        },
+        "2023": {
+          "trauma_level": "Severe",
+          "burden_rate": 4889.945303,
+          "yll": 521766.0,
+          "yld": 4319279.846,
+          "gtbi": 100.0,
+          "key_events": "M23 resurgence; eastern DRC clashes intensify; Electoral unrest; opposition crackdowns (2018, 2023 elections); Ituri ethnic violence (Hema-Lendu); inter-communal clashes; ADF (ISIS-CAP) attacks in North Kivu/Ituri; 6M+ internally displaced; eastern Congo humanitarian crisis; Seasonal flooding; Congo River basin"
+        },
+        "2024": {
+          "trauma_level": "Severe",
+          "burden_rate": 5048.081339,
+          "yll": 553057.2,
+          "yld": 4599468.938,
+          "gtbi": 100.0,
+          "key_events": "M23 resurgence; eastern DRC clashes intensify; Electoral unrest; opposition crackdowns (2018, 2023 elections); Ituri ethnic violence (Hema-Lendu); inter-communal clashes; ADF (ISIS-CAP) attacks in North Kivu/Ituri; 6M+ internally displaced; eastern Congo humanitarian crisis; Seasonal flooding; Congo River basin"
+        },
+        "2025": {
+          "trauma_level": "Severe",
+          "burden_rate": 4940.964706,
+          "yll": 559108.8,
+          "yld": 4640423.453,
+          "gtbi": 100.0,
+          "key_events": "M23 offensive; Goma captured (Jan 2025); Electoral unrest; opposition crackdowns (2018, 2023 elections); Ituri ethnic violence (Hema-Lendu); inter-communal clashes; ADF (ISIS-CAP) attacks in North Kivu/Ituri; 6M+ internally displaced; eastern Congo humanitarian crisis; Seasonal flooding; Congo River basin"
+        }
+      }
+    },
+    "288": {
+      "name": "Ghana",
+      "GTBI": {
+        "2015": {
+          "trauma_level": "Low",
+          "burden_rate": 16.601565,
+          "yll": 3173.4,
+          "yld": 1536.242,
+          "gtbi": 15.296702,
+          "key_events": "No active armed conflict; Isolated election-period protest incidents; Localized land/chieftaincy disputes; No domestic terrorism incidents recorded; Bawku-linked internal displacement; regional refugee hosting; Seasonal flooding; northern Ghana"
         },
         "2016": {
           "trauma_level": "Low",
-          "burden_rate": 28.497461,
-          "yll": 373723.2,
-          "yld": 3632.02,
-          "gtbi": 24.796665
+          "burden_rate": 17.437306,
+          "yll": 3468.6,
+          "yld": 1582.012,
+          "gtbi": 16.001653,
+          "key_events": "No active armed conflict; Isolated election-period protest incidents; Localized land/chieftaincy disputes; No domestic terrorism incidents recorded; Bawku-linked internal displacement; regional refugee hosting; Seasonal flooding; northern Ghana"
         },
         "2017": {
           "trauma_level": "Low",
-          "burden_rate": 28.188673,
-          "yll": 373723.2,
-          "yld": 3632.02,
-          "gtbi": 24.564087
+          "burden_rate": 17.338272,
+          "yll": 3394.8,
+          "yld": 1732.588,
+          "gtbi": 15.918424,
+          "key_events": "No active armed conflict; Isolated election-period protest incidents; Localized land/chieftaincy disputes; No domestic terrorism incidents recorded; Bawku-linked internal displacement; regional refugee hosting; Seasonal flooding; northern Ghana"
         },
         "2018": {
           "trauma_level": "Low",
-          "burden_rate": 27.897636,
-          "yll": 373723.2,
-          "yld": 3632.02,
-          "gtbi": 24.344221
+          "burden_rate": 17.395082,
+          "yll": 3468.6,
+          "yld": 1783.616,
+          "gtbi": 15.966178,
+          "key_events": "No active armed conflict; Isolated election-period protest incidents; Localized land/chieftaincy disputes; No domestic terrorism incidents recorded; Bawku-linked internal displacement; regional refugee hosting; Seasonal flooding; northern Ghana"
         },
         "2019": {
           "trauma_level": "Low",
-          "burden_rate": 27.75799,
-          "yll": 375051.6,
-          "yld": 4238.5,
-          "gtbi": 24.238497
+          "burden_rate": 14.803214,
+          "yll": 3025.8,
+          "yld": 1537.698,
+          "gtbi": 13.75966,
+          "key_events": "No active armed conflict; Isolated election-period protest incidents; Localized land/chieftaincy disputes; No domestic terrorism incidents recorded; Bawku-linked internal displacement; regional refugee hosting; Seasonal flooding; northern Ghana"
         },
         "2020": {
           "trauma_level": "Low",
-          "burden_rate": 27.69545,
-          "yll": 376970.4,
-          "yld": 5228.02,
-          "gtbi": 24.191101
+          "burden_rate": 15.546425,
+          "yll": 3025.8,
+          "yld": 1867.458,
+          "gtbi": 14.398232,
+          "key_events": "No active armed conflict; Isolated election-period protest incidents; Localized land/chieftaincy disputes; No domestic terrorism incidents recorded; Bawku-linked internal displacement; regional refugee hosting; Seasonal flooding; northern Ghana"
         },
         "2021": {
-          "trauma_level": "Low",
-          "burden_rate": 27.081439,
-          "yll": 373723.2,
-          "yld": 3632.02,
-          "gtbi": 23.724194
+          "trauma_level": "Moderate",
+          "burden_rate": 29.759295,
+          "yll": 7749.0,
+          "yld": 1814.48,
+          "gtbi": 25.739644,
+          "key_events": "No active armed conflict; Isolated election-period protest incidents; Bawku chieftaincy conflict escalation; No domestic terrorism incidents recorded; Bawku-linked internal displacement; regional refugee hosting; Seasonal flooding; northern Ghana"
         },
         "2022": {
           "trauma_level": "Low",
-          "burden_rate": 26.826866,
-          "yll": 373723.2,
-          "yld": 3632.02,
-          "gtbi": 23.529769
+          "burden_rate": 26.997446,
+          "yll": 6937.2,
+          "yld": 1920.924,
+          "gtbi": 23.660101,
+          "key_events": "No active armed conflict; Isolated election-period protest incidents; Bawku chieftaincy conflict escalation; No domestic terrorism incidents recorded; Bawku-linked internal displacement; regional refugee hosting; Seasonal flooding; northern Ghana"
         },
         "2023": {
-          "trauma_level": "Low",
-          "burden_rate": 26.413826,
-          "yll": 373723.2,
-          "yld": 3632.02,
-          "gtbi": 23.213263
+          "trauma_level": "Moderate",
+          "burden_rate": 30.01483,
+          "yll": 8191.8,
+          "yld": 1863.168,
+          "gtbi": 25.929163,
+          "key_events": "No active armed conflict; Isolated election-period protest incidents; Bawku chieftaincy conflict escalation; No domestic terrorism incidents recorded; Bawku-linked internal displacement; regional refugee hosting; Akosombo Dam spillage floods (Oct 2023)"
         },
         "2024": {
           "trauma_level": "Low",
-          "burden_rate": 26.173963,
-          "yll": 373723.2,
-          "yld": 3632.02,
-          "gtbi": 23.028859
+          "burden_rate": 27.82179,
+          "yll": 7896.6,
+          "yld": 1619.426,
+          "gtbi": 24.286818,
+          "key_events": "No active armed conflict; Isolated election-period protest incidents; Bawku chieftaincy conflict escalation; No domestic terrorism incidents recorded; Bawku-linked internal displacement; regional refugee hosting; Seasonal flooding; northern Ghana"
         },
         "2025": {
           "trauma_level": "Low",
-          "burden_rate": 25.935067,
-          "yll": 373723.2,
-          "yld": 3632.02,
-          "gtbi": 22.844758
+          "burden_rate": 26.62685,
+          "yll": 7453.8,
+          "yld": 1844.768,
+          "gtbi": 23.376663,
+          "key_events": "No active armed conflict; Isolated election-period protest incidents; Bawku chieftaincy conflict escalation; No domestic terrorism incidents recorded; Bawku-linked internal displacement; regional refugee hosting; Seasonal flooding; northern Ghana"
+        }
+      }
+    },
+    "360": {
+      "name": "Indonesia",
+      "GTBI": {
+        "2015": {
+          "trauma_level": "Low",
+          "burden_rate": 10.41491,
+          "yll": 15571.8,
+          "yld": 11070.045,
+          "gtbi": 9.890907,
+          "key_events": "Papua conflict; OPM/TPNPB clashes with security forces; Papua unrest crackdowns; press freedom restrictions; Localized religious/ethnic clashes; Jolo/Sulu-linked and JAD-affiliated small-scale attacks; Papua conflict and natural-disaster-linked internal displacement; Recurring seismic activity, flooding, volcanic hazards"
+        },
+        "2016": {
+          "trauma_level": "Low",
+          "burden_rate": 10.365293,
+          "yll": 15719.4,
+          "yld": 11060.672,
+          "gtbi": 9.846186,
+          "key_events": "Papua conflict; OPM/TPNPB clashes with security forces; Papua unrest crackdowns; press freedom restrictions; Localized religious/ethnic clashes; Jolo/Sulu-linked and JAD-affiliated small-scale attacks; Papua conflict and natural-disaster-linked internal displacement; Recurring seismic activity, flooding, volcanic hazards"
+        },
+        "2017": {
+          "trauma_level": "Low",
+          "burden_rate": 10.028439,
+          "yll": 16457.4,
+          "yld": 9711.463,
+          "gtbi": 9.541987,
+          "key_events": "Papua conflict; OPM/TPNPB clashes with security forces; Papua unrest crackdowns; press freedom restrictions; Localized religious/ethnic clashes; Jolo/Sulu-linked and JAD-affiliated small-scale attacks; Papua conflict and natural-disaster-linked internal displacement; Recurring seismic activity, flooding, volcanic hazards"
+        },
+        "2018": {
+          "trauma_level": "High",
+          "burden_rate": 131.69988,
+          "yll": 328779.0,
+          "yld": 18323.929,
+          "gtbi": 73.206177,
+          "key_events": "Papua conflict; OPM/TPNPB clashes with security forces; Papua unrest crackdowns; press freedom restrictions; Localized religious/ethnic clashes; Surabaya church bombings (May 2018), 13 civilians killed; Papua conflict and natural-disaster-linked internal displacement; Palu earthquake and tsunami (Sept 2018)"
+        },
+        "2019": {
+          "trauma_level": "Low",
+          "burden_rate": 9.850072,
+          "yll": 15867.0,
+          "yld": 10353.06,
+          "gtbi": 9.380496,
+          "key_events": "Papua conflict; OPM/TPNPB clashes with security forces; Papua unrest crackdowns; press freedom restrictions; Localized religious/ethnic clashes; Jolo/Sulu-linked and JAD-affiliated small-scale attacks; Papua conflict and natural-disaster-linked internal displacement; Recurring seismic activity, flooding, volcanic hazards"
+        },
+        "2020": {
+          "trauma_level": "Low",
+          "burden_rate": 9.816097,
+          "yll": 16383.6,
+          "yld": 10007.318,
+          "gtbi": 9.349703,
+          "key_events": "Papua conflict; OPM/TPNPB clashes with security forces; Papua unrest crackdowns; press freedom restrictions; Localized religious/ethnic clashes; Jolo/Sulu-linked and JAD-affiliated small-scale attacks; Papua conflict and natural-disaster-linked internal displacement; Recurring seismic activity, flooding, volcanic hazards"
+        },
+        "2021": {
+          "trauma_level": "Low",
+          "burden_rate": 12.031942,
+          "yll": 21918.6,
+          "yld": 10753.177,
+          "gtbi": 11.336282,
+          "key_events": "Papua conflict; OPM/TPNPB clashes with security forces; Papua unrest crackdowns; press freedom restrictions; Localized religious/ethnic clashes; Jolo/Sulu-linked and JAD-affiliated small-scale attacks; Papua conflict and natural-disaster-linked internal displacement; Mount Semeru eruption and Cianjur-region flooding"
+        },
+        "2022": {
+          "trauma_level": "Low",
+          "burden_rate": 15.190575,
+          "yll": 31660.2,
+          "yld": 10001.079,
+          "gtbi": 14.093076,
+          "key_events": "Papua conflict; OPM/TPNPB clashes with security forces; Papua unrest crackdowns; press freedom restrictions; Localized religious/ethnic clashes; Jolo/Sulu-linked and JAD-affiliated small-scale attacks; Papua conflict and natural-disaster-linked internal displacement; Cianjur earthquake (Nov 2022)"
+        },
+        "2023": {
+          "trauma_level": "Low",
+          "burden_rate": 9.00243,
+          "yll": 15571.8,
+          "yld": 9364.931,
+          "gtbi": 8.609102,
+          "key_events": "Papua conflict; OPM/TPNPB clashes with security forces; Papua unrest crackdowns; press freedom restrictions; Localized religious/ethnic clashes; Jolo/Sulu-linked and JAD-affiliated small-scale attacks; Papua conflict and natural-disaster-linked internal displacement; Recurring seismic activity, flooding, volcanic hazards"
+        },
+        "2024": {
+          "trauma_level": "Low",
+          "burden_rate": 9.980438,
+          "yll": 16531.2,
+          "yld": 11391.071,
+          "gtbi": 9.498556,
+          "key_events": "Papua conflict; OPM/TPNPB clashes with security forces; Papua unrest crackdowns; press freedom restrictions; Localized religious/ethnic clashes; Jolo/Sulu-linked and JAD-affiliated small-scale attacks; Papua conflict and natural-disaster-linked internal displacement; Recurring seismic activity, flooding, volcanic hazards"
+        },
+        "2025": {
+          "trauma_level": "Low",
+          "burden_rate": 9.628753,
+          "yll": 16826.4,
+          "yld": 10381.347,
+          "gtbi": 9.179716,
+          "key_events": "Papua conflict; OPM/TPNPB clashes with security forces; Papua unrest crackdowns; press freedom restrictions; Localized religious/ethnic clashes; Jolo/Sulu-linked and JAD-affiliated small-scale attacks; Papua conflict and natural-disaster-linked internal displacement; Recurring seismic activity, flooding, volcanic hazards"
         }
       }
     },
@@ -172,159 +380,274 @@
           "burden_rate": 80.71947,
           "yll": 23616.0,
           "yld": 40240.58,
-          "gtbi": 55.389222
+          "gtbi": 55.389222,
+          "key_events": "Kurdish insurgency; border skirmishes; proxy ops; Post-nuclear deal; political prisoners; Ethnic/sectarian incidents; Baloch Sistan; IRGC targets; MEK; Baloch attacks; Afghan refugee hosting; inter-l minimal; Earthquakes; floods; drought"
         },
         "2016": {
           "trauma_level": "High",
           "burden_rate": 78.953532,
           "yll": 23173.2,
           "yld": 40208.66,
-          "gtbi": 54.594426
+          "gtbi": 54.594426,
+          "key_events": "Kurdish insurgency; border skirmishes; proxy ops; Election restrictions; activist arrests; Ethnic/sectarian incidents; Baloch Sistan; IRGC targets; MEK; Baloch attacks; Afghan refugee hosting; inter-l minimal; Earthquakes; floods; drought"
         },
         "2017": {
           "trauma_level": "High",
           "burden_rate": 79.321061,
           "yll": 24058.8,
           "yld": 40320.38,
-          "gtbi": 54.760999
+          "gtbi": 54.760999,
+          "key_events": "Kurdish insurgency; border skirmishes; proxy ops; Dec 2017 protests; crackdown; Ethnic/sectarian incidents; Baloch Sistan; IRGC targets; MEK; Baloch attacks; Afghan refugee hosting; inter-l minimal; Earthquakes; floods; drought"
         },
         "2018": {
           "trauma_level": "High",
           "burden_rate": 79.735497,
           "yll": 24944.4,
           "yld": 40448.06,
-          "gtbi": 54.948097
+          "gtbi": 54.948097,
+          "key_events": "Kurdish insurgency; border skirmishes; proxy ops; Economic protest crackdowns; Ahvaz protests; Ethnic/sectarian incidents; Baloch Sistan; IRGC targets; MEK; Baloch attacks; Afghan refugee hosting; inter-l minimal; Earthquakes; floods; drought"
         },
         "2019": {
           "trauma_level": "Severe",
           "burden_rate": 211.793453,
           "yll": 132987.6,
           "yld": 42618.62,
-          "gtbi": 87.972019
+          "gtbi": 87.972019,
+          "key_events": "Kurdish insurgency; border skirmishes; proxy ops; Nov 2019 fuel protests; ~1,500 killed (Amnesty); Ethnic/sectarian incidents; Baloch Sistan; IRGC targets; MEK; Baloch attacks; Afghan refugee hosting; inter-l minimal; Earthquakes; floods; drought"
         },
         "2020": {
           "trauma_level": "High",
           "burden_rate": 75.665166,
           "yll": 23320.8,
           "yld": 40232.6,
-          "gtbi": 53.076504
+          "gtbi": 53.076504,
+          "key_events": "Kurdish insurgency; border skirmishes; proxy ops; COVID; Soleimani protests; election boycott; Ethnic/sectarian incidents; Baloch Sistan; IRGC targets; MEK; Baloch attacks; Afghan refugee hosting; inter-l minimal; Earthquakes; floods; drought"
         },
         "2021": {
           "trauma_level": "High",
           "burden_rate": 74.36809,
           "yll": 23025.6,
           "yld": 40208.66,
-          "gtbi": 52.463906
+          "gtbi": 52.463906,
+          "key_events": "Kurdish insurgency; border skirmishes; proxy ops; Khuzestan water protests; Ethnic/sectarian incidents; Baloch Sistan; IRGC targets; MEK; Baloch attacks; Afghan refugee hosting; inter-l minimal; Earthquakes; floods; drought"
         },
         "2022": {
           "trauma_level": "High",
           "burden_rate": 122.989016,
           "yll": 62951.4,
           "yld": 43751.78,
-          "gtbi": 70.767532
+          "gtbi": 70.767532,
+          "key_events": "Kurdish insurgency; border skirmishes; proxy ops; Mahsa Amini/Woman Life Freedom uprising; Ethnic/sectarian incidents; Baloch Sistan; IRGC targets; MEK; Baloch attacks; Afghan refugee hosting; inter-l minimal; Earthquakes; floods; drought"
         },
         "2023": {
           "trauma_level": "High",
           "burden_rate": 78.743678,
           "yll": 28339.2,
           "yld": 40894.94,
-          "gtbi": 54.499041
+          "gtbi": 54.499041,
+          "key_events": "Kurdish insurgency; border skirmishes; proxy ops; Continued Women Life Freedom crackdown; Ethnic/sectarian incidents; Baloch Sistan; IRGC targets; MEK; Baloch attacks; Afghan refugee hosting; inter-l minimal; Earthquakes; floods; drought"
         },
         "2024": {
           "trauma_level": "High",
           "burden_rate": 74.182339,
           "yll": 25534.8,
           "yld": 40615.64,
-          "gtbi": 52.375526
+          "gtbi": 52.375526,
+          "key_events": "Kurdish insurgency; border skirmishes; proxy ops; Post-Amini repression; executions surge; Ethnic/sectarian incidents; Baloch Sistan; IRGC targets; MEK; Baloch attacks; Afghan refugee hosting; inter-l minimal; Earthquakes; floods; drought"
         },
         "2025": {
           "trauma_level": "High",
           "burden_rate": 72.500926,
           "yll": 25092.0,
           "yld": 40511.9,
-          "gtbi": 51.567992
+          "gtbi": 51.567992,
+          "key_events": "Kurdish insurgency; border skirmishes; proxy ops; Ongoing dissent suppression; Ethnic/sectarian incidents; Baloch Sistan; IRGC targets; MEK; Baloch attacks; Afghan refugee hosting; inter-l minimal; Earthquakes; floods; drought"
         }
       }
     },
-    "376": {
-      "name": "Israel",
+    "404": {
+      "name": "Kenya",
       "GTBI": {
         "2015": {
-          "trauma_level": "High",
-          "burden_rate": 127.204322,
-          "yll": 9741.6,
-          "yld": 516.156,
-          "gtbi": 71.974159
+          "trauma_level": "Severe",
+          "burden_rate": 606.039368,
+          "yll": 27453.6,
+          "yld": 252609.803,
+          "gtbi": 99.766652,
+          "key_events": "No active internal armed conflict; Isolated protest-policing incidents; Cattle-rustling and land-based ethnic clashes; Rift Valley/North Eastern; Garissa University College attack (April 2015), 148 killed; Dadaab/Kakuma refugee camp hosting; Somali and South Sudanese refugees; Seasonal flooding; localized landslides"
         },
         "2016": {
-          "trauma_level": "High",
-          "burden_rate": 125.216755,
-          "yll": 9741.6,
-          "yld": 516.156,
-          "gtbi": 71.411554
+          "trauma_level": "Severe",
+          "burden_rate": 505.262099,
+          "yll": 17343.0,
+          "yld": 221285.953,
+          "gtbi": 99.360744,
+          "key_events": "No active internal armed conflict; Isolated protest-policing incidents; Cattle-rustling and land-based ethnic clashes; Rift Valley/North Eastern; Al-Shabaab cross-border attacks; Lamu/Garissa/Mandera counties; Dadaab/Kakuma refugee camp hosting; Somali and South Sudanese refugees; Seasonal flooding; localized landslides"
         },
         "2017": {
-          "trauma_level": "High",
-          "burden_rate": 123.260713,
-          "yll": 9741.6,
-          "yld": 516.156,
-          "gtbi": 70.846847
+          "trauma_level": "Severe",
+          "burden_rate": 520.289772,
+          "yll": 20516.4,
+          "yld": 230615.917,
+          "gtbi": 99.44994,
+          "key_events": "No active internal armed conflict; Post-election violence and security-force crackdowns (2017 annulled election); Cattle-rustling and land-based ethnic clashes; Rift Valley/North Eastern; Al-Shabaab cross-border attacks; Lamu/Garissa/Mandera counties; Dadaab/Kakuma refugee camp hosting; Somali and South Sudanese refugees; Seasonal flooding; localized landslides"
         },
         "2018": {
-          "trauma_level": "High",
-          "burden_rate": 121.364843,
-          "yll": 9741.6,
-          "yld": 516.156,
-          "gtbi": 70.288869
+          "trauma_level": "Severe",
+          "burden_rate": 533.910777,
+          "yll": 19261.8,
+          "yld": 244114.624,
+          "gtbi": 99.519985,
+          "key_events": "No active internal armed conflict; Isolated protest-policing incidents; Cattle-rustling and land-based ethnic clashes; Rift Valley/North Eastern; Al-Shabaab cross-border attacks; Lamu/Garissa/Mandera counties; Dadaab/Kakuma refugee camp hosting; Somali and South Sudanese refugees; Seasonal flooding; localized landslides"
         },
         "2019": {
-          "trauma_level": "High",
-          "burden_rate": 119.554272,
-          "yll": 9741.6,
-          "yld": 516.156,
-          "gtbi": 69.746028
+          "trauma_level": "Severe",
+          "burden_rate": 517.662347,
+          "yll": 19630.8,
+          "yld": 241348.273,
+          "gtbi": 99.435296,
+          "key_events": "No active internal armed conflict; Isolated protest-policing incidents; Cattle-rustling and land-based ethnic clashes; Rift Valley/North Eastern; DusitD2 hotel complex attack, Nairobi (Jan 2019); Dadaab/Kakuma refugee camp hosting; Somali and South Sudanese refugees; Seasonal flooding; localized landslides"
         },
         "2020": {
-          "trauma_level": "High",
-          "burden_rate": 118.504581,
-          "yll": 9741.6,
-          "yld": 516.156,
-          "gtbi": 69.426783
+          "trauma_level": "Severe",
+          "burden_rate": 503.284312,
+          "yll": 18597.6,
+          "yld": 240714.865,
+          "gtbi": 99.347975,
+          "key_events": "No active internal armed conflict; Isolated protest-policing incidents; Cattle-rustling and land-based ethnic clashes; Rift Valley/North Eastern; Al-Shabaab cross-border attacks; Lamu/Garissa/Mandera counties; Dadaab/Kakuma refugee camp hosting; Somali and South Sudanese refugees; Seasonal flooding; localized landslides"
         },
         "2021": {
-          "trauma_level": "High",
-          "burden_rate": 116.711304,
-          "yll": 9741.6,
-          "yld": 516.156,
-          "gtbi": 68.873575
+          "trauma_level": "Severe",
+          "burden_rate": 503.940704,
+          "yll": 24206.4,
+          "yld": 241156.579,
+          "gtbi": 99.352241,
+          "key_events": "No active internal armed conflict; Isolated protest-policing incidents; Cattle-rustling and land-based ethnic clashes; Rift Valley/North Eastern; Al-Shabaab cross-border attacks; Lamu/Garissa/Mandera counties; Dadaab/Kakuma refugee camp hosting; Somali and South Sudanese refugees; Multi-season drought; Horn of Africa crisis"
         },
         "2022": {
-          "trauma_level": "High",
-          "burden_rate": 115.255691,
-          "yll": 9741.6,
-          "yld": 516.156,
-          "gtbi": 68.417181
+          "trauma_level": "Severe",
+          "burden_rate": 540.067884,
+          "yll": 30553.2,
+          "yld": 260089.986,
+          "gtbi": 99.548648,
+          "key_events": "No active internal armed conflict; 2022 general election period unrest; Cattle-rustling and land-based ethnic clashes; Rift Valley/North Eastern; Al-Shabaab cross-border attacks; Lamu/Garissa/Mandera counties; Dadaab/Kakuma refugee camp hosting; Somali and South Sudanese refugees; Multi-season drought; Horn of Africa crisis"
         },
         "2023": {
           "trauma_level": "Severe",
-          "burden_rate": 1265.600806,
-          "yll": 112766.4,
-          "yld": 3346.396,
-          "gtbi": 99.999681
+          "burden_rate": 590.715852,
+          "yll": 25387.2,
+          "yld": 299506.518,
+          "gtbi": 99.72801,
+          "key_events": "No active internal armed conflict; Isolated protest-policing incidents; Cattle-rustling and land-based ethnic clashes; Rift Valley/North Eastern; Al-Shabaab cross-border attacks; Lamu/Garissa/Mandera counties; Dadaab/Kakuma refugee camp hosting; Somali and South Sudanese refugees; Multi-season drought; Horn of Africa crisis"
         },
         "2024": {
           "trauma_level": "Severe",
-          "burden_rate": 788.642897,
-          "yll": 69076.8,
-          "yld": 3963.516,
-          "gtbi": 99.962419
+          "burden_rate": 549.414993,
+          "yll": 39335.4,
+          "yld": 269490.767,
+          "gtbi": 99.588925,
+          "key_events": "No active internal armed conflict; Gen Z-led anti-finance-bill protests; Nairobi crackdown (June-July 2024); Cattle-rustling and land-based ethnic clashes; Rift Valley/North Eastern; Al-Shabaab cross-border attacks; Lamu/Garissa/Mandera counties; Dadaab/Kakuma refugee camp hosting; Somali and South Sudanese refugees; El Nino-driven floods (April-May 2024); Mai Mahiu dam collapse"
         },
         "2025": {
           "trauma_level": "Severe",
-          "burden_rate": 394.928749,
-          "yll": 34686.0,
-          "yld": 2239.836,
-          "gtbi": 98.073157
+          "burden_rate": 497.889724,
+          "yll": 19040.4,
+          "yld": 266980.417,
+          "gtbi": 99.311835,
+          "key_events": "No active internal armed conflict; Isolated protest-policing incidents; Cattle-rustling and land-based ethnic clashes; Rift Valley/North Eastern; Al-Shabaab cross-border attacks; Lamu/Garissa/Mandera counties; Dadaab/Kakuma refugee camp hosting; Somali and South Sudanese refugees; Seasonal flooding; localized landslides"
+        }
+      }
+    },
+    "484": {
+      "name": "Mexico",
+      "GTBI": {
+        "2015": {
+          "trauma_level": "Severe",
+          "burden_rate": 1785.488857,
+          "yll": 2091049.2,
+          "yld": 19503.116,
+          "gtbi": 99.999998,
+          "key_events": "No classified armed conflict (organized-crime violence coded separately); Journalist and activist killings; impunity concerns; Cartel and organized-crime violence; territorial disputes; No incidents meeting terrorism classification threshold; Cartel-violence-driven internal displacement; migrant transit corridor; Seasonal hurricanes and flooding; Pacific/Gulf coasts"
+        },
+        "2016": {
+          "trauma_level": "Severe",
+          "burden_rate": 1874.500908,
+          "yll": 2218354.2,
+          "yld": 19573.276,
+          "gtbi": 99.999999,
+          "key_events": "No classified armed conflict (organized-crime violence coded separately); Journalist and activist killings; impunity concerns; Cartel and organized-crime violence; territorial disputes; No incidents meeting terrorism classification threshold; Cartel-violence-driven internal displacement; migrant transit corridor; Seasonal hurricanes and flooding; Pacific/Gulf coasts"
+        },
+        "2017": {
+          "trauma_level": "Severe",
+          "burden_rate": 1783.813004,
+          "yll": 2129351.4,
+          "yld": 21602.25,
+          "gtbi": 99.999998,
+          "key_events": "No classified armed conflict (organized-crime violence coded separately); Journalist and activist killings; impunity concerns; Cartel and organized-crime violence; territorial disputes; No incidents meeting terrorism classification threshold; Cartel-violence-driven internal displacement; migrant transit corridor; Puebla/Morelos earthquake (Sept 19, 2017), M7.1"
+        },
+        "2018": {
+          "trauma_level": "Severe",
+          "burden_rate": 1804.571884,
+          "yll": 2176362.0,
+          "yld": 21382.932,
+          "gtbi": 99.999999,
+          "key_events": "No classified armed conflict (organized-crime violence coded separately); Journalist and activist killings; impunity concerns; Cartel and organized-crime violence; territorial disputes; No incidents meeting terrorism classification threshold; Cartel-violence-driven internal displacement; migrant transit corridor; Seasonal hurricanes and flooding; Pacific/Gulf coasts"
+        },
+        "2019": {
+          "trauma_level": "Severe",
+          "burden_rate": 1932.337942,
+          "yll": 2356138.8,
+          "yld": 20742.838,
+          "gtbi": 100.0,
+          "key_events": "No classified armed conflict (organized-crime violence coded separately); Journalist and activist killings; impunity concerns; Cartel and organized-crime violence; territorial disputes; No incidents meeting terrorism classification threshold; Cartel-violence-driven internal displacement; migrant transit corridor; Seasonal hurricanes and flooding; Pacific/Gulf coasts"
+        },
+        "2020": {
+          "trauma_level": "Severe",
+          "burden_rate": 1878.726339,
+          "yll": 2314294.2,
+          "yld": 19751.594,
+          "gtbi": 99.999999,
+          "key_events": "No classified armed conflict (organized-crime violence coded separately); Journalist and activist killings; impunity concerns; Cartel and organized-crime violence; territorial disputes; No incidents meeting terrorism classification threshold; Cartel-violence-driven internal displacement; migrant transit corridor; Seasonal hurricanes and flooding; Pacific/Gulf coasts"
+        },
+        "2021": {
+          "trauma_level": "Severe",
+          "burden_rate": 1997.815779,
+          "yll": 2484403.2,
+          "yld": 22413.966,
+          "gtbi": 100.0,
+          "key_events": "No classified armed conflict (organized-crime violence coded separately); Journalist and activist killings; impunity concerns; Cartel and organized-crime violence; territorial disputes; No incidents meeting terrorism classification threshold; Cartel-violence-driven internal displacement; migrant transit corridor; Seasonal hurricanes and flooding; Pacific/Gulf coasts"
+        },
+        "2022": {
+          "trauma_level": "Severe",
+          "burden_rate": 1944.165355,
+          "yll": 2441304.0,
+          "yld": 22588.722,
+          "gtbi": 100.0,
+          "key_events": "No classified armed conflict (organized-crime violence coded separately); Journalist and activist killings; impunity concerns; Cartel and organized-crime violence; territorial disputes; No incidents meeting terrorism classification threshold; Cartel-violence-driven internal displacement; migrant transit corridor; Seasonal hurricanes and flooding; Pacific/Gulf coasts"
+        },
+        "2023": {
+          "trauma_level": "Severe",
+          "burden_rate": 1745.595044,
+          "yll": 2213926.2,
+          "yld": 20435.456,
+          "gtbi": 99.999997,
+          "key_events": "No classified armed conflict (organized-crime violence coded separately); Journalist and activist killings; impunity concerns; Cartel and organized-crime violence; territorial disputes; No incidents meeting terrorism classification threshold; Cartel-violence-driven internal displacement; migrant transit corridor; Hurricane Otis, Acapulco (Oct 2023), rapid intensification"
+        },
+        "2024": {
+          "trauma_level": "Severe",
+          "burden_rate": 1727.625056,
+          "yll": 2214664.2,
+          "yld": 18809.472,
+          "gtbi": 99.999997,
+          "key_events": "No classified armed conflict (organized-crime violence coded separately); Journalist and activist killings; impunity concerns; Cartel and organized-crime violence; territorial disputes; No incidents meeting terrorism classification threshold; Cartel-violence-driven internal displacement; migrant transit corridor; Seasonal hurricanes and flooding; Pacific/Gulf coasts"
+        },
+        "2025": {
+          "trauma_level": "Severe",
+          "burden_rate": 1704.152588,
+          "yll": 2204775.0,
+          "yld": 20384.75,
+          "gtbi": 99.999996,
+          "key_events": "No classified armed conflict (organized-crime violence coded separately); Journalist and activist killings; impunity concerns; Cartel and organized-crime violence; territorial disputes; No incidents meeting terrorism classification threshold; Cartel-violence-driven internal displacement; migrant transit corridor; Seasonal hurricanes and flooding; Pacific/Gulf coasts"
         }
       }
     },
@@ -336,241 +659,88 @@
           "burden_rate": 426.818272,
           "yll": 767667.6,
           "yld": 5460.126,
-          "gtbi": 98.599278
+          "gtbi": 98.599278,
+          "key_events": "Boko Haram NE Nigeria; military offensive; State repression; #EndSARS 2020 peak; Farmer-herder clashes; ethnic violence Middle Belt; Boko Haram/ISWAP IED; suicide bombings; 3M+ IDPs NE Nigeria (UNHCR); Annual flooding; Benue River floods"
         },
         "2016": {
           "trauma_level": "Severe",
           "burden_rate": 353.499544,
           "yll": 652539.6,
           "yld": 4829.174,
-          "gtbi": 97.084111
+          "gtbi": 97.084111,
+          "key_events": "Boko Haram continued; Lake Chad basin; State repression; #EndSARS 2020 peak; Farmer-herder clashes; ethnic violence Middle Belt; Boko Haram/ISWAP IED; suicide bombings; 3M+ IDPs NE Nigeria (UNHCR); Annual flooding; Benue River floods"
         },
         "2017": {
           "trauma_level": "Severe",
           "burden_rate": 308.369108,
           "yll": 583905.6,
           "yld": 4688.726,
-          "gtbi": 95.421007
+          "gtbi": 95.421007,
+          "key_events": "Boko Haram/ISWAP split; NE Nigeria; State repression; #EndSARS 2020 peak; Farmer-herder clashes; ethnic violence Middle Belt; Boko Haram/ISWAP IED; suicide bombings; 3M+ IDPs NE Nigeria (UNHCR); Annual flooding; Benue River floods"
         },
         "2018": {
           "trauma_level": "Severe",
           "burden_rate": 311.084734,
           "yll": 603831.6,
           "yld": 5504.814,
-          "gtbi": 95.543682
+          "gtbi": 95.543682,
+          "key_events": "ISWAP rise; Boko Haram rural attacks; State repression; #EndSARS 2020 peak; Farmer-herder clashes; ethnic violence Middle Belt; Boko Haram/ISWAP IED; suicide bombings; 3M+ IDPs NE Nigeria (UNHCR); Annual flooding; Benue River floods"
         },
         "2019": {
           "trauma_level": "Severe",
           "burden_rate": 355.485416,
           "yll": 708627.6,
           "yld": 5768.686,
-          "gtbi": 97.141446
+          "gtbi": 97.141446,
+          "key_events": "ISWAP offensive; military losses; NE crisis; State repression; #EndSARS 2020 peak; Farmer-herder clashes; ethnic violence Middle Belt; Boko Haram/ISWAP IED; suicide bombings; 3M+ IDPs NE Nigeria (UNHCR); Annual flooding; Benue River floods"
         },
         "2020": {
           "trauma_level": "Severe",
           "burden_rate": 367.310233,
           "yll": 750250.8,
           "yld": 6920.998,
-          "gtbi": 97.460244
+          "gtbi": 97.460244,
+          "key_events": "ISWAP peak attacks; COVID restrictions compound; Farmer-herder clashes; ethnic violence Middle Belt; Boko Haram/ISWAP IED; suicide bombings; 3M+ IDPs NE Nigeria (UNHCR); Annual flooding; Benue River floods"
         },
         "2021": {
           "trauma_level": "Severe",
           "burden_rate": 394.125381,
           "yll": 826707.6,
           "yld": 6476.246,
-          "gtbi": 98.057615
+          "gtbi": 98.057615,
+          "key_events": "ISWAP/Boko Haram; bandits NW Nigeria; State repression; #EndSARS 2020 peak; Farmer-herder clashes; ethnic violence Middle Belt; Boko Haram/ISWAP IED; suicide bombings; 3M+ IDPs NE Nigeria (UNHCR); Annual flooding; Benue River floods"
         },
         "2022": {
           "trauma_level": "Severe",
           "burden_rate": 370.553393,
           "yll": 796449.6,
           "yld": 6713.518,
-          "gtbi": 97.541291
+          "gtbi": 97.541291,
+          "key_events": "NW banditry surge; NE ISWAP ongoing; State repression; #EndSARS 2020 peak; Farmer-herder clashes; ethnic violence Middle Belt; Boko Haram/ISWAP IED; suicide bombings; 3M+ IDPs NE Nigeria (UNHCR); Annual flooding; Benue River floods"
         },
         "2023": {
           "trauma_level": "Severe",
           "burden_rate": 370.899517,
           "yll": 817113.6,
           "yld": 6949.726,
-          "gtbi": 97.549787
+          "gtbi": 97.549787,
+          "key_events": "Continued NW/NE armed conflict; State repression; #EndSARS 2020 peak; Farmer-herder clashes; ethnic violence Middle Belt; Boko Haram/ISWAP IED; suicide bombings; 3M+ IDPs NE Nigeria (UNHCR); Annual flooding; Benue River floods"
         },
         "2024": {
           "trauma_level": "Severe",
           "burden_rate": 355.373907,
           "yll": 802353.6,
           "yld": 6807.15,
-          "gtbi": 97.138256
+          "gtbi": 97.138256,
+          "key_events": "NE/NW conflict; humanitarian crisis; State repression; #EndSARS 2020 peak; Farmer-herder clashes; ethnic violence Middle Belt; Boko Haram/ISWAP IED; suicide bombings; 3M+ IDPs NE Nigeria (UNHCR); Annual flooding; Benue River floods"
         },
         "2025": {
           "trauma_level": "Severe",
           "burden_rate": 333.835116,
           "yll": 772833.6,
           "yld": 6594.35,
-          "gtbi": 96.450456
-        }
-      }
-    },
-    "586": {
-      "name": "Pakistan",
-      "GTBI": {
-        "2015": {
-          "trauma_level": "Severe",
-          "burden_rate": 228.774436,
-          "yll": 428630.4,
-          "yld": 4623.8,
-          "gtbi": 89.850486
-        },
-        "2016": {
-          "trauma_level": "Severe",
-          "burden_rate": 223.722054,
-          "yll": 428630.4,
-          "yld": 4623.8,
-          "gtbi": 89.324519
-        },
-        "2017": {
-          "trauma_level": "Severe",
-          "burden_rate": 219.90818,
-          "yll": 428630.4,
-          "yld": 4623.8,
-          "gtbi": 88.909506
-        },
-        "2018": {
-          "trauma_level": "Severe",
-          "burden_rate": 204.145361,
-          "yll": 428630.4,
-          "yld": 4623.8,
-          "gtbi": 87.016016
-        },
-        "2019": {
-          "trauma_level": "Severe",
-          "burden_rate": 200.057056,
-          "yll": 428630.4,
-          "yld": 4623.8,
-          "gtbi": 86.474191
-        },
-        "2020": {
-          "trauma_level": "Severe",
-          "burden_rate": 196.138181,
-          "yll": 428630.4,
-          "yld": 4623.8,
-          "gtbi": 85.933608
-        },
-        "2021": {
-          "trauma_level": "Severe",
-          "burden_rate": 192.386466,
-          "yll": 428630.4,
-          "yld": 4623.8,
-          "gtbi": 85.395853
-        },
-        "2022": {
-          "trauma_level": "Severe",
-          "burden_rate": 229.289985,
-          "yll": 521544.6,
-          "yld": 4650.68,
-          "gtbi": 89.902677
-        },
-        "2023": {
-          "trauma_level": "Severe",
-          "burden_rate": 188.455873,
-          "yll": 429663.6,
-          "yld": 6427.28,
-          "gtbi": 84.810393
-        },
-        "2024": {
-          "trauma_level": "Severe",
-          "burden_rate": 180.315701,
-          "yll": 427892.4,
-          "yld": 5741.0,
-          "gtbi": 83.522214
-        },
-        "2025": {
-          "trauma_level": "Severe",
-          "burden_rate": 176.687136,
-          "yll": 428630.4,
-          "yld": 4623.8,
-          "gtbi": 82.913327
-        }
-      }
-    },
-    "275": {
-      "name": "Palestine",
-      "GTBI": {
-        "2015": {
-          "trauma_level": "Severe",
-          "burden_rate": 4309.007687,
-          "yll": 29224.8,
-          "yld": 161325.34,
-          "gtbi": 100.0
-        },
-        "2016": {
-          "trauma_level": "Severe",
-          "burden_rate": 4219.798288,
-          "yll": 30700.8,
-          "yld": 161365.772,
-          "gtbi": 100.0
-        },
-        "2017": {
-          "trauma_level": "Severe",
-          "burden_rate": 4057.942024,
-          "yll": 28782.0,
-          "yld": 161323.212,
-          "gtbi": 100.0
-        },
-        "2018": {
-          "trauma_level": "Severe",
-          "burden_rate": 4086.074439,
-          "yll": 34833.6,
-          "yld": 163834.252,
-          "gtbi": 100.0
-        },
-        "2019": {
-          "trauma_level": "Severe",
-          "burden_rate": 3891.785009,
-          "yll": 31734.0,
-          "yld": 162131.852,
-          "gtbi": 100.0
-        },
-        "2020": {
-          "trauma_level": "Severe",
-          "burden_rate": 3774.567388,
-          "yll": 30700.8,
-          "yld": 161855.212,
-          "gtbi": 100.0
-        },
-        "2021": {
-          "trauma_level": "Severe",
-          "burden_rate": 3798.353461,
-          "yll": 34095.6,
-          "yld": 164451.372,
-          "gtbi": 100.0
-        },
-        "2022": {
-          "trauma_level": "Severe",
-          "burden_rate": 3630.649588,
-          "yll": 30553.2,
-          "yld": 163834.252,
-          "gtbi": 100.0
-        },
-        "2023": {
-          "trauma_level": "Severe",
-          "burden_rate": 53074.684778,
-          "yll": 1673931.6,
-          "yld": 1236390.092,
-          "gtbi": 100.0
-        },
-        "2024": {
-          "trauma_level": "Severe",
-          "burden_rate": 90788.782343,
-          "yll": 3408231.6,
-          "yld": 1369071.692,
-          "gtbi": 100.0
-        },
-        "2025": {
-          "trauma_level": "Severe",
-          "burden_rate": 38954.98399,
-          "yll": 899031.6,
-          "yld": 1165580.492,
-          "gtbi": 100.0
+          "gtbi": 96.450456,
+          "key_events": "Ongoing NE/NW conflict; State repression; #EndSARS 2020 peak; Farmer-herder clashes; ethnic violence Middle Belt; Boko Haram/ISWAP IED; suicide bombings; 3M+ IDPs NE Nigeria (UNHCR); Annual flooding; Benue River floods"
         }
       }
     },
@@ -582,159 +752,88 @@
           "burden_rate": 126.793492,
           "yll": 14317.2,
           "yld": 98.042,
-          "gtbi": 71.858784
+          "gtbi": 71.858784,
+          "key_events": "Low-level insurgency; DRC border tension; RPF political control; opposition suppression; Low-level commu-l incidents; Minimal terrorism incidents; DRC refugee influx; historical IDP residual; Landslides; flooding; seaso-l disasters"
         },
         "2016": {
           "trauma_level": "High",
           "burden_rate": 123.536438,
           "yll": 14317.2,
           "yld": 98.042,
-          "gtbi": 70.927119
+          "gtbi": 70.927119,
+          "key_events": "Low-level insurgency; DRC border tension; RPF political control; opposition suppression; Low-level commu-l incidents; Minimal terrorism incidents; DRC refugee influx; historical IDP residual; Landslides; flooding; seaso-l disasters"
         },
         "2017": {
           "trauma_level": "High",
           "burden_rate": 120.318153,
           "yll": 14317.2,
           "yld": 98.042,
-          "gtbi": 69.976252
+          "gtbi": 69.976252,
+          "key_events": "Low-level insurgency; DRC border tension; RPF political control; opposition suppression; Low-level commu-l incidents; Minimal terrorism incidents; DRC refugee influx; historical IDP residual; Landslides; flooding; seaso-l disasters"
         },
         "2018": {
           "trauma_level": "High",
           "burden_rate": 117.178618,
           "yll": 14317.2,
           "yld": 98.042,
-          "gtbi": 69.018694
+          "gtbi": 69.018694,
+          "key_events": "Low-level insurgency; DRC border tension; RPF political control; opposition suppression; Low-level commu-l incidents; Minimal terrorism incidents; DRC refugee influx; historical IDP residual; Landslides; flooding; seaso-l disasters"
         },
         "2019": {
           "trauma_level": "High",
           "burden_rate": 114.162502,
           "yll": 14317.2,
           "yld": 98.042,
-          "gtbi": 68.070027
+          "gtbi": 68.070027,
+          "key_events": "Low-level insurgency; DRC border tension; RPF political control; opposition suppression; Low-level commu-l incidents; Minimal terrorism incidents; DRC refugee influx; historical IDP residual; Landslides; flooding; seaso-l disasters"
         },
         "2020": {
           "trauma_level": "High",
           "burden_rate": 111.297989,
           "yll": 14317.2,
           "yld": 98.042,
-          "gtbi": 67.142163
+          "gtbi": 67.142163,
+          "key_events": "Low-level insurgency; DRC border tension; RPF political control; opposition suppression; Low-level commu-l incidents; Minimal terrorism incidents; DRC refugee influx; historical IDP residual; Landslides; flooding; seaso-l disasters"
         },
         "2021": {
           "trauma_level": "High",
           "burden_rate": 108.577019,
           "yll": 14317.2,
           "yld": 98.042,
-          "gtbi": 66.235836
+          "gtbi": 66.235836,
+          "key_events": "Low-level insurgency; DRC border tension; RPF political control; opposition suppression; Low-level commu-l incidents; Minimal terrorism incidents; DRC refugee influx; historical IDP residual; Landslides; flooding; seaso-l disasters"
         },
         "2022": {
           "trauma_level": "High",
           "burden_rate": 123.098934,
           "yll": 16531.2,
           "yld": 210.826,
-          "gtbi": 70.799646
+          "gtbi": 70.799646,
+          "key_events": "M23 support allegations; DRC-Rwanda tension; RPF political control; opposition suppression; Low-level commu-l incidents; Minimal terrorism incidents; DRC refugee influx; historical IDP residual; Landslides; flooding; seaso-l disasters"
         },
         "2023": {
           "trauma_level": "High",
           "burden_rate": 130.34354,
           "yll": 17859.6,
           "yld": 289.562,
-          "gtbi": 72.840286
+          "gtbi": 72.840286,
+          "key_events": "Continued DRC border; RDF operations in DRC; RPF political control; opposition suppression; Low-level commu-l incidents; Minimal terrorism incidents; DRC refugee influx; historical IDP residual; Landslides; flooding; seaso-l disasters"
         },
         "2024": {
           "trauma_level": "High",
           "burden_rate": 130.49937,
           "yll": 18302.4,
           "yld": 302.33,
-          "gtbi": 72.882576
+          "gtbi": 72.882576,
+          "key_events": "RDF in eastern DRC; Goma offensive support; RPF political control; opposition suppression; Low-level commu-l incidents; Minimal terrorism incidents; DRC refugee influx; historical IDP residual; Landslides; flooding; seaso-l disasters"
         },
         "2025": {
           "trauma_level": "High",
           "burden_rate": 131.323995,
           "yll": 18819.0,
           "yld": 323.61,
-          "gtbi": 73.105273
-        }
-      }
-    },
-    "706": {
-      "name": "Somalia",
-      "GTBI": {
-        "2015": {
-          "trauma_level": "Severe",
-          "burden_rate": 18178.699611,
-          "yll": 709070.4,
-          "yld": 1799126.64,
-          "gtbi": 100.0
-        },
-        "2016": {
-          "trauma_level": "Severe",
-          "burden_rate": 17517.802195,
-          "yll": 709070.4,
-          "yld": 1799126.64,
-          "gtbi": 100.0
-        },
-        "2017": {
-          "trauma_level": "Severe",
-          "burden_rate": 17013.357779,
-          "yll": 709070.4,
-          "yld": 1799126.64,
-          "gtbi": 100.0
-        },
-        "2018": {
-          "trauma_level": "Severe",
-          "burden_rate": 16520.949422,
-          "yll": 709070.4,
-          "yld": 1799126.64,
-          "gtbi": 100.0
-        },
-        "2019": {
-          "trauma_level": "Severe",
-          "burden_rate": 16040.999541,
-          "yll": 709070.4,
-          "yld": 1799126.64,
-          "gtbi": 100.0
-        },
-        "2020": {
-          "trauma_level": "Severe",
-          "burden_rate": 15362.423018,
-          "yll": 709070.4,
-          "yld": 1799126.64,
-          "gtbi": 100.0
-        },
-        "2021": {
-          "trauma_level": "Severe",
-          "burden_rate": 14697.407771,
-          "yll": 709070.4,
-          "yld": 1799126.64,
-          "gtbi": 100.0
-        },
-        "2022": {
-          "trauma_level": "Severe",
-          "burden_rate": 14697.407771,
-          "yll": 709070.4,
-          "yld": 1799126.64,
-          "gtbi": 100.0
-        },
-        "2023": {
-          "trauma_level": "Severe",
-          "burden_rate": 13824.316339,
-          "yll": 709070.4,
-          "yld": 1799126.64,
-          "gtbi": 100.0
-        },
-        "2024": {
-          "trauma_level": "Severe",
-          "burden_rate": 13414.573569,
-          "yll": 709070.4,
-          "yld": 1799126.64,
-          "gtbi": 100.0
-        },
-        "2025": {
-          "trauma_level": "Severe",
-          "burden_rate": 13063.530824,
-          "yll": 709070.4,
-          "yld": 1799126.64,
-          "gtbi": 100.0
+          "gtbi": 73.105273,
+          "key_events": "Ongoing DRC involvement; RPF political control; opposition suppression; Low-level commu-l incidents; Minimal terrorism incidents; DRC refugee influx; historical IDP residual; Landslides; flooding; seaso-l disasters"
         }
       }
     },
@@ -746,323 +845,367 @@
           "burden_rate": 1247.286083,
           "yll": 664495.2,
           "yld": 15156.048,
-          "gtbi": 99.999617
+          "gtbi": 99.999617,
+          "key_events": "No active armed conflict; Service delivery protests; state response; High homicide rate; gang violence; GBV; Isolated extremist incidents; Xenophobic displacement; refugee flows; Floods; drought; KZN floods 2022 peak"
         },
         "2016": {
           "trauma_level": "Severe",
           "burden_rate": 1229.220822,
           "yll": 664495.2,
           "yld": 15156.048,
-          "gtbi": 99.999541
+          "gtbi": 99.999541,
+          "key_events": "No active armed conflict; Service delivery protests; state response; High homicide rate; gang violence; GBV; Isolated extremist incidents; Xenophobic displacement; refugee flows; Floods; drought; KZN floods 2022 peak"
         },
         "2017": {
           "trauma_level": "Severe",
           "burden_rate": 1213.321961,
           "yll": 664495.2,
           "yld": 15156.048,
-          "gtbi": 99.999462
+          "gtbi": 99.999462,
+          "key_events": "No active armed conflict; Service delivery protests; state response; High homicide rate; gang violence; GBV; Isolated extremist incidents; Xenophobic displacement; refugee flows; Floods; drought; KZN floods 2022 peak"
         },
         "2018": {
           "trauma_level": "Severe",
           "burden_rate": 1198.316873,
           "yll": 664495.2,
           "yld": 15156.048,
-          "gtbi": 99.999375
+          "gtbi": 99.999375,
+          "key_events": "No active armed conflict; Service delivery protests; state response; High homicide rate; gang violence; GBV; Isolated extremist incidents; Xenophobic displacement; refugee flows; Floods; drought; KZN floods 2022 peak"
         },
         "2019": {
           "trauma_level": "Severe",
           "burden_rate": 1176.281926,
           "yll": 664495.2,
           "yld": 15156.048,
-          "gtbi": 99.999221
+          "gtbi": 99.999221,
+          "key_events": "No active armed conflict; Service delivery protests; state response; High homicide rate; gang violence; GBV; Isolated extremist incidents; Xenophobic displacement; refugee flows; Floods; drought; KZN floods 2022 peak"
         },
         "2020": {
           "trauma_level": "Severe",
           "burden_rate": 1155.831594,
           "yll": 664495.2,
           "yld": 15156.048,
-          "gtbi": 99.999044
+          "gtbi": 99.999044,
+          "key_events": "No active armed conflict; Service delivery protests; state response; High homicide rate; gang violence; GBV; Isolated extremist incidents; Xenophobic displacement; refugee flows; Floods; drought; KZN floods 2022 peak"
         },
         "2021": {
           "trauma_level": "Severe",
           "burden_rate": 1187.414949,
           "yll": 689144.4,
           "yld": 16088.112,
-          "gtbi": 99.999303
+          "gtbi": 99.999303,
+          "key_events": "No active armed conflict; July 2021 unrest; Zuma arrest riots; looting; High homicide rate; gang violence; GBV; Isolated extremist incidents; Xenophobic displacement; refugee flows; Floods; drought; KZN floods 2022 peak"
         },
         "2022": {
           "trauma_level": "Severe",
           "burden_rate": 1181.116186,
           "yll": 692244.0,
           "yld": 15172.368,
-          "gtbi": 99.999258
+          "gtbi": 99.999258,
+          "key_events": "No active armed conflict; Service delivery protests; state response; High homicide rate; gang violence; GBV; Isolated extremist incidents; Xenophobic displacement; refugee flows; KwaZulu--tal floods; deadliest in decades"
         },
         "2023": {
           "trauma_level": "Severe",
           "burden_rate": 1124.980438,
           "yll": 664495.2,
           "yld": 15156.048,
-          "gtbi": 99.998699
+          "gtbi": 99.998699,
+          "key_events": "No active armed conflict; Service delivery protests; state response; High homicide rate; gang violence; GBV; Isolated extremist incidents; Xenophobic displacement; refugee flows; Floods; drought; KZN floods 2022 peak"
         },
         "2024": {
           "trauma_level": "Severe",
           "burden_rate": 1115.006568,
           "yll": 664495.2,
           "yld": 15156.048,
-          "gtbi": 99.998563
+          "gtbi": 99.998563,
+          "key_events": "No active armed conflict; Service delivery protests; state response; High homicide rate; gang violence; GBV; Isolated extremist incidents; Xenophobic displacement; refugee flows; Floods; drought; KZN floods 2022 peak"
         },
         "2025": {
           "trauma_level": "Severe",
           "burden_rate": 1104.925205,
           "yll": 664495.2,
           "yld": 15156.048,
-          "gtbi": 99.99841
+          "gtbi": 99.99841,
+          "key_events": "No active armed conflict; Service delivery protests; state response; High homicide rate; gang violence; GBV; Isolated extremist incidents; Xenophobic displacement; refugee flows; Floods; drought; KZN floods 2022 peak"
         }
       }
     },
-    "729": {
-      "name": "Sudan",
+    "144": {
+      "name": "Sri Lanka",
       "GTBI": {
         "2015": {
-          "trauma_level": "Severe",
-          "burden_rate": 4151.343545,
-          "yll": 268041.6,
-          "yld": 1346952.764,
-          "gtbi": 100.0
+          "trauma_level": "Moderate",
+          "burden_rate": 56.923881,
+          "yll": 3173.4,
+          "yld": 8956.228,
+          "gtbi": 43.404393,
+          "key_events": "Civil war concluded 2009; no active armed conflict; Isolated protest-policing incidents; Sporadic inter-communal tension, largely contained; No terrorism incidents recorded; Residual Northern Province IDPs from civil war; gradual resettlement; Monsoon flooding and landslides"
         },
         "2016": {
-          "trauma_level": "Severe",
-          "burden_rate": 4078.322646,
-          "yll": 268041.6,
-          "yld": 1346952.764,
-          "gtbi": 100.0
+          "trauma_level": "Moderate",
+          "burden_rate": 53.972483,
+          "yll": 3173.4,
+          "yld": 8373.332,
+          "gtbi": 41.709137,
+          "key_events": "Civil war concluded 2009; no active armed conflict; Isolated protest-policing incidents; Sporadic inter-communal tension, largely contained; No terrorism incidents recorded; Residual Northern Province IDPs from civil war; gradual resettlement; Monsoon flooding and landslides"
         },
         "2017": {
-          "trauma_level": "Severe",
-          "burden_rate": 3984.362192,
-          "yll": 268041.6,
-          "yld": 1346952.764,
-          "gtbi": 100.0
+          "trauma_level": "High",
+          "burden_rate": 73.223279,
+          "yll": 7601.4,
+          "yld": 8126.458,
+          "gtbi": 51.916581,
+          "key_events": "Civil war concluded 2009; no active armed conflict; Isolated protest-policing incidents; Sporadic inter-communal tension, largely contained; No terrorism incidents recorded; Residual Northern Province IDPs from civil war; gradual resettlement; 2017 Sri Lanka floods and landslides (May 2017)"
         },
         "2018": {
-          "trauma_level": "Severe",
-          "burden_rate": 3890.472897,
-          "yll": 268041.6,
-          "yld": 1346952.764,
-          "gtbi": 100.0
+          "trauma_level": "Moderate",
+          "burden_rate": 49.545762,
+          "yll": 3321.0,
+          "yld": 7363.658,
+          "gtbi": 39.070798,
+          "key_events": "Civil war concluded 2009; no active armed conflict; Isolated protest-policing incidents; Kandy anti-Muslim riots (March 2018); No terrorism incidents recorded; Residual Northern Province IDPs from civil war; gradual resettlement; Monsoon flooding and landslides"
         },
         "2019": {
           "trauma_level": "Severe",
-          "burden_rate": 3798.670774,
-          "yll": 268041.6,
-          "yld": 1346952.764,
-          "gtbi": 100.0
+          "burden_rate": 145.493775,
+          "yll": 23025.6,
+          "yld": 8475.973,
+          "gtbi": 76.658511,
+          "key_events": "Civil war concluded 2009; no active armed conflict; Isolated protest-policing incidents; Sporadic inter-communal tension, largely contained; Easter Sunday bombings (April 21, 2019), coordinated church/hotel attacks; Residual Northern Province IDPs from civil war; gradual resettlement; Monsoon flooding and landslides"
         },
         "2020": {
-          "trauma_level": "Severe",
-          "burden_rate": 3709.85974,
-          "yll": 268041.6,
-          "yld": 1346952.764,
-          "gtbi": 100.0
+          "trauma_level": "Moderate",
+          "burden_rate": 50.219021,
+          "yll": 3173.4,
+          "yld": 7743.26,
+          "gtbi": 39.479632,
+          "key_events": "Civil war concluded 2009; no active armed conflict; Isolated protest-policing incidents; Sporadic inter-communal tension, largely contained; No terrorism incidents recorded; Residual Northern Province IDPs from civil war; gradual resettlement; Monsoon flooding and landslides"
         },
         "2021": {
-          "trauma_level": "Severe",
-          "burden_rate": 3623.176397,
-          "yll": 268041.6,
-          "yld": 1346952.764,
-          "gtbi": 100.0
+          "trauma_level": "Moderate",
+          "burden_rate": 42.822784,
+          "yll": 3173.4,
+          "yld": 6172.694,
+          "gtbi": 34.833708,
+          "key_events": "Civil war concluded 2009; no active armed conflict; Isolated protest-policing incidents; Sporadic inter-communal tension, largely contained; No terrorism incidents recorded; Residual Northern Province IDPs from civil war; gradual resettlement; Monsoon flooding and landslides"
         },
         "2022": {
-          "trauma_level": "Severe",
-          "burden_rate": 3537.217722,
-          "yll": 268041.6,
-          "yld": 1346952.764,
-          "gtbi": 100.0
+          "trauma_level": "Moderate",
+          "burden_rate": 42.191949,
+          "yll": 3763.8,
+          "yld": 5481.448,
+          "gtbi": 34.421317,
+          "key_events": "Civil war concluded 2009; no active armed conflict; Aragalaya protests; economic-crisis-driven unrest, state of emergency; Sporadic inter-communal tension, largely contained; No terrorism incidents recorded; Residual Northern Province IDPs from civil war; gradual resettlement; Monsoon flooding and landslides"
         },
         "2023": {
-          "trauma_level": "Severe",
-          "burden_rate": 12941.473172,
-          "yll": 808257.6,
-          "yld": 5257953.884,
-          "gtbi": 100.0
+          "trauma_level": "Moderate",
+          "burden_rate": 39.6321,
+          "yll": 3173.4,
+          "yld": 5545.662,
+          "gtbi": 32.72093,
+          "key_events": "Civil war concluded 2009; no active armed conflict; Isolated protest-policing incidents; Sporadic inter-communal tension, largely contained; No terrorism incidents recorded; Residual Northern Province IDPs from civil war; gradual resettlement; Monsoon flooding and landslides"
         },
         "2024": {
-          "trauma_level": "Severe",
-          "burden_rate": 19667.019577,
-          "yll": 2151417.6,
-          "yld": 7310188.604,
-          "gtbi": 100.0
+          "trauma_level": "Moderate",
+          "burden_rate": 37.022881,
+          "yll": 3173.4,
+          "yld": 5004.214,
+          "gtbi": 30.94237,
+          "key_events": "Civil war concluded 2009; no active armed conflict; Isolated protest-policing incidents; Sporadic inter-communal tension, largely contained; No terrorism incidents recorded; Residual Northern Province IDPs from civil war; gradual resettlement; Monsoon flooding and landslides"
         },
         "2025": {
-          "trauma_level": "Severe",
-          "burden_rate": 17618.581895,
-          "yll": 1708617.6,
-          "yld": 6924486.204,
-          "gtbi": 100.0
+          "trauma_level": "Moderate",
+          "burden_rate": 34.02336,
+          "yll": 3173.4,
+          "yld": 4371.74,
+          "gtbi": 28.839593,
+          "key_events": "Civil war concluded 2009; no active armed conflict; Isolated protest-policing incidents; Sporadic inter-communal tension, largely contained; No terrorism incidents recorded; Residual Northern Province IDPs from civil war; gradual resettlement; Monsoon flooding and landslides"
         }
       }
     },
-    "760": {
-      "name": "Syria",
+    "764": {
+      "name": "Thailand",
       "GTBI": {
         "2015": {
-          "trauma_level": "Severe",
-          "burden_rate": 43732.658327,
-          "yll": 3708007.2,
-          "yld": 4383587.64,
-          "gtbi": 100.0
+          "trauma_level": "Low",
+          "burden_rate": 18.740073,
+          "yll": 10036.8,
+          "yld": 3099.96,
+          "gtbi": 17.088858,
+          "key_events": "Deep South insurgency; Pattani/Yala/Narathiwat low-intensity conflict; Isolated protest-policing incidents; political tension; Localized ethnic-minority and land-dispute incidents; Deep South bombings and IED attacks (BRN-linked); Myanmar border refugee camps; Deep South internal displacement; Annual monsoon flooding; central/northeastern provinces"
         },
         "2016": {
-          "trauma_level": "Severe",
-          "burden_rate": 41440.037673,
-          "yll": 3257827.2,
-          "yld": 4379757.24,
-          "gtbi": 100.0
+          "trauma_level": "Low",
+          "burden_rate": 20.443689,
+          "yll": 10996.2,
+          "yld": 3377.785,
+          "gtbi": 18.489382,
+          "key_events": "Deep South insurgency; Pattani/Yala/Narathiwat low-intensity conflict; Isolated protest-policing incidents; political tension; Localized ethnic-minority and land-dispute incidents; Deep South bombings and IED attacks (BRN-linked); Myanmar border refugee camps; Deep South internal displacement; Annual monsoon flooding; central/northeastern provinces"
         },
         "2017": {
-          "trauma_level": "Severe",
-          "burden_rate": 37848.478834,
-          "yll": 2541967.2,
-          "yld": 4372947.64,
-          "gtbi": 100.0
+          "trauma_level": "Low",
+          "burden_rate": 19.066351,
+          "yll": 10332.0,
+          "yld": 3113.793,
+          "gtbi": 17.358938,
+          "key_events": "Deep South insurgency; Pattani/Yala/Narathiwat low-intensity conflict; Isolated protest-policing incidents; political tension; Localized ethnic-minority and land-dispute incidents; Deep South bombings and IED attacks (BRN-linked); Myanmar border refugee camps; Deep South internal displacement; Annual monsoon flooding; central/northeastern provinces"
         },
         "2018": {
-          "trauma_level": "Severe",
-          "burden_rate": 35439.819311,
-          "yll": 1833487.2,
-          "yld": 4368478.84,
-          "gtbi": 100.0
+          "trauma_level": "Low",
+          "burden_rate": 19.443852,
+          "yll": 10553.4,
+          "yld": 3199.747,
+          "gtbi": 17.670321,
+          "key_events": "Deep South insurgency; Pattani/Yala/Narathiwat low-intensity conflict; Isolated protest-policing incidents; political tension; Localized ethnic-minority and land-dispute incidents; Deep South bombings and IED attacks (BRN-linked); Myanmar border refugee camps; Deep South internal displacement; Annual monsoon flooding; central/northeastern provinces"
         },
         "2019": {
-          "trauma_level": "Severe",
-          "burden_rate": 31018.646258,
-          "yll": 1065967.2,
-          "yld": 4362328.92,
-          "gtbi": 100.0
+          "trauma_level": "Low",
+          "burden_rate": 19.676002,
+          "yll": 10627.2,
+          "yld": 3331.905,
+          "gtbi": 17.861227,
+          "key_events": "Deep South insurgency; Pattani/Yala/Narathiwat low-intensity conflict; Isolated protest-policing incidents; political tension; Localized ethnic-minority and land-dispute incidents; Deep South bombings and IED attacks (BRN-linked); Myanmar border refugee camps; Deep South internal displacement; Annual monsoon flooding; central/northeastern provinces"
         },
         "2020": {
-          "trauma_level": "Severe",
-          "burden_rate": 29656.108202,
-          "yll": 829807.2,
-          "yld": 4360009.4,
-          "gtbi": 100.0
+          "trauma_level": "Low",
+          "burden_rate": 20.062723,
+          "yll": 10848.6,
+          "yld": 3427.564,
+          "gtbi": 18.178262,
+          "key_events": "Deep South insurgency; Pattani/Yala/Narathiwat low-intensity conflict; 2020-2021 pro-democracy protests; lese-majeste prosecutions; Localized ethnic-minority and land-dispute incidents; Deep South bombings and IED attacks (BRN-linked); Myanmar border refugee camps; Deep South internal displacement; Annual monsoon flooding; central/northeastern provinces"
         },
         "2021": {
-          "trauma_level": "Severe",
-          "burden_rate": 23955.228458,
-          "yll": 748627.2,
-          "yld": 4359583.8,
-          "gtbi": 100.0
+          "trauma_level": "Low",
+          "burden_rate": 20.294308,
+          "yll": 10996.2,
+          "yld": 3488.077,
+          "gtbi": 18.367529,
+          "key_events": "Deep South insurgency; Pattani/Yala/Narathiwat low-intensity conflict; Isolated protest-policing incidents; political tension; Localized ethnic-minority and land-dispute incidents; Deep South bombings and IED attacks (BRN-linked); Myanmar border refugee camps; Deep South internal displacement; Annual monsoon flooding; central/northeastern provinces"
         },
         "2022": {
-          "trauma_level": "Severe",
-          "burden_rate": 23710.362686,
-          "yll": 696967.2,
-          "yld": 4359115.64,
-          "gtbi": 100.0
+          "trauma_level": "Low",
+          "burden_rate": 19.335749,
+          "yll": 10553.4,
+          "yld": 3288.143,
+          "gtbi": 17.581272,
+          "key_events": "Deep South insurgency; Pattani/Yala/Narathiwat low-intensity conflict; Isolated protest-policing incidents; political tension; Localized ethnic-minority and land-dispute incidents; Deep South bombings and IED attacks (BRN-linked); Myanmar border refugee camps; Deep South internal displacement; Annual monsoon flooding; central/northeastern provinces"
         },
         "2023": {
-          "trauma_level": "Severe",
-          "burden_rate": 41771.09567,
-          "yll": 4882608.0,
-          "yld": 4359349.08,
-          "gtbi": 100.0
+          "trauma_level": "Low",
+          "burden_rate": 18.888178,
+          "yll": 10405.8,
+          "yld": 3155.912,
+          "gtbi": 17.211563,
+          "key_events": "Deep South insurgency; Pattani/Yala/Narathiwat low-intensity conflict; Isolated protest-policing incidents; political tension; Localized ethnic-minority and land-dispute incidents; Deep South bombings and IED attacks (BRN-linked); Myanmar border refugee camps; Deep South internal displacement; Annual monsoon flooding; central/northeastern provinces"
         },
         "2024": {
-          "trauma_level": "Severe",
-          "burden_rate": 23281.151778,
-          "yll": 874087.2,
-          "yld": 4362307.64,
-          "gtbi": 100.0
+          "trauma_level": "Low",
+          "burden_rate": 19.812686,
+          "yll": 10848.6,
+          "yld": 3419.585,
+          "gtbi": 17.973421,
+          "key_events": "Deep South insurgency; Pattani/Yala/Narathiwat low-intensity conflict; Isolated protest-policing incidents; political tension; Localized ethnic-minority and land-dispute incidents; Deep South bombings and IED attacks (BRN-linked); Myanmar border refugee camps; Deep South internal displacement; Annual monsoon flooding; central/northeastern provinces"
         },
         "2025": {
-          "trauma_level": "Severe",
-          "burden_rate": 22031.79553,
-          "yll": 489441.6,
-          "yld": 4357551.56,
-          "gtbi": 100.0
+          "trauma_level": "Low",
+          "burden_rate": 18.62039,
+          "yll": 10332.0,
+          "yld": 3117.777,
+          "gtbi": 16.989568,
+          "key_events": "Deep South insurgency; Pattani/Yala/Narathiwat low-intensity conflict; Isolated protest-policing incidents; political tension; Localized ethnic-minority and land-dispute incidents; Deep South bombings and IED attacks (BRN-linked); Myanmar border refugee camps; Deep South internal displacement; Annual monsoon flooding; central/northeastern provinces"
         }
       }
     },
-    "804": {
-      "name": "Ukraine",
+    "788": {
+      "name": "Tunisia",
       "GTBI": {
         "2015": {
-          "trauma_level": "Severe",
-          "burden_rate": 3607.5894,
-          "yll": 456084.0,
-          "yld": 1160988.268,
-          "gtbi": 100.0
+          "trauma_level": "High",
+          "burden_rate": 80.023396,
+          "yll": 6568.2,
+          "yld": 2519.364,
+          "gtbi": 55.077615,
+          "key_events": "Chaambi Mountains counter-insurgency operations; Isolated protest-related incidents; Sporadic localized clashes; largely contained; Bardo Museum attack (March, 22 killed) and Sousse beach attack (June, 38 killed); Libyan refugee/migrant hosting near western border; Seasonal flash flooding; Nabeul/Cap Bon region"
         },
         "2016": {
-          "trauma_level": "Severe",
-          "burden_rate": 3133.648311,
-          "yll": 242064.0,
-          "yld": 1156306.668,
-          "gtbi": 100.0
+          "trauma_level": "Moderate",
+          "burden_rate": 50.590544,
+          "yll": 3099.6,
+          "yld": 2697.236,
+          "gtbi": 39.704062,
+          "key_events": "Chaambi Mountains counter-insurgency operations; Isolated protest-related incidents; Sporadic localized clashes; largely contained; Ben Guerdane attack (March 2016); Libyan refugee/migrant hosting near western border; Seasonal flash flooding; Nabeul/Cap Bon region"
         },
         "2017": {
-          "trauma_level": "Severe",
-          "burden_rate": 3027.738243,
-          "yll": 188928.0,
-          "yld": 1155540.588,
-          "gtbi": 100.0
+          "trauma_level": "Moderate",
+          "burden_rate": 31.406974,
+          "yll": 1033.2,
+          "yld": 2597.906,
+          "gtbi": 26.953192,
+          "key_events": "No active armed conflict; Isolated protest-related incidents; Sporadic localized clashes; largely contained; Residual counter-terrorism operations; isolated incidents; Libyan refugee/migrant hosting near western border; Seasonal flash flooding; Nabeul/Cap Bon region"
         },
         "2018": {
-          "trauma_level": "Severe",
-          "burden_rate": 2974.556508,
-          "yll": 160884.0,
-          "yld": 1155242.668,
-          "gtbi": 100.0
+          "trauma_level": "Moderate",
+          "burden_rate": 31.842669,
+          "yll": 1033.2,
+          "yld": 2681.412,
+          "gtbi": 27.270761,
+          "key_events": "No active armed conflict; Isolated protest-related incidents; Sporadic localized clashes; largely contained; Residual counter-terrorism operations; isolated incidents; Libyan refugee/migrant hosting near western border; Seasonal flash flooding; Nabeul/Cap Bon region"
         },
         "2019": {
-          "trauma_level": "Severe",
-          "burden_rate": 2914.496687,
-          "yll": 138744.0,
-          "yld": 1154859.628,
-          "gtbi": 100.0
+          "trauma_level": "Moderate",
+          "burden_rate": 31.473054,
+          "yll": 1033.2,
+          "yld": 2671.338,
+          "gtbi": 27.001445,
+          "key_events": "No active armed conflict; Isolated protest-related incidents; Sporadic localized clashes; largely contained; Residual counter-terrorism operations; isolated incidents; Libyan refugee/migrant hosting near western border; Seasonal flash flooding; Nabeul/Cap Bon region"
         },
         "2020": {
-          "trauma_level": "Severe",
-          "burden_rate": 2880.003795,
-          "yll": 116604.0,
-          "yld": 1154476.588,
-          "gtbi": 100.0
+          "trauma_level": "Moderate",
+          "burden_rate": 31.363436,
+          "yll": 1033.2,
+          "yld": 2691.66,
+          "gtbi": 26.921382,
+          "key_events": "No active armed conflict; Isolated protest-related incidents; Sporadic localized clashes; largely contained; Residual counter-terrorism operations; isolated incidents; Libyan refugee/migrant hosting near western border; Seasonal flash flooding; Nabeul/Cap Bon region"
         },
         "2021": {
-          "trauma_level": "Severe",
-          "burden_rate": 2976.932582,
-          "yll": 138744.0,
-          "yld": 1155242.668,
-          "gtbi": 100.0
+          "trauma_level": "Moderate",
+          "burden_rate": 33.491545,
+          "yll": 1180.8,
+          "yld": 2832.602,
+          "gtbi": 28.460143,
+          "key_events": "No active armed conflict; Kais Saied power consolidation (July 2021); opposition arrests, judiciary purge; Sporadic localized clashes; largely contained; Residual counter-terrorism operations; isolated incidents; Libyan refugee/migrant hosting near western border; Seasonal flash flooding; Nabeul/Cap Bon region"
         },
         "2022": {
-          "trauma_level": "Severe",
-          "burden_rate": 17196.116481,
-          "yll": 2256804.0,
-          "yld": 5228908.908,
-          "gtbi": 100.0
+          "trauma_level": "Moderate",
+          "burden_rate": 30.010275,
+          "yll": 1180.8,
+          "yld": 2447.796,
+          "gtbi": 25.925789,
+          "key_events": "No active armed conflict; Continued political crackdowns; detained opposition figures; Sporadic localized clashes; largely contained; Residual counter-terrorism operations; isolated incidents; Libyan refugee/migrant hosting near western border; Seasonal flash flooding; Nabeul/Cap Bon region"
         },
         "2023": {
-          "trauma_level": "Severe",
-          "burden_rate": 15758.333977,
-          "yll": 1629504.0,
-          "yld": 4201078.508,
-          "gtbi": 100.0
+          "trauma_level": "Moderate",
+          "burden_rate": 30.417082,
+          "yll": 1180.8,
+          "yld": 2530.084,
+          "gtbi": 26.226516,
+          "key_events": "No active armed conflict; Continued political crackdowns; detained opposition figures; Sporadic localized clashes; largely contained; Residual counter-terrorism operations; isolated incidents; Libyan refugee/migrant hosting near western border; Seasonal flash flooding; Nabeul/Cap Bon region"
         },
         "2024": {
-          "trauma_level": "Severe",
-          "burden_rate": 15755.138797,
-          "yll": 1777104.0,
-          "yld": 4012057.708,
-          "gtbi": 100.0
+          "trauma_level": "Moderate",
+          "burden_rate": 33.277958,
+          "yll": 1180.8,
+          "yld": 2915.65,
+          "gtbi": 28.30718,
+          "key_events": "No active armed conflict; Continued political crackdowns; detained opposition figures; Sporadic localized clashes; largely contained; Residual counter-terrorism operations; isolated incidents; Libyan refugee/migrant hosting near western border; Seasonal flash flooding; Nabeul/Cap Bon region"
         },
         "2025": {
-          "trauma_level": "Severe",
-          "burden_rate": 14540.438567,
-          "yll": 1481904.0,
-          "yld": 3752652.908,
-          "gtbi": 100.0
+          "trauma_level": "Moderate",
+          "burden_rate": 32.058756,
+          "yll": 1180.8,
+          "yld": 2801.086,
+          "gtbi": 27.427749,
+          "key_events": "No active armed conflict; Continued political crackdowns; detained opposition figures; Sporadic localized clashes; largely contained; Residual counter-terrorism operations; isolated incidents; Libyan refugee/migrant hosting near western border; Seasonal flash flooding; Nabeul/Cap Bon region"
         }
       }
     },
@@ -1074,159 +1217,88 @@
           "burden_rate": 948.893265,
           "yll": 2734511.4,
           "yld": 310281.265,
-          "gtbi": 99.992432
+          "gtbi": 99.992432,
+          "key_events": "Low-level militia/extremist incidents; Ferguson protests; police use-of-force incidents; San Ber-rdino; Charleston church shooting; Domestic extremist incidents; Inter-l displacement minimal; border asylum seekers; Severe storms; wildfires"
         },
         "2016": {
           "trauma_level": "Severe",
           "burden_rate": 980.071521,
           "yll": 2908900.8,
           "yld": 257979.923,
-          "gtbi": 99.994459
+          "gtbi": 99.994459,
+          "key_events": "Low-level militia/extremist incidents; Standing Rock protests; police incidents; Orlando Pulse; Dallas police shooting; Orlando classified terrorism; domestic plots; Inter-l displacement minimal; border asylum seekers; Louisia- flooding; Hurricane Matthew"
         },
         "2017": {
           "trauma_level": "Severe",
           "burden_rate": 945.391321,
           "yll": 3021814.8,
           "yld": 51508.267,
-          "gtbi": 99.992162
+          "gtbi": 99.992162,
+          "key_events": "Low-level militia/extremist incidents; Charlottesville; travel ban protests; Las Vegas massacre; Sutherland Springs; NYC truck attack; Charlottesville vehicle attack; Inter-l displacement minimal; border asylum seekers; Hurricanes Harvey/Irma/Maria; California wildfires"
         },
         "2018": {
           "trauma_level": "Severe",
           "burden_rate": 928.120391,
           "yll": 2987645.4,
           "yld": 45806.568,
-          "gtbi": 99.990684
+          "gtbi": 99.990684,
+          "key_events": "Low-level militia/extremist incidents; Immigration detention protests; family separation; Parkland; Pittsburgh sy-gogue shooting; Pipe bombs; sy-gogue attack with terrorism classification; Inter-l displacement minimal; border asylum seekers; Camp Fire (Paradise CA); Hurricane Florence"
         },
         "2019": {
           "trauma_level": "Severe",
           "burden_rate": 372.977374,
           "yll": 1181980.8,
           "yld": 42615.637,
-          "gtbi": 97.600173
+          "gtbi": 97.600173,
+          "key_events": "Low-level militia/extremist incidents; Hong Kong solidarity; Epstein protests; El Paso; Dayton mass shootings; Domestic right-wing terrorism incidents; Inter-l displacement minimal; border asylum seekers; Midwest flooding; tor-do outbreaks"
         },
         "2020": {
           "trauma_level": "Severe",
           "burden_rate": 482.15529,
           "yll": 1534744.8,
           "yld": 53880.328,
-          "gtbi": 99.194573
+          "gtbi": 99.194573,
+          "key_events": "Low-level militia/extremist incidents; George Floyd / BLM protests; federal crackdown; COVID-linked hate crimes; increased gun violence; Boogaloo; militia plots during BLM period; Inter-l displacement minimal; border asylum seekers; Record wildfire season; Hurricane Laura"
         },
         "2021": {
           "trauma_level": "Severe",
           "burden_rate": 1137.41287,
           "yll": 3706309.8,
           "yld": 68692.37,
-          "gtbi": 99.998851
+          "gtbi": 99.998851,
+          "key_events": "Low-level militia/extremist incidents; Jan 6 Capitol attack; post-election unrest; Atlanta spa; Boulder; surge in mass shootings; Jan 6 classified terrorism by some agencies; domestic plots; Inter-l displacement minimal; border asylum seekers; Texas freeze; Hurricane Ida; western wildfires"
         },
         "2022": {
           "trauma_level": "Severe",
           "burden_rate": 493.606853,
           "yll": 1579836.6,
           "yld": 65213.922,
-          "gtbi": 99.281722
+          "gtbi": 99.281722,
+          "key_events": "Low-level militia/extremist incidents; Dobbs decision protests; ongoing political unrest; Uvalde; Buffalo supermarket; Club Q; Right-wing and a-rchist domestic terrorism; Inter-l displacement minimal; border asylum seekers; Hurricane Ian; Kentucky floods"
         },
         "2023": {
           "trauma_level": "Severe",
           "burden_rate": 1070.939181,
           "yll": 3499743.6,
           "yld": 86991.232,
-          "gtbi": 99.997767
+          "gtbi": 99.997767,
+          "key_events": "Low-level militia/extremist incidents; Protest crackdowns; university demonstrations; -shville; Lewiston; ongoing mass shooting wave; Domestic extremism incidents; Inter-l displacement minimal; border asylum seekers; Maui wildfires; severe storms"
         },
         "2024": {
           "trauma_level": "Severe",
           "burden_rate": 1006.384833,
           "yll": 3329856.0,
           "yld": 57611.434,
-          "gtbi": 99.995741
+          "gtbi": 99.995741,
+          "key_events": "Low-level militia/extremist incidents; Election-related unrest; Gaza solidarity protests; Ongoing mass shooting incidents; Election-adjacent extremist incidents; Inter-l displacement minimal; border asylum seekers; Hurricane Helene; ongoing severe weather"
         },
         "2025": {
           "trauma_level": "Severe",
           "burden_rate": 874.734986,
           "yll": 2910376.8,
           "yld": 48762.932,
-          "gtbi": 99.984112
-        }
-      }
-    },
-    "887": {
-      "name": "Yemen",
-      "GTBI": {
-        "2015": {
-          "trauma_level": "Severe",
-          "burden_rate": 12575.686363,
-          "yll": 636303.6,
-          "yld": 2695986.86,
-          "gtbi": 100.0
-        },
-        "2016": {
-          "trauma_level": "Severe",
-          "burden_rate": 12359.330961,
-          "yll": 661395.6,
-          "yld": 2696412.46,
-          "gtbi": 100.0
-        },
-        "2017": {
-          "trauma_level": "Severe",
-          "burden_rate": 12427.288599,
-          "yll": 761763.6,
-          "yld": 2697348.78,
-          "gtbi": 100.0
-        },
-        "2018": {
-          "trauma_level": "Severe",
-          "burden_rate": 12465.329885,
-          "yll": 853275.6,
-          "yld": 2699178.86,
-          "gtbi": 100.0
-        },
-        "2019": {
-          "trauma_level": "Severe",
-          "burden_rate": 12365.498157,
-          "yll": 906411.6,
-          "yld": 2699604.46,
-          "gtbi": 100.0
-        },
-        "2020": {
-          "trauma_level": "Severe",
-          "burden_rate": 11748.971325,
-          "yll": 806043.6,
-          "yld": 2698199.98,
-          "gtbi": 100.0
-        },
-        "2021": {
-          "trauma_level": "Severe",
-          "burden_rate": 12318.389854,
-          "yll": 1054011.6,
-          "yld": 2701987.82,
-          "gtbi": 100.0
-        },
-        "2022": {
-          "trauma_level": "Severe",
-          "burden_rate": 9814.81247,
-          "yll": 611211.6,
-          "yld": 2695986.86,
-          "gtbi": 100.0
-        },
-        "2023": {
-          "trauma_level": "Severe",
-          "burden_rate": 9208.156496,
-          "yll": 478371.6,
-          "yld": 2693837.58,
-          "gtbi": 100.0
-        },
-        "2024": {
-          "trauma_level": "Severe",
-          "burden_rate": 9022.637959,
-          "yll": 507891.6,
-          "yld": 2694241.9,
-          "gtbi": 100.0
-        },
-        "2025": {
-          "trauma_level": "Severe",
-          "burden_rate": 8770.635004,
-          "yll": 463611.6,
-          "yld": 2693816.3,
-          "gtbi": 100.0
+          "gtbi": 99.984112,
+          "key_events": "Low-level militia/extremist incidents; Deportation protests; federal policy unrest; Ongoing gun violence events; Domestic terrorism incidents; Inter-l displacement minimal; border asylum seekers; Ongoing severe weather events"
         }
       }
     }

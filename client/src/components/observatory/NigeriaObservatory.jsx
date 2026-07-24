@@ -2,23 +2,29 @@ import { useMemo } from "react";
 import DataPanelCard from "./DataPanelCard.jsx";
 import { ChartView } from "./ChartsSection.jsx";
 import { INDICATOR_VARIABLES, getRealYears, getYearRecord, getNumericValue, pickAvailableVariable } from "../../utils/ObservatoryData";
+import { colorForCountry } from "../../utils/countryColors";
 
 const NIGERIA_CODE = "566";
 
-function trendChart(indicator, countryCode, countryName, years, countries, variableKey, chartType) {
+/** Nigeria's own trend over time - one colored line for Nigeria across its recorded years. */
+function trendChart(indicator, countryCode, countryName, years, countries, variableKey) {
+  const color = colorForCountry(countryCode);
   const data = years.map((year) => {
     const record = getYearRecord(countries, indicator, countryCode, year);
-    return { name: String(year), value: getNumericValue(record?.[variableKey]) ?? 0 };
+    return { year: String(year), [countryCode]: getNumericValue(record?.[variableKey]) ?? 0 };
   });
   const varMeta = INDICATOR_VARIABLES[indicator].find((v) => v.key === variableKey);
   return {
     title: `${countryName} — ${varMeta.label} over time`,
-    chartType,
+    chartType: "line",
     variableLabel: varMeta.label,
     data,
+    seriesKeys: [{ key: countryCode, name: countryName, color }],
+    xKey: "year",
   };
 }
 
+/** Nigeria vs. every other country with data - one bar per country, colored per country. */
 function comparisonChart(indicator, variableKey, countriesWithData, countries, highlightCode) {
   const varMeta = INDICATOR_VARIABLES[indicator].find((v) => v.key === variableKey);
   const data = countriesWithData.map(({ code, name, years }) => {
@@ -27,6 +33,7 @@ function comparisonChart(indicator, variableKey, countriesWithData, countries, h
     return {
       name: code === highlightCode ? `${name} ★` : name,
       value: getNumericValue(record?.[variableKey]) ?? 0,
+      color: colorForCountry(code),
     };
   });
   return {
@@ -34,6 +41,8 @@ function comparisonChart(indicator, variableKey, countriesWithData, countries, h
     chartType: "bar",
     variableLabel: varMeta.label,
     data,
+    seriesKeys: countriesWithData.map(({ code, name }) => ({ key: code, name, color: colorForCountry(code) })),
+    xKey: "name",
   };
 }
 
@@ -43,7 +52,7 @@ function comparisonChart(indicator, variableKey, countriesWithData, countries, h
  * static data panels, a trend chart per indicator, and a bar-chart
  * comparison of Nigeria against every other country with data recorded for
  * the same indicator. Purely illustrative - the interactive query tool
- * lives in the "Global Data Explorer" tab.
+ * lives under the "International Trauma Observatory" tab.
  */
 export default function NigeriaObservatory({ countries }) {
   const nigeriaRecord = countries?.[NIGERIA_CODE];
@@ -71,10 +80,10 @@ export default function NigeriaObservatory({ countries }) {
   }
 
   const ettiTrend = ettiYears.length > 0
-    ? trendChart("ETTI", NIGERIA_CODE, nigeriaName, ettiYears, countries, pickAvailableVariable("ETTI", countries, NIGERIA_CODE, ettiYears), "line")
+    ? trendChart("ETTI", NIGERIA_CODE, nigeriaName, ettiYears, countries, pickAvailableVariable("ETTI", countries, NIGERIA_CODE, ettiYears))
     : null;
   const gtbiTrend = gtbiYears.length > 0
-    ? trendChart("GTBI", NIGERIA_CODE, nigeriaName, gtbiYears, countries, pickAvailableVariable("GTBI", countries, NIGERIA_CODE, gtbiYears), "line")
+    ? trendChart("GTBI", NIGERIA_CODE, nigeriaName, gtbiYears, countries, pickAvailableVariable("GTBI", countries, NIGERIA_CODE, gtbiYears))
     : null;
   const ettiComparison = countriesWithEtti.length > 0
     ? comparisonChart("ETTI", pickAvailableVariable("ETTI", countries, NIGERIA_CODE, ettiYears), countriesWithEtti, countries, NIGERIA_CODE)
@@ -88,7 +97,7 @@ export default function NigeriaObservatory({ countries }) {
       <p className="obs-nigeria-intro">
         A worked example of the Observatory: every recorded ETTI and GTBI year for {nigeriaName}, its trend over
         time, and how it compares to every other country with data on file. The interactive version of this same
-        tool — for any country, any year, any variable — lives under the "Global Data Explorer" tab.
+        tool — for any country, any year, any variable — lives under the "International Trauma Observatory" tab.
       </p>
 
       <h3 className="obs-section-heading">ETTI data panels — {nigeriaName}</h3>
@@ -126,7 +135,8 @@ export default function NigeriaObservatory({ countries }) {
       <h3 className="obs-section-heading">Charts</h3>
       <p className="obs-nigeria-chart-note">
         Charts use each indicator's composite score where it's available; if the composite isn't populated yet for
-        the current data, the next most informative variable is shown instead.
+        the current data, the next most informative variable is shown instead. Each country keeps the same color
+        everywhere on this page.
       </p>
       <div className="obs-nigeria-charts">
         {ettiTrend && (

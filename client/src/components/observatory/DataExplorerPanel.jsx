@@ -3,12 +3,31 @@ import CountryPicker from "./CountryPicker.jsx";
 import ConfirmModal from "./ConfirmModal.jsx";
 import EditPanelModal from "./EditPanelModal.jsx";
 import DataPanelCard from "./DataPanelCard.jsx";
-import { getCountriesWithData, getYearRecord } from "../../utils/ObservatoryData";
+import { getCountriesWithData, getYearRecord, getRealYears, getNumericValue } from "../../utils/ObservatoryData";
+import { ETTI_INTERPRETATION_SHORT, GTBI_INTERPRETATION_SHORT } from "../../data/observatoryReferences.js";
+
+const INTERPRETATION_TEXT = { ETTI: ETTI_INTERPRETATION_SHORT, GTBI: GTBI_INTERPRETATION_SHORT };
+const TREND_VARIABLE = { ETTI: "etti", GTBI: "gtbi" };
+
+function InterpretationBlurb({ indicator }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div className="obs-interpretation-wrap">
+      <p className={`obs-interpretation${expanded ? "" : " obs-interpretation--clamped"}`}>
+        {INTERPRETATION_TEXT[indicator]}
+      </p>
+      <button type="button" className="obs-interpretation-toggle" onClick={() => setExpanded((e) => !e)}>
+        {expanded ? "Show less" : "Read more"}
+      </button>
+    </div>
+  );
+}
 
 export default function DataExplorerPanel({ indicator, countries, panels, onAddPanels, onTogglePanelSelect, onEditPanel, onRemovePanel, onSelectAll }) {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [removingId, setRemovingId] = useState(null);
+  const [showTrend, setShowTrend] = useState(false);
 
   const countriesWithData = getCountriesWithData(countries, indicator);
   const indicatorPanels = panels.filter((p) => p.indicator === indicator);
@@ -24,8 +43,21 @@ export default function DataExplorerPanel({ indicator, countries, panels, onAddP
     setPickerOpen(false);
   }
 
+  /** Full trend for a country across every real year on file for it (not
+   * just its currently-selected years) - the point of a sparkline is
+   * showing the whole trajectory, not just what happens to be selected. */
+  function trendForPanel(panel) {
+    const record = countries?.[panel.countryCode];
+    const years = getRealYears(record?.[indicator]);
+    if (years.length < 2) return null;
+    const variable = TREND_VARIABLE[indicator];
+    return years.map((year) => getNumericValue(getYearRecord(countries, indicator, panel.countryCode, year)?.[variable]));
+  }
+
   return (
     <div className="obs-explorer-panel">
+      <InterpretationBlurb indicator={indicator} />
+
       <div className="obs-explorer-toolbar">
         <button type="button" className="obs-btn obs-btn-primary" onClick={() => setPickerOpen(true)}>
           + Select Data
@@ -34,6 +66,12 @@ export default function DataExplorerPanel({ indicator, countries, panels, onAddP
           <button type="button" className="obs-btn" onClick={() => onSelectAll(indicator, !allSelected)}>
             {allSelected ? "Deselect all" : "Select all"}
           </button>
+        )}
+        {indicatorPanels.length > 0 && (
+          <label className="obs-split-toggle">
+            <input type="checkbox" checked={showTrend} onChange={(e) => setShowTrend(e.target.checked)} />
+            Show trend
+          </label>
         )}
         <span className="obs-explorer-count">{indicatorPanels.length} data panel{indicatorPanels.length === 1 ? "" : "s"}</span>
       </div>
@@ -53,6 +91,7 @@ export default function DataExplorerPanel({ indicator, countries, panels, onAddP
               onToggleSelect={() => onTogglePanelSelect(panel.id)}
               onEdit={() => setEditingId(panel.id)}
               onRemove={() => setRemovingId(panel.id)}
+              trendValues={showTrend ? trendForPanel(panel) : null}
             />
           ))}
         </div>
