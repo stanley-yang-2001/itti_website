@@ -1,49 +1,36 @@
-Add Observatory data query tool (ETTI/GTBI) and wire up real workbook data
+Add interactive About page, site branding, and fix broken Observatory imports
 
-Build out the previously-placeholder Observatory page into a full data
-query tool, and fix the GTBI extraction pipeline to match the real
-source workbook that was just added.
+About page (client/src/pages/About.jsx, styles/About.css)
+- Replace the ITTI placeholder with a full About page built from the
+  institute's About PDF: overview, parent-org relationship, mission,
+  trauma observatories, analytic frameworks (GTBI/ETTI/ITCS), advisory
+  services, who we serve, ethics, why it matters, partnership/funding,
+  and contact.
+- Sticky in-page nav with scrollspy (IntersectionObserver) that jumps to
+  and highlights the active section; collapses to a horizontal pill bar
+  on mobile.
+- Expandable accordion panels for the three analytic frameworks and the
+  "Who We Serve" categories.
+- Adds a dedicated "A Division of Outlets for Hope, Inc." section linking
+  to https://ofhusa.org/#itti.
 
-Frontend (client/):
-- New Observatory page with two top-level views: a static "Nigeria
-  Observatory" example and an interactive "Global Data Explorer"
-- Global Data Explorer: separate ETTI/GTBI tabs, each with a country+year
-  picker (country checkbox selects all years, individual year checkboxes
-  for partial selection), a Selected Data slideshow (select-all, click-
-  to-edit, remove with confirmation), and a shared chart builder that can
-  combine panels from both tabs into one bar/line chart
-- Charts support single-panel "all variables" view, cross-indicator
-  composite comparisons, and per-chart delete/download(SVG)/save-to-
-  profile actions, kept as a slideshow across multiple created charts
-- Nigeria Observatory: every recorded ETTI/GTBI year for Nigeria as
-  static panels, trend charts, and a comparison chart against every
-  other country with data on file
-- Add recharts dependency; add observatoryData.js helpers and saved-
-  chart API client functions
+Branding
+- Rename "About ITTI" -> "About" in the navbar, footer, and homepage
+  explore cards.
+- Add the ITTI seal logo to the top-left navbar (now a home link) and to
+  the footer; add a favicon.
+- Footer now credits "A division of Outlets for Hope, Inc." with a link.
+- Re-cut the supplied logo PNG with a proper circular alpha mask — the
+  original had a checkerboard baked into its pixels rather than real
+  transparency (public/itti-logo.png, public/favicon.png).
 
-Backend (server/):
-- Add SavedChart model + saved_charts relationship on User, so a chart
-  built in the query tool can be saved to a user's profile (stores only
-  the chart config, not raw figures, so it stays current automatically)
-- Add POST/GET /api/observatory/saved-charts and DELETE .../<id> routes
-  (login-required)
-- Add matching Alembic migration, chained after add_reports_table
+Typography
+- Switch headers and page titles (.display, h1/h2/h3, navbar-page-title,
+  country-name) to Times New Roman across the site; body copy stays on
+  Inter.
 
-Data pipeline (server/data_scripts/):
-- Rewrite gtbi_extract.py: the newly-added GTBI_DataPanel workbook uses a
-  single flat per-(country, year, exposure-type) sheet, not the four
-  pre-aggregated sheets the old script expected. Aggregate YLD/YLL/
-  severity terms per country-year per the workbook's own formulas
-  (burden_rate, then gtbi = 100*(1 - e^(-burden_rate/K)), K=100,
-  reverse-derived and verified against the workbook's own values)
-- Add Syria/Palestine/Iran name aliases so pycountry resolves cleanly
-- Regenerate etti_country_data.json, gtbi_country_data.json, and the
-  combined country_data.json from the real source spreadsheets (15
-  countries with real ETTI/GTBI data, incl. full Nigeria history)
-- Known gap carried over from the source workbook itself: EVS, ITS, and
-  the ETTI composite are "Data Pending" for every country (only TIE/PDL
-  are populated); frontend now auto-falls-back to the first populated
-  variable rather than defaulting to an all-pending composite
-
-Merged in origin/database's new commit (footer, home/contact updates,
-Reports feature + backend) as the base for this work.
+Fixes (pre-existing, discovered while verifying the build)
+- Correct Observatory.jsx gadgets, they are now placed in the correct directory
+- Add missing recharts dependency required by the Observatory page.
+- Fix case-sensitive import mismatches (observatoryData -> ObservatoryData)
+  that only broke on case-sensitive filesystems.

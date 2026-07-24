@@ -21,8 +21,14 @@
     overflow-x:hidden;
     overflow-y:auto;
   }
-  .display{font-family:'Space Grotesk',sans-serif;}
+  .display{font-family:'Times New Roman', Times, serif;}
   .mono{font-family:'JetBrains Mono',monospace;}
+
+  /* Headers and page titles across the site use Times New Roman; body copy
+     stays on Inter. Anything with the .display class picks this up too. */
+  h1, h2, h3{
+    font-family:'Times New Roman', Times, serif;
+  }
 
   #app{
     position:relative;
@@ -200,7 +206,7 @@
     margin:0 0 6px 0;
   }
   .country-name{
-    font-family:'Space Grotesk',sans-serif;
+    font-family:'Times New Roman', Times, serif;
     font-size:28px;
     font-weight:600;
     margin:0 0 20px 0;
@@ -353,6 +359,13 @@
     display:flex;
     align-items:center;
     gap:10px;
+    text-decoration:none;
+  }
+  .navbar-logo{
+    width:34px;
+    height:34px;
+    object-fit:contain;
+    flex-shrink:0;
   }
   .navbar-title{
     font-size:19px;
@@ -362,7 +375,7 @@
   .navbar-page-title{
     width:100%;
     padding:10px 4px 0 4px;
-    font-family:'Space Grotesk',sans-serif;
+    font-family:'Times New Roman', Times, serif;
     font-size:15px;
     font-weight:600;
     color:var(--text-hi);
@@ -611,6 +624,12 @@
     align-items:center;
     gap:10px;
   }
+  .site-footer-logo{
+    width:28px;
+    height:28px;
+    object-fit:contain;
+    flex-shrink:0;
+  }
   .site-footer-title{
     font-size:16px;
     font-weight:600;
@@ -641,6 +660,16 @@
     font-size:12px;
     color:var(--text-low);
   }
+  .site-footer-parent{
+    margin:6px 0 0 0;
+    font-size:12px;
+    color:var(--text-low);
+  }
+  .site-footer-parent a{
+    color:var(--text-mid);
+    transition:color .15s ease;
+  }
+  .site-footer-parent a:hover{color:var(--cyan);}
 
   @media (max-width: 640px){
     .site-footer{padding:28px 20px 22px;}

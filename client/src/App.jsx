@@ -4,7 +4,7 @@ import NavBar from './components/NavBar.jsx';
 import Footer from './components/Footer.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import Home from './pages/Home.jsx';
-import AboutItti from './pages/AboutItti.jsx';
+import About from './pages/About.jsx';
 import Observatory from './pages/Observatory.jsx';
 import Reports from './pages/Reports.jsx';
 import CountryProfiles from './pages/CountryProfiles.jsx';
@@ -24,7 +24,7 @@ export default function App() {
       <NavBar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/about" element={<AboutItti />} />
+        <Route path="/about" element={<About />} />
         <Route path="/observatory" element={<Observatory />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/country-profiles" element={<CountryProfiles />} />

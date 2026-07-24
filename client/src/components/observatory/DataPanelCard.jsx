@@ -1,4 +1,4 @@
-import { INDICATOR_VARIABLES, getValueOrNull, getNumericValue } from "../../utils/observatoryData";
+import { INDICATOR_VARIABLES, getValueOrNull, getNumericValue } from "../../utils/ObservatoryData";
 
 export default function DataPanelCard({ panel, yearRecord, selected, onToggleSelect, onEdit, onRemove, readOnly }) {
   const variables = INDICATOR_VARIABLES[panel.indicator] || [];

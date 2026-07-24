@@ -3,7 +3,7 @@ import {
   ResponsiveContainer, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 } from "recharts";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { INDICATOR_VARIABLES, getYearRecord, getNumericValue } from "../../utils/observatoryData";
+import { INDICATOR_VARIABLES, getYearRecord, getNumericValue } from "../../utils/ObservatoryData";
 import { saveObservatoryChart } from "../../api.js";
 
 let chartIdSeq = 1;

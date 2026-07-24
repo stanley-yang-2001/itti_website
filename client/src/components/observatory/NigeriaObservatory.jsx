@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import DataPanelCard from "./DataPanelCard.jsx";
 import { ChartView } from "./ChartsSection.jsx";
-import { INDICATOR_VARIABLES, getRealYears, getYearRecord, getNumericValue, pickAvailableVariable } from "../../utils/observatoryData";
+import { INDICATOR_VARIABLES, getRealYears, getYearRecord, getNumericValue, pickAvailableVariable } from "../../utils/ObservatoryData";
 
 const NIGERIA_CODE = "566";
 

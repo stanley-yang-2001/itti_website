@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
 const NAV_LINKS = [
   { to: '/', label: 'Home', end: true },
-  { to: '/about', label: 'About ITTI' },
+  { to: '/about', label: 'About' },
   { to: '/observatory', label: 'Observatory' },
   { to: '/reports', label: 'Reports' },
   { to: '/country-profiles', label: 'Country Profiles' },
@@ -66,10 +66,10 @@ export default function NavBar() {
   return (
     <nav className="navbar" ref={navRef}>
       <div className="navbar-top">
-        <div className="navbar-brand">
-          <span className="mark"></span>
+        <Link to="/" className="navbar-brand">
+          <img src="/itti-logo.png" alt="ITTI seal" className="navbar-logo" />
           <span className="navbar-title display">ITTI</span>
-        </div>
+        </Link>
 
         <div className="navbar-auth">
           {isAuthenticated ? (

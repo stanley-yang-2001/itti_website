@@ -3,7 +3,7 @@ import CountryPicker from "./CountryPicker.jsx";
 import ConfirmModal from "./ConfirmModal.jsx";
 import EditPanelModal from "./EditPanelModal.jsx";
 import DataPanelCard from "./DataPanelCard.jsx";
-import { getCountriesWithData, getYearRecord } from "../../utils/observatoryData";
+import { getCountriesWithData, getYearRecord } from "../../utils/ObservatoryData";
 
 export default function DataExplorerPanel({ indicator, countries, panels, onAddPanels, onTogglePanelSelect, onEditPanel, onRemovePanel, onSelectAll }) {
   const [pickerOpen, setPickerOpen] = useState(false);

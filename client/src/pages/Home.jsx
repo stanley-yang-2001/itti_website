@@ -19,7 +19,7 @@ const EXPLORE_CARDS = [
   },
   {
     to: '/about',
-    label: 'About ITTI',
+    label: 'About',
     description: 'Our mission, leadership, and how the organization is governed.'
   },
   {
