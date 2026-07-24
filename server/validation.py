@@ -40,6 +40,8 @@ EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 MAX_TITLE_LENGTH = 200
 MAX_DESCRIPTION_LENGTH = 2000
+MAX_RESUBMISSION_NOTE_LENGTH = 2000
+MAX_REVIEW_COMMENT_LENGTH = 2000
 MIN_PASSWORD_LENGTH = 8
 MAX_PASSWORD_LENGTH = 128
 
@@ -82,11 +84,36 @@ def check_report_description(value):
     return None
 
 
+def check_resubmission_note(value):
+    """Optional field - blank/omitted is fine, but length-capped if provided."""
+    if value is None or not value.strip():
+        return None
+    if len(value) > MAX_RESUBMISSION_NOTE_LENGTH:
+        return f"Resubmission note must be under {MAX_RESUBMISSION_NOTE_LENGTH} characters."
+    return None
+
+
+def check_review_comment(value):
+    """
+    Only validates LENGTH, not presence - "required for reject" is
+    enforced in models/report_review.py's record_review(), since that
+    depends on the decision (approve vs reject), which this
+    single-value check has no access to.
+    """
+    if value is None or not value.strip():
+        return None
+    if len(value) > MAX_REVIEW_COMMENT_LENGTH:
+        return f"Comment must be under {MAX_REVIEW_COMMENT_LENGTH} characters."
+    return None
+
+
 CHECKS = {
     "email": check_email,
     "password": check_password,
     "report_title": check_report_title,
     "report_description": check_report_description,
+    "resubmission_note": check_resubmission_note,
+    "review_comment": check_review_comment,
 }
 
 

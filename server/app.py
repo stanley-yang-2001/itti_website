@@ -46,16 +46,18 @@ from decorators import get_current_user, login_required, roles_required
 from models.database import Base, DATABASE_URL, engine
 from models.user import (
     create_user, get_user, get_user_by_google_sub, get_user_by_email,
-    update_user, delete_user, ROLE_ADMIN,
+    update_user, delete_user, ROLE_ADMIN, ROLE_PUBLISHER,
 )
 from models.document import (
     create_document, get_documents_by_user, get_document, delete_document,
     hard_delete_document,
 )
 from models.report import (
-    create_report, get_report, get_all_reports, get_reports_by_uploader,
-    delete_report, hard_delete_report,
+    create_report, get_report, get_published_reports, get_pending_reports,
+    get_changes_requested_reports, get_reports_by_uploader,
+    delete_report, hard_delete_report, resubmit_report,
 )
+from models.report_review import record_review, get_reviews_for_report, ReviewError
 from models.user_event import create_user_event, get_events_by_user, CRUDAction
 from models.password_reset_token import create_reset_token, get_valid_token, mark_token_used
 from models.saved_chart import (
@@ -579,44 +581,147 @@ def remove_document_permanently(document_id):
 
 # ---------------------------------------------------------------------------
 # Reports (public content: title, description, a PDF/DOCX, an optional
-# cover image). Read routes are open to everyone; only publishers/admins
-# can upload or remove.
+# cover image) with a peer-review workflow gating what's public.
+#
+#   pending_review --(3 distinct approvals, not from the uploader)--> published
+#   pending_review --(any single reject, with a required comment)--> changes_requested
+#   changes_requested --(uploader resubmits)--> pending_review, version += 1
+#
+# Only PUBLISHED reports are visible to the general public. pending_review
+# and changes_requested reports are only visible to their own uploader or
+# to a publisher/admin (the reviewer pool) - see _can_view_report below.
 # ---------------------------------------------------------------------------
+
+def _can_view_report(report, user):
+    """
+    True if `user` (may be None, i.e. a guest) is allowed to see this
+    report at all. Published+visible reports are public. Anything else
+    (pending_review, changes_requested, or soft-deleted) is only
+    visible to the report's own uploader or to a publisher/admin -
+    i.e. the same pool of people who can act on it.
+    """
+    if report.status != 1:
+        return user is not None and (user.role == ROLE_ADMIN)
+    if report.review_status == "published":
+        return True
+    if user is None:
+        return False
+    return user.id == report.uploaded_by or user.role in (ROLE_PUBLISHER, ROLE_ADMIN)
+
 
 @app.get("/api/reports")
 def list_reports():
-    """All visible reports, newest first. Public - no login required."""
-    reports = get_all_reports()
+    """All PUBLISHED, visible reports, newest first. Public - no login required."""
+    reports = get_published_reports()
+    return jsonify([r.to_public_dict() for r in reports])
+
+
+@app.get("/api/reports/pending")
+@roles_required("publisher", "admin")
+def list_pending_reports_route():
+    """Reports awaiting review, oldest first. Peer Review page - publisher/admin only."""
+    reports = get_pending_reports()
+    return jsonify([r.to_public_dict() for r in reports])
+
+
+@app.get("/api/reports/changes-requested")
+@roles_required("publisher", "admin")
+def list_changes_requested_reports_route():
+    """
+    Reports sent back to their uploader for changes, most recently
+    updated first. Shown in a separate section of the Peer Review page
+    per product decision - visible to reviewers, but not part of
+    anyone's active review queue until the uploader resubmits.
+    """
+    reports = get_changes_requested_reports()
     return jsonify([r.to_public_dict() for r in reports])
 
 
 @app.get("/api/reports/<int:report_id>")
 def get_report_route(report_id):
-    """A single report's metadata. Public - no login required."""
+    """A single report's metadata. Public only once published; otherwise
+    restricted to the uploader or a publisher/admin - see _can_view_report."""
     report = get_report(report_id)
-    if report is None or report.status == 0:
+    if report is None:
+        abort(404, description="Report not found")
+    user = get_current_user()
+    if not _can_view_report(report, user):
         abort(404, description="Report not found")
     return jsonify(report.to_public_dict())
 
 
 @app.get("/api/reports/<int:report_id>/file")
 def download_report_file(report_id):
-    """Streams/redirects to the report's actual PDF/DOCX. Public."""
+    """Streams/redirects to the report's actual PDF/DOCX. Same visibility rule as get_report_route."""
     report = get_report(report_id)
-    if report is None or report.status == 0:
+    if report is None:
+        abort(404, description="Report not found")
+    user = get_current_user()
+    if not _can_view_report(report, user):
         abort(404, description="Report not found")
     return report_storage.get_file_response(report.file_path, download_name=report.original_filename)
 
 
 @app.get("/api/reports/<int:report_id>/image")
 def get_report_image(report_id):
-    """Streams/redirects to the report's cover image, if one was provided. Public."""
+    """Streams/redirects to the report's cover image, if one was provided. Same visibility rule as get_report_route."""
     report = get_report(report_id)
-    if report is None or report.status == 0 or report.image_path is None:
+    if report is None or report.image_path is None:
+        abort(404, description="No image for this report")
+    user = get_current_user()
+    if not _can_view_report(report, user):
         abort(404, description="No image for this report")
     return report_storage.get_file_response(
         report.image_path, download_name=f"report-{report.id}-cover", mimetype=report.image_mime_type
     )
+
+
+def _save_report_upload(user_id, file, image):
+    """
+    Shared file-handling logic for both a first upload and a
+    resubmission: validates extensions/sizes, saves via report_storage,
+    and cleans up the report file if the image is rejected afterward.
+    Returns (file_path, file_type, file_size_bytes, original_filename,
+    image_path, image_mime_type) - image fields are None if no image
+    was provided.
+    """
+    if file is None or file.filename == "":
+        abort(400, description="No file selected")
+
+    ext = os.path.splitext(file.filename)[1].lower()
+    if ext not in ALLOWED_REPORT_FILE_EXTENSIONS:
+        abort(400, description="Reports must be a PDF or Word document (.pdf, .doc, .docx)")
+
+    file.stream.seek(0, os.SEEK_END)
+    size = file.stream.tell()
+    file.stream.seek(0)
+    if size > MAX_UPLOAD_BYTES:
+        abort(400, description=f"File exceeds the {MAX_UPLOAD_BYTES // (1024 * 1024)}MB limit")
+    if size == 0:
+        abort(400, description="File is empty")
+
+    file_path, file_size_bytes = report_storage.save(user_id, file.filename, file)
+    file_type = ext.lstrip(".")
+
+    image_path = None
+    image_mime_type = None
+    if image is not None and image.filename != "":
+        image_ext = os.path.splitext(image.filename)[1].lower()
+        if image_ext not in ALLOWED_REPORT_IMAGE_EXTENSIONS:
+            report_storage.delete(file_path)
+            abort(400, description="Cover image must be a PNG, JPG, or WEBP file")
+
+        image.stream.seek(0, os.SEEK_END)
+        image_size = image.stream.tell()
+        image.stream.seek(0)
+        if image_size > MAX_REPORT_IMAGE_BYTES:
+            report_storage.delete(file_path)
+            abort(400, description=f"Cover image exceeds the {MAX_REPORT_IMAGE_BYTES // (1024 * 1024)}MB limit")
+
+        image_path, _ = report_storage.save(user_id, image.filename, image)
+        image_mime_type = image.mimetype
+
+    return file_path, file_type, file_size_bytes, file.filename, image_path, image_mime_type
 
 
 @app.post("/api/reports")
@@ -629,6 +734,9 @@ def upload_report():
       - "description": string, required
       - "file": the report itself, .pdf/.doc/.docx, required
       - "image": an optional cover image (.png/.jpg/.jpeg/.webp)
+
+    Lands as review_status=pending_review - it appears on the Peer
+    Review page, not the public Reports page, until it clears review.
     """
     user = get_current_user()
 
@@ -644,45 +752,10 @@ def upload_report():
 
     if "file" not in request.files:
         abort(400, description="No file part in request")
-    file = request.files["file"]
-    if file.filename == "":
-        abort(400, description="No file selected")
 
-    ext = os.path.splitext(file.filename)[1].lower()
-    if ext not in ALLOWED_REPORT_FILE_EXTENSIONS:
-        abort(400, description="Reports must be a PDF or Word document (.pdf, .doc, .docx)")
-
-    file.stream.seek(0, os.SEEK_END)
-    size = file.stream.tell()
-    file.stream.seek(0)
-    if size > MAX_UPLOAD_BYTES:
-        abort(400, description=f"File exceeds the {MAX_UPLOAD_BYTES // (1024 * 1024)}MB limit")
-    if size == 0:
-        abort(400, description="File is empty")
-
-    file_path, file_size_bytes = report_storage.save(user.id, file.filename, file)
-    file_type = ext.lstrip(".")
-
-    image_path = None
-    image_mime_type = None
-    image = request.files.get("image")
-    if image is not None and image.filename != "":
-        image_ext = os.path.splitext(image.filename)[1].lower()
-        if image_ext not in ALLOWED_REPORT_IMAGE_EXTENSIONS:
-            # The report file itself already saved successfully above; clean it
-            # up rather than leaving an orphaned file if the image is rejected.
-            report_storage.delete(file_path)
-            abort(400, description="Cover image must be a PNG, JPG, or WEBP file")
-
-        image.stream.seek(0, os.SEEK_END)
-        image_size = image.stream.tell()
-        image.stream.seek(0)
-        if image_size > MAX_REPORT_IMAGE_BYTES:
-            report_storage.delete(file_path)
-            abort(400, description=f"Cover image exceeds the {MAX_REPORT_IMAGE_BYTES // (1024 * 1024)}MB limit")
-
-        image_path, _ = report_storage.save(user.id, image.filename, image)
-        image_mime_type = image.mimetype
+    file_path, file_type, file_size_bytes, original_filename, image_path, image_mime_type = (
+        _save_report_upload(user.id, request.files["file"], request.files.get("image"))
+    )
 
     report = create_report(
         uploaded_by=user.id,
@@ -690,7 +763,7 @@ def upload_report():
         description=description,
         file_path=file_path,
         file_type=file_type,
-        original_filename=file.filename,
+        original_filename=original_filename,
         file_size_bytes=file_size_bytes,
         image_path=image_path,
         image_mime_type=image_mime_type,
@@ -699,6 +772,119 @@ def upload_report():
     logger.info("report uploaded id=%s by user_id=%s", report.id, user.id)
 
     return jsonify(report.to_public_dict()), 201
+
+
+@app.post("/api/reports/<int:report_id>/resubmit")
+@roles_required("publisher", "admin")
+@limiter.limit("20 per hour")
+def resubmit_report_route(report_id):
+    """
+    Multipart form fields (title/description/resubmission_note
+    optional; file required - a resubmission always brings a file,
+    even if unchanged):
+      - "title", "description": string
+      - "resubmission_note": string, optional note to reviewers about
+        what changed, addressing their rejection comment
+      - "file": a new .pdf/.doc/.docx, required
+      - "image": an optional new cover image
+
+    Only usable by the report's own uploader, and only while it's in
+    changes_requested. Bumps version and resets to pending_review.
+    """
+    user = get_current_user()
+    report = get_report(report_id)
+    if report is None or report.uploaded_by != user.id:
+        abort(404, description="Report not found")
+    if report.review_status != "changes_requested":
+        abort(400, description="This report isn't awaiting a resubmission.")
+
+    title = request.form.get("title")
+    description = request.form.get("description")
+    resubmission_note = request.form.get("resubmission_note")
+
+    if title is not None:
+        error = validation.run_check("report_title", title.strip())
+        if error:
+            abort(400, description=error)
+        title = title.strip()
+    if description is not None:
+        error = validation.run_check("report_description", description.strip())
+        if error:
+            abort(400, description=error)
+        description = description.strip()
+    if resubmission_note is not None:
+        error = validation.run_check("resubmission_note", resubmission_note.strip())
+        if error:
+            abort(400, description=error)
+        resubmission_note = resubmission_note.strip() or None
+
+    if "file" not in request.files:
+        abort(400, description="No file part in request")
+
+    file_path, file_type, file_size_bytes, original_filename, image_path, image_mime_type = (
+        _save_report_upload(user.id, request.files["file"], request.files.get("image"))
+    )
+
+    updated = resubmit_report(
+        report_id,
+        title=title,
+        description=description,
+        resubmission_note=resubmission_note,
+        file_path=file_path,
+        file_type=file_type,
+        original_filename=original_filename,
+        file_size_bytes=file_size_bytes,
+        image_path=image_path,
+        image_mime_type=image_mime_type,
+    )
+    logger.info("report resubmitted id=%s by user_id=%s new_version=%s", report_id, user.id, updated.version)
+
+    return jsonify(updated.to_public_dict())
+
+
+@app.post("/api/reports/<int:report_id>/review")
+@roles_required("publisher", "admin")
+@limiter.limit("60 per hour")
+def review_report_route(report_id):
+    """
+    Body: { "decision": "approve" | "reject", "comment": "..." }
+    comment is required when decision is "reject", optional otherwise.
+    All the actual rules (can't review your own report, report must be
+    pending_review, 3rd approval auto-publishes) are enforced in
+    models/report_review.record_review() - this route just translates
+    its ReviewError into a 400.
+    """
+    user = get_current_user()
+    body = request.get_json(silent=True) or {}
+    decision = (body.get("decision") or "").strip().lower()
+    comment = (body.get("comment") or "").strip() or None
+
+    if comment is not None:
+        error = validation.run_check("review_comment", comment)
+        if error:
+            abort(400, description=error)
+
+    try:
+        updated_report = record_review(report_id, user.id, decision, comment)
+    except ReviewError as e:
+        abort(400, description=str(e))
+
+    create_user_event(user_id=user.id, document_id=None, action=CRUDAction.UPDATE)
+    logger.info("report review id=%s reviewer_id=%s decision=%s -> review_status=%s",
+                report_id, user.id, decision, updated_report.review_status)
+
+    return jsonify(updated_report.to_public_dict())
+
+
+@app.get("/api/reports/<int:report_id>/reviews")
+@roles_required("publisher", "admin")
+def list_report_reviews_route(report_id):
+    """All review decisions for a report (every version, newest first). Publisher/admin only."""
+    report = get_report(report_id)
+    if report is None:
+        abort(404, description="Report not found")
+    reviews = get_reviews_for_report(report_id)
+    return jsonify([r.to_public_dict() for r in reviews])
 
 
 @app.delete("/api/reports/<int:report_id>")

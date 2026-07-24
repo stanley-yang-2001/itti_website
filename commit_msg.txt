@@ -1,57 +1,85 @@
-Reconcile Observatory with GTBI v2, real ETTI sub-variables, and a
-diversified data-presentation layer
+feat: add peer-review workflow to Reports
 
-The last import-path fix (case-sensitive ObservatoryData rename) didn't
-re-run the extraction pipeline, so etti_extract.py was still parsing
-ETTI_final_v1.xlsx with the old (year-keyed) logic instead of the
-workbook's actual election-based EVS/TIE/PDL/ITS/Final-ETTI sheet
-structure - producing silently wrong output (e.g. a nonexistent
-"Congo 2026" row, EVS/ITS/composite ETTI stuck on "Data Pending" for
-every country). This fixes that at the source and builds the previously
-agreed-upon diversification work on top of the corrected data.
+Reports no longer publish directly. Every upload now starts as
+pending_review and must clear peer review before it appears on the
+public Reports page:
 
-Data pipeline:
-- Rewrite etti_extract.py for the real workbook shape: joins the EVS/
-  TIE/PDL/ITS detail sheets to Final ETTI by (country, election), derives
-  year from the election label, and now exposes each domain's raw
-  sub-variables (deaths, kidnappings, attacks, political intimidation,
-  threats, harassment, arrests, etc.) alongside the normalized composite
-- Swap GTBI_final_v1.xlsx -> v2 (country coverage changed substantially:
-  drops China/India/Israel/Pakistan/Palestine/Somalia/Sudan/Syria/Ukraine/
-  Yemen, adds Brazil/Congo/Ghana/Indonesia/Kenya/Mexico/Sri Lanka/
-  Thailand/Tunisia - 14 countries, 13 now overlapping with ETTI's 15)
-- Extend gtbi_extract.py to capture the "Key Event" column, previously
-  discarded during per-country-year aggregation, into a new key_events
-  field
-- Regenerate etti_country_data.json/gtbi_country_data.json/
-  country_data.json from the corrected pipeline
+  pending_review --(3 distinct approvals, not from the uploader)--> published
+  pending_review --(any single reject, with a required comment)--> changes_requested
+  changes_requested --(uploader resubmits)--> pending_review, version += 1
 
-Frontend - diversified data presentation:
-- Replace the standalone chart section with a Chart/Map/Table/Stats/
-  Timeline tab bar (AnalysisViews.jsx) so new visualizations slot into
-  existing tabs instead of stacking new sections down the page
-- Map: flat choropleth reusing the existing world-110m.json/
-  topojson-client, own year+variable pickers
-- Table: sortable columns + CSV export
-- Stats: mean/median/min/max + ranked list (2+ panels selected)
-- Timeline: one track per country/indicator on a shared axis, surfacing
-  GTBI's Key Events / ETTI's election label via hover tooltips
-- Chart: scatter plot and an ETTI domain stacked-bar breakdown folded
-  into the existing chart-type dropdown; "split by country" small-
-  multiples toggle for bar/line
-- Data panel cards: opt-in "Show trend" sparkline (full per-country
-  history, not just selected years) and a collapsible interpretation
-  blurb (2-line clamp + "Read more") per indicator section
-- Add Docs page (/docs, linked from footer): methodology, corrected
-  variable definitions, and full source citations for ETTI and GTBI
+Rejection doesn't delete the report - it sends it back to the
+uploader with the reviewer's comment. The uploader resubmits a new
+file/description (plus an optional note addressing the feedback),
+which bumps the report's version and resets it to pending_review.
+Approvals are scoped to that version, so a resubmission genuinely
+starts review over: prior approvals from before the rejection don't
+carry forward and count toward the new 3.
 
-Housekeeping:
-- Rename utils/observatoryData.js -> ObservatoryData.js to match the
-  established case-sensitive-safe convention; fix every import
-- Confirmed compatible with recharts@3.10.0 (built and verified against
-  the actual installed version, not the 2.x this was originally written
-  against)
+New routes (all in server/app.py):
+  GET  /api/reports/pending              - publisher/admin only
+  GET  /api/reports/changes-requested     - publisher/admin only
+  POST /api/reports/<id>/resubmit         - uploader only
+  POST /api/reports/<id>/review           - publisher/admin only
+  GET  /api/reports/<id>/reviews          - publisher/admin only
 
-Verified: npm run build succeeds against recharts@3.10.0; backend
-imports cleanly; /api/countries returns correct ETTI sub-variables and
-GTBI key_events; /api/world-data (used by the new Map view) returns 200.
+GET /api/reports (public) now returns only published reports.
+GET /api/reports/<id>, .../file, and .../image now restrict
+non-published reports to their uploader or a publisher/admin, rather
+than any visitor - a pending or rejected submission is not public
+just because you have its URL.
+
+New models:
+  - report_review.py: ReportReview (one row per report+reviewer+
+    version) and record_review(), the single entry point enforcing
+    every rule (no self-review, comment required on reject, 3rd
+    distinct approval auto-publishes)
+  - report.py: adds review_status, version, resubmission_note,
+    updated_at; resubmit_report() applies a resubmission
+
+Fixes a real bug caught while testing: Report.to_public_dict() used
+to read the uploader relationship directly, which raises
+DetachedInstanceError once the session that loaded the report has
+closed (e.g. immediately after create_report() returns). Author name
+is now resolved through its own short-lived query
+(get_author_name()), so to_public_dict() is safe to call regardless
+of session state - the same pattern is used for ReportReview's
+reviewer_name.
+
+validation.py: adds check_resubmission_note and check_review_comment
+(length-capped; "required for reject" is enforced in
+report_review.py itself, since that depends on the decision, not
+just the value).
+
+models/__init__.py: registers report and report_review so their
+relationships resolve correctly (matches this file's existing
+pattern for every other model).
+
+migrations/3dd530f4f775: adds resubmission_note/review_status/
+version/updated_at to reports, plus the new report_reviews table.
+Chained after 1b00e3b253a1 (add_saved_charts) rather than directly
+after c37ebaee3d80 (add_reports_table): both migrations initially
+branched from c37ebaee3d80, but 1b00e3b253a1 was already pushed
+first, so this one re-parents onto it to keep migration history
+linear instead of requiring an Alembic merge migration. Existing
+report rows get review_status='published' via server_default, so
+reports already live before this migration stay visible rather than
+retroactively requiring review.
+
+Verified end-to-end against a real SQLite database: upload stays
+non-public through 0/1/2 approvals and auto-publishes on the 3rd;
+self-review is blocked; reject without a comment is rejected;
+rejected reports move to a separate changes-requested list and can't
+be reviewed further until resubmitted; resubmission correctly resets
+the approval count so a prior version's approvals don't count toward
+the new one.
+
+Not yet built: the frontend Peer Review page and the updated Reports
+page UI (author/date display, approve/reject controls). This commit
+is backend-only.
+
+Files changed:
+  server/app.py, server/validation.py,
+  server/models/report.py, server/models/report_review.py (new),
+  server/models/__init__.py,
+  server/migrations/versions/3dd530f4f775_add_peer_review_workflow.py (new)
