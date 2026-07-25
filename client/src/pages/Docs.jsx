@@ -1,8 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   GTBI_SOURCES, GTBI_FORMULA_NOTES, GTBI_KNOWN_GAP, GTBI_INTERPRETATION_SHORT, GTBI_PANEL_SUMMARY,
   ETTI_METHODOLOGY_NOTES, ETTI_KNOWN_GAP, ETTI_INTERPRETATION_SHORT, ETTI_PANEL_SUMMARY,
   UNDERLYING_EVENT_SOURCE,
+  NTO_MAP_AUTHOR, NTO_MAP_PUBLISHED_DATE, NTO_MAP_CAPTION, NTO_MAP_REFERENCES, NTO_MAP_FORMATTING_NOTES,
+  USER_GUIDE_INTRO, USER_GUIDE_STEPS,
 } from '../data/observatoryReferences.js';
 import '../styles/About.css';
 import '../styles/Docs.css';
@@ -16,16 +19,19 @@ function getScroller() {
 }
 
 const SECTIONS = [
+  { id: 'user-guide', label: 'User Guide' },
   { id: 'overview', label: 'Overview' },
   { id: 'etti', label: 'ETTI' },
   { id: 'gtbi', label: 'GTBI' },
   { id: 'gtbi-sources', label: 'GTBI Sources' },
+  { id: 'nto-map', label: 'NTO Map' },
   { id: 'conventions', label: 'Data Conventions' }
 ];
 
 export default function Docs() {
   const [activeSection, setActiveSection] = useState(SECTIONS[0].id);
   const sectionRefs = useRef({});
+  const { hash } = useLocation();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -70,6 +76,14 @@ export default function Docs() {
     scroller.scrollTo({ top, behavior: 'smooth' });
   }
 
+  // Supports deep links like /docs#user-guide or /docs#nto-map (used by
+  // the Observatory page) - refs are populated synchronously during
+  // render, so they're ready by the time this effect runs on mount.
+  useEffect(() => {
+    if (!hash) return;
+    scrollToSection(hash.slice(1));
+  }, [hash]);
+
   return (
     <div className="about-page">
       <section className="about-hero">
@@ -98,6 +112,19 @@ export default function Docs() {
         </nav>
 
         <div className="about-content">
+          <section id="user-guide" ref={registerSection('user-guide')} className="about-section">
+            <h2 className="about-section-title display">How to Use the Observatory</h2>
+            <div className="docs-interpretation">{USER_GUIDE_INTRO}</div>
+            <div className="docs-cards">
+              {USER_GUIDE_STEPS.map((step) => (
+                <div key={step.title} className="docs-card">
+                  <h3>{step.title}</h3>
+                  <p>{step.body}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
           <section id="overview" ref={registerSection('overview')} className="about-section">
             <h2 className="about-section-title display">Shared Data Source</h2>
             <p>{UNDERLYING_EVENT_SOURCE}</p>
@@ -156,6 +183,33 @@ export default function Docs() {
                 </tbody>
               </table>
             </div>
+          </section>
+
+          <section id="nto-map" ref={registerSection('nto-map')} className="about-section">
+            <h2 className="about-section-title display">NTO — Nigeria Geographic Stressor Severity Map</h2>
+            <div className="docs-interpretation">{NTO_MAP_CAPTION}</div>
+            <p>Map by {NTO_MAP_AUTHOR}. Published {NTO_MAP_PUBLISHED_DATE}.</p>
+
+            <h3 className="about-subsection-title display">References</h3>
+            <div className="docs-sources-table-wrap">
+              <table className="docs-sources-table">
+                <thead>
+                  <tr>
+                    <th>Source</th>
+                    <th>Citation</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {NTO_MAP_REFERENCES.map((r) => (
+                    <tr key={r.id}>
+                      <td className="docs-source-id">{r.id}</td>
+                      <td>{r.citation}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="docs-known-gap">{NTO_MAP_FORMATTING_NOTES}</div>
           </section>
 
           <section id="conventions" ref={registerSection('conventions')} className="about-section">

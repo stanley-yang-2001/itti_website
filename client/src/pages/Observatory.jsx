@@ -140,7 +140,8 @@ export default function Observatory() {
       )}
 
       <p className="obs-references-link">
-        Data sources and methodology references: <Link to="/docs">Documentation &amp; References</Link>
+        New here? <Link to="/docs#user-guide">Read the user guide</Link> for how to use the query tool, build
+        charts, and read the Nigeria tab. Data sources and methodology references: <Link to="/docs">Documentation &amp; References</Link>
       </p>
     </div>
   );

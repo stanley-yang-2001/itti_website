@@ -202,3 +202,123 @@ export const UNDERLYING_EVENT_SOURCE =
   "Location & Event Data Project (ACLED), supplemented for GTBI by UCDP, GBD 2019, WHO GHE, UNHCR, Our World in " +
   "Data, the Global Terrorism Index, PRIO, CFR's Global Conflict Tracker, and OCHA (see the full GTBI source table " +
   "below).";
+
+// ---------------------------------------------------------------------
+// NTO - Nigeria Trauma Observatory geographic stressor severity map
+// ---------------------------------------------------------------------
+
+export const NTO_MAP_AUTHOR = "Blessing Alims";
+export const NTO_MAP_PUBLISHED_DATE = "July 24, 2026";
+
+// Short, in-text form for linking from the Nigeria tab itself.
+export const NTO_MAP_CITATION_SHORT = "Nigeria Trauma Observatory (2026)";
+
+export const NTO_MAP_CAPTION =
+  "Severity is scored 0-10 per geopolitical zone for 2020-2026, alongside each zone's dominant stressor categories: " +
+  "banditry, mass kidnappings, and school raids in the North West; the Boko Haram/ISWAP insurgency and mass " +
+  "displacement in the North East; farmer-herder conflict and sectarian violence in the North Central; separatist " +
+  "violence and sit-at-home enforcement in the South East; oil pollution and environmental degradation in the " +
+  "South South; and cultism, gang violence, and urban economic strain in the South West.";
+
+// Full APA 7th-edition reference list backing the map, as supplied with
+// the map itself. Rendered on the Docs page; the Nigeria tab links there
+// rather than repeating the full list inline.
+export const NTO_MAP_REFERENCES = [
+  {
+    id: "Nigeria Trauma Observatory 2026",
+    citation:
+      "Nigeria Trauma Observatory. (2026). Geographic stressor severity report: Regional mapping of dominant " +
+      "stressors across Nigeria's six geopolitical zones (Technical Working Paper No. 3). Nigeria Trauma Observatory.",
+  },
+  {
+    id: "ACLED 2025 (Nigeria)",
+    citation:
+      "Armed Conflict Location & Event Data Project. (2025). ACLED data export tool: Nigeria conflict and protest " +
+      "events (2020-2026) [Data set]. ACLED. https://acleddata.com",
+  },
+  {
+    id: "GBD 2019",
+    citation:
+      "GBD 2019 Diseases and Injuries Collaborators. (2020). Global burden of 369 diseases and injuries in 204 " +
+      "countries and territories, 1990-2019: A systematic analysis for the Global Burden of Disease Study 2019. " +
+      "The Lancet, 396(10258), 1204-1222. https://doi.org/10.1016/S0140-6736(20)30925-9",
+  },
+  {
+    id: "UNHCR 2024 (Nigeria)",
+    citation:
+      "United Nations High Commissioner for Refugees. (2024). UNHCR refugee and IDP population statistics " +
+      "database: Nigeria country report [Data set]. UNHCR. https://www.unhcr.org/refugee-statistics",
+  },
+];
+
+export const NTO_MAP_FORMATTING_NOTES =
+  "References follow APA 7th edition: a 0.5-inch hanging indent, alphabetical ordering by author/organization, " +
+  "double line spacing in 12pt Times New Roman in the source document, and italics applied to standalone " +
+  "report/dataset and journal titles per APA guidelines.";
+
+// ---------------------------------------------------------------------
+// Observatory user guide - how to use the query tool, data panels,
+// charts, and the Nigeria worked example. Linked from the Observatory
+// page itself so a first-time visitor doesn't have to guess at the
+// workflow.
+// ---------------------------------------------------------------------
+
+export const USER_GUIDE_INTRO =
+  "The Observatory has two tabs: the International Trauma Observatory, a query tool for assembling your own " +
+  "country/year data and charts across ETTI and GTBI, and the Nigeria Trauma Observatory (NTO), a fixed worked " +
+  "example built the same way. This guide walks through both.";
+
+export const USER_GUIDE_STEPS = [
+  {
+    title: "1. Choose an indicator",
+    body:
+      "On the International tab, start by picking ETTI or GTBI from the indicator tabs. Each has its own set of " +
+      "countries, years, and variables - the query tool works one indicator at a time, though panels from both " +
+      "can be combined later when you build a chart.",
+  },
+  {
+    title: "2. Add data panels",
+    body:
+      "Use the country picker to search for a country and select one or more years on file for it, then add them " +
+      "as data panels. Each panel shows every variable recorded for that country/year, with a colored country dot " +
+      "and border so the same country is recognizable at a glance across panels, charts, and legends.",
+  },
+  {
+    title: "3. Select panels to chart",
+    body:
+      "Check the box on any data panel to mark it as chartable. You can check panels from both the ETTI and GTBI " +
+      "tabs and combine them into a single chart, table, or stats summary - the checkbox state is what feeds the " +
+      "chart builder below, not which indicator tab happens to be open.",
+  },
+  {
+    title: "4. Build a chart",
+    body:
+      "With at least one panel checked, pick a chart type (bar, line, pie, radar, scatter, or a stacked domain/" +
+      "exposure-type breakdown where available) and a variable, then click \"Create chart.\" Bar, line, and radar " +
+      "support a \"split by country\" toggle for small-multiples view when more than one country is selected. " +
+      "Finished charts can be downloaded as SVG or, if you're logged in, saved to your profile.",
+  },
+  {
+    title: "5. Switch views",
+    body:
+      "Beyond charts, the same checked panels can be viewed as a map, a sortable data table, summary statistics, " +
+      "or a timeline - use the view tabs above the chart builder to switch between them without losing your " +
+      "selection.",
+  },
+  {
+    title: "6. Explore the Nigeria tab (NTO)",
+    body:
+      "The Nigeria Trauma Observatory tab is a fixed worked example: every recorded ETTI and GTBI year for Nigeria " +
+      "as read-only data panels, a geographic stressor severity map, and a set of pre-built charts organized into " +
+      "Trends, Comparisons, and Breakdowns. It's meant to demonstrate what the interactive query tool on the " +
+      "International tab can do, using real Nigeria data as the example.",
+  },
+  {
+    title: "7. Check the references",
+    body:
+      "Every section of this Docs page documents the data sources, formulas, and known gaps behind the figures " +
+      "you'll see in the Observatory, including the full APA-formatted reference list behind the Nigeria stressor " +
+      "map. If a value reads \"Data Pending,\" it means the underlying source doesn't yet have a usable number for " +
+      "that field - not that it's zero.",
+  },
+];

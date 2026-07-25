@@ -5,7 +5,7 @@ import {
   ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ZAxis,
 } from "recharts";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { INDICATOR_VARIABLES, getYearRecord, getNumericValue } from "../../utils/ObservatoryData";
+import { INDICATOR_VARIABLES, GTBI_EXPOSURE_TYPES, getYearRecord, getNumericValue } from "../../utils/ObservatoryData";
 import { colorForCountry } from "../../utils/countryColors";
 import { saveObservatoryChart } from "../../api.js";
 
@@ -41,6 +41,7 @@ const CHART_TYPES = [
   { key: "radar", label: "Radar chart", available: (indicator) => indicator !== "mixed" },
   { key: "scatter", label: "Scatter plot (2 variables)", available: (indicator) => indicator !== "mixed" },
   { key: "stackedDomain", label: "Stacked bar: ETTI domain breakdown", available: (indicator) => indicator === "ETTI" },
+  { key: "stackedExposure", label: "Stacked bar: GTBI exposure-type breakdown (YLL)", available: (indicator) => indicator === "GTBI" },
 ];
 
 /**
@@ -66,6 +67,18 @@ function buildChartPayload(panels, countries, variableKey, chartType) {
         pdl: getNumericValue(record?.pdl) ?? 0,
         its: getNumericValue(record?.its) ?? 0,
       };
+    });
+    return { data, seriesKeys: [], xKey: "name", mode: "stacked" };
+  }
+
+  if (chartType === "stackedExposure") {
+    const data = panels.map((panel) => {
+      const record = getYearRecord(countries, "GTBI", panel.countryCode, panel.year);
+      const row = { name: `${panel.countryName} ${panel.year}` };
+      GTBI_EXPOSURE_TYPES.forEach((t) => {
+        row[t.key] = getNumericValue(record?.[`${t.key}_yll`]) ?? 0;
+      });
+      return row;
     });
     return { data, seriesKeys: [], xKey: "name", mode: "stacked" };
   }
@@ -194,7 +207,7 @@ export default function ChartsSection({ chartablePanels, countries }) {
   const effectiveChartType = chartTypeOptions.some((t) => t.key === chartType) ? chartType : "bar";
 
   const variableOptions = useMemo(() => {
-    if (chartablePanels.length === 0 || effectiveChartType === "stackedDomain") return [];
+    if (chartablePanels.length === 0 || effectiveChartType === "stackedDomain" || effectiveChartType === "stackedExposure") return [];
     if (indicatorOfSelection === "mixed") {
       return [{ key: "__composite__", label: "Composite Score (ETTI / GTBI)", group: "Composite" }];
     }
@@ -251,6 +264,16 @@ export default function ChartsSection({ chartablePanels, countries }) {
         title: `ETTI domain breakdown — ${chartablePanels.length === 1 ? chartablePanels[0].countryName : `${distinctCountryCount} countries`}`,
         chartType: "stackedDomain",
         indicator: "ETTI",
+        panels: chartablePanels.map((p) => ({ indicator: p.indicator, countryCode: p.countryCode, countryName: p.countryName, year: p.year })),
+        data, xKey, seriesKeys: [], mode: "stacked",
+      };
+    } else if (effectiveChartType === "stackedExposure") {
+      const { data, xKey } = buildChartPayload(chartablePanels, countries, null, "stackedExposure");
+      chart = {
+        id: chartIdSeq++,
+        title: `GTBI exposure-type YLL breakdown — ${chartablePanels.length === 1 ? chartablePanels[0].countryName : `${distinctCountryCount} countries`}`,
+        chartType: "stackedExposure",
+        indicator: "GTBI",
         panels: chartablePanels.map((p) => ({ indicator: p.indicator, countryCode: p.countryCode, countryName: p.countryName, year: p.year })),
         data, xKey, seriesKeys: [], mode: "stacked",
       };
@@ -318,7 +341,7 @@ export default function ChartsSection({ chartablePanels, countries }) {
 
   const activeChart = charts[activeIndex];
   const canCreate = chartablePanels.length > 0
-    && (effectiveChartType === "stackedDomain"
+    && (effectiveChartType === "stackedDomain" || effectiveChartType === "stackedExposure"
       || (effectiveChartType === "scatter" ? !!effectiveXVariable && !!effectiveYVariable : !!effectiveVariable));
 
   return (
@@ -355,6 +378,8 @@ export default function ChartsSection({ chartablePanels, countries }) {
           </>
         ) : effectiveChartType === "stackedDomain" ? (
           <span className="obs-chart-builder-note">Uses EVS / TIE / PDL / ITS for each selected panel</span>
+        ) : effectiveChartType === "stackedExposure" ? (
+          <span className="obs-chart-builder-note">Uses each GTBI exposure type's YLL for each selected panel</span>
         ) : (
           <select value={effectiveVariable} onChange={(e) => setVariableKey(e.target.value)} disabled={chartablePanels.length === 0}>
             {variableGroups.map((g) => (
@@ -473,6 +498,32 @@ export function ChartView({ chart, height = 280 }) {
             <Bar dataKey="tie" name="TIE" stackId="etti" fill={DOMAIN_COLORS.tie} />
             <Bar dataKey="pdl" name="PDL" stackId="etti" fill={DOMAIN_COLORS.pdl} />
             <Bar dataKey="its" name="ITS" stackId="etti" fill={DOMAIN_COLORS.its} radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </>
+    );
+  }
+
+  if (chartType === "stackedExposure") {
+    return (
+      <>
+        <ResponsiveContainer width="100%" height={height}>
+          <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 30 }}>
+            <CartesianGrid stroke="#1D2A3E" strokeDasharray="3 3" />
+            <XAxis dataKey="name" stroke="#9FB0C3" angle={-20} textAnchor="end" height={60} interval={0} tick={{ fontSize: 11 }} />
+            <YAxis stroke="#9FB0C3" />
+            <Tooltip contentStyle={TOOLTIP_STYLE} />
+            <Legend />
+            {GTBI_EXPOSURE_TYPES.map((t, i) => (
+              <Bar
+                key={t.key}
+                dataKey={t.key}
+                name={t.label}
+                stackId="gtbi"
+                fill={t.color}
+                radius={i === GTBI_EXPOSURE_TYPES.length - 1 ? [4, 4, 0, 0] : undefined}
+              />
+            ))}
           </BarChart>
         </ResponsiveContainer>
       </>

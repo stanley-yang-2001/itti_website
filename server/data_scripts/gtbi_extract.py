@@ -14,7 +14,12 @@ ISO numeric country code:
             "yll": <float or "Data Pending">,
             "yld": <float or "Data Pending">,
             "gtbi": <float or "Data Pending">
-            "key_events": <str or "Data Pending">
+            "key_events": <str or "Data Pending">,
+            "<exposure_type>_yll": <float or "Data Pending">,   # one trio per exposure
+            "<exposure_type>_yld": <float or "Data Pending">,   # type (armed_conflict,
+            "<exposure_type>_prevalence": <float or "Data Pending">,  # political_repression,
+                                                                        # communal_violence, terrorism,
+                                                                        # forced_displacement, disaster)
           },
           ...
         }
@@ -130,9 +135,30 @@ COL_POPULATION = 2
 COL_YEAR = 3
 COL_EXPOSURE_PCT = 5
 COL_SEVERITY_WEIGHT = 6
+COL_EXPOSURE_TYPE = 4
 COL_YLD = 11
 COL_YLL = 14
 COL_KEY_EVENT = 17
+
+# The workbook breaks every country-year into one row per "exposure type"
+# (Armed Conflict, Political Repression, etc.) before this script rolls
+# them up into the single aggregate GTBI/burden_rate/yll/yld figures
+# above. Previously that per-type breakdown was discarded after
+# aggregation; it's now also kept as its own set of sub-variables (one
+# YLL/YLD/prevalence trio per exposure type) so a chart can compare, say,
+# armed-conflict YLL specifically across countries - mirroring how ETTI
+# exposes both its normalized domain scores AND their raw sub-variables.
+# "Commu-l Violence" is the same stray find/replace artifact noted in
+# COUNTRY_NAME_ALIASES above ("Communal Violence" -> "Commu-l Violence").
+EXPOSURE_TYPE_KEYS = {
+    "Armed Conflict": "armed_conflict",
+    "Political Repression": "political_repression",
+    "Communal Violence": "communal_violence",
+    "Commu-l Violence": "communal_violence",
+    "Terrorism": "terrorism",
+    "Forced Displacement": "forced_displacement",
+    "Disaster (Trauma-Linked)": "disaster",
+}
 
 
 def resolve_workbook_path(path_arg):
@@ -231,7 +257,10 @@ def aggregate_by_country_year(ws):
             key_event = None
 
         if key not in totals:
-            totals[key] = {"population": population, "yld": 0.0, "yll": 0.0, "severity_term": 0.0, "key_events": []}
+            totals[key] = {
+                "population": population, "yld": 0.0, "yll": 0.0, "severity_term": 0.0, "key_events": [],
+                "by_type": {},
+            }
         totals[key]["yld"] += yld
         totals[key]["yll"] += yll
         totals[key]["severity_term"] += severity_term
@@ -239,6 +268,14 @@ def aggregate_by_country_year(ws):
             totals[key]["population"] = population
         if key_event and key_event not in totals[key]["key_events"]:
             totals[key]["key_events"].append(key_event)
+
+        exposure_type = row[COL_EXPOSURE_TYPE]
+        type_key = EXPOSURE_TYPE_KEYS.get(str(exposure_type).strip()) if exposure_type else None
+        if type_key:
+            by_type = totals[key]["by_type"].setdefault(type_key, {"yll": 0.0, "yld": 0.0, "prevalence": 0.0})
+            by_type["yll"] += yll
+            by_type["yld"] += yld
+            by_type["prevalence"] += exposure_pct * 100  # stored as a percentage, not a fraction
 
     return totals
 
@@ -269,7 +306,7 @@ def build_country_data(workbook_path):
             level = trauma_level_for(gtbi_score)
 
         entry = country_data.setdefault(code, {"name": DISPLAY_NAME_OVERRIDES.get(country_name, country_name), "GTBI": {}})
-        entry["GTBI"][str(year)] = {
+        year_entry = {
             "trauma_level": level,
             "burden_rate": burden_rate,
             "yll": round(totals_for_key["yll"], 3),
@@ -277,6 +314,13 @@ def build_country_data(workbook_path):
             "gtbi": gtbi_score,
             "key_events": "; ".join(totals_for_key["key_events"]) if totals_for_key["key_events"] else MISSING,
         }
+        by_type = totals_for_key["by_type"]
+        for type_key in dict.fromkeys(EXPOSURE_TYPE_KEYS.values()):
+            values = by_type.get(type_key)
+            year_entry[f"{type_key}_yll"] = round(values["yll"], 3) if values else MISSING
+            year_entry[f"{type_key}_yld"] = round(values["yld"], 3) if values else MISSING
+            year_entry[f"{type_key}_prevalence"] = round(values["prevalence"], 6) if values else MISSING
+        entry["GTBI"][str(year)] = year_entry
 
     return {
         "countries": country_data,

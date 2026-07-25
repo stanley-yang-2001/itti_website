@@ -529,6 +529,35 @@
   }
 }
 
+.obs-nto-map {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+.obs-nto-map-img {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  display: block;
+  border: 1px solid var(--line);
+}
+.obs-nto-map-caption {
+  color: var(--text-mid);
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 12px 0 8px 0;
+}
+.obs-nto-map-meta {
+  color: var(--text-low);
+  font-size: 12px;
+  margin: 0;
+}
+.obs-nto-map-meta a {
+  color: var(--cyan);
+}
+
 /* ---------- View tabs (Chart / Map / Table / Stats / Timeline) ---------- */
 .obs-view-tabs {
   display: flex;

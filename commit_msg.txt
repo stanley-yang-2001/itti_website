@@ -1,47 +1,27 @@
-Add Certifications and Fellowship pages, fix Login/SignUp legibility,
-and polish sitewide navigation, typography, and footer
+Observatory: NTO map + refs, GTBI expanded variables, dynamic country
+colors, Nigeria chart reorg, user guide
 
-Certifications page
-- Replace the placeholder with a fully interactive page covering all
-  11 ITTI credentials, extracted from ITTI_CERTIFICATIONS.docx
-  (client/src/data/certifications.js): program overview, details,
-  who-should-enroll/apply, four-week curriculum, outcomes,
-  requirements, credential package, and the official scope notice.
-- Category filter pills, live search, expandable cards, a linked
-  Level 1 -> Level 2 pathway (CGTBA(tm) -> GTBSF(tm)) with jump-to
-  buttons, and a sortable "compare at a glance" table.
-- 11 certification banner/flyer images, resized and compressed
-  (~19MB -> ~1.2MB total) and lazy-loaded — only fetched when a card
-  is expanded.
+- Add Nigeria geographic stressor severity map (Blessing Alims,
+  published 2026-07-24) to the NTO tab, with caption + APA reference
+  list on the Docs page (docs#nto-map), integrated into the sticky
+  sidebar-nav Docs layout with deep-link support (#user-guide,
+  #nto-map).
+- countryColors.js: replace the fixed 12-color hash palette (which
+  guaranteed collisions past 12 distinct countries) with dynamic
+  golden-angle hue assignment - no hardcoded palette, no upper bound,
+  same call signature everywhere it's used.
+- Expand GTBI's chartable variables: gtbi_extract.py now aggregates
+  per-exposure-type YLL/YLD/prevalence (Armed Conflict, Political
+  Repression, Communal Violence, Terrorism, Forced Displacement,
+  Disaster) alongside the existing composite figures, mirroring ETTI's
+  domain/sub-variable structure. Added a matching "stacked GTBI
+  exposure-type breakdown" chart type to the chart builder.
+- NigeriaObservatory: add Burden Rate trend, YLL-vs-YLD trend, ETTI
+  domain breakdown, and GTBI exposure-type breakdown charts; organize
+  all charts into Trends / Comparisons / Breakdowns tabs.
+- Add a Docs "How to use the Observatory" user guide section, linked
+  from the Observatory page.
 
-Fellowship page (renamed from Fellows)
-- "Fellows" renamed to "Fellowship" in the navbar and the homepage
-  explore card; pages/Fellows.jsx, styles/Fellows.css, and
-  data/fellows.js renamed to Fellowship.jsx / Fellowship.css /
-  fellowship.js, including the component's default export.
-- Two sections built from FITTI_Executive_Deck.pdf: About the
-  Fellowship (Why FITTI, the four pathway levels, Executive Value,
-  Fellows Gain, who should apply, the closing Invitation) and Our
-  Fellows, a roster grid (photo-or-initials, name, level badge, bio)
-  with level-filter pills, backed by an intentionally empty roster
-  array with a documented data shape and a "coming soon" empty state.
-
-Login / SignUp
-- Fix an invisible-heading bug: .login-card h1 / .signup-card h1 had
-  no explicit color and inherited the site's near-white body text on
-  a white card. Set explicit high-contrast colors throughout both
-  forms and apply Times New Roman across all text. ForgotPassword and
-  ResetPassword inherit the fix since they reuse Login.css.
-
-Sitewide navigation and typography
-- New ScrollToTop component, mounted in App.jsx, resets scroll
-  position to the top of the page on every route change (via
-  document.body, this site's actual scroll container).
-- Extend the sitewide serif rule to h4-h6 for full heading coverage.
-- Docs page rebuilt to match the About page's format: hero, sticky
-  scrollspy sidebar, and panel sections, reusing About.css for the
-  shared shell and trimming Docs.css to its content-specific styles
-  (methodology cards, formula list, sources table).
-- Footer cleaned up: removed every link duplicated in the navbar
-  (About, Observatory, Reports, Country Profiles, Fellowship,
-  Certifications, Contact), leaving only Docs.
+Rebased onto 49c6a8d (navbar/logo sizing on top of the Certifications/
+Fellowship/nav-polish commit); no conflicts with either, and this
+commit's Footer/Login fix means the full build now passes clean.

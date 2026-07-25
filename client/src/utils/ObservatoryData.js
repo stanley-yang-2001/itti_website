@@ -39,11 +39,41 @@ export const INDICATOR_VARIABLES = {
     { key: "gtbi", label: "GTBI (composite)", numeric: true, group: "Composite" },
     { key: "trauma_level", label: "Trauma Level", numeric: false, group: "Composite" },
     { key: "burden_rate", label: "Burden Rate", numeric: true, group: "Burden" },
-    { key: "yll", label: "YLL - Years of Life Lost", numeric: true, group: "Burden" },
-    { key: "yld", label: "YLD - Years Lived with Disability", numeric: true, group: "Burden" },
+    { key: "yll", label: "YLL - Years of Life Lost (total)", numeric: true, group: "Burden" },
+    { key: "yld", label: "YLD - Years Lived with Disability (total)", numeric: true, group: "Burden" },
+    { key: "armed_conflict_yll", label: "Armed Conflict: YLL", numeric: true, group: "Armed Conflict" },
+    { key: "armed_conflict_yld", label: "Armed Conflict: YLD", numeric: true, group: "Armed Conflict" },
+    { key: "armed_conflict_prevalence", label: "Armed Conflict: Exposed prevalence (%)", numeric: true, group: "Armed Conflict" },
+    { key: "political_repression_yll", label: "Political Repression: YLL", numeric: true, group: "Political Repression" },
+    { key: "political_repression_yld", label: "Political Repression: YLD", numeric: true, group: "Political Repression" },
+    { key: "political_repression_prevalence", label: "Political Repression: Exposed prevalence (%)", numeric: true, group: "Political Repression" },
+    { key: "communal_violence_yll", label: "Communal Violence: YLL", numeric: true, group: "Communal Violence" },
+    { key: "communal_violence_yld", label: "Communal Violence: YLD", numeric: true, group: "Communal Violence" },
+    { key: "communal_violence_prevalence", label: "Communal Violence: Exposed prevalence (%)", numeric: true, group: "Communal Violence" },
+    { key: "terrorism_yll", label: "Terrorism: YLL", numeric: true, group: "Terrorism" },
+    { key: "terrorism_yld", label: "Terrorism: YLD", numeric: true, group: "Terrorism" },
+    { key: "terrorism_prevalence", label: "Terrorism: Exposed prevalence (%)", numeric: true, group: "Terrorism" },
+    { key: "forced_displacement_yll", label: "Forced Displacement: YLL", numeric: true, group: "Forced Displacement" },
+    { key: "forced_displacement_yld", label: "Forced Displacement: YLD", numeric: true, group: "Forced Displacement" },
+    { key: "forced_displacement_prevalence", label: "Forced Displacement: Exposed prevalence (%)", numeric: true, group: "Forced Displacement" },
+    { key: "disaster_yll", label: "Disaster (Trauma-Linked): YLL", numeric: true, group: "Disaster" },
+    { key: "disaster_yld", label: "Disaster (Trauma-Linked): YLD", numeric: true, group: "Disaster" },
+    { key: "disaster_prevalence", label: "Disaster (Trauma-Linked): Exposed prevalence (%)", numeric: true, group: "Disaster" },
     { key: "key_events", label: "Key Events", numeric: false, group: "Context" },
   ],
 };
+
+/** GTBI's six exposure-type domains, in display order - used to build the
+ *  "GTBI exposure-type breakdown" stacked chart, the GTBI mirror of ETTI's
+ *  EVS/TIE/PDL/ITS stacked-domain chart. */
+export const GTBI_EXPOSURE_TYPES = [
+  { key: "armed_conflict", label: "Armed Conflict", color: "#E86B6B" },
+  { key: "political_repression", label: "Political Repression", color: "#B98BD8" },
+  { key: "communal_violence", label: "Communal Violence", color: "#E0956B" },
+  { key: "terrorism", label: "Terrorism", color: "#4FD9C7" },
+  { key: "forced_displacement", label: "Forced Displacement", color: "#7FA8E0" },
+  { key: "disaster", label: "Disaster (Trauma-Linked)", color: "#E8B84B" },
+];
 
 export function variableLabel(indicator, key) {
   const found = (INDICATOR_VARIABLES[indicator] || []).find((v) => v.key === key);
