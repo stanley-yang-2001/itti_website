@@ -116,10 +116,20 @@
   #suggestions div:hover{background:rgba(79,217,199,0.08); color:var(--text-hi);}
 
   /* ---------- Main / Globe ---------- */
+  /* main used to be the only content below the header, so flex:1 inside
+     #app's column layout naturally filled the screen. Now that NavBar,
+     the "Explore" section, and the site footer all sit in the same flex
+     column, they compete with main for space: #app only grows to
+     min-height:100vh, so once those extra sections push the column past
+     one viewport tall there's no leftover space left for flex:1 to hand
+     to main, and it (and the globe inside it) collapses toward 0 height.
+     Giving it an explicit min-height keeps the globe a full-viewport
+     hero at the top of the page regardless of how tall the sections
+     below it are. */
   main{
     position:relative;
     flex:1;
-    min-height:0;
+    min-height:100vh;
   }
   #globe-container{
     position:absolute; inset:0;
@@ -131,6 +141,34 @@
   }
   #globe-container svg:active{cursor:grabbing;}
 
+  .globe-intro{
+    position:absolute;
+    top:44px; left:50%;
+    transform:translateX(-50%);
+    z-index:2;
+    width:min(560px, 84%);
+    text-align:center;
+    pointer-events:none;
+  }
+  .globe-intro-title{
+    margin:0 0 10px;
+    font-size:clamp(26px, 4vw, 38px);
+    font-weight:400;
+    color:var(--text-hi);
+    letter-spacing:0.01em;
+  }
+  .globe-intro-desc{
+    margin:0;
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    line-height:1.6;
+    color:var(--text-low);
+  }
+  @media (max-width: 640px){
+    .globe-intro{top:28px; width:90%;}
+    .globe-intro-desc{font-size:12px;}
+  }
+
   .sphere-glow{fill:url(#glow);}
   .sphere-fill{fill:url(#ocean);}
   .graticule{fill:none; stroke:#2A3B52; stroke-width:0.4px; stroke-opacity:0.5;}
@@ -140,6 +178,17 @@
     stroke-width:0.5px;
     transition:fill .12s ease;
   }
+  /* Data-coverage colors: only countries that actually have ETTI and/or
+     GTBI records get tinted; everything else keeps the default --land
+     color above. These sit between the base .land rule and the
+     hover/selected rules below (same specificity, later in the
+     cascade = wins over the default fill), so hovering or clicking a
+     tinted country still falls through to the original hover/selected
+     colors untouched. */
+  .land.data-etti{fill:#7FA8E0;}   /* ETTI only - steel blue */
+  .land.data-gtbi{fill:#B98BD8;}   /* GTBI only - violet */
+  .land.data-both{fill:#6BC97A;}   /* ETTI + GTBI - green */
+
   .land:hover{fill:var(--land-hover); cursor:pointer;}
   .land.selected{
     fill:var(--gold);
@@ -159,6 +208,32 @@
     pointer-events:none;
   }
   .hint .dot{width:4px;height:4px;border-radius:50%;background:var(--text-low);}
+
+  .globe-legend{
+    position:absolute;
+    bottom:60px; left:50%;
+    transform:translateX(-50%);
+    display:flex; gap:18px; align-items:center;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.08em;
+    color:var(--text-low);
+    text-transform:uppercase;
+    pointer-events:none;
+  }
+  .globe-legend-item{display:flex; align-items:center; gap:6px;}
+  .globe-legend-swatch{
+    width:9px; height:9px;
+    border-radius:2px;
+    flex-shrink:0;
+  }
+  .globe-legend-swatch.data-etti{background:#7FA8E0;}
+  .globe-legend-swatch.data-gtbi{background:#B98BD8;}
+  .globe-legend-swatch.data-both{background:#6BC97A;}
+
+  @media (max-width: 640px){
+    .globe-legend{flex-wrap:wrap; justify-content:center; bottom:64px; gap:10px 16px; width:88%;}
+  }
 
   /* ---------- Side Panel ---------- */
   #side-panel{

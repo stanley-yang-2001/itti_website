@@ -24,7 +24,7 @@ const EXPLORE_CARDS = [
   },
   {
     to: '/fellows',
-    label: 'Fellows',
+    label: 'Fellowship',
     description: 'Meet the people doing the work \u2014 and find out how to join them.'
   }
 ];

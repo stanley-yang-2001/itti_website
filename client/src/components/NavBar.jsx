@@ -8,7 +8,7 @@ const NAV_LINKS = [
   { to: '/observatory', label: 'Observatory' },
   { to: '/reports', label: 'Reports' },
   { to: '/country-profiles', label: 'Country Profiles' },
-  { to: '/fellows', label: 'Fellows' },
+  { to: '/fellows', label: 'Fellowship' },
   { to: '/certifications', label: 'Certifications' },
   { to: '/contact', label: 'Contact' }
 ];

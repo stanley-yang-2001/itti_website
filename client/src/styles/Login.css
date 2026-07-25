@@ -4,6 +4,7 @@
   align-items: center;
   min-height: 100vh;
   background: #f5f5f5;
+  font-family: 'Times New Roman', Times, serif;
 }
 
 .login-card {
@@ -14,11 +15,13 @@
   width: 100%;
   max-width: 360px;
   text-align: center;
+  color: #1B2431;
 }
 
 .login-card h1 {
   margin-bottom: 1.5rem;
   font-size: 1.5rem;
+  color: #14213D;
 }
 
 .login-google {
@@ -30,7 +33,7 @@
 .login-divider {
   display: flex;
   align-items: center;
-  color: #888;
+  color: #5B6472;
   font-size: 0.85rem;
   margin: 1rem 0;
 }
@@ -52,6 +55,8 @@
   border: 1px solid #ccc;
   border-radius: 6px;
   background: #fff;
+  color: #1B2431;
+  font-family: inherit;
   font-size: 0.95rem;
   cursor: pointer;
 }
@@ -61,13 +66,13 @@
 }
 
 .login-error {
-  color: #b3261e;
+  color: #A82A20;
   font-size: 0.85rem;
   margin-bottom: 1rem;
 }
 
 .login-status {
-  color: #555;
+  color: #3D4652;
   font-size: 0.85rem;
   margin-bottom: 1rem;
 }
@@ -84,14 +89,17 @@
   flex-direction: column;
   gap: 0.35rem;
   font-size: 0.85rem;
-  color: #444;
+  color: #2B3440;
 }
 
 .login-field input {
   padding: 0.55rem 0.7rem;
   border: 1px solid #ccc;
   border-radius: 6px;
+  font-family: inherit;
   font-size: 0.95rem;
+  color: #14213D;
+  background: #fff;
 }
 
 .login-submit-button {
@@ -99,8 +107,9 @@
   padding: 0.65rem 1rem;
   border: none;
   border-radius: 6px;
-  background: #1a1a1a;
+  background: #14213D;
   color: #fff;
+  font-family: inherit;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
@@ -122,7 +131,7 @@
 }
 
 .login-forgot-link a {
-  color: #555;
+  color: #3D4652;
   text-decoration: none;
 }
 
@@ -133,11 +142,11 @@
 .login-signup-link {
   margin: 1.25rem 0 0 0;
   font-size: 0.85rem;
-  color: #555;
+  color: #3D4652;
 }
 
 .login-signup-link a {
-  color: #1a1a1a;
+  color: #14213D;
   font-weight: 600;
   text-decoration: none;
 }

@@ -11,7 +11,19 @@ function isoGuess(feature) {
   return feature.id ? String(feature.id).padStart(3, '0') : '—';
 }
 
-const Globe = forwardRef(function Globe({ worldData, onCountryClick }, ref) {
+// Maps a feature's data-coverage status to the CSS class that colors it
+// (see .land.data-etti / .data-gtbi / .data-both in App.css). Countries
+// with no ETTI/GTBI data get no extra class, so they keep the default
+// --land fill.
+function dataClassFor(feature, countryStatus) {
+  const status = countryStatus?.[isoGuess(feature)];
+  if (status === 'both') return 'data-both';
+  if (status === 'etti') return 'data-etti';
+  if (status === 'gtbi') return 'data-gtbi';
+  return '';
+}
+
+const Globe = forwardRef(function Globe({ worldData, onCountryClick, countryStatus }, ref) {
   const containerRef = useRef(null);
   const d3State = useRef({}); // stash mutable d3 objects across renders
 
@@ -85,7 +97,7 @@ const Globe = forwardRef(function Globe({ worldData, onCountryClick }, ref) {
       .selectAll('path.land')
       .data(allFeatures)
       .join('path')
-      .attr('class', 'land')
+      .attr('class', (d) => `land ${dataClassFor(d, countryStatus)}`.trim())
       .attr('d', path)
       .on('click', function (event, d) {
         event.stopPropagation();
@@ -147,7 +159,7 @@ const Globe = forwardRef(function Globe({ worldData, onCountryClick }, ref) {
       container.innerHTML = '';
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [worldData]);
+  }, [worldData, countryStatus]);
 
   useImperativeHandle(ref, () => ({
     focusOnFeature(feature) {

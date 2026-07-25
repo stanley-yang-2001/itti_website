@@ -1,125 +1,156 @@
-import { useState } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
-import { GoogleLogin } from "@react-oauth/google";
-import { useAuth } from "../context/AuthContext.jsx";
-import { checkEmail } from "../utils/formValidation.js";
-import "../styles/Login.css";
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #f5f5f5;
+  font-family: 'Times New Roman', Times, serif;
+}
 
-/**
- * Login page. Supports both Google Sign-In and email/password (for
- * accounts created via /signup) — previously only Google was wired up
- * here even though the backend has always supported both.
- */
-export default function Login() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { loginWithGoogle, loginWithPassword } = useAuth();
-  const redirectTo = location.state?.from?.pathname || "/";
+.login-card {
+  background: #fff;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+  color: #1B2431;
+}
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+.login-card h1 {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  color: #14213D;
+}
 
-  async function handleGoogleSuccess(credentialResponse) {
-    setError(null);
-    setLoading(true);
-    try {
-      await loginWithGoogle(credentialResponse.credential);
-      navigate(redirectTo, { replace: true });
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }
+.login-google {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
 
-  function handleGoogleError() {
-    setError("Google sign-in was cancelled or failed. Please try again.");
-  }
+.login-divider {
+  display: flex;
+  align-items: center;
+  color: #5B6472;
+  font-size: 0.85rem;
+  margin: 1rem 0;
+}
 
-  async function handlePasswordSubmit(e) {
-    e.preventDefault();
-    setError(null);
+.login-divider::before,
+.login-divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #ddd;
+}
 
-    // Deliberately limited to format/presence only - this must never
-    // narrow down further than the server's own generic "Invalid email
-    // or password" response does, or it would leak which field was
-    // actually wrong before a single request is even sent.
-    const emailFormatError = checkEmail(email);
-    if (emailFormatError) {
-      setError(emailFormatError);
-      return;
-    }
-    if (!password) {
-      setError("Password is required.");
-      return;
-    }
+.login-divider span {
+  padding: 0 0.75rem;
+}
 
-    setLoading(true);
-    try {
-      await loginWithPassword(email, password);
-      navigate(redirectTo, { replace: true });
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }
+.login-signup-button {
+  width: 100%;
+  padding: 0.65rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  color: #1B2431;
+  font-family: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
 
-  return (
-    <div className="login-page">
-      <div className="login-card">
-        <h1>Sign in</h1>
+.login-signup-button:hover {
+  background: #f0f0f0;
+}
 
-        {error && <p className="login-error">{error}</p>}
-        {loading && <p className="login-status">Signing you in…</p>}
+.login-error {
+  color: #A82A20;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
 
-        <div className="login-google">
-          <GoogleLogin
-            onSuccess={handleGoogleSuccess}
-            onError={handleGoogleError}
-            useOneTap={false}
-          />
-        </div>
+.login-status {
+  color: #3D4652;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
 
-        <div className="login-divider">
-          <span>or</span>
-        </div>
+.login-password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  text-align: left;
+}
 
-        <form className="login-password-form" onSubmit={handlePasswordSubmit}>
-          <label className="login-field">
-            <span>Email</span>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              required
-            />
-          </label>
-          <label className="login-field">
-            <span>Password</span>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-              required
-            />
-          </label>
-          <p className="login-forgot-link">
-            <Link to="/forgot-password">Forgot password?</Link>
-          </p>
-          <button type="submit" className="login-submit-button" disabled={loading}>
-            Log in
-          </button>
-        </form>
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: #2B3440;
+}
 
-        <p className="login-signup-link">
-          Don&rsquo;t have an account? <Link to="/signup">Sign up</Link>
-        </p>
-      </div>
-    </div>
-  );
+.login-field input {
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: #14213D;
+  background: #fff;
+}
+
+.login-submit-button {
+  width: 100%;
+  padding: 0.65rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #14213D;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.login-submit-button:hover {
+  opacity: 0.9;
+}
+
+.login-submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.login-forgot-link {
+  margin: -0.5rem 0 0 0;
+  text-align: right;
+  font-size: 0.8rem;
+}
+
+.login-forgot-link a {
+  color: #3D4652;
+  text-decoration: none;
+}
+
+.login-forgot-link a:hover {
+  text-decoration: underline;
+}
+
+.login-signup-link {
+  margin: 1.25rem 0 0 0;
+  font-size: 0.85rem;
+  color: #3D4652;
+}
+
+.login-signup-link a {
+  color: #14213D;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-signup-link a:hover {
+  text-decoration: underline;
 }

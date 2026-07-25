@@ -1,0 +1,341 @@
+/* ---------- Fellows page ---------- */
+.fellows-page{
+  width:100%;
+  padding-bottom:48px;
+}
+
+.fellows-hero{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  gap:12px;
+  padding:56px 24px 40px;
+  border-bottom:1px solid var(--line);
+  background:radial-gradient(ellipse at 50% 0%, rgba(79,217,199,0.07), transparent 60%);
+}
+.fellows-hero-eyebrow{
+  font-size:11px;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  color:var(--cyan);
+  margin:0;
+}
+.fellows-hero-title{
+  font-size:32px;
+  font-weight:700;
+  color:var(--text-hi);
+  margin:0;
+  max-width:760px;
+}
+.fellows-hero-sub{
+  font-size:15px;
+  color:var(--text-mid);
+  max-width:660px;
+  margin:0;
+  line-height:1.7;
+}
+.fellows-hero-actions{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:12px;
+  margin-top:10px;
+}
+
+.fellows-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:11px 22px;
+  border-radius:8px;
+  font-family:'Inter',sans-serif;
+  font-size:13.5px;
+  font-weight:600;
+  text-decoration:none;
+  cursor:pointer;
+  border:none;
+  transition:opacity .15s ease, transform .15s ease;
+}
+.fellows-btn.primary{background:var(--cyan); color:var(--bg-deep);}
+.fellows-btn.secondary{background:transparent; color:var(--text-hi); border:1px solid var(--line);}
+.fellows-btn:hover{opacity:0.88; transform:translateY(-1px);}
+
+/* ---------- Sections ---------- */
+.fellows-section{
+  max-width:1080px;
+  margin:0 auto;
+  padding:48px 32px 0;
+}
+.fellows-section-eyebrow{
+  font-size:11px;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin:0 0 8px 0;
+}
+.fellows-section-title{
+  font-size:26px;
+  font-weight:700;
+  color:var(--text-hi);
+  margin:0 0 20px 0;
+  padding-bottom:14px;
+  border-bottom:1px solid var(--line);
+}
+.fellows-subtitle{
+  font-size:17px;
+  font-weight:700;
+  color:var(--text-hi);
+  margin:34px 0 6px 0;
+}
+.fellows-subtitle-note{
+  font-size:13px;
+  color:var(--text-mid);
+  margin:0 0 16px 0;
+}
+
+.fellows-why-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px 24px;
+}
+.fellows-why-grid p{
+  font-size:14px;
+  line-height:1.65;
+  color:var(--text-mid);
+  margin:0;
+  padding:14px 16px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--line);
+  border-radius:10px;
+}
+
+/* ---------- Fellowship pathway cards ---------- */
+.fellows-pathways{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(230px, 1fr));
+  gap:14px;
+}
+.fellows-pathway-card{
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--line);
+  border-left:3px solid var(--line);
+  border-radius:10px;
+  padding:16px 18px;
+}
+.fellows-pathway-card.level-afitti{border-left-color:#5B9BD5;}
+.fellows-pathway-card.level-fitti{border-left-color:var(--gold);}
+.fellows-pathway-card.level-sfitti{border-left-color:#C0447A;}
+.fellows-pathway-card.level-dfitti{border-left-color:#F2C744;}
+.fellows-pathway-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:8px;
+}
+.fellows-pathway-code{
+  font-size:13px;
+  color:var(--cyan);
+  letter-spacing:0.03em;
+}
+.fellows-pathway-tag{
+  font-size:10px;
+  letter-spacing:0.04em;
+  text-transform:uppercase;
+  color:var(--text-low);
+}
+.fellows-pathway-name{
+  font-size:15.5px;
+  font-weight:700;
+  color:var(--text-hi);
+  margin:0 0 8px 0;
+}
+.fellows-pathway-desc{
+  font-size:13px;
+  line-height:1.6;
+  color:var(--text-mid);
+  margin:0;
+}
+
+/* ---------- Executive value / fellows gain ---------- */
+.fellows-value-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:32px;
+}
+.fellows-list, .fellows-checklist{
+  margin:0;
+  padding-left:20px;
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+.fellows-checklist{
+  padding-left:0;
+  list-style:none;
+}
+.fellows-list li, .fellows-checklist li{
+  font-size:13.5px;
+  line-height:1.6;
+  color:var(--text-mid);
+}
+.fellows-checklist li{color:var(--text-hi);}
+
+/* ---------- Who should apply ---------- */
+.fellows-chip-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.fellows-chip{
+  font-size:12px;
+  color:var(--text-mid);
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:6px 12px;
+}
+
+/* ---------- Invitation ---------- */
+.fellows-invitation{
+  margin-top:34px;
+  padding:24px 26px;
+  border-radius:12px;
+  background:rgba(239,184,78,0.05);
+  border:1px solid rgba(239,184,78,0.3);
+}
+.fellows-invitation p{
+  font-size:14px;
+  line-height:1.7;
+  color:var(--text-mid);
+  margin:0 0 10px 0;
+}
+.fellows-invitation-note{
+  font-size:12.5px;
+  color:var(--text-low);
+  font-style:italic;
+}
+.fellows-invitation .fellows-btn{margin-top:6px;}
+
+/* ---------- Roster ---------- */
+.fellows-filter-pills{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:22px;
+}
+.fellows-pill{
+  font-family:'Inter',sans-serif;
+  font-size:12.5px;
+  font-weight:600;
+  color:var(--text-mid);
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:7px 14px;
+  cursor:pointer;
+  transition:color .15s ease, border-color .15s ease, background .15s ease;
+}
+.fellows-pill:hover{color:var(--text-hi);}
+.fellows-pill.active{
+  color:var(--bg-deep);
+  background:var(--cyan);
+  border-color:var(--cyan);
+}
+
+.fellows-empty{
+  text-align:center;
+  padding:60px 24px;
+  border:1px dashed var(--line);
+  border-radius:14px;
+  background:rgba(255,255,255,0.015);
+}
+.fellows-empty-title{
+  font-size:16px;
+  font-weight:600;
+  color:var(--text-hi);
+  margin:0 0 8px 0;
+}
+.fellows-empty-sub{
+  font-size:13px;
+  color:var(--text-low);
+  max-width:440px;
+  margin:0 auto;
+  line-height:1.6;
+}
+
+.fellows-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
+  gap:18px;
+}
+.fellow-card{
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:22px 20px;
+  text-align:center;
+}
+.fellow-card-photo{
+  width:84px;
+  height:84px;
+  border-radius:50%;
+  margin:0 auto 14px;
+  overflow:hidden;
+  background:var(--bg-panel);
+  border:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.fellow-card-photo img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.fellow-card-initials{
+  font-family:'Times New Roman', Times, serif;
+  font-size:24px;
+  font-weight:700;
+  color:var(--text-mid);
+}
+.fellow-card-name{
+  font-size:15.5px;
+  font-weight:700;
+  color:var(--text-hi);
+  margin:0 0 6px 0;
+}
+.fellow-card-level{
+  display:inline-block;
+  font-size:10.5px;
+  font-weight:600;
+  letter-spacing:0.03em;
+  padding:4px 10px;
+  border-radius:999px;
+  margin-bottom:10px;
+  color:var(--text-mid);
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--line);
+}
+.fellow-card-level.level-afitti{color:#8EC0EA; border-color:rgba(91,155,213,0.4);}
+.fellow-card-level.level-fitti{color:var(--gold); border-color:rgba(239,184,78,0.4);}
+.fellow-card-level.level-sfitti{color:#E387AC; border-color:rgba(192,68,122,0.4);}
+.fellow-card-level.level-dfitti{color:#F2C744; border-color:rgba(242,199,68,0.4);}
+.fellow-card-bio{
+  font-size:12.5px;
+  line-height:1.6;
+  color:var(--text-mid);
+  margin:0;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 760px){
+  .fellows-why-grid{grid-template-columns:1fr;}
+  .fellows-value-row{grid-template-columns:1fr;}
+  .fellows-section{padding:40px 20px 0;}
+}
+@media (max-width: 560px){
+  .fellows-hero{padding:44px 18px 32px;}
+  .fellows-hero-title{font-size:24px;}
+}

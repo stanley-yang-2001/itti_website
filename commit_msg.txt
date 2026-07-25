@@ -1,85 +1,47 @@
-feat: add peer-review workflow to Reports
+Add Certifications and Fellowship pages, fix Login/SignUp legibility,
+and polish sitewide navigation, typography, and footer
 
-Reports no longer publish directly. Every upload now starts as
-pending_review and must clear peer review before it appears on the
-public Reports page:
+Certifications page
+- Replace the placeholder with a fully interactive page covering all
+  11 ITTI credentials, extracted from ITTI_CERTIFICATIONS.docx
+  (client/src/data/certifications.js): program overview, details,
+  who-should-enroll/apply, four-week curriculum, outcomes,
+  requirements, credential package, and the official scope notice.
+- Category filter pills, live search, expandable cards, a linked
+  Level 1 -> Level 2 pathway (CGTBA(tm) -> GTBSF(tm)) with jump-to
+  buttons, and a sortable "compare at a glance" table.
+- 11 certification banner/flyer images, resized and compressed
+  (~19MB -> ~1.2MB total) and lazy-loaded — only fetched when a card
+  is expanded.
 
-  pending_review --(3 distinct approvals, not from the uploader)--> published
-  pending_review --(any single reject, with a required comment)--> changes_requested
-  changes_requested --(uploader resubmits)--> pending_review, version += 1
+Fellowship page (renamed from Fellows)
+- "Fellows" renamed to "Fellowship" in the navbar and the homepage
+  explore card; pages/Fellows.jsx, styles/Fellows.css, and
+  data/fellows.js renamed to Fellowship.jsx / Fellowship.css /
+  fellowship.js, including the component's default export.
+- Two sections built from FITTI_Executive_Deck.pdf: About the
+  Fellowship (Why FITTI, the four pathway levels, Executive Value,
+  Fellows Gain, who should apply, the closing Invitation) and Our
+  Fellows, a roster grid (photo-or-initials, name, level badge, bio)
+  with level-filter pills, backed by an intentionally empty roster
+  array with a documented data shape and a "coming soon" empty state.
 
-Rejection doesn't delete the report - it sends it back to the
-uploader with the reviewer's comment. The uploader resubmits a new
-file/description (plus an optional note addressing the feedback),
-which bumps the report's version and resets it to pending_review.
-Approvals are scoped to that version, so a resubmission genuinely
-starts review over: prior approvals from before the rejection don't
-carry forward and count toward the new 3.
+Login / SignUp
+- Fix an invisible-heading bug: .login-card h1 / .signup-card h1 had
+  no explicit color and inherited the site's near-white body text on
+  a white card. Set explicit high-contrast colors throughout both
+  forms and apply Times New Roman across all text. ForgotPassword and
+  ResetPassword inherit the fix since they reuse Login.css.
 
-New routes (all in server/app.py):
-  GET  /api/reports/pending              - publisher/admin only
-  GET  /api/reports/changes-requested     - publisher/admin only
-  POST /api/reports/<id>/resubmit         - uploader only
-  POST /api/reports/<id>/review           - publisher/admin only
-  GET  /api/reports/<id>/reviews          - publisher/admin only
-
-GET /api/reports (public) now returns only published reports.
-GET /api/reports/<id>, .../file, and .../image now restrict
-non-published reports to their uploader or a publisher/admin, rather
-than any visitor - a pending or rejected submission is not public
-just because you have its URL.
-
-New models:
-  - report_review.py: ReportReview (one row per report+reviewer+
-    version) and record_review(), the single entry point enforcing
-    every rule (no self-review, comment required on reject, 3rd
-    distinct approval auto-publishes)
-  - report.py: adds review_status, version, resubmission_note,
-    updated_at; resubmit_report() applies a resubmission
-
-Fixes a real bug caught while testing: Report.to_public_dict() used
-to read the uploader relationship directly, which raises
-DetachedInstanceError once the session that loaded the report has
-closed (e.g. immediately after create_report() returns). Author name
-is now resolved through its own short-lived query
-(get_author_name()), so to_public_dict() is safe to call regardless
-of session state - the same pattern is used for ReportReview's
-reviewer_name.
-
-validation.py: adds check_resubmission_note and check_review_comment
-(length-capped; "required for reject" is enforced in
-report_review.py itself, since that depends on the decision, not
-just the value).
-
-models/__init__.py: registers report and report_review so their
-relationships resolve correctly (matches this file's existing
-pattern for every other model).
-
-migrations/3dd530f4f775: adds resubmission_note/review_status/
-version/updated_at to reports, plus the new report_reviews table.
-Chained after 1b00e3b253a1 (add_saved_charts) rather than directly
-after c37ebaee3d80 (add_reports_table): both migrations initially
-branched from c37ebaee3d80, but 1b00e3b253a1 was already pushed
-first, so this one re-parents onto it to keep migration history
-linear instead of requiring an Alembic merge migration. Existing
-report rows get review_status='published' via server_default, so
-reports already live before this migration stay visible rather than
-retroactively requiring review.
-
-Verified end-to-end against a real SQLite database: upload stays
-non-public through 0/1/2 approvals and auto-publishes on the 3rd;
-self-review is blocked; reject without a comment is rejected;
-rejected reports move to a separate changes-requested list and can't
-be reviewed further until resubmitted; resubmission correctly resets
-the approval count so a prior version's approvals don't count toward
-the new one.
-
-Not yet built: the frontend Peer Review page and the updated Reports
-page UI (author/date display, approve/reject controls). This commit
-is backend-only.
-
-Files changed:
-  server/app.py, server/validation.py,
-  server/models/report.py, server/models/report_review.py (new),
-  server/models/__init__.py,
-  server/migrations/versions/3dd530f4f775_add_peer_review_workflow.py (new)
+Sitewide navigation and typography
+- New ScrollToTop component, mounted in App.jsx, resets scroll
+  position to the top of the page on every route change (via
+  document.body, this site's actual scroll container).
+- Extend the sitewide serif rule to h4-h6 for full heading coverage.
+- Docs page rebuilt to match the About page's format: hero, sticky
+  scrollspy sidebar, and panel sections, reusing About.css for the
+  shared shell and trimming Docs.css to its content-specific styles
+  (methodology cards, formula list, sources table).
+- Footer cleaned up: removed every link duplicated in the navbar
+  (About, Observatory, Reports, Country Profiles, Fellowship,
+  Certifications, Contact), leaving only Docs.

@@ -1,135 +1,97 @@
-.docs-page {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  padding: 40px 32px 80px;
-  max-width: 1000px;
-  margin: 0 auto;
-  width: 100%;
+/* ---------- Docs page ----------
+   Page shell (hero, sticky index nav, section panels) comes from
+   About.css, which Docs.jsx also imports. This file only covers the
+   content types unique to Docs: interpretation/gap callouts, methodology
+   cards, the formula list, and the GTBI sources table. */
+
+.docs-interpretation{
+  color:var(--text-hi);
+  font-size:14px;
+  line-height:1.7;
+  background:rgba(79,217,199,0.06);
+  border:1px solid rgba(79,217,199,0.25);
+  border-radius:8px;
+  padding:14px 16px;
+  margin-bottom:14px;
 }
-.docs-header h1 {
-  margin: 0 0 6px 0;
-  font-size: 30px;
-  color: var(--text-hi);
-}
-.docs-subheading {
-  color: var(--text-mid);
-  font-size: 14px;
-  margin: 0 0 12px 0;
-}
-.docs-section {
-  margin-top: 36px;
-}
-.docs-section h2 {
-  color: var(--text-hi);
-  font-size: 18px;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 8px;
-  margin-bottom: 14px;
-}
-.docs-section > p {
-  color: var(--text-mid);
-  font-size: 14px;
-  line-height: 1.6;
-  max-width: 760px;
-}
-.docs-subheading-h3 {
-  color: var(--text-hi);
-  font-size: 14px;
-  margin: 20px 0 8px 0;
-}
-.docs-interpretation {
-  color: var(--text-hi);
-  font-size: 14px;
-  line-height: 1.7;
-  background: rgba(79, 217, 199, 0.06);
-  border: 1px solid rgba(79, 217, 199, 0.25);
-  border-radius: 8px;
-  padding: 14px 16px;
-  margin-bottom: 12px;
-}
-.docs-known-gap {
-  color: var(--gold);
-  font-size: 13px;
-  line-height: 1.6;
-  background: rgba(232, 184, 75, 0.08);
-  border: 1px solid rgba(232, 184, 75, 0.3);
-  border-radius: 8px;
-  padding: 12px 14px;
-  margin-bottom: 16px;
+.docs-known-gap{
+  color:var(--gold);
+  font-size:13px;
+  line-height:1.6;
+  background:rgba(232,184,75,0.08);
+  border:1px solid rgba(232,184,75,0.3);
+  border-radius:8px;
+  padding:12px 14px;
+  margin-bottom:16px;
 }
 
-.docs-cards {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+.docs-cards{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:14px;
 }
-@media (max-width: 700px) {
-  .docs-cards { grid-template-columns: 1fr; }
+@media (max-width: 700px){
+  .docs-cards{grid-template-columns:1fr;}
 }
-.docs-card {
-  background: var(--bg-panel);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 14px 16px;
+.docs-card{
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:14px 16px;
 }
-.docs-card h3 {
-  color: var(--cyan);
-  font-size: 13px;
-  margin: 0 0 8px 0;
+.docs-card h3{
+  color:var(--cyan);
+  font-size:13px;
+  margin:0 0 8px 0;
 }
-.docs-card p {
-  color: var(--text-mid);
-  font-size: 13px;
-  line-height: 1.6;
-  margin: 0;
-}
-
-.docs-formula-list {
-  color: var(--text-mid);
-  font-size: 13px;
-  line-height: 1.7;
-  padding-left: 20px;
-  max-width: 780px;
-}
-.docs-formula-list li {
-  margin-bottom: 6px;
+.docs-card p{
+  color:var(--text-mid);
+  font-size:13px;
+  line-height:1.6;
+  margin:0;
 }
 
-.docs-sources-table-wrap {
-  overflow-x: auto;
+.docs-formula-list{
+  color:var(--text-mid);
+  font-size:13px;
+  line-height:1.7;
+  padding-left:20px;
+  margin:0;
 }
-.docs-sources-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
+.docs-formula-list li{margin-bottom:6px;}
+
+.docs-sources-table-wrap{overflow-x:auto;}
+.docs-sources-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
 }
-.docs-sources-table th {
-  text-align: left;
-  color: var(--text-hi);
-  border-bottom: 1px solid var(--line);
-  padding: 8px 10px;
-  white-space: nowrap;
+.docs-sources-table th{
+  text-align:left;
+  color:var(--text-hi);
+  border-bottom:1px solid var(--line);
+  padding:8px 10px;
+  white-space:nowrap;
 }
-.docs-sources-table td {
-  color: var(--text-mid);
-  border-bottom: 1px dashed var(--line);
-  padding: 10px;
-  vertical-align: top;
-  line-height: 1.5;
+.docs-sources-table td{
+  color:var(--text-mid);
+  border-bottom:1px dashed var(--line);
+  padding:10px;
+  vertical-align:top;
+  line-height:1.5;
 }
-.docs-source-id {
-  color: var(--cyan);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  white-space: nowrap;
+.docs-source-id{
+  color:var(--cyan);
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  white-space:nowrap;
 }
 
-.docs-page code {
-  background: var(--bg-panel);
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  padding: 1px 5px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
+.about-section code{
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--line);
+  border-radius:4px;
+  padding:1px 5px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
 }
