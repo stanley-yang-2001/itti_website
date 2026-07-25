@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
 const NAV_LINKS = [
@@ -13,29 +13,16 @@ const NAV_LINKS = [
   { to: '/contact', label: 'Contact' }
 ];
 
-// Titles for routes that aren't in NAV_LINKS but still need a page name
-// shown in the navbar (auth pages, the publisher-only page, etc).
-const EXTRA_PAGE_TITLES = {
-  '/login': 'Log In',
-  '/signup': 'Sign Up',
-  '/forgot-password': 'Reset Password',
-  '/reset-password': 'Reset Password',
-  '/publish': 'Publish',
-  '/unavailable': 'Unavailable'
-};
-
 export default function NavBar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, isAuthenticated, isPublisher, logout } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
   const navRef = useRef(null);
 
-  // The navbar's height changes per page (page title row present or not)
-  // and on mobile (menu open/closed), and it's now sticky - so anything
-  // else on the page that also needs to stick below it (e.g. the letter
-  // grid on Country Profiles) reads this variable instead of a hardcoded
-  // pixel offset.
+  // The navbar's height changes on mobile (menu open/closed), and it's
+  // sticky - so anything else on the page that also needs to stick below
+  // it (e.g. the letter grid on Country Profiles) reads this variable
+  // instead of a hardcoded pixel offset.
   useEffect(() => {
     const el = navRef.current;
     if (!el) return;
@@ -48,7 +35,7 @@ export default function NavBar() {
     const observer = new ResizeObserver(updateHeight);
     observer.observe(el);
     return () => observer.disconnect();
-  }, [menuOpen, location.pathname]);
+  }, [menuOpen]);
 
   async function handleLogout() {
     await logout();
@@ -58,17 +45,12 @@ export default function NavBar() {
 
   const links = isPublisher ? [...NAV_LINKS, { to: '/publish', label: 'Publish' }] : NAV_LINKS;
 
-  const currentPageTitle =
-    links.find((link) => link.to === location.pathname)?.label ??
-    EXTRA_PAGE_TITLES[location.pathname] ??
-    null;
-
   return (
     <nav className="navbar" ref={navRef}>
       <div className="navbar-top">
         <Link to="/" className="navbar-brand">
           <img src="/itti-logo.png" alt="ITTI seal" className="navbar-logo" />
-          <span className="navbar-title display">ITTI</span>
+          <span className="navbar-title display">International Truth &amp; Trauma Institute</span>
         </Link>
 
         <div className="navbar-auth">
@@ -105,8 +87,6 @@ export default function NavBar() {
           </button>
         </div>
       </div>
-
-      {currentPageTitle && <div className="navbar-page-title">{currentPageTitle}</div>}
 
       <ul className={`navbar-links${menuOpen ? ' open' : ''}`}>
         {links.map((link) => (

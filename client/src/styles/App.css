@@ -433,28 +433,24 @@
   .navbar-brand{
     display:flex;
     align-items:center;
-    gap:10px;
+    gap:14px;
     text-decoration:none;
+    color:var(--text-hi);
   }
   .navbar-logo{
-    width:34px;
-    height:34px;
+    width:76px;
+    height:76px;
     object-fit:contain;
     flex-shrink:0;
   }
   .navbar-title{
+    display:block;
+    max-width:260px;
     font-size:19px;
+    line-height:1.3;
     font-weight:600;
     letter-spacing:0.01em;
-  }
-  .navbar-page-title{
-    width:100%;
-    padding:10px 4px 0 4px;
-    font-family:'Times New Roman', Times, serif;
-    font-size:15px;
-    font-weight:600;
     color:var(--text-hi);
-    text-align:left;
   }
   .navbar-links{
     list-style:none;
