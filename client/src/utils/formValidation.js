@@ -46,6 +46,8 @@ export const MIN_PASSWORD_LENGTH = 8;
 export const MAX_PASSWORD_LENGTH = 128;
 export const MAX_REPORT_TITLE_LENGTH = 200;
 export const MAX_REPORT_DESCRIPTION_LENGTH = 2000;
+export const MIN_DONATION_DOLLARS = 1;
+export const MAX_DONATION_DOLLARS = 100000;
 
 export function checkEmail(value) {
   if (!value || !value.trim()) return 'Email is required.';
@@ -104,6 +106,16 @@ export function checkReportDescription(value) {
   return null;
 }
 
+/** value is a dollar amount (number), e.g. from a preset or parsed custom-amount input. */
+export function checkDonationAmount(value) {
+  if (value == null || Number.isNaN(value)) return 'Choose an amount or enter a custom one.';
+  if (value < MIN_DONATION_DOLLARS) return `Minimum donation is $${MIN_DONATION_DOLLARS.toFixed(2)}.`;
+  if (value > MAX_DONATION_DOLLARS) {
+    return `Donations over $${MAX_DONATION_DOLLARS.toLocaleString()} aren't supported online — please contact us directly.`;
+  }
+  return null;
+}
+
 const CHECKS = {
   email: checkEmail,
   password: checkPassword,
@@ -111,6 +123,7 @@ const CHECKS = {
   searchQuery: checkSearchQuery,
   reportTitle: checkReportTitle,
   reportDescription: checkReportDescription,
+  donationAmount: checkDonationAmount,
 };
 
 /** Looks up a check by name and runs it. Returns null (valid) or an error message. */

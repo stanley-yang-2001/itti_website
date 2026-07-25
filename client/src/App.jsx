@@ -19,6 +19,8 @@ import ResetPassword from './pages/ResetPassword.jsx';
 import Unavailable from './pages/Unavailable.jsx';
 import Publish from './pages/Publish.jsx';
 import Docs from './pages/Docs.jsx';
+import Donate from './pages/Donate.jsx';
+import DonateThankYou from './pages/DonateThankYou.jsx';
 
 export default function App() {
   return (
@@ -35,6 +37,8 @@ export default function App() {
         <Route path="/certifications" element={<Certifications />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/docs" element={<Docs />} />
+        <Route path="/donate" element={<Donate />} />
+        <Route path="/donate/thank-you" element={<DonateThankYou />} />
 
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />

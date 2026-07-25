@@ -83,3 +83,36 @@ def send_password_reset_email(backend, to_email, reset_link):
             "ignore this email - your password will not be changed."
         ),
     )
+
+
+def send_donation_confirmation_email(backend, donation):
+    """
+    donation is a models.donation.Donation row that has already been
+    marked succeeded - this only composes and sends the receipt, it
+    doesn't check or change status itself (see
+    finalize_succeeded_donation's just_finalized return value, which is
+    what callers use to decide whether to call this at all, so a
+    donor is never emailed twice for the same donation).
+    """
+    donated_on = donation.created_at.strftime("%B %d, %Y") if donation.created_at else ""
+    backend.send(
+        to=donation.email,
+        subject=f"Thank you for your donation to ITTI — {donation.confirmation_code}",
+        body=(
+            f"Dear {donation.first_name},\n\n"
+            "Thank you for your generous gift to the International Truth & Trauma "
+            "Institute. Your support directly funds our work documenting and "
+            "responding to election- and conflict-related trauma around the world.\n\n"
+            "Donation receipt\n"
+            "-----------------\n"
+            f"Confirmation number: {donation.confirmation_code}\n"
+            f"Donor: {donation.full_name}\n"
+            f"Amount: {donation.amount_display} ({donation.currency.upper()})\n"
+            f"Date: {donated_on}\n\n"
+            "Please keep this email for your records - your confirmation number is "
+            "also stored on file with us and can be used as a reference in any "
+            "correspondence about this gift.\n\n"
+            "With gratitude,\n"
+            "The International Truth & Trauma Institute"
+        ),
+    )

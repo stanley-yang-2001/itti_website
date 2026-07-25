@@ -10,7 +10,8 @@ const NAV_LINKS = [
   { to: '/country-profiles', label: 'Country Profiles' },
   { to: '/fellows', label: 'Fellowship' },
   { to: '/certifications', label: 'Certifications' },
-  { to: '/contact', label: 'Contact' }
+  { to: '/contact', label: 'Contact' },
+  { to: '/donate', label: 'Donate', emphasize: true }
 ];
 
 export default function NavBar() {
@@ -94,7 +95,9 @@ export default function NavBar() {
             <NavLink
               to={link.to}
               end={link.end}
-              className={({ isActive }) => 'navbar-link' + (isActive ? ' active' : '')}
+              className={({ isActive }) =>
+                'navbar-link' + (link.emphasize ? ' navbar-link-donate' : '') + (isActive ? ' active' : '')
+              }
               onClick={() => setMenuOpen(false)}
             >
               {link.label}

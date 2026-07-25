@@ -574,6 +574,19 @@
     color:var(--bg-deep);
     background:var(--cyan);
   }
+  .navbar-link-donate{
+    border:1px solid var(--cyan);
+    color:var(--cyan);
+    font-weight:600;
+  }
+  .navbar-link-donate:hover{
+    color:var(--bg-deep);
+    background:var(--cyan);
+  }
+  .navbar-link-donate.active{
+    color:var(--bg-deep);
+    background:var(--cyan);
+  }
   .navbar-toggle{
     display:none;
     flex-direction:column;

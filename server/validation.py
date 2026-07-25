@@ -44,6 +44,30 @@ MAX_RESUBMISSION_NOTE_LENGTH = 2000
 MAX_REVIEW_COMMENT_LENGTH = 2000
 MIN_PASSWORD_LENGTH = 8
 MAX_PASSWORD_LENGTH = 128
+MAX_DONOR_NAME_LENGTH = 120
+MIN_DONATION_CENTS = 100        # $1.00 - Stripe itself won't process much less anyway
+MAX_DONATION_CENTS = 100_000_00  # $100,000.00 - generous ceiling, catches fat-finger/garbage input
+
+
+def check_donor_name(value, field_label="Name"):
+    if value is None or not value.strip():
+        return f"{field_label} is required."
+    if len(value) > MAX_DONOR_NAME_LENGTH:
+        return f"{field_label} must be under {MAX_DONOR_NAME_LENGTH} characters."
+    return None
+
+
+def check_donation_amount(value):
+    """value is expected to already be an int number of cents."""
+    if value is None:
+        return "Donation amount is required."
+    if not isinstance(value, int) or isinstance(value, bool):
+        return "Donation amount must be a whole number of cents."
+    if value < MIN_DONATION_CENTS:
+        return f"Minimum donation is ${MIN_DONATION_CENTS / 100:.2f}."
+    if value > MAX_DONATION_CENTS:
+        return f"Donations over ${MAX_DONATION_CENTS / 100:,.0f} aren't supported online - please contact us directly."
+    return None
 
 
 def check_email(value):
@@ -114,6 +138,8 @@ CHECKS = {
     "report_description": check_report_description,
     "resubmission_note": check_resubmission_note,
     "review_comment": check_review_comment,
+    "donor_name": check_donor_name,
+    "donation_amount": check_donation_amount,
 }
 
 

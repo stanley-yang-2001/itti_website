@@ -16,3 +16,4 @@ from . import password_reset_token  # noqa: F401
 from . import saved_chart  # noqa: F401
 from . import report  # noqa: F401
 from . import report_review  # noqa: F401
+from . import donation  # noqa: F401

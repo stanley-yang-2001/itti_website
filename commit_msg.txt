@@ -1,25 +1,36 @@
-Rebase home-page globe/panel work onto latest database branch
+Add Stripe-powered donation flow with email confirmation
 
-database moved forward again (49c6a8d, "Enlarge navbar logo and
-institute name") and, importantly, that commit also properly fixed
-Footer.jsx and Login.jsx, which a prior commit (aec6f89) had corrupted
-with the wrong file's content. My earlier stopgap restore of those two
-files is no longer needed - upstream's real fix (with the larger logo/
-institute name) is better and is left untouched here entirely.
+- New Donation model (server/models/donation.py): a pending row is
+  created up front with a confirmation code (ITTI-XXXXXXXX) before
+  Stripe is ever involved; finalize_succeeded_donation() is idempotent
+  so a webhook retry or a racing client-side check never double-process
+  or double-email the same donation.
+- Alembic migration for the donations table, chained after the latest
+  head (3dd530f4f775).
+- POST /api/donations/checkout-session validates donor name/email/
+  amount, then creates a Stripe Checkout Session with
+  automatic_payment_methods enabled - Stripe itself decides which
+  methods to offer (card, bank debit, wallets, etc.) rather than this
+  app hardcoding a payment method list.
+- POST /api/donations/webhook (signature-verified via
+  STRIPE_WEBHOOK_SECRET) and GET /api/donations/session/<id> both
+  finalize a paid donation through the same idempotent path, so the
+  flow completes correctly whether or not a webhook is configured
+  (e.g. local dev with no public URL).
+- send_donation_confirmation_email() (server/email_backend.py): thank-
+  you message, confirmation number, donor name, amount, and date.
+- New server-side validation (check_donor_name, check_donation_amount)
+  and matching client-side checks (formValidation.js).
+- New Donate page (fixed-amount chips fetched from the backend + custom
+  amount, name/email form, redirect to Stripe-hosted checkout) and
+  DonateThankYou page (polls the session endpoint, shows the
+  confirmation code and receipt, handles pending/failed/error states).
+- Donate link added to the navbar as an emphasized CTA.
 
-Reapplies the home-page changes (globe collapse fix + ETTI/GTBI color
-coding, SidePanel data-pending bug fix, three-part restructure with
-embedded panel and year dropdowns) on top of this new tip:
-- Home.jsx, SidePanel.jsx, and countryData.js: full change set
-  reapplied as-is, no conflicts.
-- App.css: spliced my Main/Globe + Side Panel sections into the
-  current file rather than overwriting it wholesale, since 49c6a8d
-  changed the Navbar section (larger .navbar-logo, restructured
-  .navbar-title, removed .navbar-page-title) right next to where my
-  changes live. Verified line-for-line that the Navbar/Placeholder/
-  Explore/Footer sections are byte-identical to origin after the
-  splice - only the Main/Globe/Side Panel region differs.
-
-Verified with `vite build` and a live dev-server run (backend +
-Vite proxy) that everything compiles and works end-to-end alongside
-the current NavBar/Footer.
+Requires STRIPE_SECRET_KEY (and STRIPE_WEBHOOK_SECRET for the webhook
+route) in the server environment; the donate flow returns a clear 503
+instead of failing at request time if either is unset. All four
+donation routes and the model/email layer were smoke-tested in-process
+(400/502/503 paths, idempotent finalize, presets); the live Stripe API
+call itself could not be exercised since api.stripe.com isn't reachable
+from this environment.
