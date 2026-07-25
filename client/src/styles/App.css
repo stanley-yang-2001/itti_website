@@ -38,14 +38,11 @@
   }
 
   /* ---------- Header ---------- */
-  header{
-    display:flex;
-    align-items:center;
-    justify-content:flex-end;
-    padding:18px 32px;
-    z-index:5;
-    flex-shrink:0;
-  }
+  /* The <header> wrapper itself is no longer rendered - the search bar
+     it used to hold now lives inside .home-globe-left (see the
+     ".home-globe-left .searchwrap" override in the Main/Globe section
+     below). .searchwrap/#search/#suggestions stay here as the shared
+     base styles for the control itself, wherever it's placed. */
   .brand{
     display:flex;
     align-items:baseline;
@@ -159,7 +156,7 @@
     gap:36px;
     max-width:1240px;
     margin:0 auto;
-    align-items:start;
+    align-items:stretch;
   }
   .home-globe-left{
     position:relative;
@@ -173,15 +170,6 @@
   .home-globe-right{
     display:flex;
     flex-direction:column;
-    gap:20px;
-  }
-  .home-globe-message{
-    margin:0;
-    font-size:15px;
-    line-height:1.65;
-    color:var(--text-mid);
-    padding-bottom:20px;
-    border-bottom:1px solid var(--line);
   }
 
   #globe-container{
@@ -220,6 +208,14 @@
   }
   .land.selected:hover{fill:var(--gold);}
 
+  .home-globe-left .searchwrap{
+    position:absolute;
+    top:16px; left:50%;
+    transform:translateX(-50%);
+    z-index:3;
+    width:min(320px, 80%);
+  }
+
   .hint{
     position:absolute;
     bottom:16px; left:50%;
@@ -237,7 +233,7 @@
 
   .globe-legend{
     position:absolute;
-    top:16px; left:50%;
+    top:66px; left:50%;
     transform:translateX(-50%);
     display:flex; gap:14px; align-items:center;
     font-family:'JetBrains Mono',monospace;
@@ -258,22 +254,29 @@
   .globe-legend-swatch.data-both{background:#6BC97A;}
 
   @media (max-width: 900px){
-    .home-globe-grid{grid-template-columns:1fr;}
+    .home-globe-grid{grid-template-columns:1fr; align-items:stretch;}
     .home-globe-left{height:420px;}
+    #side-panel{min-height:320px;}
   }
   @media (max-width: 640px){
     .home-welcome{padding:56px 20px 40px;}
-    .globe-legend{flex-wrap:wrap; justify-content:center; width:88%; gap:8px 12px;}
+    .home-globe-left .searchwrap{width:88%;}
+    .globe-legend{flex-wrap:wrap; justify-content:center; width:88%; gap:8px 12px; top:60px;}
     .hint{width:90%; flex-wrap:wrap; justify-content:center;}
   }
 
   /* ---------- Side Panel ---------- */
   /* Used to be a fixed drawer that slid in from the right edge of a
      full-viewport globe hero. It now lives in normal document flow,
-     stacked below the message in the Part 2 right column, so it just
-     needs to look like a card - no position/transform/z-index needed. */
+     filling the Part 2 right column alongside the globe box, so it
+     just needs to look like a card - no position/transform/z-index
+     needed. flex:1 makes it match the globe box's height (the grid
+     row is stretched to the tallest item via align-items:stretch on
+     .home-globe-grid, and .home-globe-right hands that full height
+     down to this, its only child). */
   #side-panel{
     position:relative;
+    flex:1;
     background:linear-gradient(180deg, var(--bg-panel), #0A1220);
     border:1px solid var(--line);
     border-radius:14px;
@@ -283,6 +286,10 @@
   }
 
   .panel-placeholder{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
     padding:40px 26px;
     text-align:center;
   }
@@ -495,11 +502,6 @@
   ::-webkit-scrollbar{width:8px;}
   ::-webkit-scrollbar-track{background:transparent;}
   ::-webkit-scrollbar-thumb{background:var(--line); border-radius:8px;}
-
-  @media (max-width: 640px){
-    header{padding:16px 18px; flex-wrap:wrap; gap:12px;}
-    .searchwrap{width:100%; order:3;}
-  }
 
   /* ---------- Navbar ---------- */
   .navbar-top{

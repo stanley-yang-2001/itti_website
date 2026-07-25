@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import * as topojson from 'topojson-client';
-import Header from '../components/Header.jsx';
 import Globe from '../components/Globe.jsx';
+import SearchBar from '../components/SearchBar.jsx';
 import SidePanel from '../components/SidePanel.jsx';
 import { fetchWorldData, fetchCountry, fetchAllCountries } from '../api.js';
 import { computeCountryDataStatus } from '../utils/countryDataStatus.js';
@@ -76,8 +76,6 @@ export default function Home() {
 
   return (
     <>
-      <Header features={features} onSelectFeature={handleSelectFeature} />
-
       <main>
         {/* Part 1: welcome */}
         <section className="home-welcome">
@@ -92,6 +90,7 @@ export default function Home() {
         <section className="home-globe">
           <div className="home-globe-grid">
             <div className="home-globe-left">
+              <SearchBar features={features} onSelectFeature={handleSelectFeature} />
               {worldData && (
                 <Globe
                   ref={globeRef}
@@ -118,7 +117,6 @@ export default function Home() {
             </div>
 
             <div className="home-globe-right">
-              <p className="home-globe-message">{MISSION_MESSAGE}</p>
               <SidePanel country={country} record={metrics} onClose={handleClose} />
             </div>
           </div>
