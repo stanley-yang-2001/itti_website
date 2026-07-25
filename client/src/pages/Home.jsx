@@ -4,7 +4,8 @@ import * as topojson from 'topojson-client';
 import Header from '../components/Header.jsx';
 import Globe from '../components/Globe.jsx';
 import SidePanel from '../components/SidePanel.jsx';
-import { fetchWorldData, fetchCountry } from '../api.js';
+import { fetchWorldData, fetchCountry, fetchAllCountries } from '../api.js';
+import { computeCountryDataStatus } from '../utils/countryDataStatus.js';
 
 const EXPLORE_CARDS = [
   {
@@ -29,12 +30,17 @@ const EXPLORE_CARDS = [
   }
 ];
 
+const MISSION_MESSAGE =
+  'ITTI is a global research and advisory institute that documents collective trauma, builds ' +
+  'country-level Trauma Observatories and standardized indices like GTBI and ETTI, and turns ' +
+  'those insights into trauma-informed governance and policy reform.';
+
 export default function Home() {
   const [worldData, setWorldData] = useState(null);
   const [features, setFeatures] = useState([]);
-  const [panelOpen, setPanelOpen] = useState(false);
   const [country, setCountry] = useState(null); // { name, iso }
   const [metrics, setMetrics] = useState(null);
+  const [countryStatus, setCountryStatus] = useState({}); // iso -> 'etti' | 'gtbi' | 'both'
   const globeRef = useRef(null);
 
   useEffect(() => {
@@ -43,11 +49,13 @@ export default function Home() {
       const parsed = topojson.feature(world, world.objects.countries);
       setFeatures(parsed.features);
     });
+    fetchAllCountries()
+      .then((countries) => setCountryStatus(computeCountryDataStatus(countries)))
+      .catch(() => setCountryStatus({})); // globe still renders fine with default colors
   }, []);
 
   function openCountry(name, iso) {
     setCountry({ name, iso });
-    setPanelOpen(true);
     fetchCountry(iso)
       .then(setMetrics)
       .catch(() => setMetrics(null)); // fall back to placeholder zeros in the panel
@@ -62,21 +70,59 @@ export default function Home() {
   }
 
   function handleClose() {
-    setPanelOpen(false);
+    setCountry(null);
+    setMetrics(null);
   }
 
   return (
     <>
       <Header features={features} onSelectFeature={handleSelectFeature} />
+
       <main>
-        {worldData && (
-          <Globe ref={globeRef} worldData={worldData} onCountryClick={handleCountryClick} />
-        )}
-        <div className="hint">
-          <span className="dot"></span>DRAG TO ROTATE<span className="dot"></span>SCROLL TO ZOOM
-          <span className="dot"></span>CLICK A COUNTRY
-        </div>
-        <SidePanel isOpen={panelOpen} country={country} metrics={metrics} onClose={handleClose} />
+        {/* Part 1: welcome */}
+        <section className="home-welcome">
+          <p className="home-welcome-eyebrow">WELCOME</p>
+          <h1 className="home-welcome-title display">
+            Welcome to the International Truth &amp; Trauma Institute
+          </h1>
+          <p className="home-welcome-message">{MISSION_MESSAGE}</p>
+        </section>
+
+        {/* Part 2: globe (left) + message and country panel (right) */}
+        <section className="home-globe">
+          <div className="home-globe-grid">
+            <div className="home-globe-left">
+              {worldData && (
+                <Globe
+                  ref={globeRef}
+                  worldData={worldData}
+                  onCountryClick={handleCountryClick}
+                  countryStatus={countryStatus}
+                />
+              )}
+              <div className="globe-legend">
+                <span className="globe-legend-item">
+                  <span className="globe-legend-swatch data-etti"></span>ETTI data
+                </span>
+                <span className="globe-legend-item">
+                  <span className="globe-legend-swatch data-gtbi"></span>GTBI data
+                </span>
+                <span className="globe-legend-item">
+                  <span className="globe-legend-swatch data-both"></span>ETTI + GTBI
+                </span>
+              </div>
+              <div className="hint">
+                <span className="dot"></span>DRAG TO ROTATE<span className="dot"></span>SCROLL TO ZOOM
+                <span className="dot"></span>CLICK A COUNTRY
+              </div>
+            </div>
+
+            <div className="home-globe-right">
+              <p className="home-globe-message">{MISSION_MESSAGE}</p>
+              <SidePanel country={country} record={metrics} onClose={handleClose} />
+            </div>
+          </div>
+        </section>
       </main>
 
       <section className="home-explore">

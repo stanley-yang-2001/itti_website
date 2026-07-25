@@ -1,27 +1,25 @@
-Observatory: NTO map + refs, GTBI expanded variables, dynamic country
-colors, Nigeria chart reorg, user guide
+Rebase home-page globe/panel work onto latest database branch
 
-- Add Nigeria geographic stressor severity map (Blessing Alims,
-  published 2026-07-24) to the NTO tab, with caption + APA reference
-  list on the Docs page (docs#nto-map), integrated into the sticky
-  sidebar-nav Docs layout with deep-link support (#user-guide,
-  #nto-map).
-- countryColors.js: replace the fixed 12-color hash palette (which
-  guaranteed collisions past 12 distinct countries) with dynamic
-  golden-angle hue assignment - no hardcoded palette, no upper bound,
-  same call signature everywhere it's used.
-- Expand GTBI's chartable variables: gtbi_extract.py now aggregates
-  per-exposure-type YLL/YLD/prevalence (Armed Conflict, Political
-  Repression, Communal Violence, Terrorism, Forced Displacement,
-  Disaster) alongside the existing composite figures, mirroring ETTI's
-  domain/sub-variable structure. Added a matching "stacked GTBI
-  exposure-type breakdown" chart type to the chart builder.
-- NigeriaObservatory: add Burden Rate trend, YLL-vs-YLD trend, ETTI
-  domain breakdown, and GTBI exposure-type breakdown charts; organize
-  all charts into Trends / Comparisons / Breakdowns tabs.
-- Add a Docs "How to use the Observatory" user guide section, linked
-  from the Observatory page.
+database moved forward again (49c6a8d, "Enlarge navbar logo and
+institute name") and, importantly, that commit also properly fixed
+Footer.jsx and Login.jsx, which a prior commit (aec6f89) had corrupted
+with the wrong file's content. My earlier stopgap restore of those two
+files is no longer needed - upstream's real fix (with the larger logo/
+institute name) is better and is left untouched here entirely.
 
-Rebased onto 49c6a8d (navbar/logo sizing on top of the Certifications/
-Fellowship/nav-polish commit); no conflicts with either, and this
-commit's Footer/Login fix means the full build now passes clean.
+Reapplies the home-page changes (globe collapse fix + ETTI/GTBI color
+coding, SidePanel data-pending bug fix, three-part restructure with
+embedded panel and year dropdowns) on top of this new tip:
+- Home.jsx, SidePanel.jsx, and countryData.js: full change set
+  reapplied as-is, no conflicts.
+- App.css: spliced my Main/Globe + Side Panel sections into the
+  current file rather than overwriting it wholesale, since 49c6a8d
+  changed the Navbar section (larger .navbar-logo, restructured
+  .navbar-title, removed .navbar-page-title) right next to where my
+  changes live. Verified line-for-line that the Navbar/Placeholder/
+  Explore/Footer sections are byte-identical to origin after the
+  splice - only the Main/Globe/Side Panel region differs.
+
+Verified with `vite build` and a live dev-server run (backend +
+Vite proxy) that everything compiles and works end-to-end alongside
+the current NavBar/Footer.

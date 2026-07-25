@@ -66,6 +66,32 @@ export function getLatestYearRecord(yearKeyedSection) {
 }
 
 /**
+ * Given a year-keyed section like record.GTBI or record.ETTI, returns
+ * the sorted list of real years present (newest first), skipping the
+ * "Data Pending" placeholder key. Empty array if the country has no
+ * real data for that index at all.
+ */
+export function getAvailableYears(yearKeyedSection) {
+  if (!yearKeyedSection || typeof yearKeyedSection !== "object") return [];
+
+  return Object.keys(yearKeyedSection)
+    .filter((key) => key !== DATA_PENDING)
+    .map((key) => parseInt(key, 10))
+    .filter((year) => Number.isFinite(year))
+    .sort((a, b) => b - a);
+}
+
+/**
+ * Returns the record for a specific year out of a year-keyed section,
+ * or null if that year isn't present. Pair with getAvailableYears() so
+ * a year dropdown only ever offers years that actually resolve here.
+ */
+export function getYearRecord(yearKeyedSection, year) {
+  if (!yearKeyedSection || typeof yearKeyedSection !== "object" || year == null) return null;
+  return yearKeyedSection[String(year)] ?? null;
+}
+
+/**
  * Convenience formatter for displaying a field in the UI: returns the
  * real value if present, or the literal string "Data Pending"
  * otherwise (so a component can always render {formatField(value)}

@@ -115,24 +115,77 @@
   }
   #suggestions div:hover{background:rgba(79,217,199,0.08); color:var(--text-hi);}
 
-  /* ---------- Main / Globe ---------- */
-  /* main used to be the only content below the header, so flex:1 inside
-     #app's column layout naturally filled the screen. Now that NavBar,
-     the "Explore" section, and the site footer all sit in the same flex
-     column, they compete with main for space: #app only grows to
-     min-height:100vh, so once those extra sections push the column past
-     one viewport tall there's no leftover space left for flex:1 to hand
-     to main, and it (and the globe inside it) collapses toward 0 height.
-     Giving it an explicit min-height keeps the globe a full-viewport
-     hero at the top of the page regardless of how tall the sections
-     below it are. */
+  /* ---------- Main wrapper (Part 1 + Part 2) ---------- */
   main{
     position:relative;
-    flex:1;
-    min-height:100vh;
   }
+
+  /* ---------- Part 1: Welcome ---------- */
+  .home-welcome{
+    padding:72px 32px 48px;
+    text-align:center;
+    max-width:760px;
+    margin:0 auto;
+  }
+  .home-welcome-eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--cyan);
+    margin:0 0 14px;
+  }
+  .home-welcome-title{
+    margin:0 0 16px;
+    font-size:clamp(30px, 4.2vw, 44px);
+    font-weight:400;
+    line-height:1.15;
+    color:var(--text-hi);
+  }
+  .home-welcome-message{
+    margin:0;
+    font-size:16px;
+    line-height:1.6;
+    color:var(--text-mid);
+  }
+
+  /* ---------- Part 2: Globe + message/panel ---------- */
+  .home-globe{
+    padding:16px 32px 88px;
+  }
+  .home-globe-grid{
+    display:grid;
+    grid-template-columns:1.15fr 1fr;
+    gap:36px;
+    max-width:1240px;
+    margin:0 auto;
+    align-items:start;
+  }
+  .home-globe-left{
+    position:relative;
+    width:100%;
+    height:560px;
+    border-radius:20px;
+    overflow:hidden;
+    border:1px solid var(--line);
+    background:radial-gradient(circle at 38% 32%, #0F2033, var(--bg-deep));
+  }
+  .home-globe-right{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+  }
+  .home-globe-message{
+    margin:0;
+    font-size:15px;
+    line-height:1.65;
+    color:var(--text-mid);
+    padding-bottom:20px;
+    border-bottom:1px solid var(--line);
+  }
+
   #globe-container{
-    position:absolute; inset:0;
+    width:100%; height:100%;
     display:flex; align-items:center; justify-content:center;
   }
   #globe-container svg{
@@ -140,34 +193,6 @@
     cursor:grab;
   }
   #globe-container svg:active{cursor:grabbing;}
-
-  .globe-intro{
-    position:absolute;
-    top:44px; left:50%;
-    transform:translateX(-50%);
-    z-index:2;
-    width:min(560px, 84%);
-    text-align:center;
-    pointer-events:none;
-  }
-  .globe-intro-title{
-    margin:0 0 10px;
-    font-size:clamp(26px, 4vw, 38px);
-    font-weight:400;
-    color:var(--text-hi);
-    letter-spacing:0.01em;
-  }
-  .globe-intro-desc{
-    margin:0;
-    font-family:'Inter',sans-serif;
-    font-size:13px;
-    line-height:1.6;
-    color:var(--text-low);
-  }
-  @media (max-width: 640px){
-    .globe-intro{top:28px; width:90%;}
-    .globe-intro-desc{font-size:12px;}
-  }
 
   .sphere-glow{fill:url(#glow);}
   .sphere-fill{fill:url(#ocean);}
@@ -197,33 +222,34 @@
 
   .hint{
     position:absolute;
-    bottom:26px; left:50%;
+    bottom:16px; left:50%;
     transform:translateX(-50%);
     font-family:'JetBrains Mono',monospace;
-    font-size:11px;
-    letter-spacing:0.12em;
+    font-size:10px;
+    letter-spacing:0.1em;
     color:var(--text-low);
     text-transform:uppercase;
-    display:flex; gap:8px; align-items:center;
+    display:flex; gap:6px; align-items:center;
     pointer-events:none;
+    text-align:center;
   }
-  .hint .dot{width:4px;height:4px;border-radius:50%;background:var(--text-low);}
+  .hint .dot{width:4px;height:4px;border-radius:50%;background:var(--text-low); flex-shrink:0;}
 
   .globe-legend{
     position:absolute;
-    bottom:60px; left:50%;
+    top:16px; left:50%;
     transform:translateX(-50%);
-    display:flex; gap:18px; align-items:center;
+    display:flex; gap:14px; align-items:center;
     font-family:'JetBrains Mono',monospace;
-    font-size:10px;
-    letter-spacing:0.08em;
+    font-size:9.5px;
+    letter-spacing:0.06em;
     color:var(--text-low);
     text-transform:uppercase;
     pointer-events:none;
   }
   .globe-legend-item{display:flex; align-items:center; gap:6px;}
   .globe-legend-swatch{
-    width:9px; height:9px;
+    width:8px; height:8px;
     border-radius:2px;
     flex-shrink:0;
   }
@@ -231,27 +257,41 @@
   .globe-legend-swatch.data-gtbi{background:#B98BD8;}
   .globe-legend-swatch.data-both{background:#6BC97A;}
 
+  @media (max-width: 900px){
+    .home-globe-grid{grid-template-columns:1fr;}
+    .home-globe-left{height:420px;}
+  }
   @media (max-width: 640px){
-    .globe-legend{flex-wrap:wrap; justify-content:center; bottom:64px; gap:10px 16px; width:88%;}
+    .home-welcome{padding:56px 20px 40px;}
+    .globe-legend{flex-wrap:wrap; justify-content:center; width:88%; gap:8px 12px;}
+    .hint{width:90%; flex-wrap:wrap; justify-content:center;}
   }
 
   /* ---------- Side Panel ---------- */
+  /* Used to be a fixed drawer that slid in from the right edge of a
+     full-viewport globe hero. It now lives in normal document flow,
+     stacked below the message in the Part 2 right column, so it just
+     needs to look like a card - no position/transform/z-index needed. */
   #side-panel{
-    position:absolute;
-    top:0; right:0;
-    height:100%;
-    width:380px;
-    max-width:88vw;
+    position:relative;
     background:linear-gradient(180deg, var(--bg-panel), #0A1220);
-    border-left:1px solid var(--line);
-    box-shadow:-24px 0 60px rgba(0,0,0,0.35);
-    transform:translateX(100%);
-    transition:transform .32s cubic-bezier(.22,.9,.32,1);
-    z-index:10;
+    border:1px solid var(--line);
+    border-radius:14px;
     display:flex;
     flex-direction:column;
+    overflow:hidden;
   }
-  #side-panel.open{transform:translateX(0);}
+
+  .panel-placeholder{
+    padding:40px 26px;
+    text-align:center;
+  }
+  .panel-placeholder p{
+    margin:0;
+    font-size:13px;
+    color:var(--text-low);
+    line-height:1.6;
+  }
 
   .panel-top{
     padding:26px 26px 0 26px;
@@ -322,7 +362,6 @@
 
   .panel-body{
     padding:26px;
-    overflow-y:auto;
     flex:1;
   }
   .tab-pane{display:none;}
@@ -335,6 +374,13 @@
     padding:22px;
     margin-bottom:18px;
   }
+  .score-card-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:8px;
+  }
   .score-label{
     font-family:'JetBrains Mono',monospace;
     font-size:11px;
@@ -343,6 +389,7 @@
     color:var(--text-low);
     margin:0 0 8px 0;
   }
+  .score-card-head .score-label{margin:0;}
   .score-value{
     font-family:'JetBrains Mono',monospace;
     font-size:42px;
@@ -357,6 +404,33 @@
     margin-top:12px;
     line-height:1.5;
   }
+
+  .year-select-wrap{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-shrink:0;
+  }
+  .year-select-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;
+    letter-spacing:0.08em;
+    color:var(--text-low);
+    text-transform:uppercase;
+    white-space:nowrap;
+  }
+  .year-select{
+    background:rgba(255,255,255,0.04);
+    border:1px solid var(--line);
+    border-radius:7px;
+    color:var(--text-hi);
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    padding:5px 8px;
+    cursor:pointer;
+  }
+  .year-select:focus{outline:none; border-color:var(--cyan);}
+  .year-select:disabled{color:var(--text-low); cursor:default;}
 
   .metric-grid{
     display:grid;
@@ -400,6 +474,24 @@
   }
   .placeholder-note svg{flex-shrink:0; margin-top:2px; width:13px;height:13px; stroke:var(--text-low);}
 
+  .panel-observatory-link{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:22px 26px 26px;
+    padding:14px 16px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:rgba(79,217,199,0.05);
+    color:var(--cyan);
+    font-size:13px;
+    font-weight:500;
+    text-decoration:none;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .panel-observatory-link:hover{border-color:var(--cyan); background:rgba(79,217,199,0.1);}
+  .panel-observatory-link svg{width:16px; height:16px; flex-shrink:0;}
+
   ::-webkit-scrollbar{width:8px;}
   ::-webkit-scrollbar-track{background:transparent;}
   ::-webkit-scrollbar-thumb{background:var(--line); border-radius:8px;}
@@ -407,7 +499,6 @@
   @media (max-width: 640px){
     header{padding:16px 18px; flex-wrap:wrap; gap:12px;}
     .searchwrap{width:100%; order:3;}
-    #side-panel{width:100%; max-width:100%;}
   }
 
   /* ---------- Navbar ---------- */
