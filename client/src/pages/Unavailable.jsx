@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import Reveal from '../components/Reveal.jsx';
 import "../styles/Unavailable.css";
 
 /**
@@ -9,13 +10,15 @@ import "../styles/Unavailable.css";
 export default function Unavailable() {
   return (
     <div className="unavailable-page">
-      <div className="unavailable-content">
-        <h1>Sorry, this content is currently unavailable</h1>
-        <p>Please check back later.</p>
-        <Link to="/country-profiles" className="unavailable-back-link">
-          Back to Country Profiles
-        </Link>
-      </div>
+      <Reveal delay={0}>
+        <div className="unavailable-content">
+          <h1>Sorry, this content is currently unavailable</h1>
+          <p>Please check back later.</p>
+          <Link to="/country-profiles" className="unavailable-back-link">
+            Back to Country Profiles
+          </Link>
+        </div>
+      </Reveal>
     </div>
   );
 }

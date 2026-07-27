@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import Reveal from '../components/Reveal.jsx';
 import '../styles/About.css';
 
 const OFH_URL = 'https://ofhusa.org/#itti';
@@ -219,12 +220,14 @@ export default function About() {
 
   return (
     <div className="about-page">
-      <section className="about-hero">
-        <img src="/itti-logo.png" alt="ITTI seal" className="about-hero-seal" />
-        <p className="about-hero-eyebrow mono">International Truth &amp; Trauma Institute</p>
-        <h1 className="about-hero-title display">About ITTI</h1>
-        <p className="about-hero-tagline">Documenting Trauma. Designing Resilience. Strengthening Institutions.</p>
-      </section>
+      <Reveal delay={0}>
+        <section className="about-hero">
+          <img src="/itti-logo.png" alt="ITTI seal" className="about-hero-seal" />
+          <p className="about-hero-eyebrow mono">International Truth &amp; Trauma Institute</p>
+          <h1 className="about-hero-title display">About ITTI</h1>
+          <p className="about-hero-tagline">Documenting Trauma. Designing Resilience. Strengthening Institutions.</p>
+        </section>
+      </Reveal>
 
       <div className="about-layout">
         <nav className="about-index" aria-label="About page sections">
@@ -244,6 +247,7 @@ export default function About() {
         </nav>
 
         <div className="about-content">
+          <Reveal delay={0}>
           <section id="overview" ref={registerSection('overview')} className="about-section">
             <h2 className="about-section-title display">Who We Are</h2>
             <p>
@@ -274,7 +278,9 @@ export default function About() {
               institution.
             </p>
           </section>
+          </Reveal>
 
+          <Reveal delay={70}>
           <section id="parent-org" ref={registerSection('parent-org')} className="about-section about-section-highlight">
             <h2 className="about-section-title display">A Division of Outlets for Hope, Inc.</h2>
             <p>
@@ -289,7 +295,9 @@ export default function About() {
             </a>
             <p className="about-note">ofhusa.org/#itti</p>
           </section>
+          </Reveal>
 
+          <Reveal delay={140}>
           <section id="mission" ref={registerSection('mission')} className="about-section">
             <h2 className="about-section-title display">Our Mission</h2>
             <ol className="about-numbered-list">
@@ -298,7 +306,9 @@ export default function About() {
               ))}
             </ol>
           </section>
+          </Reveal>
 
+          <Reveal delay={210}>
           <section id="observatories" ref={registerSection('observatories')} className="about-section">
             <h2 className="about-section-title display">International Trauma Observatories (ITOs)</h2>
             <p>ITTI establishes country-level Trauma Observatories designed to:</p>
@@ -321,7 +331,9 @@ export default function About() {
               ))}
             </div>
           </section>
+          </Reveal>
 
+          <Reveal delay={280}>
           <section id="frameworks" ref={registerSection('frameworks')} className="about-section">
             <h2 className="about-section-title display">Three Major Analytic Frameworks</h2>
             <p>ITTI has developed three integrated research frameworks that form the intellectual foundation of its work.</p>
@@ -354,7 +366,9 @@ export default function About() {
               })}
             </div>
           </section>
+          </Reveal>
 
+          <Reveal delay={350}>
           <section id="advisory" ref={registerSection('advisory')} className="about-section">
             <h2 className="about-section-title display">NTTC Design &amp; Implementation Consulting</h2>
             <p>
@@ -385,7 +399,9 @@ export default function About() {
               ))}
             </ul>
           </section>
+          </Reveal>
 
+          <Reveal delay={420}>
           <section id="who-we-serve" ref={registerSection('who-we-serve')} className="about-section">
             <h2 className="about-section-title display">Who We Serve</h2>
             <p>ITTI's services are particularly relevant to:</p>
@@ -416,7 +432,9 @@ export default function About() {
               })}
             </div>
           </section>
+          </Reveal>
 
+          <Reveal delay={490}>
           <section id="ethics" ref={registerSection('ethics')} className="about-section">
             <h2 className="about-section-title display">Ethical Foundations</h2>
             <p>ITTI is grounded in:</p>
@@ -429,7 +447,9 @@ export default function About() {
             </div>
             <p className="about-note">ITTI's purpose is structural resilience, not political retaliation.</p>
           </section>
+          </Reveal>
 
+          <Reveal delay={560}>
           <section id="why" ref={registerSection('why')} className="about-section">
             <h2 className="about-section-title display">Why ITTI Matters</h2>
             <p>Fragile institutions cannot reform what they do not measure. Without structured trauma documentation:</p>
@@ -447,7 +467,9 @@ export default function About() {
               ))}
             </div>
           </section>
+          </Reveal>
 
+          <Reveal delay={630}>
           <section id="partnership" ref={registerSection('partnership')} className="about-section about-section-highlight">
             <h2 className="about-section-title display">Partnership &amp; Funding Invitation</h2>
             <p>ITTI seeks strategic partnerships and funding support to:</p>
@@ -465,7 +487,9 @@ export default function About() {
               <span aria-hidden="true">→</span>
             </Link>
           </section>
+          </Reveal>
 
+          <Reveal delay={700}>
           <section id="contact" ref={registerSection('contact')} className="about-section">
             <h2 className="about-section-title display">Contact</h2>
             <p className="about-contact-org">International Truth &amp; Trauma Institute (ITTI)</p>
@@ -490,6 +514,7 @@ export default function About() {
               remembered — but understood, measured, and prevented from repeating.
             </p>
           </section>
+          </Reveal>
         </div>
       </div>
     </div>

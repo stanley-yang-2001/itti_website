@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
+import Reveal from '../components/Reveal.jsx';
 import '../styles/PublishGlobeData.css';
 
 const KIND_OPTIONS = [
@@ -92,30 +93,34 @@ export default function PublishGlobeData() {
       <h2 className="display">Update Globe Data</h2>
       <p>Upload a GTBI or ETTI workbook to update the figures shown on the globe.</p>
 
-      <div className="globe-upload-kind-choice">
-        {KIND_OPTIONS.map((opt) => (
-          <button
-            key={opt.value}
-            type="button"
-            className={`globe-upload-kind-btn${kind === opt.value ? ' active' : ''}`}
-            onClick={() => handleKindSelect(opt.value)}
-          >
-            <span className="globe-upload-kind-label">{opt.label}</span>
-            <span className="globe-upload-kind-desc">{opt.description}</span>
-          </button>
-        ))}
-      </div>
+      <Reveal delay={0}>
+        <div className="globe-upload-kind-choice">
+          {KIND_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              className={`globe-upload-kind-btn${kind === opt.value ? ' active' : ''}`}
+              onClick={() => handleKindSelect(opt.value)}
+            >
+              <span className="globe-upload-kind-label">{opt.label}</span>
+              <span className="globe-upload-kind-desc">{opt.description}</span>
+            </button>
+          ))}
+        </div>
+      </Reveal>
 
       {kind && (
-        <form onSubmit={handleSubmit} className="globe-upload-form">
-          <label className="globe-upload-file-label">
-            <span>{kind} spreadsheet (.xlsx)</span>
-            <input type="file" accept=".xlsx" onChange={handleFileChange} required />
-          </label>
-          <button className="auth-submit" type="submit" disabled={!file || submitting} style={{ width: 'auto' }}>
-            {submitting ? 'Processing…' : `Upload ${kind} data`}
-          </button>
-        </form>
+        <Reveal delay={0}>
+          <form onSubmit={handleSubmit} className="globe-upload-form">
+            <label className="globe-upload-file-label">
+              <span>{kind} spreadsheet (.xlsx)</span>
+              <input type="file" accept=".xlsx" onChange={handleFileChange} required />
+            </label>
+            <button className="auth-submit" type="submit" disabled={!file || submitting} style={{ width: 'auto' }}>
+              {submitting ? 'Processing…' : `Upload ${kind} data`}
+            </button>
+          </form>
+        </Reveal>
       )}
 
       {status && (

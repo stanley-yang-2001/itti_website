@@ -64,7 +64,7 @@ export default function SearchBar({ features, onSelectFeature }) {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
-      <div id="suggestions" style={{ display: open ? 'block' : 'none' }}>
+      <div id="suggestions" className={open ? 'open' : ''}>
         {matches.map((f) => (
           <div key={f.id ?? f.properties.name} onClick={() => handlePick(f)}>
             {f.properties.name}

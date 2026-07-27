@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import Reveal from '../components/Reveal.jsx';
 import {
   GTBI_SOURCES, GTBI_FORMULA_NOTES, GTBI_KNOWN_GAP, GTBI_INTERPRETATION_SHORT, GTBI_PANEL_SUMMARY,
   ETTI_METHODOLOGY_NOTES, ETTI_KNOWN_GAP, ETTI_INTERPRETATION_SHORT, ETTI_PANEL_SUMMARY,
@@ -86,6 +87,7 @@ export default function Docs() {
 
   return (
     <div className="about-page">
+      <Reveal delay={0}>
       <section className="about-hero">
         <p className="about-hero-eyebrow mono">ITTI Observatory</p>
         <h1 className="about-hero-title display">Documentation &amp; References</h1>
@@ -93,6 +95,7 @@ export default function Docs() {
           Data sources, methodology, and how to interpret the Observatory's ETTI and GTBI figures.
         </p>
       </section>
+      </Reveal>
 
       <div className="about-layout">
         <nav className="about-index" aria-label="Docs page sections">
@@ -112,6 +115,7 @@ export default function Docs() {
         </nav>
 
         <div className="about-content">
+          <Reveal delay={0}>
           <section id="user-guide" ref={registerSection('user-guide')} className="about-section">
             <h2 className="about-section-title display">How to Use the Observatory</h2>
             <div className="docs-interpretation">{USER_GUIDE_INTRO}</div>
@@ -124,12 +128,16 @@ export default function Docs() {
               ))}
             </div>
           </section>
+          </Reveal>
 
+          <Reveal delay={70}>
           <section id="overview" ref={registerSection('overview')} className="about-section">
             <h2 className="about-section-title display">Shared Data Source</h2>
             <p>{UNDERLYING_EVENT_SOURCE}</p>
           </section>
+          </Reveal>
 
+          <Reveal delay={140}>
           <section id="etti" ref={registerSection('etti')} className="about-section">
             <h2 className="about-section-title display">ETTI — Election Trauma Temperature Index</h2>
             <div className="docs-interpretation">{ETTI_INTERPRETATION_SHORT}</div>
@@ -144,7 +152,9 @@ export default function Docs() {
               ))}
             </div>
           </section>
+          </Reveal>
 
+          <Reveal delay={210}>
           <section id="gtbi" ref={registerSection('gtbi')} className="about-section">
             <h2 className="about-section-title display">GTBI — Global Trauma Burden Index</h2>
             <div className="docs-interpretation">{GTBI_INTERPRETATION_SHORT}</div>
@@ -158,7 +168,9 @@ export default function Docs() {
               ))}
             </ul>
           </section>
+          </Reveal>
 
+          <Reveal delay={280}>
           <section id="gtbi-sources" ref={registerSection('gtbi-sources')} className="about-section">
             <h2 className="about-section-title display">GTBI Sources</h2>
             <div className="docs-sources-table-wrap">
@@ -184,7 +196,9 @@ export default function Docs() {
               </table>
             </div>
           </section>
+          </Reveal>
 
+          <Reveal delay={350}>
           <section id="nto-map" ref={registerSection('nto-map')} className="about-section">
             <h2 className="about-section-title display">NTO — Nigeria Geographic Stressor Severity Map</h2>
             <div className="docs-interpretation">{NTO_MAP_CAPTION}</div>
@@ -211,7 +225,9 @@ export default function Docs() {
             </div>
             <div className="docs-known-gap">{NTO_MAP_FORMATTING_NOTES}</div>
           </section>
+          </Reveal>
 
+          <Reveal delay={420}>
           <section id="conventions" ref={registerSection('conventions')} className="about-section">
             <h2 className="about-section-title display">Missing-Value Convention</h2>
             <p>
@@ -221,6 +237,7 @@ export default function Docs() {
               a single <code>"Data Pending"</code> year.
             </p>
           </section>
+          </Reveal>
         </div>
       </div>
     </div>

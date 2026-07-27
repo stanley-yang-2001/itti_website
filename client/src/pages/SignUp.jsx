@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../context/AuthContext.jsx";
 import { checkEmail, checkPassword, checkPasswordsMatch, checkName } from "../utils/formValidation.js";
+import Reveal from '../components/Reveal.jsx';
 import "../styles/SignUp.css";
 
 /**
@@ -82,6 +83,7 @@ export default function Signup() {
 
   return (
     <div className="signup-page">
+      <Reveal delay={0}>
       <div className="signup-card">
         <h1>Create an account</h1>
 
@@ -156,6 +158,7 @@ export default function Signup() {
           Already have an account? <Link to="/login">Sign in</Link>
         </p>
       </div>
+      </Reveal>
     </div>
   );
 }

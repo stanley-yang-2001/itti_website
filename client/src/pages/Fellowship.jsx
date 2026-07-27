@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FELLOW_LEVELS, WHO_SHOULD_APPLY, EXECUTIVE_VALUE, FELLOWS_GAIN, FELLOWS } from '../data/fellowship.js';
+import Reveal from '../components/Reveal.jsx';
 import '../styles/Fellowship.css';
 
 const LEVEL_LOOKUP = Object.fromEntries(FELLOW_LEVELS.map((l) => [l.code, l]));
@@ -41,6 +42,7 @@ export default function Fellowship() {
 
   return (
     <div className="fellows-page">
+      <Reveal delay={0}>
       <section className="fellows-hero">
         <p className="fellows-hero-eyebrow mono">FITTI™ Fellowship Program</p>
         <h1 className="fellows-hero-title display">Building the Global Leadership Corps for Trauma-Informed Nations</h1>
@@ -53,8 +55,10 @@ export default function Fellowship() {
           <a href="#our-fellows" className="fellows-btn primary">Meet the Fellows</a>
         </div>
       </section>
+      </Reveal>
 
       {/* ---------- Section 1: About the Fellowship ---------- */}
+      <Reveal delay={90}>
       <section id="about-fellowship" className="fellows-section">
         <p className="fellows-section-eyebrow mono">About the Program</p>
         <h2 className="fellows-section-title display">Why FITTI™?</h2>
@@ -111,8 +115,10 @@ export default function Fellowship() {
           <a href="mailto:itti@ofhusa.org" className="fellows-btn primary">Inquire About a Nomination</a>
         </div>
       </section>
+      </Reveal>
 
       {/* ---------- Section 2: Our Fellows ---------- */}
+      <Reveal delay={180}>
       <section id="our-fellows" className="fellows-section">
         <p className="fellows-section-eyebrow mono">The Roster</p>
         <h2 className="fellows-section-title display">Our Fellows</h2>
@@ -150,6 +156,7 @@ export default function Fellowship() {
           </div>
         )}
       </section>
+      </Reveal>
     </div>
   );
 }

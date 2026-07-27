@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { checkPassword, checkPasswordsMatch } from "../utils/formValidation.js";
+import Reveal from '../components/Reveal.jsx';
 import "../styles/Login.css";
 
 /**
@@ -49,6 +50,7 @@ export default function ResetPassword() {
   if (!token) {
     return (
       <div className="login-page">
+        <Reveal delay={0}>
         <div className="login-card">
           <h1>Reset your password</h1>
           <p className="login-error">
@@ -59,12 +61,14 @@ export default function ResetPassword() {
             <Link to="/forgot-password">Request a new reset link</Link>
           </p>
         </div>
+        </Reveal>
       </div>
     );
   }
 
   return (
     <div className="login-page">
+      <Reveal delay={0}>
       <div className="login-card">
         <h1>Choose a new password</h1>
 
@@ -100,6 +104,7 @@ export default function ResetPassword() {
           <Link to="/login">Back to log in</Link>
         </p>
       </div>
+      </Reveal>
     </div>
   );
 }

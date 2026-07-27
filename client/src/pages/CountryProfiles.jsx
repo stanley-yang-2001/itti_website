@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/CountryProfiles.css";
+import Reveal from '../components/Reveal.jsx';
 import { isDataPending, getNumericValue, getLatestYearRecord } from "../utils/countryData";
 
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -78,58 +79,62 @@ export default function CountryProfiles() {
 
   return (
     <div className="country-profiles-page">
-      <div className="country-letter-grid" role="navigation" aria-label="Filter countries by letter">
-        {ALPHABET.map((letter) => (
-          <button
-            key={letter}
-            type="button"
-            className={
-              "country-letter-block" +
-              (selectedLetter === letter ? " country-letter-block--active" : "") +
-              (!availableLetters.has(letter) && countries !== null ? " country-letter-block--disabled" : "")
-            }
-            onClick={() => handleLetterClick(letter)}
-            disabled={countries !== null && !availableLetters.has(letter)}
-            aria-pressed={selectedLetter === letter}
-          >
-            {letter}
-          </button>
-        ))}
-      </div>
+      <Reveal delay={0}>
+        <div className="country-letter-grid" role="navigation" aria-label="Filter countries by letter">
+          {ALPHABET.map((letter) => (
+            <button
+              key={letter}
+              type="button"
+              className={
+                "country-letter-block" +
+                (selectedLetter === letter ? " country-letter-block--active" : "") +
+                (!availableLetters.has(letter) && countries !== null ? " country-letter-block--disabled" : "")
+              }
+              onClick={() => handleLetterClick(letter)}
+              disabled={countries !== null && !availableLetters.has(letter)}
+              aria-pressed={selectedLetter === letter}
+            >
+              {letter}
+            </button>
+          ))}
+        </div>
+      </Reveal>
 
-      <div className="country-profiles-content">
-        <h1 className="country-profiles-heading">Country Profiles</h1>
-        <p className="country-profiles-subheading">
-          Select a letter above to browse countries by name.
-        </p>
+      <Reveal delay={100}>
+        <div className="country-profiles-content">
+          <h1 className="country-profiles-heading">Country Profiles</h1>
+          <p className="country-profiles-subheading">
+            Select a letter above to browse countries by name.
+          </p>
 
-        {loadError && <p className="country-profiles-error">{loadError}</p>}
+          {loadError && <p className="country-profiles-error">{loadError}</p>}
 
-        {!loadError && countries === null && (
-          <p className="country-profiles-status">Loading countries…</p>
-        )}
+          {!loadError && countries === null && (
+            <p className="country-profiles-status">Loading countries…</p>
+          )}
 
-        {!loadError && countries !== null && !selectedLetter && (
-          <p className="country-profiles-status">Choose a letter to see countries.</p>
-        )}
+          {!loadError && countries !== null && !selectedLetter && (
+            <p className="country-profiles-status">Choose a letter to see countries.</p>
+          )}
 
-        {!loadError && countries !== null && selectedLetter && (
-          <ul className="country-profiles-list">
-            {filteredCountries.length === 0 && (
-              <li className="country-profiles-empty">
-                No countries found starting with "{selectedLetter}".
-              </li>
-            )}
-            {filteredCountries.map((c) => (
-              <li key={c.code}>
-                <Link to="/unavailable" className="country-profiles-list-item">
-                  {c.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+          {!loadError && countries !== null && selectedLetter && (
+            <ul className="country-profiles-list">
+              {filteredCountries.length === 0 && (
+                <li className="country-profiles-empty">
+                  No countries found starting with "{selectedLetter}".
+                </li>
+              )}
+              {filteredCountries.map((c) => (
+                <li key={c.code}>
+                  <Link to="/unavailable" className="country-profiles-list-item">
+                    {c.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </Reveal>
     </div>
   );
 }

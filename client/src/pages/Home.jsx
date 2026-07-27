@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import * as topojson from 'topojson-client';
 import Globe from '../components/Globe.jsx';
+import Reveal from '../components/Reveal.jsx';
 import SearchBar from '../components/SearchBar.jsx';
 import SidePanel from '../components/SidePanel.jsx';
 import { fetchWorldData, fetchCountry, fetchAllCountries } from '../api.js';
@@ -78,64 +79,72 @@ export default function Home() {
     <>
       <main>
         {/* Part 1: welcome */}
-        <section className="home-welcome">
-          <p className="home-welcome-eyebrow">WELCOME</p>
-          <h1 className="home-welcome-title display">
-            Welcome to the International Truth &amp; Trauma Institute
-          </h1>
-          <p className="home-welcome-message">{MISSION_MESSAGE}</p>
-        </section>
+        <Reveal delay={0}>
+          <section className="home-welcome">
+            <p className="home-welcome-eyebrow">WELCOME</p>
+            <h1 className="home-welcome-title display">
+              Welcome to the International Truth &amp; Trauma Institute
+            </h1>
+            <p className="home-welcome-message">{MISSION_MESSAGE}</p>
+          </section>
+        </Reveal>
 
         {/* Part 2: globe (left) + message and country panel (right) */}
-        <section className="home-globe">
-          <div className="home-globe-grid">
-            <div className="home-globe-left">
-              <SearchBar features={features} onSelectFeature={handleSelectFeature} />
-              {worldData && (
-                <Globe
-                  ref={globeRef}
-                  worldData={worldData}
-                  onCountryClick={handleCountryClick}
-                  countryStatus={countryStatus}
-                />
-              )}
-              <div className="globe-legend">
-                <span className="globe-legend-item">
-                  <span className="globe-legend-swatch data-etti"></span>ETTI data
-                </span>
-                <span className="globe-legend-item">
-                  <span className="globe-legend-swatch data-gtbi"></span>GTBI data
-                </span>
-                <span className="globe-legend-item">
-                  <span className="globe-legend-swatch data-both"></span>ETTI + GTBI
-                </span>
+        <Reveal delay={120}>
+          <section className="home-globe">
+            <div className="home-globe-grid">
+              <div className="home-globe-left">
+                <SearchBar features={features} onSelectFeature={handleSelectFeature} />
+                {worldData && (
+                  <Globe
+                    ref={globeRef}
+                    worldData={worldData}
+                    onCountryClick={handleCountryClick}
+                    countryStatus={countryStatus}
+                  />
+                )}
+                <div className="globe-legend">
+                  <span className="globe-legend-item">
+                    <span className="globe-legend-swatch data-etti"></span>ETTI data
+                  </span>
+                  <span className="globe-legend-item">
+                    <span className="globe-legend-swatch data-gtbi"></span>GTBI data
+                  </span>
+                  <span className="globe-legend-item">
+                    <span className="globe-legend-swatch data-both"></span>ETTI + GTBI
+                  </span>
+                </div>
+                <div className="hint">
+                  <span className="dot"></span>DRAG TO ROTATE<span className="dot"></span>SCROLL TO ZOOM
+                  <span className="dot"></span>CLICK A COUNTRY
+                </div>
               </div>
-              <div className="hint">
-                <span className="dot"></span>DRAG TO ROTATE<span className="dot"></span>SCROLL TO ZOOM
-                <span className="dot"></span>CLICK A COUNTRY
-              </div>
-            </div>
 
-            <div className="home-globe-right">
-              <SidePanel country={country} record={metrics} onClose={handleClose} />
+              <div className="home-globe-right">
+                <SidePanel country={country} record={metrics} onClose={handleClose} />
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </Reveal>
       </main>
 
       <section className="home-explore">
-        <div className="home-explore-intro">
-          <p className="home-explore-eyebrow mono">EXPLORE</p>
-          <h2 className="home-explore-heading display">Where to go from here</h2>
-        </div>
+        <Reveal delay={0}>
+          <div className="home-explore-intro">
+            <p className="home-explore-eyebrow mono">EXPLORE</p>
+            <h2 className="home-explore-heading display">Where to go from here</h2>
+          </div>
+        </Reveal>
 
         <div className="home-explore-grid">
-          {EXPLORE_CARDS.map((card) => (
-            <Link key={card.to} to={card.to} className="home-explore-card">
-              <span className="home-explore-card-label display">{card.label}</span>
-              <p className="home-explore-card-desc">{card.description}</p>
-              <span className="home-explore-card-arrow" aria-hidden="true">&rarr;</span>
-            </Link>
+          {EXPLORE_CARDS.map((card, i) => (
+            <Reveal key={card.to} delay={i * 90}>
+              <Link to={card.to} className="home-explore-card">
+                <span className="home-explore-card-label display">{card.label}</span>
+                <p className="home-explore-card-desc">{card.description}</p>
+                <span className="home-explore-card-arrow" aria-hidden="true">&rarr;</span>
+              </Link>
+            </Reveal>
           ))}
         </div>
       </section>

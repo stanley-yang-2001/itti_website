@@ -1,4 +1,5 @@
 import React from 'react';
+import Reveal from '../components/Reveal.jsx';
 import '../styles/Contact.css';
 
 const CONTACTS = [
@@ -37,24 +38,28 @@ const CONTACTS = [
 export default function Contact() {
   return (
     <div className="contact-page">
-      <div className="contact-intro">
-        <p className="contact-eyebrow mono">CONTACT</p>
-        <h1 className="contact-heading display">Get in touch</h1>
-        <p className="contact-subheading">
-          Reach out to the right team directly — each address below goes to a different part of
-          ITTI.
-        </p>
-      </div>
+      <Reveal delay={0}>
+        <div className="contact-intro">
+          <p className="contact-eyebrow mono">CONTACT</p>
+          <h1 className="contact-heading display">Get in touch</h1>
+          <p className="contact-subheading">
+            Reach out to the right team directly — each address below goes to a different part of
+            ITTI.
+          </p>
+        </div>
+      </Reveal>
 
       <div className="contact-grid">
-        {CONTACTS.map((c) => (
-          <div key={c.email} className="contact-card">
-            <h2 className="contact-card-label display">{c.label}</h2>
-            <a className="contact-card-email mono" href={`mailto:${c.email}`}>
-              {c.email}
-            </a>
-            <p className="contact-card-desc">{c.description}</p>
-          </div>
+        {CONTACTS.map((c, i) => (
+          <Reveal key={c.email} delay={80 + i * 80}>
+            <div className="contact-card">
+              <h2 className="contact-card-label display">{c.label}</h2>
+              <a className="contact-card-email mono" href={`mailto:${c.email}`}>
+                {c.email}
+              </a>
+              <p className="contact-card-desc">{c.description}</p>
+            </div>
+          </Reveal>
         ))}
       </div>
     </div>

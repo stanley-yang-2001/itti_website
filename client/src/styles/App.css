@@ -24,6 +24,112 @@
   .display{font-family:'Times New Roman', Times, serif;}
   .mono{font-family:'JetBrains Mono',monospace;}
 
+  /* ---------- Page transition ---------- */
+  /* Wraps whatever <Routes> renders (see App.jsx). Has to behave as a
+     transparent flex pass-through, not just a plain div: #app is a
+     column flex container and some pages (e.g. PlaceholderPage) rely
+     on being a direct flex:1 child to center their content vertically. */
+  .page-transition{
+    display:flex;
+    flex-direction:column;
+    flex:1;
+    min-height:0;
+    animation:pageFadeIn .32s ease;
+  }
+  @keyframes pageFadeIn{
+    from{opacity:0; transform:translateY(6px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .page-transition{animation:none;}
+  }
+
+  /* ---------- Micro-interactions ---------- */
+  /* Small press feedback on anything clickable, so buttons/cards/links
+     feel responsive without being showy. Scoped to specific classes
+     (not a blanket "button, a" rule) so it doesn't fight bespoke hover
+     transforms elsewhere (e.g. .home-explore-card's own hover lift). */
+  button,
+  .home-explore-card,
+  .contact-card,
+  .cert-card-summary,
+  .navbar-link,
+  .navbar-auth-btn,
+  .navbar-toggle,
+  .certs-btn,
+  .certs-pill,
+  .donate-amount-chip,
+  .donate-submit-button,
+  .panel-observatory-link,
+  .panel-close,
+  .tab-btn,
+  .globe-upload-kind-btn,
+  .pub-dashboard-card,
+  .year-select,
+  a.unavailable-back-link{
+    transition:transform .12s ease, opacity .12s ease, border-color .15s ease, background .15s ease, color .15s ease;
+  }
+  button:active,
+  .contact-card:active,
+  .cert-card-summary:active,
+  .navbar-link:active,
+  .navbar-auth-btn:active,
+  .certs-btn:active,
+  .certs-pill:active,
+  .donate-amount-chip:active,
+  .donate-submit-button:active,
+  .panel-observatory-link:active,
+  .panel-close:active,
+  .tab-btn:active,
+  .globe-upload-kind-btn:active,
+  .pub-dashboard-card:active{
+    transform:scale(0.97);
+  }
+  button:disabled:active{transform:none;}
+  @media (prefers-reduced-motion: reduce){
+    button, .home-explore-card, .contact-card, .cert-card-summary, .navbar-link,
+    .navbar-auth-btn, .certs-btn, .certs-pill, .donate-amount-chip,
+    .donate-submit-button, .panel-observatory-link, .panel-close,
+    .tab-btn, .globe-upload-kind-btn, .pub-dashboard-card{
+      transition:none !important;
+    }
+    button:active, .home-explore-card:active, .contact-card:active,
+    .cert-card-summary:active, .navbar-link:active, .navbar-auth-btn:active,
+    .certs-btn:active, .certs-pill:active, .donate-amount-chip:active,
+    .donate-submit-button:active, .panel-observatory-link:active,
+    .panel-close:active, .tab-btn:active, .globe-upload-kind-btn:active,
+    .pub-dashboard-card:active{
+      transform:none !important;
+    }
+  }
+
+  /* ---------- Scroll reveal ---------- */
+  /* Shared entrance animation for inline status/error banners
+     (form errors, upload status, donation notices, etc.) - applied
+     directly on the existing per-page rules below rather than a new
+     class, since they're all simple one-line additions. */
+  @keyframes bannerSlideIn{
+    from{opacity:0; transform:translateY(-6px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+  /* Applied by the <Reveal> component (client/src/components/Reveal.jsx)
+     to whatever element it wraps. Starts hidden/offset, then transitions
+     in once that element's IntersectionObserver fires. Wrapping several
+     siblings in <Reveal> with staggered `delay` props gives a cascading,
+     one-after-another appearance as the user scrolls down a page. */
+  .reveal-on-scroll{
+    opacity:0;
+    transform:translateY(28px);
+    transition:opacity .6s cubic-bezier(.22,.9,.32,1), transform .6s cubic-bezier(.22,.9,.32,1);
+  }
+  .reveal-on-scroll.is-visible{
+    opacity:1;
+    transform:translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce){
+    .reveal-on-scroll{transition:none; opacity:1; transform:none;}
+  }
+
   /* Headers and page titles across the site use Times New Roman; body copy
      stays on Inter. Anything with the .display class picks this up too. */
   h1, h2, h3{
@@ -101,8 +207,21 @@
     border-radius:8px;
     max-height:220px;
     overflow-y:auto;
-    display:none;
     z-index:20;
+    opacity:0;
+    transform:translateY(-6px);
+    visibility:hidden;
+    pointer-events:none;
+    transition:opacity .16s ease, transform .16s ease, visibility .16s;
+  }
+  #suggestions.open{
+    opacity:1;
+    transform:translateY(0);
+    visibility:visible;
+    pointer-events:auto;
+  }
+  @media (prefers-reduced-motion: reduce){
+    #suggestions{transition:opacity .01s linear;}
   }
   #suggestions div{
     padding:8px 14px;
@@ -372,7 +491,17 @@
     flex:1;
   }
   .tab-pane{display:none;}
-  .tab-pane.active{display:block;}
+  .tab-pane.active{
+    display:block;
+    animation:tabFadeIn .25s ease;
+  }
+  @keyframes tabFadeIn{
+    from{opacity:0;}
+    to{opacity:1;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .tab-pane.active{animation:none;}
+  }
 
   .score-card{
     background:rgba(79,217,199,0.05);
@@ -672,17 +801,31 @@
     .navbar-top{flex-wrap:wrap; row-gap:10px;}
     .navbar-user span.role-badge{display:none;}
     .navbar-links{
-      display:none;
+      display:flex;
       flex-direction:column;
       align-items:stretch;
       gap:2px;
-      margin-top:12px;
+      margin-top:0;
       background:var(--bg-panel);
       border:1px solid var(--line);
       border-radius:8px;
-      padding:10px;
+      padding:0 10px;
+      max-height:0;
+      opacity:0;
+      overflow:hidden;
+      border-width:0;
+      transition:max-height .28s ease, opacity .2s ease, margin-top .28s ease, padding .28s ease, border-width .28s ease;
     }
-    .navbar-links.open{display:flex;}
+    .navbar-links.open{
+      max-height:400px;
+      opacity:1;
+      margin-top:12px;
+      padding:10px;
+      border-width:1px;
+    }
+    @media (prefers-reduced-motion: reduce){
+      .navbar-links{transition:opacity .01s linear;}
+    }
     .navbar-link{width:100%; padding:12px 14px;}
   }
 
@@ -757,6 +900,9 @@
     background:rgba(79,217,199,0.05);
     transform:translateY(-2px);
   }
+  .home-explore-card:active{
+    transform:translateY(-2px) scale(0.97);
+  }
   .home-explore-card-label{
     font-size:19px;
     font-weight:600;
@@ -773,6 +919,11 @@
     font-family:'JetBrains Mono',monospace;
     font-size:16px;
     color:var(--cyan);
+    display:inline-block;
+    transition:transform .18s ease;
+  }
+  .home-explore-card:hover .home-explore-card-arrow{
+    transform:translateX(4px);
   }
 
   @media (max-width: 640px){

@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CATEGORIES, CERTIFICATIONS, COMPARISON_ROWS } from '../data/certifications.js';
+import Reveal from '../components/Reveal.jsx';
 import '../styles/Certifications.css';
 
 const BADGE_CLASS = {
@@ -66,61 +67,66 @@ export default function Certifications() {
 
   return (
     <div className="certs-page">
-      <section className="certs-hero">
-        <p className="certs-hero-eyebrow mono">ITTI Professional Certifications</p>
-        <h1 className="certs-hero-title display">Understand Trauma. Transform Systems. Help the World Heal.</h1>
-        <p className="certs-hero-sub">
-          Earn a globally focused ITTI professional designation in just four weeks — and gain the applied
-          expertise to strengthen care, build healthier workplaces, transform institutions, advance peace,
-          analyze elections, measure global trauma, and support healing across communities and nations.
-        </p>
-        <p className="certs-hero-sub2">
-          Every four-week program combines focused instruction, guided application, practical analytical
-          tools, professional assessment, and a real-world final project. Successful participants earn an
-          ITTI designation, digital credential, certificate-verification access, and a pathway into the
-          Institute's growing international professional and Observatory community.
-        </p>
-        <div className="certs-hero-actions">
-          <a href="#cert-grid" className="certs-btn primary">Explore ITTI Credentials</a>
-          <a href="#compare" className="certs-btn secondary">Find Your Certification Pathway</a>
-        </div>
-      </section>
+      <Reveal delay={0}>
+        <section className="certs-hero">
+          <p className="certs-hero-eyebrow mono">ITTI Professional Certifications</p>
+          <h1 className="certs-hero-title display">Understand Trauma. Transform Systems. Help the World Heal.</h1>
+          <p className="certs-hero-sub">
+            Earn a globally focused ITTI professional designation in just four weeks — and gain the applied
+            expertise to strengthen care, build healthier workplaces, transform institutions, advance peace,
+            analyze elections, measure global trauma, and support healing across communities and nations.
+          </p>
+          <p className="certs-hero-sub2">
+            Every four-week program combines focused instruction, guided application, practical analytical
+            tools, professional assessment, and a real-world final project. Successful participants earn an
+            ITTI designation, digital credential, certificate-verification access, and a pathway into the
+            Institute's growing international professional and Observatory community.
+          </p>
+          <div className="certs-hero-actions">
+            <a href="#cert-grid" className="certs-btn primary">Explore ITTI Credentials</a>
+            <a href="#compare" className="certs-btn secondary">Find Your Certification Pathway</a>
+          </div>
+        </section>
+      </Reveal>
 
-      <section id="cert-grid" className="certs-toolbar">
-        <div className="certs-filter-pills">
-          <button
-            className={`certs-pill${activeCategory === 'all' ? ' active' : ''}`}
-            onClick={() => setActiveCategory('all')}
-          >
-            All ({CERTIFICATIONS.length})
-          </button>
-          {CATEGORIES.map((cat) => (
+      <Reveal delay={80}>
+        <section id="cert-grid" className="certs-toolbar">
+          <div className="certs-filter-pills">
             <button
-              key={cat.id}
-              className={`certs-pill${activeCategory === cat.id ? ' active' : ''}`}
-              onClick={() => setActiveCategory(cat.id)}
+              className={`certs-pill${activeCategory === 'all' ? ' active' : ''}`}
+              onClick={() => setActiveCategory('all')}
             >
-              {cat.label} ({CERTIFICATIONS.filter((c) => c.category === cat.id).length})
+              All ({CERTIFICATIONS.length})
             </button>
-          ))}
-        </div>
-        <input
-          type="text"
-          className="certs-search"
-          placeholder="Search by name, code, or focus…"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-      </section>
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat.id}
+                className={`certs-pill${activeCategory === cat.id ? ' active' : ''}`}
+                onClick={() => setActiveCategory(cat.id)}
+              >
+                {cat.label} ({CERTIFICATIONS.filter((c) => c.category === cat.id).length})
+              </button>
+            ))}
+          </div>
+          <input
+            type="text"
+            className="certs-search"
+            placeholder="Search by name, code, or focus…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </section>
+      </Reveal>
 
       <div className="certs-groups">
         {grouped.length === 0 && (
           <p className="certs-empty">No certifications match your search.</p>
         )}
-        {grouped.map((cat) => (
-          <section key={cat.id} className="certs-group">
-            <h2 className="certs-group-title display">{cat.label}</h2>
-            <div className="certs-grid">
+        {grouped.map((cat, i) => (
+          <Reveal key={cat.id} delay={i * 90}>
+            <section className="certs-group">
+              <h2 className="certs-group-title display">{cat.label}</h2>
+              <div className="certs-grid">
               {cat.items.map((c) => {
                 const isOpen = expanded === c.code;
                 return (
@@ -241,43 +247,46 @@ export default function Certifications() {
                   </article>
                 );
               })}
-            </div>
-          </section>
+              </div>
+            </section>
+          </Reveal>
         ))}
       </div>
 
-      <section id="compare" className="certs-compare">
-        <h2 className="certs-group-title display">Compare at a Glance</h2>
-        <p className="certs-compare-sub">All eleven credentials share the same four-week structure. Tuition and depth scale with specialization.</p>
-        <div className="certs-compare-table-wrap">
-          <table className="certs-compare-table">
-            <thead>
-              <tr>
-                <th>Rank</th>
-                <th>Certification</th>
-                <th>Primary Focus</th>
-                <th>Duration</th>
-                <th>
-                  <button className="cert-sort-btn mono" onClick={() => setSortByPrice((v) => !v)}>
-                    Tuition {sortByPrice ? '↑' : ''}
-                  </button>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {comparisonRows.map((row) => (
-                <tr key={row.code} onClick={() => jumpToCert(row.code)} className="certs-compare-row">
-                  <td>{row.rank}</td>
-                  <td className="mono">{row.code}™</td>
-                  <td>{row.focus}</td>
-                  <td>{row.duration}</td>
-                  <td>{row.tuition}</td>
+      <Reveal delay={0}>
+        <section id="compare" className="certs-compare">
+          <h2 className="certs-group-title display">Compare at a Glance</h2>
+          <p className="certs-compare-sub">All eleven credentials share the same four-week structure. Tuition and depth scale with specialization.</p>
+          <div className="certs-compare-table-wrap">
+            <table className="certs-compare-table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Certification</th>
+                  <th>Primary Focus</th>
+                  <th>Duration</th>
+                  <th>
+                    <button className="cert-sort-btn mono" onClick={() => setSortByPrice((v) => !v)}>
+                      Tuition {sortByPrice ? '↑' : ''}
+                    </button>
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+              </thead>
+              <tbody>
+                {comparisonRows.map((row) => (
+                  <tr key={row.code} onClick={() => jumpToCert(row.code)} className="certs-compare-row">
+                    <td>{row.rank}</td>
+                    <td className="mono">{row.code}™</td>
+                    <td>{row.focus}</td>
+                    <td>{row.duration}</td>
+                    <td>{row.tuition}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </Reveal>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import Reveal from '../components/Reveal.jsx';
 import '../styles/Settings.css';
 
 export default function Settings() {
@@ -103,6 +104,7 @@ export default function Settings() {
       <p>Manage your account.</p>
 
       {/* --- Account overview --- */}
+      <Reveal delay={0}>
       <section className="settings-section">
         <h3>Account</h3>
         <div className="settings-info-grid">
@@ -134,8 +136,10 @@ export default function Settings() {
           </div>
         </div>
       </section>
+      </Reveal>
 
       {/* --- Change name --- */}
+      <Reveal delay={90}>
       <section className="settings-section">
         <h3>Display name</h3>
         <form onSubmit={handleNameSubmit} className="settings-form">
@@ -153,8 +157,10 @@ export default function Settings() {
           <p className={`settings-status settings-status--${nameStatus.type}`}>{nameStatus.message}</p>
         )}
       </section>
+      </Reveal>
 
       {/* --- Change password (only if the account actually has one) --- */}
+      <Reveal delay={180}>
       <section className="settings-section">
         <h3>Password</h3>
         {user.has_password ? (
@@ -193,16 +199,20 @@ export default function Settings() {
           <p className={`settings-status settings-status--${passwordStatus.type}`}>{passwordStatus.message}</p>
         )}
       </section>
+      </Reveal>
 
       {/* --- Session --- */}
+      <Reveal delay={270}>
       <section className="settings-section">
         <h3>Session</h3>
         <button type="button" className="settings-btn settings-btn--secondary" onClick={handleLogout}>
           Log out
         </button>
       </section>
+      </Reveal>
 
       {/* --- Danger zone --- */}
+      <Reveal delay={360}>
       <section className="settings-section settings-section--danger">
         <h3>Delete account</h3>
         <p className="settings-muted">
@@ -243,6 +253,7 @@ export default function Settings() {
           <p className={`settings-status settings-status--${deleteStatus.type}`}>{deleteStatus.message}</p>
         )}
       </section>
+      </Reveal>
     </div>
   );
 }

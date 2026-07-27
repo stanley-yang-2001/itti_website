@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import NavBar from './components/NavBar.jsx';
 import Footer from './components/Footer.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
@@ -22,12 +22,34 @@ import Docs from './pages/Docs.jsx';
 import Donate from './pages/Donate.jsx';
 import DonateThankYou from './pages/DonateThankYou.jsx';
 
+/**
+ * Gives routed page content a gentle fade-in on navigation instead of
+ * a hard cut. Keyed by pathname so React fully remounts (and
+ * re-triggers the CSS entrance animation) on every route change -
+ * NavBar/Footer are outside this wrapper and stay put.
+ *
+ * flex:1 + min-height:0 + display:flex/column here matter: #app is a
+ * column flex container, and several pages (e.g. PlaceholderPage) rely
+ * on being a direct flex child with flex:1 to center their content -
+ * this wrapper has to pass that through transparently rather than
+ * just being a plain block div.
+ */
+function PageTransition({ children }) {
+  const location = useLocation();
+  return (
+    <div key={location.pathname} className="page-transition">
+      {children}
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <div id="app">
       <ScrollToTop />
       <NavBar />
-      <Routes>
+      <PageTransition>
+        <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/observatory" element={<Observatory />} />
@@ -55,6 +77,7 @@ export default function App() {
           }
         />
       </Routes>
+      </PageTransition>
       <Footer />
     </div>
   );

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { checkEmail, checkName, checkDonationAmount } from '../utils/formValidation.js';
+import Reveal from '../components/Reveal.jsx';
 import '../styles/Donate.css';
 
 const FALLBACK_PRESETS_CENTS = [2500, 5000, 10000, 25000]; // used only if /api/donations/presets can't be reached
@@ -104,14 +105,16 @@ export default function Donate() {
 
   return (
     <div className="donate-page">
-      <div className="donate-hero">
-        <p className="donate-hero-eyebrow mono">Support ITTI</p>
-        <h1 className="donate-hero-title display">Make a Donation</h1>
-        <p className="donate-hero-tagline">
-          Your gift funds our work documenting and responding to election- and conflict-related trauma
-          around the world. Every donation is processed securely through Stripe.
-        </p>
-      </div>
+      <Reveal delay={0}>
+        <div className="donate-hero">
+          <p className="donate-hero-eyebrow mono">Support ITTI</p>
+          <h1 className="donate-hero-title display">Make a Donation</h1>
+          <p className="donate-hero-tagline">
+            Your gift funds our work documenting and responding to election- and conflict-related trauma
+            around the world. Every donation is processed securely through Stripe.
+          </p>
+        </div>
+      </Reveal>
 
       <form className="donate-card" onSubmit={handleSubmit}>
         {wasCanceled && (
@@ -119,77 +122,83 @@ export default function Donate() {
         )}
         {error && <p className="donate-error">{error}</p>}
 
-        <fieldset className="donate-fieldset">
-          <legend>Choose an amount</legend>
-          <div className="donate-amount-grid">
-            {presetsCents.map((cents) => (
-              <button
-                key={cents}
-                type="button"
-                className={`donate-amount-chip${selectedPreset === cents ? ' active' : ''}`}
-                onClick={() => selectPreset(cents)}
-              >
-                {centsToDollarLabel(cents)}
-              </button>
-            ))}
-          </div>
-          <label className="donate-field donate-custom-amount">
-            <span>Custom amount (USD)</span>
-            <div className="donate-custom-amount-input">
-              <span className="donate-currency-prefix">$</span>
-              <input
-                type="number"
-                min="1"
-                step="1"
-                inputMode="decimal"
-                placeholder="Other amount"
-                value={customAmount}
-                onChange={handleCustomAmountChange}
-              />
+        <Reveal delay={90}>
+          <fieldset className="donate-fieldset">
+            <legend>Choose an amount</legend>
+            <div className="donate-amount-grid">
+              {presetsCents.map((cents) => (
+                <button
+                  key={cents}
+                  type="button"
+                  className={`donate-amount-chip${selectedPreset === cents ? ' active' : ''}`}
+                  onClick={() => selectPreset(cents)}
+                >
+                  {centsToDollarLabel(cents)}
+                </button>
+              ))}
             </div>
-          </label>
-        </fieldset>
+            <label className="donate-field donate-custom-amount">
+              <span>Custom amount (USD)</span>
+              <div className="donate-custom-amount-input">
+                <span className="donate-currency-prefix">$</span>
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  inputMode="decimal"
+                  placeholder="Other amount"
+                  value={customAmount}
+                  onChange={handleCustomAmountChange}
+                />
+              </div>
+            </label>
+          </fieldset>
+        </Reveal>
 
-        <fieldset className="donate-fieldset">
-          <legend>Your information</legend>
-          <div className="donate-name-row">
+        <Reveal delay={170}>
+          <fieldset className="donate-fieldset">
+            <legend>Your information</legend>
+            <div className="donate-name-row">
+              <label className="donate-field">
+                <span>First name</span>
+                <input
+                  type="text"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  autoComplete="given-name"
+                  required
+                />
+              </label>
+              <label className="donate-field">
+                <span>Last name</span>
+                <input
+                  type="text"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  autoComplete="family-name"
+                  required
+                />
+              </label>
+            </div>
             <label className="donate-field">
-              <span>First name</span>
+              <span>Email address</span>
               <input
-                type="text"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                autoComplete="given-name"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
                 required
               />
             </label>
-            <label className="donate-field">
-              <span>Last name</span>
-              <input
-                type="text"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                autoComplete="family-name"
-                required
-              />
-            </label>
-          </div>
-          <label className="donate-field">
-            <span>Email address</span>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              required
-            />
-          </label>
-          <p className="donate-email-note">Your donation receipt and confirmation number will be sent here.</p>
-        </fieldset>
+            <p className="donate-email-note">Your donation receipt and confirmation number will be sent here.</p>
+          </fieldset>
+        </Reveal>
 
-        <button type="submit" className="donate-submit-button" disabled={loading}>
-          {loading ? 'Redirecting to secure checkout…' : 'Continue to secure checkout'}
-        </button>
+        <Reveal delay={250}>
+          <button type="submit" className="donate-submit-button" disabled={loading}>
+            {loading ? 'Redirecting to secure checkout…' : 'Continue to secure checkout'}
+          </button>
+        </Reveal>
         <p className="donate-stripe-note">
           Payments are processed securely by Stripe. Card, bank, and wallet options (e.g. Apple Pay, Cash App
           Pay, Link) are offered automatically based on your device and location — ITTI never sees or stores

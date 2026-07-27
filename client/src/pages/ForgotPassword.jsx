@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import Reveal from '../components/Reveal.jsx';
 import "../styles/Login.css";
 
 /**
@@ -32,6 +33,7 @@ export default function ForgotPassword() {
 
   return (
     <div className="login-page">
+      <Reveal delay={0}>
       <div className="login-card">
         <h1>Reset your password</h1>
 
@@ -70,6 +72,7 @@ export default function ForgotPassword() {
           <Link to="/login">Back to log in</Link>
         </p>
       </div>
+      </Reveal>
     </div>
   );
 }

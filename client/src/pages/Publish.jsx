@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Reveal from '../components/Reveal.jsx';
 import '../styles/Publish.css';
 
 /**
@@ -58,23 +59,27 @@ export default function Publish() {
       <h2 className="display">Publish</h2>
       <p>Upload and manage documents. Only publishers can reach this page.</p>
 
-      <form onSubmit={handleUpload} className="publish-upload-form">
-        <input type="file" name="file" required />
-        <button className="auth-submit" type="submit" style={{ width: 'auto' }}>
-          Upload
-        </button>
-      </form>
+      <Reveal delay={0}>
+        <form onSubmit={handleUpload} className="publish-upload-form">
+          <input type="file" name="file" required />
+          <button className="auth-submit" type="submit" style={{ width: 'auto' }}>
+            Upload
+          </button>
+        </form>
+      </Reveal>
       {status && <p className="publish-status">{status}</p>}
 
-      <ul className="publish-doc-list">
-        {documents.map((doc) => (
-          <li key={doc.id}>
-            <span>{doc.filename}</span>
-            <button onClick={() => handleDelete(doc.id)}>Delete</button>
-          </li>
-        ))}
-        {documents.length === 0 && <li className="publish-empty">No documents yet.</li>}
-      </ul>
+      <Reveal delay={90}>
+        <ul className="publish-doc-list">
+          {documents.map((doc) => (
+            <li key={doc.id}>
+              <span>{doc.filename}</span>
+              <button onClick={() => handleDelete(doc.id)}>Delete</button>
+            </li>
+          ))}
+          {documents.length === 0 && <li className="publish-empty">No documents yet.</li>}
+        </ul>
+      </Reveal>
     </div>
   );
 }

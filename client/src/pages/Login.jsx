@@ -3,6 +3,7 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../context/AuthContext.jsx";
 import { checkEmail } from "../utils/formValidation.js";
+import Reveal from '../components/Reveal.jsx';
 import "../styles/Login.css";
 
 /**
@@ -69,6 +70,7 @@ export default function Login() {
 
   return (
     <div className="login-page">
+      <Reveal delay={0}>
       <div className="login-card">
         <h1>Sign in</h1>
 
@@ -120,6 +122,7 @@ export default function Login() {
           Don&rsquo;t have an account? <Link to="/signup">Sign up</Link>
         </p>
       </div>
+      </Reveal>
     </div>
   );
 }

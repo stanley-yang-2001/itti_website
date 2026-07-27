@@ -92,6 +92,14 @@
   background:rgba(79,217,199,0.12);
   border-color:var(--cyan);
   color:var(--cyan);
+  animation:chipSelect .18s ease;
+}
+@keyframes chipSelect{
+  from{transform:scale(0.97);}
+  to{transform:scale(1);}
+}
+@media (prefers-reduced-motion: reduce){
+  .donate-amount-chip.active{animation:none;}
 }
 
 .donate-custom-amount{
