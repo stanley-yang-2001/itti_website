@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import CountUp from './CountUp.jsx';
 import {
   getAvailableYears,
   getYearRecord,
@@ -11,6 +12,18 @@ import {
 function fmt(value) {
   const num = getNumericValue(value);
   return num === null ? formatField(value) : num.toFixed(2);
+}
+
+/** Renders a numeric field with a restrained count-up animation, or
+ *  the plain "Data Pending" text when there's no real value. Keyed by
+ *  country so a fresh CountUp mounts (and counts up from 0) every time
+ *  a different country is clicked on the globe, while switching the
+ *  year dropdown for the *same* country smoothly transitions between
+ *  the two values instead of resetting to 0. */
+function Score({ value, countryKey }) {
+  const num = getNumericValue(value);
+  if (num === null) return <>{formatField(value)}</>;
+  return <CountUp key={countryKey} value={num} />;
 }
 
 /** A <select> of the real years available for one index, or a disabled
@@ -120,11 +133,11 @@ export default function SidePanel({ country, record, onClose }) {
           <div className="metric-grid">
             <div className="metric">
               <div className="k">GTBI Score{gtbiYears[0] ? ` (${gtbiYears[0]})` : ''}</div>
-              <div className="v" id="ov-gtbi">{fmt(gtbiOverview.gtbi)}</div>
+              <div className="v" id="ov-gtbi"><Score value={gtbiOverview.gtbi} countryKey={iso} /></div>
             </div>
             <div className="metric">
               <div className="k">ETTI Score{ettiYears[0] ? ` (${ettiYears[0]})` : ''}</div>
-              <div className="v" id="ov-etti">{fmt(ettiOverview.etti)}</div>
+              <div className="v" id="ov-etti"><Score value={ettiOverview.etti} countryKey={iso} /></div>
             </div>
           </div>
         </div>
@@ -135,7 +148,7 @@ export default function SidePanel({ country, record, onClose }) {
               <p className="score-label">GTBI — Global Trauma Burden Index</p>
               <YearSelect label="Year" years={gtbiYears} value={gtbiYear} onChange={setGtbiYear} />
             </div>
-            <div className="score-value" id="gtbi-value">{fmt(gtbiSelected.gtbi)}</div>
+            <div className="score-value" id="gtbi-value"><Score value={gtbiSelected.gtbi} countryKey={iso} /></div>
             <p className="score-desc">
               A composite measure of a country's collective trauma burden, combining mortality (Years of Life Lost)
               and morbidity (Years Lived with Disability) from conflict-related harm.
@@ -149,17 +162,17 @@ export default function SidePanel({ country, record, onClose }) {
             </div>
             <div className="metric">
               <div className="k">Burden Rate</div>
-              <div className="v" id="m-burden-rate">{fmt(gtbiSelected.burden_rate)}</div>
+              <div className="v" id="m-burden-rate"><Score value={gtbiSelected.burden_rate} countryKey={iso} /></div>
               <div className="full">Per 100,000 population</div>
             </div>
             <div className="metric">
               <div className="k">YLL</div>
-              <div className="v" id="m-yll">{fmt(gtbiSelected.yll)}</div>
+              <div className="v" id="m-yll"><Score value={gtbiSelected.yll} countryKey={iso} /></div>
               <div className="full">Years of Life Lost</div>
             </div>
             <div className="metric">
               <div className="k">YLD</div>
-              <div className="v" id="m-yld">{fmt(gtbiSelected.yld)}</div>
+              <div className="v" id="m-yld"><Score value={gtbiSelected.yld} countryKey={iso} /></div>
               <div className="full">Years Lived with Disability</div>
             </div>
           </div>
@@ -171,28 +184,28 @@ export default function SidePanel({ country, record, onClose }) {
               <p className="score-label">ETTI — Composite Score</p>
               <YearSelect label="Year" years={ettiYears} value={ettiYear} onChange={setEttiYear} />
             </div>
-            <div className="score-value" id="etti-value">{fmt(ettiSelected.etti)}</div>
+            <div className="score-value" id="etti-value"><Score value={ettiSelected.etti} countryKey={iso} /></div>
             <p className="score-desc">ETTI aggregates four underlying variables into a single composite score.</p>
           </div>
           <div className="metric-grid">
             <div className="metric">
               <div className="k">EVS</div>
-              <div className="v" id="m-evs">{fmt(ettiSelected.evs)}</div>
+              <div className="v" id="m-evs"><Score value={ettiSelected.evs} countryKey={iso} /></div>
               <div className="full">Election Violence Severity</div>
             </div>
             <div className="metric">
               <div className="k">TIE</div>
-              <div className="v" id="m-tie">{fmt(ettiSelected.tie)}</div>
+              <div className="v" id="m-tie"><Score value={ettiSelected.tie} countryKey={iso} /></div>
               <div className="full">Trust in Electoral Institutions</div>
             </div>
             <div className="metric">
               <div className="k">PDL</div>
-              <div className="v" id="m-pdl">{fmt(ettiSelected.pdl)}</div>
+              <div className="v" id="m-pdl"><Score value={ettiSelected.pdl} countryKey={iso} /></div>
               <div className="full">Political Distrust Level</div>
             </div>
             <div className="metric">
               <div className="k">ITS</div>
-              <div className="v" id="m-its">{fmt(ettiSelected.its)}</div>
+              <div className="v" id="m-its"><Score value={ettiSelected.its} countryKey={iso} /></div>
               <div className="full">Institutional Trust Stability</div>
             </div>
           </div>

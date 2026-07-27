@@ -1,34 +1,32 @@
 import { useEffect, useRef, useState } from 'react';
 
 /**
- * Animates a number counting from its previous value to `value` over
- * `duration` ms. Deliberately restrained for the context this site is
- * used in (trauma statistics, not a game score): a single smooth
- * ease-out with no bounce/overshoot, and it's skipped entirely for
- * reduced-motion users. Renders the number as-is (no animation) on
- * first mount so it doesn't visibly count up from 0 the instant a
- * country panel opens - it only animates on subsequent changes (e.g.
- * switching the year dropdown), which is the useful case: showing
- * that a number actually changed.
+ * Animates a number counting up. Deliberately restrained for the
+ * context this site is used in (trauma statistics, not a game score):
+ * a single smooth ease-out with no bounce/overshoot, and it's skipped
+ * entirely for reduced-motion users.
+ *
+ * On first mount - i.e. right after a country is clicked on the globe,
+ * since SidePanel gives each <Score> a `key` tied to the country's ISO
+ * code, forcing a fresh CountUp instance per country - it counts up
+ * from 0. On any later change to `value` within that same mounted
+ * instance (e.g. switching the GTBI/ETTI year dropdown for the same
+ * country), it animates smoothly from whatever's currently displayed
+ * instead of resetting to 0, so the motion reads as "this number
+ * changed" rather than restarting from scratch.
  */
-export default function CountUp({ value, decimals = 2, duration = 650 }) {
-  const [display, setDisplay] = useState(value);
-  const fromRef = useRef(value);
+export default function CountUp({ value, decimals = 2, duration = 800 }) {
+  const [display, setDisplay] = useState(0);
+  const fromRef = useRef(0);
   const firstRender = useRef(true);
   const rafRef = useRef(null);
 
   useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false;
-      fromRef.current = value;
-      setDisplay(value);
-      return undefined;
-    }
-
-    const from = fromRef.current;
     const to = value;
+    const from = firstRender.current ? 0 : fromRef.current;
+    firstRender.current = false;
 
-    if (typeof to !== 'number' || Number.isNaN(to) || typeof from !== 'number') {
+    if (typeof to !== 'number' || Number.isNaN(to)) {
       setDisplay(to);
       fromRef.current = to;
       return undefined;

@@ -567,6 +567,15 @@
   }
   .year-select:focus{outline:none; border-color:var(--cyan);}
   .year-select:disabled{color:var(--text-low); cursor:default;}
+  /* The <select> itself picks up the dark theme above, but browsers
+     render the opened option list with their own light system
+     background regardless - var(--text-hi) (near-white) on that
+     default light background was invisible. Force readable colors on
+     the options themselves rather than relying on inherited theme. */
+  .year-select option{
+    color:#000;
+    background:#fff;
+  }
 
   .metric-grid{
     display:grid;

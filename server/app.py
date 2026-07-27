@@ -47,7 +47,8 @@ from decorators import get_current_user, login_required, roles_required
 from models.database import Base, DATABASE_URL, engine
 from models.user import (
     create_user, get_user, get_user_by_google_sub, get_user_by_email,
-    update_user, delete_user, ROLE_ADMIN, ROLE_PUBLISHER,
+    update_user, delete_user, restore_user, STATUS_HIDDEN,
+    ROLE_ADMIN, ROLE_PUBLISHER,
 )
 from models.document import (
     create_document, get_documents_by_user, get_document, delete_document,
@@ -313,21 +314,38 @@ def auth_google():
         abort(401, description="Invalid Google credential")
 
     google_sub = claims["sub"]
-    email = claims.get("email")
+    # Normalize the same way /api/auth/signup and /api/auth/login do. Google
+    # claims are almost always already lowercase, but that's not guaranteed
+    # (e.g. some Workspace/custom-domain accounts) - without this, a casing
+    # mismatch would bypass the email lookup below and silently create a
+    # second account instead of linking to the existing one.
+    email = (claims.get("email") or "").strip().lower()
     name = claims.get("name")
     picture_url = claims.get("picture")
 
-    user = get_user_by_google_sub(google_sub)
+    # include_hidden=True on both lookups: a soft-deleted account (google_sub
+    # or email) would otherwise be invisible here, and create_user() below
+    # would then crash on the unique google_sub/email constraint instead of
+    # reactivating the existing row.
+    user = get_user_by_google_sub(google_sub, include_hidden=True)
     if user is None:
         # An account with this email may already exist from an email/password
         # sign-up. Link the Google identity to it rather than erroring, since
         # email is unique and it's the same person.
-        user = get_user_by_email(email)
+        user = get_user_by_email(email, include_hidden=True)
         if user is not None:
             update_user(user.id, google_sub=google_sub, name=user.name or name, picture_url=user.picture_url or picture_url)
-            user = get_user(user.id)
         else:
             user = create_user(google_sub=google_sub, email=email, name=name, picture_url=picture_url)
+
+    if user.status == STATUS_HIDDEN:
+        # They previously deleted this account; signing back in (Google or
+        # password) is treated as an intentional reactivation rather than a
+        # dead end.
+        restore_user(user.id)
+        logger.info("google login reactivated soft-deleted user_id=%s", user.id)
+
+    user = get_user(user.id)
 
     session.clear()
     session["user_id"] = user.id
@@ -344,7 +362,10 @@ def auth_signup():
     Body: { "email": "...", "password": "...", "name": "..." (optional) }
     Creates a new email/password account, always at ROLE_BASIC (see
     models/user.py) - nothing in this request can set a different role.
-    Returns 409 if the email is already taken.
+    Returns 409 if the email belongs to an active account. If the email
+    belongs to a previously soft-deleted account instead, reactivates it
+    with the new name/password rather than erroring - their old
+    documents/event history come back with it.
     """
     body = request.get_json(silent=True) or {}
     email = (body.get("email") or "").strip().lower()
@@ -356,17 +377,33 @@ def auth_signup():
     if len(password) < 8:
         abort(400, description="Password must be at least 8 characters")
 
-    if get_user_by_email(email) is not None:
-        abort(409, description="An account with this email already exists")
+    # include_hidden=True: a previously-deleted account with this email
+    # still holds the row (soft delete never removes it), and the unique
+    # constraint on email means a plain create_user() call below would
+    # otherwise crash with an IntegrityError instead of a clean response.
+    existing = get_user_by_email(email, include_hidden=True)
+    if existing is not None:
+        if existing.status != STATUS_HIDDEN:
+            abort(409, description="An account with this email already exists")
 
-    password_hash = generate_password_hash(password)
-    user = create_user(email=email, password_hash=password_hash, name=name)
+        # They previously deleted this account. Treat signing up again with
+        # the same email as reactivating it (with the new password/name)
+        # rather than a dead end - their old documents/event history are
+        # still attached to this same row and come back with it.
+        password_hash = generate_password_hash(password)
+        update_user(existing.id, password_hash=password_hash, name=name or existing.name)
+        restore_user(existing.id)
+        user = get_user(existing.id)
+        logger.info("signup reactivated soft-deleted user_id=%s", user.id)
+    else:
+        password_hash = generate_password_hash(password)
+        user = create_user(email=email, password_hash=password_hash, name=name)
+        logger.info("signup user_id=%s", user.id)
 
     session.clear()
     session["user_id"] = user.id
     session.permanent = True
 
-    logger.info("signup user_id=%s", user.id)
     return jsonify(user.to_public_dict()), 201
 
 
@@ -376,14 +413,29 @@ def auth_login():
     """
     Body: { "email": "...", "password": "..." }
     Logs in with an email/password account created via /api/auth/signup.
+    If the account was previously soft-deleted, a correct password
+    reactivates it rather than being rejected.
     """
     body = request.get_json(silent=True) or {}
     email = (body.get("email") or "").strip().lower()
     password = body.get("password") or ""
 
-    user = get_user_by_email(email)
+    # include_hidden=True: without this a soft-deleted account can never log
+    # back in at all (get_user_by_email would silently act as if no account
+    # existed), even with the correct password and no way to recover it.
+    user = get_user_by_email(email, include_hidden=True)
     if user is None or not user.password_hash or not check_password_hash(user.password_hash, password):
         abort(401, description="Invalid email or password")
+
+    if user.status == STATUS_HIDDEN:
+        # Correct password proves ownership, so treat this as an intentional
+        # reactivation rather than leaving the account permanently locked
+        # out - same behavior as signing up again or via Google (see those
+        # handlers). Their documents/event history are still attached to
+        # this same row and come back with it.
+        restore_user(user.id)
+        user = get_user(user.id)
+        logger.info("login reactivated soft-deleted user_id=%s", user.id)
 
     session.clear()
     session["user_id"] = user.id
