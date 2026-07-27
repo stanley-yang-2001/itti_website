@@ -31,6 +31,7 @@ import logging
 import json
 import os
 import re
+import tempfile
 
 import stripe
 from dotenv import load_dotenv
@@ -40,9 +41,11 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.exceptions import HTTPException
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 
+import globe_data
 from decorators import get_current_user, login_required, roles_required
 from models.database import Base, DATABASE_URL, engine
 from models.user import (
@@ -253,6 +256,14 @@ ALLOWED_UPLOAD_EXTENSIONS = {".pdf", ".doc", ".docx", ".ppt", ".pptx", ".xls", "
 ALLOWED_REPORT_FILE_EXTENSIONS = {".pdf", ".doc", ".docx"}
 ALLOWED_REPORT_IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp"}
 MAX_REPORT_IMAGE_BYTES = 5 * 1024 * 1024  # 5 MB per cover image
+
+# GTBI/ETTI workbooks: same shape the data_scripts/{kind}_extract.py CLI
+# scripts already expect (a multi-sheet .xlsx workbook, not a flat CSV -
+# etti_extract.py reads named sheets like "EVS"/"Final ETTI" and
+# gtbi_extract.py reads a "GTBI Panel" sheet, which a CSV export can't
+# represent). Generous size cap since the real workbooks are ~100-200KB.
+ALLOWED_GLOBE_DATA_EXTENSIONS = {".xlsx"}
+MAX_GLOBE_DATA_UPLOAD_BYTES = 20 * 1024 * 1024  # 20 MB per file
 
 
 def load_json(path):
@@ -544,6 +555,102 @@ def delete_account():
     create_user_event(user_id=user.id, document_id=None, action=CRUDAction.DELETE)
     session.pop("user_id", None)
     return jsonify({"status": "account deleted"})
+
+
+# ---------------------------------------------------------------------------
+# Globe data (GTBI/ETTI workbook uploads) - publisher/admin only. Wires
+# together the pipeline already in server/data_scripts/ (etti_extract.py,
+# gtbi_extract.py) and server/globe_data.py, so uploading through the
+# Publish > Update Globe Data page does exactly what running those CLI
+# scripts by hand would do, without anyone needing shell access.
+# ---------------------------------------------------------------------------
+
+@app.post("/api/globe-data/upload")
+@roles_required("publisher", "admin")
+@limiter.limit("20 per hour")
+def upload_globe_data():
+    """
+    Body: multipart/form-data with:
+      kind = "ETTI" | "GTBI"
+      file = the replacement workbook (.xlsx - see globe_data.py's module
+             docstring for why this has to be a multi-sheet workbook, not
+             a flat CSV)
+
+    Steps (each one backed by server/globe_data.py):
+      1. Validate the upload actually extracts cleanly as `kind`, using
+         the exact same extraction code data_scripts/{kind}_extract.py
+         runs from the command line. Nothing on disk changes if this
+         fails.
+      2. Archive the raw upload into data_scripts/{kind}_storage/
+         (timestamped) as a permanent record of every upload made.
+      3. Rotate data_scripts/{kind_lower}_source/: whatever workbook is
+         currently there moves into that folder's old/ subfolder
+         (timestamped), and the new upload takes its place - so anyone
+         re-running the CLI script by hand afterward reads the same file
+         this endpoint just applied.
+      4. Write the validated extraction to
+         data_scripts/{kind_lower}_country_data.json, the same file the
+         CLI script's own -o flag would produce.
+      5. Merge that extraction into server/data/country_data.json -
+         the file GET /api/countries actually serves - touching only
+         this kind's section per country. A GTBI upload never touches
+         ETTI data and vice versa.
+    """
+    kind = (request.form.get("kind") or "").strip().upper()
+    if kind not in globe_data.VALID_KINDS:
+        abort(400, description=f"'kind' must be one of {', '.join(globe_data.VALID_KINDS)}")
+
+    upload = request.files.get("file")
+    if upload is None or upload.filename == "":
+        abort(400, description="Missing 'file' in request body")
+
+    original_filename = secure_filename(upload.filename)
+    if not original_filename:
+        abort(400, description="Invalid filename")
+
+    ext = os.path.splitext(original_filename)[1].lower()
+    if ext not in ALLOWED_GLOBE_DATA_EXTENSIONS:
+        abort(400, description=f"Only {', '.join(sorted(ALLOWED_GLOBE_DATA_EXTENSIONS))} workbooks are accepted")
+
+    # Nothing under data_scripts/ is touched until the workbook is proven
+    # to extract cleanly - it's saved to a scratch temp file first.
+    tmp_dir = os.path.join(globe_data.DATA_SCRIPTS_DIR, "_uploads_tmp")
+    os.makedirs(tmp_dir, exist_ok=True)
+    tmp_fd, tmp_path = tempfile.mkstemp(suffix=ext, dir=tmp_dir)
+    os.close(tmp_fd)
+    upload.save(tmp_path)
+
+    size = os.path.getsize(tmp_path)
+    if size > MAX_GLOBE_DATA_UPLOAD_BYTES:
+        os.remove(tmp_path)
+        abort(400, description=f"File exceeds the {MAX_GLOBE_DATA_UPLOAD_BYTES // (1024 * 1024)}MB limit")
+
+    try:
+        extracted = globe_data.validate_workbook(kind, tmp_path)
+    except globe_data.WorkbookValidationError as e:
+        os.remove(tmp_path)
+        abort(400, description=str(e))
+
+    # Archive a copy for history, then move the validated file itself into
+    # the CLI-facing source folder (rotating whatever was there into old/).
+    globe_data.archive_workbook(kind, tmp_path, original_filename)
+    globe_data.rotate_source_file(kind, tmp_path, original_filename)
+    globe_data.sync_cached_extraction(kind, extracted)
+    result = globe_data.apply_workbook_to_country_data(kind, extracted)
+
+    user = get_current_user()
+    create_user_event(user_id=user.id, document_id=None, action=CRUDAction.UPDATE)
+    logger.info(
+        "globe data upload kind=%s user_id=%s countries_updated=%d unresolved=%d",
+        kind, user.id, len(result["updated_codes"]), len(result["unresolved_country_names"]),
+    )
+
+    return jsonify({
+        "kind": kind,
+        "countries_updated": result["updated_codes"],
+        "unresolved_country_names": result["unresolved_country_names"],
+        "total_countries_in_file": result["total_countries_in_file"],
+    })
 
 
 # ---------------------------------------------------------------------------

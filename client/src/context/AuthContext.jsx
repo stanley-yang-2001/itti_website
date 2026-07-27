@@ -74,7 +74,13 @@ export function AuthProvider({ children }) {
     user,
     loading,
     isAuthenticated: Boolean(user),
-    isPublisher: user?.role === 'publisher',
+    // Matches the backend's @roles_required("publisher", "admin") pattern
+    // used on every route this flag gates client-side (uploading
+    // documents/reports, the globe-data workbook upload) - admin can do
+    // everything publisher can, so this has to be true for both roles,
+    // not just a literal role === 'publisher' check.
+    isPublisher: user?.role === 'publisher' || user?.role === 'admin',
+    isAdmin: user?.role === 'admin',
     loginWithGoogle,
     loginWithPassword,
     signup,

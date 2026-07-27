@@ -1,55 +1,32 @@
-Add cascading scroll-reveal + tasteful micro-interactions sitewide
+Wire up admin/publisher GTBI+ETTI workbook upload end-to-end
 
-Two things combined into one changeset on top of database's current
-tip (5f63060):
+Connects the existing but disconnected pieces (globe_data.py,
+PublishGlobeData.jsx) into a working upload flow, and fixes the
+admin-exclusion bug that would've blocked admins from using it.
 
-1. Cascading scroll-reveal on every page except Report/Observatory.
-   New client/src/components/Reveal.jsx wraps a single element and
-   fades/slides it in via IntersectionObserver the first time it
-   scrolls into view - no wrapping DOM node (uses cloneElement to
-   merge ref/className/style onto the child), composes with any ref
-   the child already had (so About.jsx's/Docs.jsx's scroll-spy section
-   tracking still works), respects prefers-reduced-motion, and reveals
-   once rather than re-hiding on scroll-away. Wrapped each page's
-   top-level sections/cards in <Reveal delay={...}> with staggered
-   delays for the cascade: Home, About, Certifications, Fellowship,
-   Contact, Docs, Donate, DonateThankYou, Login, SignUp,
-   ForgotPassword, ResetPassword, CountryProfiles, Settings, Publish,
-   PublishGlobeData, PublisherDashboard, PlaceholderPage, Unavailable.
-   Reports.jsx, Observatory.jsx, and ReportUploadForm.jsx intentionally
-   untouched.
+Backend:
+- Add POST /api/globe-data/upload (roles_required: publisher, admin).
+  Validates the workbook using the same extraction code the CLI
+  scripts use, archives the raw upload, rotates
+  data_scripts/{kind}_source/ (old file -> old/, new file installed),
+  refreshes the cached {kind}_country_data.json, and merges the result
+  into server/data/country_data.json - touching only the uploaded
+  kind's section per country.
+- globe_data.py: add rotate_source_file() and sync_cached_extraction()
+  alongside the existing validate_workbook()/archive_workbook()/
+  apply_workbook_to_country_data().
 
-2. A handful of small, deliberately restrained micro-interactions -
-   this is a trauma-response nonprofit's site, not a product demo, so
-   nothing here uses bounce/overshoot easing or treats data as a
-   spectacle:
-   - SidePanel tab switching (Overview/GTBI/ETTI) fades instead of
-     snapping instantly (plain opacity fade, no slide/bounce).
-   - Search suggestions dropdown and the mobile nav menu open/close
-     with a brief fade+slide instead of an instant display toggle
-     (SearchBar.jsx swapped inline display style for a CSS class).
-   - client/src/components/CountUp.jsx (new): a restrained ease-out
-     count animation for numeric stats. Skips animating on first mount
-     (a country's trauma statistics don't count up dramatically the
-     moment its panel opens) and only animates when a value actually
-     changes - e.g. switching the GTBI/ETTI year dropdown for the same
-     country. Keyed by country ISO in SidePanel.jsx so it never
-     animates *between* different countries' figures.
-   - Subtle scale(0.97) press feedback on buttons/cards/nav links
-     sitewide, scoped to specific classes so it doesn't fight existing
-     bespoke hover transforms (explore cards combine lift+press
-     instead of one overriding the other).
-   - Cert card detail panels fade in when expanded; explore card
-     arrows nudge right on hover; donation amount chips settle into
-     their selected state with a plain 0.18s scale-in (no bounce -
-     this one originally had a springy pop and was toned down before
-     shipping, specifically because bounce felt like the wrong
-     register for the donation page).
-   - App.jsx: routed page content gets a brief fade+slight-rise on
-     navigation via a new PageTransition wrapper, keyed by pathname,
-     built as a transparent flex pass-through so it doesn't break
-     pages (e.g. PlaceholderPage) that rely on being a direct flex:1
-     child of #app.
+Frontend:
+- Route PublishGlobeData.jsx at /publish/globe-data (unwrapped in
+  ProtectedRoute, per its own self-guarding design) and link it from
+  the Publish hub.
+- Fix AuthContext's isPublisher and ProtectedRoute's requireRole check,
+  both of which only matched role === 'publisher' and silently
+  excluded admins, despite the backend already treating admin as a
+  superset of publisher everywhere else.
 
-Everything respects prefers-reduced-motion. Verified with `vite build`
-and a live dev-server run.
+Verified via Flask test client: 401/403 for anonymous/basic users,
+200 for publisher and admin, 400 with no filesystem side effects for
+corrupted or wrong-shape workbooks, correct old/-folder rotation and
+country_data.json merge behavior. Frontend changes verified with a
+clean `vite build`.

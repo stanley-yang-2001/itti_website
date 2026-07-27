@@ -18,6 +18,7 @@ import ForgotPassword from './pages/ForgotPassword.jsx';
 import ResetPassword from './pages/ResetPassword.jsx';
 import Unavailable from './pages/Unavailable.jsx';
 import Publish from './pages/Publish.jsx';
+import PublishGlobeData from './pages/PublishGlobeData.jsx';
 import Docs from './pages/Docs.jsx';
 import Donate from './pages/Donate.jsx';
 import DonateThankYou from './pages/DonateThankYou.jsx';
@@ -76,6 +77,13 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        {/* Not wrapped in ProtectedRoute on purpose - see the comment atop
+            PublishGlobeData.jsx: it does its own auth/role check so a
+            non-publisher/admin landing here sees an explanation instead
+            of a silent redirect. Server-side enforcement is the real
+            gate (@roles_required("publisher", "admin") on
+            POST /api/globe-data/upload). */}
+        <Route path="/publish/globe-data" element={<PublishGlobeData />} />
       </Routes>
       </PageTransition>
       <Footer />

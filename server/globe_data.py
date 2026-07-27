@@ -1,24 +1,38 @@
 """
 globe_data.py
 
-Backs the publisher-only globe-data upload flow:
+Backs the publisher/admin globe-data upload flow (POST
+/api/globe-data/upload in app.py):
   1. validate_workbook(kind, path)   - try to extract the workbook with the
      same logic data_scripts/{kind}_extract.py uses; raises ValueError with
      a human-readable reason if the workbook doesn't fit.
-  2. archive_workbook(kind, path)    - moves the *original* uploaded file into
-     server/data_scripts/{kind}_storage/, timestamped so repeat uploads don't
-     collide or silently overwrite history.
-  3. apply_workbook_to_country_data(kind, path) - runs the real extraction,
-     then merges the result into the existing server/data/country_data.json
-     IN PLACE: only the given kind's section ("ETTI" or "GTBI") is touched,
-     per country. Countries new to this workbook are added (with the other
+  2. archive_workbook(kind, path, original_filename) - copies the raw
+     upload into server/data_scripts/{kind}_storage/, timestamped, as a
+     permanent audit trail of every upload ever made (Publisher
+     Dashboard's upload history via list_uploads()).
+  3. rotate_source_file(kind, tmp_path, original_filename) - whatever is
+     currently sitting in data_scripts/{kind}_source/ (the file the CLI
+     scripts themselves read from) moves into data_scripts/{kind}_source/old/,
+     timestamped so repeat uploads never collide or silently overwrite
+     history; the new upload then takes its place as the canonical source
+     file, so a later manual run of the CLI script picks up the same file
+     this endpoint just applied.
+  4. sync_cached_extraction(kind, extracted_data) - writes the already-
+     validated extraction out to data_scripts/{kind}_country_data.json,
+     the same path/shape `python3 {kind}_extract.py {kind}_source/ -o
+     {kind}_country_data.json` would produce, so that file stays in sync
+     with whatever's live rather than going stale after the first upload.
+  5. apply_workbook_to_country_data(kind, extracted_data) - merges the
+     extraction into the existing server/data/country_data.json IN PLACE:
+     only the given kind's section ("ETTI" or "GTBI") is touched, per
+     country. Countries new to this workbook are added (with the other
      section defaulted to "Data Pending" if they didn't already exist);
      countries already in country_data.json keep their other section as-is.
 
 This intentionally does NOT reuse combine_country_data.py's full-rebuild
 behavior, since that script starts from a blank slate covering all 249
 world countries built from BOTH extract outputs at once. A single
-publisher uploading just a new ETTI workbook shouldn't blow away
+publisher/admin uploading just a new ETTI workbook shouldn't blow away
 whatever GTBI data is already sitting in country_data.json from a
 previous, unrelated upload - so this module updates one section at a
 time, merging into whatever is already on disk.
@@ -68,6 +82,14 @@ def _storage_dir(kind):
     return path
 
 
+def _source_dir(kind):
+    """server/data_scripts/{kind_lower}_source/, created if missing - the
+    same folder the CLI scripts read from (etti_source/, gtbi_source/)."""
+    path = os.path.join(DATA_SCRIPTS_DIR, f"{kind.lower()}_source")
+    os.makedirs(path, exist_ok=True)
+    return path
+
+
 def validate_workbook(kind, path):
     """
     Attempts to extract the workbook the same way the CLI scripts do.
@@ -102,17 +124,72 @@ def validate_workbook(kind, path):
 
 def archive_workbook(kind, path, original_filename):
     """
-    Moves the original uploaded file into server/data_scripts/{kind}_storage/,
+    Copies the original uploaded file into server/data_scripts/{kind}_storage/,
     prefixed with a UTC timestamp so repeated uploads never collide or
-    silently overwrite a previous submission. Returns the new path.
+    silently overwrite a previous submission. This is a full audit trail
+    of every upload ever made (used by the Publisher Dashboard's upload
+    history) - distinct from rotate_source_file's job below, which only
+    ever keeps the single current + single previous file the CLI scripts
+    read from. Returns the archived copy's path. Copies rather than moves,
+    since the caller still needs `path` afterward (e.g. to also pass it to
+    rotate_source_file).
     """
     storage_dir = _storage_dir(kind)
     timestamp = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
     safe_name = os.path.basename(original_filename)
     archived_name = f"{timestamp}_{safe_name}"
     archived_path = os.path.join(storage_dir, archived_name)
-    shutil.move(path, archived_path)
+    shutil.copy2(path, archived_path)
     return archived_path
+
+
+def rotate_source_file(kind, tmp_path, original_filename):
+    """
+    Installs `tmp_path` (an already-validated upload) as the new canonical
+    source file for `kind` - data_scripts/{kind_lower}_source/ - after
+    first moving whatever workbook is currently there into that same
+    folder's old/ subfolder, timestamped so repeat uploads never collide
+    or silently overwrite history. This is what keeps the CLI pipeline
+    (`python3 {kind}_extract.py {kind}_source/`) and this upload endpoint
+    pointed at the same file going forward. Skips Excel's transient lock
+    files (~$...) if one happens to be sitting in the folder.
+    Returns the new source file's path.
+    """
+    if kind not in VALID_KINDS:
+        raise ValueError(f"Unknown kind '{kind}', expected one of {VALID_KINDS}")
+
+    source_dir = _source_dir(kind)
+    old_dir = os.path.join(source_dir, "old")
+    os.makedirs(old_dir, exist_ok=True)
+
+    timestamp = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+    for existing_name in os.listdir(source_dir):
+        existing_path = os.path.join(source_dir, existing_name)
+        if not os.path.isfile(existing_path) or existing_name.startswith("~$"):
+            continue  # skips the old/ subfolder itself (not a file) and Excel lock files
+        shutil.move(existing_path, os.path.join(old_dir, f"{timestamp}_{existing_name}"))
+
+    safe_name = os.path.basename(original_filename)
+    new_source_path = os.path.join(source_dir, safe_name)
+    shutil.move(tmp_path, new_source_path)
+    return new_source_path
+
+
+def sync_cached_extraction(kind, extracted_data):
+    """
+    Writes an already-validated extraction to
+    data_scripts/{kind_lower}_country_data.json - the same file
+    `{kind}_extract.py`'s own -o flag would produce - so it doesn't go
+    stale after an upload applied through the API instead of the CLI.
+    Returns the path written.
+    """
+    if kind not in VALID_KINDS:
+        raise ValueError(f"Unknown kind '{kind}', expected one of {VALID_KINDS}")
+
+    path = os.path.join(DATA_SCRIPTS_DIR, f"{kind.lower()}_country_data.json")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(extracted_data, f, indent=2, ensure_ascii=False)
+    return path
 
 
 def list_uploads():

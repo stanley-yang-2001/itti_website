@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Reveal from '../components/Reveal.jsx';
 import '../styles/Publish.css';
 
@@ -58,6 +59,13 @@ export default function Publish() {
     <div className="publish-page">
       <h2 className="display">Publish</h2>
       <p>Upload and manage documents. Only publishers can reach this page.</p>
+
+      <Reveal delay={0}>
+        <p className="publish-globe-data-link">
+          Need to update the GTBI/ETTI figures shown on the globe instead?{' '}
+          <Link to="/publish/globe-data">Update Globe Data</Link>
+        </p>
+      </Reveal>
 
       <Reveal delay={0}>
         <form onSubmit={handleUpload} className="publish-upload-form">
