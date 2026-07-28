@@ -1,54 +1,23 @@
-Add user Profile page with Favorites and Publications
+Observatory: select-all-data option + box plot chart; fix globe data-pending bug
 
-server/models/favorite_report.py (new)
-- FavoriteReport model + CRUD (add/remove/list), mirroring the existing
-  saved_chart.py pattern: a thin join row rather than a denormalized
-  copy, so a favorite always reflects the report's current state.
+1. Fix: globe panel shows "Data Pending" for GTBI/ETTI until year
+   changed. SidePanel.jsx's default-year useEffect only depended on
+   country.iso, but Home.jsx sets `country` state synchronously on
+   click while the actual record loads asynchronously via
+   fetchCountry() - the effect fired against the stale/empty record
+   from before the fetch resolved, locked in gtbiYear/ettiYear as
+   null, and (keyed only on country.iso) never re-ran once the fetch
+   caught up. Fixed by computing the effective year fresh on every
+   render instead of relying on effect timing.
 
-server/migrations/versions/a1f9c3d7e5b2_add_favorite_reports.py (new)
-- Adds the favorite_reports table. Applies cleanly on top of the full
-  existing migration chain.
+2. Observatory: "Select all data (GTBI + ETTI)" button in the data
+   explorer toolbar, behind a confirmation modal.
 
-server/app.py
-- GET    /api/reports/mine          - the logged-in user's own reports,
-                                       any review_status
-- GET    /api/reports/favorites      - the logged-in user's favorited
-                                       reports (full objects)
-- GET    /api/reports/favorites/ids  - just the id set, for marking
-                                       stars cheaply on a list of cards
-- POST   /api/reports/<id>/favorite  - favorite a report (idempotent)
-- DELETE /api/reports/<id>/favorite  - unfavorite a report
+3. Observatory: new "Box plot (vs. all countries)" chart type -
+   hand-rolled SVG box plot (Q1-Q3, median, Tukey 1.5*IQR whiskers,
+   outliers) built from every country with real data for the chosen
+   indicator, with checked panels plotted as colored points against
+   that distribution.
 
-client/src/pages/Profile.jsx (new), client/src/styles/Profile.css (new)
-- Header (avatar/initials, name, email, role badge, member since).
-- Favorites: Observatory charts (using the save-to-profile flow that
-  already existed in ChartsSection.jsx) and favorited Reports.
-- Publications: publisher/admin users get a list of their own reports
-  with status badges and a "New Report" button reusing the existing
-  ReportUploadForm workflow unchanged; other users see a message
-  directing them to contact@itti.org to request publisher access.
-- Quick Links to Settings, Certifications, Donate, and Contact.
-
-client/src/components/ReportCard.jsx
-- Optional favorite-star toggle (isFavorited/onToggleFavorite props),
-  omitted entirely when not supplied rather than rendering inert.
-
-client/src/pages/Reports.jsx
-- Loads the current user's favorite id set and wires the star on each
-  card, with an optimistic toggle that reverts on failure.
-
-client/src/components/NavBar.jsx
-- The logged-in user's name/role block is now a link to /profile.
-
-client/src/App.jsx
-- New protected routes: /profile and /settings (Settings.jsx existed
-  in the repo already but had no route at all until now).
-
-client/src/api.js
-- fetchMyReports, fetchFavoriteReports, fetchFavoriteReportIds,
-  favoriteReport, unfavoriteReport.
-
-Verified end-to-end with a live backend + real browser: signup,
-publisher promotion, report creation, favoriting/unfavoriting (both
-reports and charts), deleting a saved chart, and the non-publisher
-gated Publications view all confirmed working with zero console errors.
+Verified with `vite build`, a live dev-server run, and direct
+Node-level testing of the box plot quantile logic against real data.

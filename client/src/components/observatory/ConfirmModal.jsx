@@ -1,4 +1,4 @@
-export default function ConfirmModal({ title, message, onConfirm, onCancel }) {
+export default function ConfirmModal({ title, message, onConfirm, onCancel, confirmLabel = "Remove", confirmClassName = "obs-btn-danger" }) {
   return (
     <div className="obs-modal-overlay" onClick={onCancel}>
       <div className="obs-modal" onClick={(e) => e.stopPropagation()}>
@@ -6,7 +6,7 @@ export default function ConfirmModal({ title, message, onConfirm, onCancel }) {
         <p>{message}</p>
         <div className="obs-modal-actions">
           <button type="button" className="obs-btn" onClick={onCancel}>Cancel</button>
-          <button type="button" className="obs-btn obs-btn-danger" onClick={onConfirm}>Remove</button>
+          <button type="button" className={`obs-btn ${confirmClassName}`} onClick={onConfirm}>{confirmLabel}</button>
         </div>
       </div>
     </div>

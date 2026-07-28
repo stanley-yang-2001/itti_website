@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import ReportCard from '../components/ReportCard.jsx';
 import ReportUploadForm from './ReportUploadForm.jsx';
+import Reveal from '../components/Reveal.jsx';
 import {
   fetchSavedObservatoryCharts, deleteSavedObservatoryChart,
   fetchFavoriteReports, unfavoriteReport,
@@ -122,6 +123,7 @@ export default function Profile() {
   return (
     <div className="profile-page">
       {/* ---------- Header ---------- */}
+      <Reveal delay={0}>
       <section className="profile-header">
         <div className="profile-avatar">
           {user.picture_url ? (
@@ -142,8 +144,10 @@ export default function Profile() {
           Account settings
         </Link>
       </section>
+      </Reveal>
 
       {/* ---------- Favorites ---------- */}
+      <Reveal delay={90}>
       <section className="profile-section">
         <h2 className="profile-section-title display">Favorites</h2>
 
@@ -187,8 +191,10 @@ export default function Profile() {
           </div>
         )}
       </section>
+      </Reveal>
 
       {/* ---------- Publications ---------- */}
+      <Reveal delay={180}>
       <section className="profile-section">
         <div className="profile-section-head">
           <h2 className="profile-section-title display">Publications</h2>
@@ -239,8 +245,10 @@ export default function Profile() {
           </>
         )}
       </section>
+      </Reveal>
 
       {/* ---------- Quick links ---------- */}
+      <Reveal delay={270}>
       <section className="profile-section">
         <h2 className="profile-section-title display">Quick Links</h2>
         <div className="profile-quicklinks">
@@ -250,6 +258,7 @@ export default function Profile() {
           <Link to="/contact" className="chip">Contact us</Link>
         </div>
       </section>
+      </Reveal>
     </div>
   );
 }
