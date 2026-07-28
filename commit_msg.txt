@@ -1,32 +1,47 @@
-Wire up admin/publisher GTBI+ETTI workbook upload end-to-end
+build: add DigitalOcean App Platform deployment config
 
-Connects the existing but disconnected pieces (globe_data.py,
-PublishGlobeData.jsx) into a working upload flow, and fixes the
-admin-exclusion bug that would've blocked admins from using it.
+Adds everything needed to deploy the backend (Flask + gunicorn +
+Postgres via Alembic) and frontend (Vite static build) to DigitalOcean
+App Platform, plus the Brevo SMTP setup this depends on.
 
-Backend:
-- Add POST /api/globe-data/upload (roles_required: publisher, admin).
-  Validates the workbook using the same extraction code the CLI
-  scripts use, archives the raw upload, rotates
-  data_scripts/{kind}_source/ (old file -> old/, new file installed),
-  refreshes the cached {kind}_country_data.json, and merges the result
-  into server/data/country_data.json - touching only the uploaded
-  kind's section per country.
-- globe_data.py: add rotate_source_file() and sync_cached_extraction()
-  alongside the existing validate_workbook()/archive_workbook()/
-  apply_workbook_to_country_data().
+  - server/Dockerfile: builds the backend container. Installs
+    requirements-prod.txt, copies the server/ source, and on every
+    container start runs `alembic upgrade head` before starting
+    gunicorn - migrations apply automatically on each deploy rather
+    than needing a manual step.
 
-Frontend:
-- Route PublishGlobeData.jsx at /publish/globe-data (unwrapped in
-  ProtectedRoute, per its own self-guarding design) and link it from
-  the Publish hub.
-- Fix AuthContext's isPublisher and ProtectedRoute's requireRole check,
-  both of which only matched role === 'publisher' and silently
-  excluded admins, despite the backend already treating admin as a
-  superset of publisher everywhere else.
+  - app.yaml: the full App Platform spec - backend service (from the
+    Dockerfile), frontend static site (npm install && npm run build,
+    serving dist/), and a managed Postgres 16 database, wired together
+    via ${db.DATABASE_URL} and ${APP_URL}. Every secret (FLASK_SECRET_KEY,
+    SMTP credentials, Stripe keys, Google client ID) is a <PLACEHOLDER>
+    to fill in before use, not a real value.
 
-Verified via Flask test client: 401/403 for anonymous/basic users,
-200 for publisher and admin, 400 with no filesystem side effects for
-corrupted or wrong-shape workbooks, correct old/-folder rotation and
-country_data.json merge behavior. Frontend changes verified with a
-clean `vite build`.
+  - server/.env.example: documents every environment variable the
+    server actually reads (cross-checked against every os.environ.get()
+    call in app.py, storage.py, email_backend.py, and
+    models/database.py), including the Brevo/SMTP config
+    email_backend.py already supported but was never actually
+    documented anywhere.
+
+  - docs/DEPLOYMENT.md: step-by-step guide covering both halves of
+    this - deploying to App Platform, and setting up a Brevo sending
+    address (single-address verification for a quick start, or full
+    domain verification via DKIM/SPF for production-quality
+    deliverability), plus how to get the resulting SMTP credentials
+    into the five SMTP_* env vars the app expects.
+
+Verified: requirements-prod.txt installs cleanly in a fresh venv,
+gunicorn app:app resolves the real Flask app object, and the Dockerfile's
+`alembic upgrade head` step runs correctly against Postgres (confirmed
+Base.metadata.create_all() only fires for a local sqlite DATABASE_URL,
+so it never collides with Alembic in the actual production path). Did
+not run an actual `docker build` - no Docker available in this
+environment - so a local build/run before the first real deploy is
+still worth doing.
+
+Files added:
+  app.yaml
+  server/Dockerfile
+  server/.env.example
+  docs/DEPLOYMENT.md
