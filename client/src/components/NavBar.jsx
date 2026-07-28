@@ -57,10 +57,10 @@ export default function NavBar() {
         <div className="navbar-auth">
           {isAuthenticated ? (
             <>
-              <span className="navbar-user">
+              <Link to="/profile" className="navbar-user">
                 {user.name || user.email}
                 <span className={`role-badge role-${user.role}`}>{user.role}</span>
-              </span>
+              </Link>
               <button className="navbar-auth-btn" onClick={handleLogout}>
                 Log out
               </button>

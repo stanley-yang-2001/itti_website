@@ -63,6 +63,9 @@ from models.report import (
     delete_report, hard_delete_report, resubmit_report,
 )
 from models.report_review import record_review, get_reviews_for_report, ReviewError
+from models.favorite_report import (
+    add_favorite_report, remove_favorite_report, get_favorite_report_ids, get_favorite_reports_by_user,
+)
 from models.user_event import create_user_event, get_events_by_user, CRUDAction
 from models.password_reset_token import create_reset_token, get_valid_token, mark_token_used
 from models.saved_chart import (
@@ -1103,6 +1106,69 @@ def remove_report_permanently(report_id):
 
     logger.warning("hard delete report_id=%s by admin_id=%s", report_id, get_current_user().id)
     return jsonify({"status": "permanently deleted", "id": report_id})
+
+
+# ---------------------------------------------------------------------------
+# Report favorites - a logged-in user bookmarking a report for their
+# Profile page. Unlike soft/hard delete above, favoriting has no role
+# gate: any authenticated user can favorite any report they can already
+# see (there's nothing to protect - it's the user's own bookmark list).
+# ---------------------------------------------------------------------------
+
+@app.get("/api/reports/mine")
+@login_required
+def list_my_reports():
+    """
+    The logged-in user's own uploaded reports, any review_status,
+    newest first - what the Profile page's Publications section shows.
+    Unlike /api/reports (public, published-only), this deliberately
+    includes pending_review and changes_requested so an uploader can see
+    where their own submissions stand.
+    """
+    user = get_current_user()
+    reports = get_reports_by_uploader(user.id)
+    return jsonify([r.to_public_dict() for r in reports])
+
+
+@app.get("/api/reports/favorites")
+@login_required
+def list_favorite_reports():
+    """The logged-in user's favorited reports, most-recently-favorited first."""
+    user = get_current_user()
+    reports = get_favorite_reports_by_user(user.id)
+    return jsonify([r.to_public_dict() for r in reports])
+
+
+@app.get("/api/reports/favorites/ids")
+@login_required
+def list_favorite_report_ids():
+    """
+    Just the id set, for pages like /reports that list many report cards
+    and only need to know which ones to show as already-favorited -
+    cheaper than fetching full report bodies for every card.
+    """
+    user = get_current_user()
+    return jsonify(sorted(get_favorite_report_ids(user.id)))
+
+
+@app.post("/api/reports/<int:report_id>/favorite")
+@login_required
+def favorite_report_route(report_id):
+    user = get_current_user()
+    report = get_report(report_id)
+    if report is None or report.status == 0:
+        abort(404, description="Report not found")
+
+    add_favorite_report(user.id, report_id)
+    return jsonify({"status": "favorited", "report_id": report_id}), 201
+
+
+@app.delete("/api/reports/<int:report_id>/favorite")
+@login_required
+def unfavorite_report_route(report_id):
+    user = get_current_user()
+    remove_favorite_report(user.id, report_id)
+    return jsonify({"status": "unfavorited", "report_id": report_id})
 
 
 @app.get("/api/events")

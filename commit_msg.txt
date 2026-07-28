@@ -1,47 +1,54 @@
-build: add DigitalOcean App Platform deployment config
+Add user Profile page with Favorites and Publications
 
-Adds everything needed to deploy the backend (Flask + gunicorn +
-Postgres via Alembic) and frontend (Vite static build) to DigitalOcean
-App Platform, plus the Brevo SMTP setup this depends on.
+server/models/favorite_report.py (new)
+- FavoriteReport model + CRUD (add/remove/list), mirroring the existing
+  saved_chart.py pattern: a thin join row rather than a denormalized
+  copy, so a favorite always reflects the report's current state.
 
-  - server/Dockerfile: builds the backend container. Installs
-    requirements-prod.txt, copies the server/ source, and on every
-    container start runs `alembic upgrade head` before starting
-    gunicorn - migrations apply automatically on each deploy rather
-    than needing a manual step.
+server/migrations/versions/a1f9c3d7e5b2_add_favorite_reports.py (new)
+- Adds the favorite_reports table. Applies cleanly on top of the full
+  existing migration chain.
 
-  - app.yaml: the full App Platform spec - backend service (from the
-    Dockerfile), frontend static site (npm install && npm run build,
-    serving dist/), and a managed Postgres 16 database, wired together
-    via ${db.DATABASE_URL} and ${APP_URL}. Every secret (FLASK_SECRET_KEY,
-    SMTP credentials, Stripe keys, Google client ID) is a <PLACEHOLDER>
-    to fill in before use, not a real value.
+server/app.py
+- GET    /api/reports/mine          - the logged-in user's own reports,
+                                       any review_status
+- GET    /api/reports/favorites      - the logged-in user's favorited
+                                       reports (full objects)
+- GET    /api/reports/favorites/ids  - just the id set, for marking
+                                       stars cheaply on a list of cards
+- POST   /api/reports/<id>/favorite  - favorite a report (idempotent)
+- DELETE /api/reports/<id>/favorite  - unfavorite a report
 
-  - server/.env.example: documents every environment variable the
-    server actually reads (cross-checked against every os.environ.get()
-    call in app.py, storage.py, email_backend.py, and
-    models/database.py), including the Brevo/SMTP config
-    email_backend.py already supported but was never actually
-    documented anywhere.
+client/src/pages/Profile.jsx (new), client/src/styles/Profile.css (new)
+- Header (avatar/initials, name, email, role badge, member since).
+- Favorites: Observatory charts (using the save-to-profile flow that
+  already existed in ChartsSection.jsx) and favorited Reports.
+- Publications: publisher/admin users get a list of their own reports
+  with status badges and a "New Report" button reusing the existing
+  ReportUploadForm workflow unchanged; other users see a message
+  directing them to contact@itti.org to request publisher access.
+- Quick Links to Settings, Certifications, Donate, and Contact.
 
-  - docs/DEPLOYMENT.md: step-by-step guide covering both halves of
-    this - deploying to App Platform, and setting up a Brevo sending
-    address (single-address verification for a quick start, or full
-    domain verification via DKIM/SPF for production-quality
-    deliverability), plus how to get the resulting SMTP credentials
-    into the five SMTP_* env vars the app expects.
+client/src/components/ReportCard.jsx
+- Optional favorite-star toggle (isFavorited/onToggleFavorite props),
+  omitted entirely when not supplied rather than rendering inert.
 
-Verified: requirements-prod.txt installs cleanly in a fresh venv,
-gunicorn app:app resolves the real Flask app object, and the Dockerfile's
-`alembic upgrade head` step runs correctly against Postgres (confirmed
-Base.metadata.create_all() only fires for a local sqlite DATABASE_URL,
-so it never collides with Alembic in the actual production path). Did
-not run an actual `docker build` - no Docker available in this
-environment - so a local build/run before the first real deploy is
-still worth doing.
+client/src/pages/Reports.jsx
+- Loads the current user's favorite id set and wires the star on each
+  card, with an optimistic toggle that reverts on failure.
 
-Files added:
-  app.yaml
-  server/Dockerfile
-  server/.env.example
-  docs/DEPLOYMENT.md
+client/src/components/NavBar.jsx
+- The logged-in user's name/role block is now a link to /profile.
+
+client/src/App.jsx
+- New protected routes: /profile and /settings (Settings.jsx existed
+  in the repo already but had no route at all until now).
+
+client/src/api.js
+- fetchMyReports, fetchFavoriteReports, fetchFavoriteReportIds,
+  favoriteReport, unfavoriteReport.
+
+Verified end-to-end with a live backend + real browser: signup,
+publisher promotion, report creation, favoriting/unfavoriting (both
+reports and charts), deleting a saved chart, and the non-publisher
+gated Publications view all confirmed working with zero console errors.

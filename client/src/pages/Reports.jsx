@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import ReportCard from '../components/ReportCard.jsx';
 import ReportUploadForm from './ReportUploadForm.jsx';
+import { fetchFavoriteReportIds, favoriteReport, unfavoriteReport } from '../api.js';
 import '../styles/Reports.css';
 
 export default function Reports() {
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [reports, setReports] = useState(null); // null = loading
   const [loadError, setLoadError] = useState(null);
   const [showUploadForm, setShowUploadForm] = useState(false);
+  const [favoriteIds, setFavoriteIds] = useState(new Set());
 
   // Server-side enforcement is @roles_required("publisher", "admin") on
   // POST/DELETE /api/reports - this is only the UX layer that decides
@@ -30,6 +32,43 @@ export default function Reports() {
   useEffect(() => {
     loadReports();
   }, []);
+
+  // Favorite state is a separate load, gated on being logged in at all -
+  // a logged-out visitor simply never sees any star as filled (and
+  // ReportCard hides the star entirely for them - see onToggleFavorite
+  // being undefined below).
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setFavoriteIds(new Set());
+      return;
+    }
+    fetchFavoriteReportIds()
+      .then((ids) => setFavoriteIds(new Set(ids)))
+      .catch(() => {}); // non-critical - stars just won't show as filled
+  }, [isAuthenticated]);
+
+  async function handleToggleFavorite(reportId, currentlyFavorited) {
+    // Optimistic update - toggling a favorite is low-stakes enough that
+    // waiting on the round-trip before reflecting it would feel laggy.
+    setFavoriteIds((prev) => {
+      const next = new Set(prev);
+      if (currentlyFavorited) next.delete(reportId);
+      else next.add(reportId);
+      return next;
+    });
+    try {
+      if (currentlyFavorited) await unfavoriteReport(reportId);
+      else await favoriteReport(reportId);
+    } catch {
+      // Revert on failure.
+      setFavoriteIds((prev) => {
+        const next = new Set(prev);
+        if (currentlyFavorited) next.add(reportId);
+        else next.delete(reportId);
+        return next;
+      });
+    }
+  }
 
   function handleUploaded() {
     setShowUploadForm(false);
@@ -58,7 +97,7 @@ export default function Reports() {
             <p>Published research reports and field bulletins.</p>
           </div>
           {canUpload && !showUploadForm && (
-            <button type="button" className="reports-upload-toggle" onClick={() => setShowUploadForm(true)}>
+            <button type="button" className="btn btn-primary" onClick={() => setShowUploadForm(true)}>
               Upload Report
             </button>
           )}
@@ -82,6 +121,8 @@ export default function Reports() {
                 report={report}
                 canManage={canUpload && (user?.role === 'admin' || user?.id === report.uploaded_by)}
                 onDelete={handleDelete}
+                isFavorited={favoriteIds.has(report.id)}
+                onToggleFavorite={isAuthenticated ? handleToggleFavorite : undefined}
               />
             ))}
           </div>
