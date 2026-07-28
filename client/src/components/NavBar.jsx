@@ -10,13 +10,12 @@ const NAV_LINKS = [
   { to: '/country-profiles', label: 'Country Profiles' },
   { to: '/fellows', label: 'Fellowship' },
   { to: '/certifications', label: 'Certifications' },
-  { to: '/contact', label: 'Contact' },
-  { to: '/donate', label: 'Donate', emphasize: true }
+  { to: '/contact', label: 'Contact' }
 ];
 
 export default function NavBar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { user, isAuthenticated, isPublisher, logout } = useAuth();
+  const { user, isAuthenticated, isPublisher, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
   const navRef = useRef(null);
 
@@ -45,6 +44,7 @@ export default function NavBar() {
   }
 
   const links = isPublisher ? [...NAV_LINKS, { to: '/publish', label: 'Publish' }] : NAV_LINKS;
+  const allLinks = isAdmin ? [...links, { to: '/admin/donations', label: 'Donations (Admin)' }] : links;
 
   return (
     <nav className="navbar" ref={navRef}>
@@ -76,6 +76,14 @@ export default function NavBar() {
             </>
           )}
 
+          <NavLink
+            to="/donate"
+            className={({ isActive }) => 'navbar-auth-btn navbar-donate-btn' + (isActive ? ' active' : '')}
+            onClick={() => setMenuOpen(false)}
+          >
+            Donate
+          </NavLink>
+
           <button
             className="navbar-toggle"
             aria-label="Toggle navigation menu"
@@ -90,14 +98,12 @@ export default function NavBar() {
       </div>
 
       <ul className={`navbar-links${menuOpen ? ' open' : ''}`}>
-        {links.map((link) => (
+        {allLinks.map((link) => (
           <li key={link.to}>
             <NavLink
               to={link.to}
               end={link.end}
-              className={({ isActive }) =>
-                'navbar-link' + (link.emphasize ? ' navbar-link-donate' : '') + (isActive ? ' active' : '')
-              }
+              className={({ isActive }) => 'navbar-link' + (isActive ? ' active' : '')}
               onClick={() => setMenuOpen(false)}
             >
               {link.label}

@@ -73,8 +73,9 @@ from models.saved_chart import (
 )
 from models.donation import (
     create_donation, get_donation, get_donation_by_confirmation_code,
-    get_donation_by_checkout_session, attach_checkout_session,
+    get_donation_by_payment_intent, attach_payment_intent,
     finalize_succeeded_donation, mark_donation_failed,
+    list_donations, get_donation_totals,
 )
 from storage import get_storage
 from email_backend import get_email_backend, send_password_reset_email, send_donation_confirmation_email
@@ -124,6 +125,7 @@ CLIENT_ORIGIN = os.environ.get("CLIENT_ORIGIN", "http://localhost:5173")
 # for the secret key, Webhooks page (after adding an endpoint pointing at
 # /api/donations/webhook) for the webhook signing secret.
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
+STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "")
 STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
 if STRIPE_SECRET_KEY:
     stripe.api_key = STRIPE_SECRET_KEY
@@ -141,6 +143,8 @@ if IS_PRODUCTION:
         missing.append("GOOGLE_CLIENT_ID")
     if not STRIPE_SECRET_KEY:
         missing.append("STRIPE_SECRET_KEY")
+    if not STRIPE_PUBLISHABLE_KEY:
+        missing.append("STRIPE_PUBLISHABLE_KEY")
     if not STRIPE_WEBHOOK_SECRET:
         missing.append("STRIPE_WEBHOOK_SECRET")
     if missing:
@@ -1250,24 +1254,29 @@ def remove_observatory_chart(chart_id):
 
 
 # ---------------------------------------------------------------------------
-# Donations - Stripe Checkout. Open to anyone, logged in or not.
+# Donations - Stripe Payment Element, embedded directly on /donate rather
+# than a redirect to a Stripe-hosted page. Open to anyone, logged in or not.
 #
 # Flow:
-#   1. POST /api/donations/checkout-session creates a "pending" Donation
-#      row (so a confirmation_code exists up front) and a Stripe Checkout
-#      Session with automatic_payment_methods enabled - Stripe itself
-#      decides which methods to actually offer (card, Cash App Pay,
-#      Link, US bank debit, etc.) based on the amount, currency, and
-#      what's turned on in the Stripe Dashboard, so nothing here has to
-#      hardcode a payment method list.
-#   2. The browser is redirected to Stripe's hosted checkout_url. On
-#      success, Stripe redirects back to /donate/thank-you?session_id=...
-#   3. Two independent paths both funnel through the same
+#   1. POST /api/donations/payment-intent creates a "pending" Donation row
+#      (so a confirmation_code exists up front) and a Stripe PaymentIntent
+#      with automatic_payment_methods enabled - Stripe itself decides
+#      which methods the embedded Payment Element actually offers (card,
+#      Cash App Pay, Link, US bank debit, etc.) based on the amount,
+#      currency, and what's turned on in the Stripe Dashboard, so nothing
+#      here hardcodes a payment method list. Returns the PaymentIntent's
+#      client_secret to the frontend.
+#   2. The frontend mounts <PaymentElement> using that client_secret and
+#      calls stripe.confirmPayment() when the donor submits - the actual
+#      card/bank/wallet entry and the charge itself both happen through
+#      Stripe.js, so no card data ever touches this server.
+#   3. confirmPayment() redirects to /donate/thank-you?payment_intent=...
+#      Two independent paths both funnel through the same
 #      finalize_succeeded_donation() (models/donation.py), which is safe
 #      to call twice for one donation:
 #        a. POST /api/donations/webhook - Stripe's own server-to-server
 #           notification, the authoritative path in production.
-#        b. GET /api/donations/session/<session_id> - called by the
+#        b. GET /api/donations/payment-intent/<id> - called by the
 #           thank-you page itself, so the flow still works end-to-end in
 #           local dev with no public webhook URL configured at all.
 #      Whichever one gets there first sends the confirmation email
@@ -1279,15 +1288,23 @@ DONATION_PRESETS_CENTS = [2500, 5000, 10000, 25000]  # $25 / $50 / $100 / $250
 DONATION_CURRENCY = "usd"
 
 
-@app.get("/api/donations/presets")
-def get_donation_presets():
-    """Preset donation amounts (in cents), so the frontend never hardcodes them separately."""
-    return jsonify({"presets_cents": DONATION_PRESETS_CENTS, "currency": DONATION_CURRENCY})
+@app.get("/api/donations/config")
+def get_donation_config():
+    """
+    Preset amounts + the Stripe *publishable* key (safe to expose - it's
+    designed to be public, unlike STRIPE_SECRET_KEY) so the frontend can
+    load Stripe.js and never has to hardcode either one separately.
+    """
+    return jsonify({
+        "presets_cents": DONATION_PRESETS_CENTS,
+        "currency": DONATION_CURRENCY,
+        "publishable_key": STRIPE_PUBLISHABLE_KEY,
+    })
 
 
-@app.post("/api/donations/checkout-session")
+@app.post("/api/donations/payment-intent")
 @limiter.limit("20 per hour")
-def create_donation_checkout_session():
+def create_donation_payment_intent():
     if not STRIPE_SECRET_KEY:
         abort(503, description="Donations aren't configured on this server yet. Please try again later.")
 
@@ -1309,61 +1326,54 @@ def create_donation_checkout_session():
     donation = create_donation(first_name, last_name, email, amount_cents, currency=DONATION_CURRENCY)
 
     try:
-        checkout_session = stripe.checkout.Session.create(
-            mode="payment",
+        intent = stripe.PaymentIntent.create(
+            amount=amount_cents,
+            currency=DONATION_CURRENCY,
             automatic_payment_methods={"enabled": True},
-            customer_email=email,
-            line_items=[{
-                "price_data": {
-                    "currency": DONATION_CURRENCY,
-                    "product_data": {
-                        "name": "Donation to the International Truth & Trauma Institute",
-                        "description": f"Confirmation {donation.confirmation_code}",
-                    },
-                    "unit_amount": amount_cents,
-                },
-                "quantity": 1,
-            }],
+            # Deliberately NOT setting receipt_email here - that would make
+            # Stripe send its own generic receipt on top of the branded
+            # confirmation email send_donation_confirmation_email already
+            # sends (with the confirmation code, thank-you message, etc.),
+            # so donors would get two emails for one gift.
+            description=f"Donation to the International Truth & Trauma Institute — {donation.confirmation_code}",
             metadata={
                 "donation_id": str(donation.id),
                 "confirmation_code": donation.confirmation_code,
             },
-            success_url=f"{CLIENT_ORIGIN}/donate/thank-you?session_id={{CHECKOUT_SESSION_ID}}",
-            cancel_url=f"{CLIENT_ORIGIN}/donate?canceled=1",
         )
     except stripe.StripeError as e:
-        logger.warning("Stripe checkout session creation failed for donation_id=%s: %s", donation.id, e)
+        logger.warning("Stripe PaymentIntent creation failed for donation_id=%s: %s", donation.id, e)
         mark_donation_failed(donation.id)
         abort(502, description="We couldn't reach our payment processor. Please try again in a moment.")
 
-    attach_checkout_session(donation.id, checkout_session.id)
+    attach_payment_intent(donation.id, intent.id)
 
     return jsonify({
-        "checkout_url": checkout_session.url,
+        "client_secret": intent.client_secret,
         "confirmation_code": donation.confirmation_code,
     }), 201
 
 
-def _finalize_from_stripe_session(stripe_session):
+def _finalize_from_payment_intent(intent):
     """
     Shared by the webhook and the thank-you page's status check: given a
-    Stripe Checkout Session object that's already known to be paid, looks
-    up the matching Donation by its metadata and finalizes it. Sends the
-    confirmation email exactly once (only on the call that actually
-    transitions the row from pending -> succeeded).
+    Stripe PaymentIntent object that's already known to have succeeded,
+    looks up the matching Donation by its metadata and finalizes it.
+    Sends the confirmation email exactly once (only on the call that
+    actually transitions the row from pending -> succeeded).
     """
-    donation_id = (stripe_session.get("metadata") or {}).get("donation_id")
+    donation_id = (intent.get("metadata") or {}).get("donation_id")
     if not donation_id:
-        logger.warning("Stripe session %s has no donation_id in metadata", stripe_session.get("id"))
+        logger.warning("PaymentIntent %s has no donation_id in metadata", intent.get("id"))
         return None
 
-    payment_intent = stripe_session.get("payment_intent")
-    payment_intent_id = payment_intent if isinstance(payment_intent, str) else (payment_intent or {}).get("id")
-
+    # payment_method_types reflects the types Stripe was willing to offer
+    # for this PaymentIntent (via automatic_payment_methods) - informational
+    # only, always present without needing to expand anything on the intent.
     donation, just_finalized = finalize_succeeded_donation(
         int(donation_id),
-        stripe_payment_intent_id=payment_intent_id,
-        payment_method_types=stripe_session.get("payment_method_types"),
+        stripe_payment_intent_id=intent.get("id"),
+        payment_method_types=intent.get("payment_method_types"),
     )
     if donation and just_finalized:
         try:
@@ -1395,41 +1405,78 @@ def stripe_donation_webhook():
         logger.warning("Rejected donation webhook: invalid payload or signature")
         abort(400, description="Invalid signature")
 
-    if event["type"] == "checkout.session.completed":
-        stripe_session = event["data"]["object"]
-        if stripe_session.get("payment_status") == "paid":
-            _finalize_from_stripe_session(stripe_session)
+    if event["type"] == "payment_intent.succeeded":
+        _finalize_from_payment_intent(event["data"]["object"])
 
     return jsonify({"received": True})
 
 
-@app.get("/api/donations/session/<session_id>")
+@app.get("/api/donations/payment-intent/<intent_id>")
 @limiter.limit("60 per hour")
-def get_donation_by_session(session_id):
+def get_donation_by_payment_intent_route(intent_id):
     """
-    Called by the thank-you page right after a Stripe redirect. Re-checks
-    the session with Stripe directly and finalizes the donation if it's
-    paid but the webhook hasn't landed yet (or isn't configured at all,
-    e.g. local dev) - see _finalize_from_stripe_session for why this is
-    safe to run alongside the webhook rather than in place of it.
+    Called by the thank-you page right after Stripe.js redirects back
+    from confirming payment. Re-checks the PaymentIntent with Stripe
+    directly and finalizes the donation if it's succeeded but the
+    webhook hasn't landed yet (or isn't configured at all, e.g. local
+    dev) - see _finalize_from_payment_intent for why this is safe to run
+    alongside the webhook rather than in place of it.
     """
     if not STRIPE_SECRET_KEY:
         abort(503, description="Donations aren't configured on this server yet.")
 
     try:
-        stripe_session = stripe.checkout.Session.retrieve(session_id)
+        intent = stripe.PaymentIntent.retrieve(intent_id)
     except stripe.StripeError:
-        abort(404, description="Donation session not found")
+        abort(404, description="Donation not found")
 
-    if stripe_session.get("payment_status") == "paid":
-        donation = _finalize_from_stripe_session(stripe_session)
+    if intent.get("status") == "succeeded":
+        donation = _finalize_from_payment_intent(intent)
     else:
-        donation = get_donation_by_checkout_session(session_id)
+        donation = get_donation_by_payment_intent(intent_id)
 
     if donation is None:
         abort(404, description="Donation not found")
 
     return jsonify(donation.to_dict())
+
+
+@app.get("/api/donations")
+@roles_required("admin")
+def list_donations_route():
+    """
+    Admin-only donations list, for looking a gift up (e.g. a donor calls
+    in with just their confirmation code) or getting a quick sense of
+    recent activity. Not exposed to publishers - donor PII (email, name)
+    is more sensitive than the content-moderation data publishers
+    otherwise see.
+    """
+    status = request.args.get("status") or None
+    search = request.args.get("q") or None
+    try:
+        limit = min(int(request.args.get("limit", 50)), 200)
+        offset = max(int(request.args.get("offset", 0)), 0)
+    except ValueError:
+        abort(400, description="limit/offset must be integers")
+
+    donations, total = list_donations(status=status, search=search, limit=limit, offset=offset)
+    return jsonify({
+        "donations": [d.to_admin_dict() for d in donations],
+        "total": total,
+        "limit": limit,
+        "offset": offset,
+        "totals": get_donation_totals(),
+    })
+
+
+@app.get("/api/donations/lookup/<confirmation_code>")
+@roles_required("admin")
+def lookup_donation_route(confirmation_code):
+    """Direct single-donation lookup by confirmation code, for support use."""
+    donation = get_donation_by_confirmation_code(confirmation_code)
+    if donation is None:
+        abort(404, description="No donation found with that confirmation code")
+    return jsonify(donation.to_admin_dict())
 
 
 if __name__ == "__main__":

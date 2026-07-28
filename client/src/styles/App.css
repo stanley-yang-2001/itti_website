@@ -24,6 +24,44 @@
   .display{font-family:'Times New Roman', Times, serif;}
   .mono{font-family:'JetBrains Mono',monospace;}
 
+  /* ---------- Shared button utility ----------
+     .btn is the base; pair it with .btn-primary (solid, cyan) or
+     .btn-secondary (outlined) - used on Reports and Profile so an
+     "Upload"/"Go to X"-style action looks the same everywhere instead
+     of every page inventing its own button class. */
+  .btn{
+    display:inline-block;
+    padding:9px 18px;
+    border-radius:6px;
+    border:1px solid var(--line);
+    font-size:0.85rem;
+    font-weight:700;
+    text-align:center;
+    text-decoration:none;
+    cursor:pointer;
+    transition:opacity 0.15s ease, border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+  }
+  .btn-primary{
+    background:var(--cyan);
+    border-color:var(--cyan);
+    color:var(--bg-deep);
+  }
+  .btn-primary:hover:not(:disabled){
+    opacity:0.9;
+  }
+  .btn-secondary{
+    background:transparent;
+    color:var(--text-hi);
+  }
+  .btn-secondary:hover:not(:disabled){
+    border-color:var(--cyan);
+    color:var(--cyan);
+  }
+  .btn:disabled{
+    opacity:0.5;
+    cursor:not-allowed;
+  }
+
   /* ---------- Page transition ---------- */
   /* Wraps whatever <Routes> renders (see App.jsx). Has to behave as a
      transparent flex pass-through, not just a plain div: #app is a
@@ -714,18 +752,19 @@
     color:var(--bg-deep);
     background:var(--cyan);
   }
-  .navbar-link-donate{
-    border:1px solid var(--cyan);
-    color:var(--cyan);
-    font-weight:600;
-  }
-  .navbar-link-donate:hover{
-    color:var(--bg-deep);
+  .navbar-donate-btn{
     background:var(--cyan);
-  }
-  .navbar-link-donate.active{
+    border-color:var(--cyan);
     color:var(--bg-deep);
-    background:var(--cyan);
+    font-weight:700;
+  }
+  .navbar-donate-btn:hover{
+    color:var(--bg-deep);
+    opacity:0.9;
+  }
+  .navbar-donate-btn.active{
+    outline:2px solid var(--text-hi);
+    outline-offset:1px;
   }
   .navbar-toggle{
     display:none;

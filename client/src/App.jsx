@@ -22,6 +22,7 @@ import PublishGlobeData from './pages/PublishGlobeData.jsx';
 import Docs from './pages/Docs.jsx';
 import Donate from './pages/Donate.jsx';
 import DonateThankYou from './pages/DonateThankYou.jsx';
+import AdminDonations from './pages/AdminDonations.jsx';
 import Profile from './pages/Profile.jsx';
 import Settings from './pages/Settings.jsx';
 
@@ -102,6 +103,14 @@ export default function App() {
             gate (@roles_required("publisher", "admin") on
             POST /api/globe-data/upload). */}
         <Route path="/publish/globe-data" element={<PublishGlobeData />} />
+        <Route
+          path="/admin/donations"
+          element={
+            <ProtectedRoute requireRole="admin">
+              <AdminDonations />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
       </PageTransition>
       <Footer />

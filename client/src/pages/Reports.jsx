@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import ReportCard from '../components/ReportCard.jsx';
 import ReportUploadForm from './ReportUploadForm.jsx';
 import { fetchFavoriteReportIds, favoriteReport, unfavoriteReport } from '../api.js';
+import Reveal from '../components/Reveal.jsx';
+import { isBadRequest } from '../utils/apiError';
 import '../styles/Reports.css';
 
 export default function Reports() {
+  const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   const [reports, setReports] = useState(null); // null = loading
   const [loadError, setLoadError] = useState(null);
@@ -22,6 +26,10 @@ export default function Reports() {
   async function loadReports() {
     try {
       const res = await fetch('/api/reports');
+      if (isBadRequest(res)) {
+        navigate('/unavailable?from=%2Freports&fromLabel=Back%20to%20Reports');
+        return;
+      }
       if (!res.ok) throw new Error('Failed to load reports.');
       setReports(await res.json());
     } catch (err) {
@@ -91,17 +99,19 @@ export default function Reports() {
   return (
     <div className="reports-page">
       <div className="reports-content">
-        <div className="reports-header">
-          <div>
-            <h2>Reports</h2>
-            <p>Published research reports and field bulletins.</p>
+        <Reveal delay={0}>
+          <div className="reports-header">
+            <div>
+              <h2 className="display">Reports</h2>
+              <p>Published research reports and field bulletins.</p>
+            </div>
+            {canUpload && !showUploadForm && (
+              <button type="button" className="btn btn-primary" onClick={() => setShowUploadForm(true)}>
+                Upload Report
+              </button>
+            )}
           </div>
-          {canUpload && !showUploadForm && (
-            <button type="button" className="btn btn-primary" onClick={() => setShowUploadForm(true)}>
-              Upload Report
-            </button>
-          )}
-        </div>
+        </Reveal>
 
         {showUploadForm && (
           <ReportUploadForm onUploaded={handleUploaded} onCancel={() => setShowUploadForm(false)} />
@@ -114,18 +124,20 @@ export default function Reports() {
         )}
 
         {!loadError && reports !== null && reports.length > 0 && (
-          <div className="reports-grid">
-            {reports.map((report) => (
-              <ReportCard
-                key={report.id}
-                report={report}
-                canManage={canUpload && (user?.role === 'admin' || user?.id === report.uploaded_by)}
-                onDelete={handleDelete}
-                isFavorited={favoriteIds.has(report.id)}
-                onToggleFavorite={isAuthenticated ? handleToggleFavorite : undefined}
-              />
-            ))}
-          </div>
+          <Reveal delay={90}>
+            <div className="reports-grid">
+              {reports.map((report) => (
+                <ReportCard
+                  key={report.id}
+                  report={report}
+                  canManage={canUpload && (user?.role === 'admin' || user?.id === report.uploaded_by)}
+                  onDelete={handleDelete}
+                  isFavorited={favoriteIds.has(report.id)}
+                  onToggleFavorite={isAuthenticated ? handleToggleFavorite : undefined}
+                />
+              ))}
+            </div>
+          </Reveal>
         )}
       </div>
     </div>

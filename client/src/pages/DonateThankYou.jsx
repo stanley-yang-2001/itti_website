@@ -8,19 +8,29 @@ const MAX_RETRIES = 3; // covers async payment methods (e.g. bank debit) that do
 
 export default function DonateThankYou() {
   const [searchParams] = useSearchParams();
-  const sessionId = searchParams.get('session_id');
+  // Stripe.js appends these after stripe.confirmPayment() redirects back
+  // here: payment_intent/payment_intent_client_secret identify which
+  // PaymentIntent to check, redirect_status is Stripe's own immediate
+  // read on it (still re-verified server-side below, not trusted as-is).
+  const paymentIntentId = searchParams.get('payment_intent');
+  const redirectStatus = searchParams.get('redirect_status');
 
   const [donation, setDonation] = useState(null);
-  const [status, setStatus] = useState(sessionId ? 'loading' : 'missing-session');
+  const [status, setStatus] = useState(paymentIntentId ? 'loading' : 'missing-session');
 
   useEffect(() => {
-    if (!sessionId) return;
+    if (!paymentIntentId) return;
+    if (redirectStatus === 'failed') {
+      setStatus('failed');
+      return;
+    }
+
     let cancelled = false;
     let retries = 0;
 
     async function poll() {
       try {
-        const res = await fetch(`/api/donations/session/${encodeURIComponent(sessionId)}`);
+        const res = await fetch(`/api/donations/payment-intent/${encodeURIComponent(paymentIntentId)}`);
         const data = await res.json().catch(() => ({}));
         if (cancelled) return;
 
@@ -48,7 +58,7 @@ export default function DonateThankYou() {
     return () => {
       cancelled = true;
     };
-  }, [sessionId]);
+  }, [paymentIntentId, redirectStatus]);
 
   return (
     <div className="donate-page">
