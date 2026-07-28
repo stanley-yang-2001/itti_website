@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "database"]
+  pull_request:
+
+jobs:
+  backend:
+    name: Backend (Flask)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Import sanity check
+        run: |
+          python -c "import app; print('app.py imports cleanly')"
+
+      - name: Alembic migration check (fresh SQLite)
+        run: |
+          rm -f app.db
+          python -m alembic upgrade head
+          python -c "
+          import sqlite3
+          conn = sqlite3.connect('app.db')
+          tables = {r[0] for r in conn.execute(\"SELECT name FROM sqlite_master WHERE type='table'\")}
+          assert {'users', 'documents', 'user_events', 'password_reset_tokens'}.issubset(tables), tables
+          print('migrations produce expected schema:', tables)
+          "
+
+      - name: Auth + access-tier smoke test
+        run: |
+          rm -f app.db
+          python - <<'PYEOF'
+          from unittest.mock import patch
+          import io, logging, re
+          import app as flask_app
+
+          flask_app.GOOGLE_CLIENT_ID = "test-client-id"
+          c = flask_app.app.test_client()
+
+          fake = {"sub": "sub-1", "email": "ci@example.com", "name": "CI Bot", "picture": None}
+          with patch("app.id_token.verify_oauth2_token", return_value=fake):
+              r = c.post("/api/auth/google", json={"credential": "t"})
+          assert r.status_code == 200 and r.json["role"] == "basic", r.json
+
+          r = c.post("/api/documents", data={"file": (io.BytesIO(b"hi"), "brief.pdf")}, content_type="multipart/form-data")
+          assert r.status_code == 403, r.json
+
+          assert c.get("/api/health").status_code == 200
+          assert c.get("/api/countries").status_code == 200
+
+          # forgot-password / reset-password
+          c.post("/api/auth/signup", json={"email": "reset@example.com", "password": "originalpass1"})
+          c.post("/api/auth/logout")
+
+          buf = io.StringIO()
+          flask_app.logger.addHandler(logging.StreamHandler(buf))
+          flask_app.logger.setLevel(logging.INFO)
+          r = c.post("/api/auth/forgot-password", json={"email": "reset@example.com"})
+          assert r.status_code == 200
+          match = re.search(r"token=(\S+)", buf.getvalue())
+          assert match, "reset link not found in console-logged email"
+          token = match.group(1)
+
+          r = c.post("/api/auth/reset-password", json={"token": token, "password": "newpassword1"})
+          assert r.status_code == 200, r.json
+          r = c.post("/api/auth/reset-password", json={"token": token, "password": "again12345"})
+          assert r.status_code == 400, "token should be single-use"
+
+          print("backend smoke test passed")
+          PYEOF
+
+  frontend:
+    name: Frontend (Vite build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build

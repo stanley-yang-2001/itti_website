@@ -1,0 +1,109 @@
+.pub-dashboard-page {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 40px 32px 80px;
+  max-width: 760px;
+  margin: 0 auto;
+  width: 100%;
+}
+.pub-dashboard-page h2 {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  color: var(--text-hi);
+}
+.pub-dashboard-page > p {
+  color: var(--text-mid);
+  font-size: 14px;
+  margin: 0 0 28px 0;
+}
+
+.pub-dashboard-actions {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.pub-dashboard-card {
+  flex: 1;
+  display: block;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 20px;
+  text-decoration: none;
+  transition: border-color 0.15s ease;
+}
+.pub-dashboard-card:hover {
+  border-color: var(--cyan);
+}
+.pub-dashboard-card h3 {
+  margin: 0 0 6px 0;
+  font-size: 16px;
+  color: var(--text-hi);
+}
+.pub-dashboard-card p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-mid);
+  line-height: 1.5;
+}
+
+.pub-dashboard-history h3 {
+  font-size: 15px;
+  color: var(--text-hi);
+  margin: 0 0 12px 0;
+}
+
+.pub-dashboard-muted {
+  color: var(--text-low);
+  font-size: 13px;
+}
+.pub-dashboard-error {
+  color: #f2a9a9;
+  font-size: 13px;
+}
+
+.pub-dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 13px;
+}
+.pub-dashboard-table th {
+  text-align: left;
+  padding: 10px 14px;
+  color: var(--text-low);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--line);
+}
+.pub-dashboard-table td {
+  padding: 10px 14px;
+  color: var(--text-hi);
+  border-bottom: 1px solid var(--line);
+}
+.pub-dashboard-table tr:last-child td {
+  border-bottom: none;
+}
+
+.kind-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+}
+.kind-badge--gtbi {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+.kind-badge--etti {
+  color: var(--cyan);
+  border-color: var(--cyan);
+}

@@ -1,0 +1,72 @@
+# DigitalOcean App Platform spec.
+# Use this either by pasting it in when creating the app (App Platform
+# supports "Edit as YAML"), or via `doctl apps create --spec app.yaml`.
+# Replace every <PLACEHOLDER> before using.
+name: itti-website
+
+services:
+  - name: backend
+    dockerfile_path: server/Dockerfile
+    source_dir: /
+    github:
+      repo: <your-github-username>/itti_website
+      branch: database
+      deploy_on_push: true
+    http_port: 8080
+    instance_size_slug: basic-xxs
+    instance_count: 1
+    routes:
+      - path: /api
+    envs:
+      - key: FLASK_ENV
+        value: production
+      - key: FLASK_SECRET_KEY
+        type: SECRET
+        value: "<PLACEHOLDER - generate one with: python3 -c 'import secrets; print(secrets.token_hex(32))'>"
+      - key: CLIENT_ORIGIN
+        value: ${APP_URL}
+      - key: DATABASE_URL
+        value: ${db.DATABASE_URL}
+      - key: GOOGLE_CLIENT_ID
+        value: <PLACEHOLDER>
+      - key: EMAIL_BACKEND
+        value: smtp
+      - key: SMTP_HOST
+        value: smtp-relay.brevo.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USERNAME
+        type: SECRET
+        value: <PLACEHOLDER - Brevo SMTP login>
+      - key: SMTP_PASSWORD
+        type: SECRET
+        value: <PLACEHOLDER - Brevo SMTP key>
+      - key: SMTP_FROM_EMAIL
+        value: <PLACEHOLDER - e.g. noreply@yourdomain.org>
+      - key: STRIPE_SECRET_KEY
+        type: SECRET
+        value: <PLACEHOLDER, if using donations>
+      - key: STRIPE_WEBHOOK_SECRET
+        type: SECRET
+        value: <PLACEHOLDER, if using donations>
+
+static_sites:
+  - name: frontend
+    source_dir: /client
+    github:
+      repo: <your-github-username>/itti_website
+      branch: database
+      deploy_on_push: true
+    build_command: npm install && npm run build
+    output_dir: dist
+    routes:
+      - path: /
+    envs:
+      - key: GOOGLE_CLIENT_ID
+        value: <PLACEHOLDER - same value as backend's GOOGLE_CLIENT_ID>
+
+databases:
+  - name: db
+    engine: PG
+    version: "16"
+    production: true

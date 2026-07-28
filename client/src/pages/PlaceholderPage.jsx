@@ -1,4 +1,5 @@
 import React from 'react';
+import Reveal from '../components/Reveal.jsx';
 
 /**
  * Generic placeholder used by every nav section that doesn't have real
@@ -7,9 +8,11 @@ import React from 'react';
  */
 export default function PlaceholderPage({ title }) {
   return (
-    <div className="page-placeholder">
-      <h2 className="display">{title}</h2>
-      <p>This section is coming soon.</p>
-    </div>
+    <Reveal delay={0}>
+      <div className="page-placeholder">
+        <h2 className="display">{title}</h2>
+        <p>This section is coming soon.</p>
+      </div>
+    </Reveal>
   );
 }

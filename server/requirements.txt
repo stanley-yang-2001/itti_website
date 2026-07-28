@@ -1,2 +1,17 @@
 Flask==3.0.3
 Flask-Cors==4.0.1
+SQLAlchemy==2.0.35
+google-auth==2.34.0
+python-dotenv==1.0.1
+requests==2.32.3
+openpyxl==3.1.5
+pycountry==24.6.1
+stripe==15.3.1
+
+# Database
+psycopg2-binary==2.9.9
+alembic==1.13.3
+
+# Production hardening (all cross-platform, safe to install locally too)
+Flask-Limiter==3.8.0
+sentry-sdk[flask]==2.14.0

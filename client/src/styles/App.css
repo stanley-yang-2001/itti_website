@@ -1,4 +1,4 @@
-  :root{
+:root{
     --bg-deep:#080D16;
     --bg-panel:#0E1626;
     --line:#1D2A3E;
@@ -18,27 +18,137 @@
     background:var(--bg-deep);
     color:var(--text-hi);
     font-family:'Inter',sans-serif;
-    overflow:hidden;
+    overflow-x:hidden;
+    overflow-y:auto;
   }
-  .display{font-family:'Space Grotesk',sans-serif;}
+  .display{font-family:'Times New Roman', Times, serif;}
   .mono{font-family:'JetBrains Mono',monospace;}
+
+  /* ---------- Page transition ---------- */
+  /* Wraps whatever <Routes> renders (see App.jsx). Has to behave as a
+     transparent flex pass-through, not just a plain div: #app is a
+     column flex container and some pages (e.g. PlaceholderPage) rely
+     on being a direct flex:1 child to center their content vertically. */
+  .page-transition{
+    display:flex;
+    flex-direction:column;
+    flex:1;
+    min-height:0;
+    animation:pageFadeIn .32s ease;
+  }
+  @keyframes pageFadeIn{
+    from{opacity:0; transform:translateY(6px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .page-transition{animation:none;}
+  }
+
+  /* ---------- Micro-interactions ---------- */
+  /* Small press feedback on anything clickable, so buttons/cards/links
+     feel responsive without being showy. Scoped to specific classes
+     (not a blanket "button, a" rule) so it doesn't fight bespoke hover
+     transforms elsewhere (e.g. .home-explore-card's own hover lift). */
+  button,
+  .home-explore-card,
+  .contact-card,
+  .cert-card-summary,
+  .navbar-link,
+  .navbar-auth-btn,
+  .navbar-toggle,
+  .certs-btn,
+  .certs-pill,
+  .donate-amount-chip,
+  .donate-submit-button,
+  .panel-observatory-link,
+  .panel-close,
+  .tab-btn,
+  .globe-upload-kind-btn,
+  .pub-dashboard-card,
+  .year-select,
+  a.unavailable-back-link{
+    transition:transform .12s ease, opacity .12s ease, border-color .15s ease, background .15s ease, color .15s ease;
+  }
+  button:active,
+  .contact-card:active,
+  .cert-card-summary:active,
+  .navbar-link:active,
+  .navbar-auth-btn:active,
+  .certs-btn:active,
+  .certs-pill:active,
+  .donate-amount-chip:active,
+  .donate-submit-button:active,
+  .panel-observatory-link:active,
+  .panel-close:active,
+  .tab-btn:active,
+  .globe-upload-kind-btn:active,
+  .pub-dashboard-card:active{
+    transform:scale(0.97);
+  }
+  button:disabled:active{transform:none;}
+  @media (prefers-reduced-motion: reduce){
+    button, .home-explore-card, .contact-card, .cert-card-summary, .navbar-link,
+    .navbar-auth-btn, .certs-btn, .certs-pill, .donate-amount-chip,
+    .donate-submit-button, .panel-observatory-link, .panel-close,
+    .tab-btn, .globe-upload-kind-btn, .pub-dashboard-card{
+      transition:none !important;
+    }
+    button:active, .home-explore-card:active, .contact-card:active,
+    .cert-card-summary:active, .navbar-link:active, .navbar-auth-btn:active,
+    .certs-btn:active, .certs-pill:active, .donate-amount-chip:active,
+    .donate-submit-button:active, .panel-observatory-link:active,
+    .panel-close:active, .tab-btn:active, .globe-upload-kind-btn:active,
+    .pub-dashboard-card:active{
+      transform:none !important;
+    }
+  }
+
+  /* ---------- Scroll reveal ---------- */
+  /* Shared entrance animation for inline status/error banners
+     (form errors, upload status, donation notices, etc.) - applied
+     directly on the existing per-page rules below rather than a new
+     class, since they're all simple one-line additions. */
+  @keyframes bannerSlideIn{
+    from{opacity:0; transform:translateY(-6px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+  /* Applied by the <Reveal> component (client/src/components/Reveal.jsx)
+     to whatever element it wraps. Starts hidden/offset, then transitions
+     in once that element's IntersectionObserver fires. Wrapping several
+     siblings in <Reveal> with staggered `delay` props gives a cascading,
+     one-after-another appearance as the user scrolls down a page. */
+  .reveal-on-scroll{
+    opacity:0;
+    transform:translateY(28px);
+    transition:opacity .6s cubic-bezier(.22,.9,.32,1), transform .6s cubic-bezier(.22,.9,.32,1);
+  }
+  .reveal-on-scroll.is-visible{
+    opacity:1;
+    transform:translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce){
+    .reveal-on-scroll{transition:none; opacity:1; transform:none;}
+  }
+
+  /* Headers and page titles across the site use Times New Roman; body copy
+     stays on Inter. Anything with the .display class picks this up too. */
+  h1, h2, h3{
+    font-family:'Times New Roman', Times, serif;
+  }
 
   #app{
     position:relative;
-    width:100vw; height:100vh;
+    width:100vw; min-height:100vh;
     display:flex;
     flex-direction:column;
   }
 
   /* ---------- Header ---------- */
-  header{
-    display:flex;
-    align-items:center;
-    justify-content:flex-end;
-    padding:18px 32px;
-    z-index:5;
-    flex-shrink:0;
-  }
+  /* The <header> wrapper itself is no longer rendered - the search bar
+     it used to hold now lives inside .home-globe-left (see the
+     ".home-globe-left .searchwrap" override in the Main/Globe section
+     below). .searchwrap/#search/#suggestions stay here as the shared
+     base styles for the control itself, wherever it's placed. */
   .brand{
     display:flex;
     align-items:baseline;
@@ -97,8 +207,21 @@
     border-radius:8px;
     max-height:220px;
     overflow-y:auto;
-    display:none;
     z-index:20;
+    opacity:0;
+    transform:translateY(-6px);
+    visibility:hidden;
+    pointer-events:none;
+    transition:opacity .16s ease, transform .16s ease, visibility .16s;
+  }
+  #suggestions.open{
+    opacity:1;
+    transform:translateY(0);
+    visibility:visible;
+    pointer-events:auto;
+  }
+  @media (prefers-reduced-motion: reduce){
+    #suggestions{transition:opacity .01s linear;}
   }
   #suggestions div{
     padding:8px 14px;
@@ -108,14 +231,68 @@
   }
   #suggestions div:hover{background:rgba(79,217,199,0.08); color:var(--text-hi);}
 
-  /* ---------- Main / Globe ---------- */
+  /* ---------- Main wrapper (Part 1 + Part 2) ---------- */
   main{
     position:relative;
-    flex:1;
-    min-height:0;
   }
+
+  /* ---------- Part 1: Welcome ---------- */
+  .home-welcome{
+    padding:72px 32px 48px;
+    text-align:center;
+    max-width:760px;
+    margin:0 auto;
+  }
+  .home-welcome-eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--cyan);
+    margin:0 0 14px;
+  }
+  .home-welcome-title{
+    margin:0 0 16px;
+    font-size:clamp(30px, 4.2vw, 44px);
+    font-weight:400;
+    line-height:1.15;
+    color:var(--text-hi);
+  }
+  .home-welcome-message{
+    margin:0;
+    font-size:16px;
+    line-height:1.6;
+    color:var(--text-mid);
+  }
+
+  /* ---------- Part 2: Globe + message/panel ---------- */
+  .home-globe{
+    padding:16px 32px 88px;
+  }
+  .home-globe-grid{
+    display:grid;
+    grid-template-columns:1.15fr 1fr;
+    gap:36px;
+    max-width:1240px;
+    margin:0 auto;
+    align-items:stretch;
+  }
+  .home-globe-left{
+    position:relative;
+    width:100%;
+    height:560px;
+    border-radius:20px;
+    overflow:hidden;
+    border:1px solid var(--line);
+    background:radial-gradient(circle at 38% 32%, #0F2033, var(--bg-deep));
+  }
+  .home-globe-right{
+    display:flex;
+    flex-direction:column;
+  }
+
   #globe-container{
-    position:absolute; inset:0;
+    width:100%; height:100%;
     display:flex; align-items:center; justify-content:center;
   }
   #globe-container svg{
@@ -133,43 +310,114 @@
     stroke-width:0.5px;
     transition:fill .12s ease;
   }
+  /* Data-coverage colors: only countries that actually have ETTI and/or
+     GTBI records get tinted; everything else keeps the default --land
+     color above. These sit between the base .land rule and the
+     hover/selected rules below (same specificity, later in the
+     cascade = wins over the default fill), so hovering or clicking a
+     tinted country still falls through to the original hover/selected
+     colors untouched. */
+  .land.data-etti{fill:#7FA8E0;}   /* ETTI only - steel blue */
+  .land.data-gtbi{fill:#B98BD8;}   /* GTBI only - violet */
+  .land.data-both{fill:#6BC97A;}   /* ETTI + GTBI - green */
+
   .land:hover{fill:var(--land-hover); cursor:pointer;}
   .land.selected{
     fill:var(--gold);
   }
   .land.selected:hover{fill:var(--gold);}
 
+  .home-globe-left .searchwrap{
+    position:absolute;
+    top:16px; left:50%;
+    transform:translateX(-50%);
+    z-index:3;
+    width:min(320px, 80%);
+  }
+
   .hint{
     position:absolute;
-    bottom:26px; left:50%;
+    bottom:16px; left:50%;
     transform:translateX(-50%);
     font-family:'JetBrains Mono',monospace;
-    font-size:11px;
-    letter-spacing:0.12em;
+    font-size:10px;
+    letter-spacing:0.1em;
     color:var(--text-low);
     text-transform:uppercase;
-    display:flex; gap:8px; align-items:center;
+    display:flex; gap:6px; align-items:center;
+    pointer-events:none;
+    text-align:center;
+  }
+  .hint .dot{width:4px;height:4px;border-radius:50%;background:var(--text-low); flex-shrink:0;}
+
+  .globe-legend{
+    position:absolute;
+    top:66px; left:50%;
+    transform:translateX(-50%);
+    display:flex; gap:14px; align-items:center;
+    font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;
+    letter-spacing:0.06em;
+    color:var(--text-low);
+    text-transform:uppercase;
     pointer-events:none;
   }
-  .hint .dot{width:4px;height:4px;border-radius:50%;background:var(--text-low);}
+  .globe-legend-item{display:flex; align-items:center; gap:6px;}
+  .globe-legend-swatch{
+    width:8px; height:8px;
+    border-radius:2px;
+    flex-shrink:0;
+  }
+  .globe-legend-swatch.data-etti{background:#7FA8E0;}
+  .globe-legend-swatch.data-gtbi{background:#B98BD8;}
+  .globe-legend-swatch.data-both{background:#6BC97A;}
+
+  @media (max-width: 900px){
+    .home-globe-grid{grid-template-columns:1fr; align-items:stretch;}
+    .home-globe-left{height:420px;}
+    #side-panel{min-height:320px;}
+  }
+  @media (max-width: 640px){
+    .home-welcome{padding:56px 20px 40px;}
+    .home-globe-left .searchwrap{width:88%;}
+    .globe-legend{flex-wrap:wrap; justify-content:center; width:88%; gap:8px 12px; top:60px;}
+    .hint{width:90%; flex-wrap:wrap; justify-content:center;}
+  }
 
   /* ---------- Side Panel ---------- */
+  /* Used to be a fixed drawer that slid in from the right edge of a
+     full-viewport globe hero. It now lives in normal document flow,
+     filling the Part 2 right column alongside the globe box, so it
+     just needs to look like a card - no position/transform/z-index
+     needed. flex:1 makes it match the globe box's height (the grid
+     row is stretched to the tallest item via align-items:stretch on
+     .home-globe-grid, and .home-globe-right hands that full height
+     down to this, its only child). */
   #side-panel{
-    position:absolute;
-    top:0; right:0;
-    height:100%;
-    width:380px;
-    max-width:88vw;
+    position:relative;
+    flex:1;
     background:linear-gradient(180deg, var(--bg-panel), #0A1220);
-    border-left:1px solid var(--line);
-    box-shadow:-24px 0 60px rgba(0,0,0,0.35);
-    transform:translateX(100%);
-    transition:transform .32s cubic-bezier(.22,.9,.32,1);
-    z-index:10;
+    border:1px solid var(--line);
+    border-radius:14px;
     display:flex;
     flex-direction:column;
+    overflow:hidden;
   }
-  #side-panel.open{transform:translateX(0);}
+
+  .panel-placeholder{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px 26px;
+    text-align:center;
+  }
+  .panel-placeholder p{
+    margin:0;
+    font-size:13px;
+    color:var(--text-low);
+    line-height:1.6;
+  }
 
   .panel-top{
     padding:26px 26px 0 26px;
@@ -199,7 +447,7 @@
     margin:0 0 6px 0;
   }
   .country-name{
-    font-family:'Space Grotesk',sans-serif;
+    font-family:'Times New Roman', Times, serif;
     font-size:28px;
     font-weight:600;
     margin:0 0 20px 0;
@@ -240,11 +488,20 @@
 
   .panel-body{
     padding:26px;
-    overflow-y:auto;
     flex:1;
   }
   .tab-pane{display:none;}
-  .tab-pane.active{display:block;}
+  .tab-pane.active{
+    display:block;
+    animation:tabFadeIn .25s ease;
+  }
+  @keyframes tabFadeIn{
+    from{opacity:0;}
+    to{opacity:1;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .tab-pane.active{animation:none;}
+  }
 
   .score-card{
     background:rgba(79,217,199,0.05);
@@ -252,6 +509,13 @@
     border-radius:12px;
     padding:22px;
     margin-bottom:18px;
+  }
+  .score-card-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:8px;
   }
   .score-label{
     font-family:'JetBrains Mono',monospace;
@@ -261,6 +525,7 @@
     color:var(--text-low);
     margin:0 0 8px 0;
   }
+  .score-card-head .score-label{margin:0;}
   .score-value{
     font-family:'JetBrains Mono',monospace;
     font-size:42px;
@@ -274,6 +539,42 @@
     color:var(--text-mid);
     margin-top:12px;
     line-height:1.5;
+  }
+
+  .year-select-wrap{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-shrink:0;
+  }
+  .year-select-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;
+    letter-spacing:0.08em;
+    color:var(--text-low);
+    text-transform:uppercase;
+    white-space:nowrap;
+  }
+  .year-select{
+    background:rgba(255,255,255,0.04);
+    border:1px solid var(--line);
+    border-radius:7px;
+    color:var(--text-hi);
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    padding:5px 8px;
+    cursor:pointer;
+  }
+  .year-select:focus{outline:none; border-color:var(--cyan);}
+  .year-select:disabled{color:var(--text-low); cursor:default;}
+  /* The <select> itself picks up the dark theme above, but browsers
+     render the opened option list with their own light system
+     background regardless - var(--text-hi) (near-white) on that
+     default light background was invisible. Force readable colors on
+     the options themselves rather than relying on inherited theme. */
+  .year-select option{
+    color:#000;
+    background:#fff;
   }
 
   .metric-grid{
@@ -318,15 +619,27 @@
   }
   .placeholder-note svg{flex-shrink:0; margin-top:2px; width:13px;height:13px; stroke:var(--text-low);}
 
+  .panel-observatory-link{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:22px 26px 26px;
+    padding:14px 16px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:rgba(79,217,199,0.05);
+    color:var(--cyan);
+    font-size:13px;
+    font-weight:500;
+    text-decoration:none;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .panel-observatory-link:hover{border-color:var(--cyan); background:rgba(79,217,199,0.1);}
+  .panel-observatory-link svg{width:16px; height:16px; flex-shrink:0;}
+
   ::-webkit-scrollbar{width:8px;}
   ::-webkit-scrollbar-track{background:transparent;}
   ::-webkit-scrollbar-thumb{background:var(--line); border-radius:8px;}
-
-  @media (max-width: 640px){
-    header{padding:16px 18px; flex-wrap:wrap; gap:12px;}
-    .searchwrap{width:100%; order:3;}
-    #side-panel{width:100%; max-width:100%;}
-  }
 
   /* ---------- Navbar ---------- */
   .navbar-top{
@@ -343,19 +656,32 @@
     padding:16px 32px;
     border-bottom:1px solid var(--line);
     flex-shrink:0;
-    position:relative;
-    z-index:30;
+    position:sticky;
+    top:0;
+    z-index:50;
     background:var(--bg-deep);
   }
   .navbar-brand{
     display:flex;
     align-items:center;
-    gap:10px;
+    gap:14px;
+    text-decoration:none;
+    color:var(--text-hi);
+  }
+  .navbar-logo{
+    width:76px;
+    height:76px;
+    object-fit:contain;
+    flex-shrink:0;
   }
   .navbar-title{
+    display:block;
+    max-width:260px;
     font-size:19px;
+    line-height:1.3;
     font-weight:600;
     letter-spacing:0.01em;
+    color:var(--text-hi);
   }
   .navbar-links{
     list-style:none;
@@ -388,6 +714,19 @@
     color:var(--bg-deep);
     background:var(--cyan);
   }
+  .navbar-link-donate{
+    border:1px solid var(--cyan);
+    color:var(--cyan);
+    font-weight:600;
+  }
+  .navbar-link-donate:hover{
+    color:var(--bg-deep);
+    background:var(--cyan);
+  }
+  .navbar-link-donate.active{
+    color:var(--bg-deep);
+    background:var(--cyan);
+  }
   .navbar-toggle{
     display:none;
     flex-direction:column;
@@ -409,20 +748,93 @@
     border-radius:1px;
   }
 
+  .navbar-auth{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .navbar-user{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    color:var(--text-mid);
+    white-space:nowrap;
+  }
+  .role-badge{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    padding:3px 8px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    color:var(--text-low);
+  }
+  .role-badge.role-publisher{
+    color:var(--bg-deep);
+    background:var(--gold);
+    border-color:var(--gold);
+  }
+  .navbar-auth-btn{
+    display:inline-block;
+    padding:7px 14px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:transparent;
+    color:var(--text-mid);
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:500;
+    text-decoration:none;
+    cursor:pointer;
+    transition:color .15s ease, background .15s ease, border-color .15s ease;
+  }
+  .navbar-auth-btn:hover{
+    color:var(--text-hi);
+    border-color:var(--cyan);
+  }
+  .navbar-auth-btn.primary{
+    background:var(--cyan);
+    border-color:var(--cyan);
+    color:var(--bg-deep);
+  }
+  .navbar-auth-btn.primary:hover{
+    color:var(--bg-deep);
+    opacity:0.9;
+  }
+
   @media (max-width: 900px){
     .navbar-toggle{display:flex;}
+    .navbar-top{flex-wrap:wrap; row-gap:10px;}
+    .navbar-user span.role-badge{display:none;}
     .navbar-links{
-      display:none;
+      display:flex;
       flex-direction:column;
       align-items:stretch;
       gap:2px;
-      margin-top:12px;
+      margin-top:0;
       background:var(--bg-panel);
       border:1px solid var(--line);
       border-radius:8px;
-      padding:10px;
+      padding:0 10px;
+      max-height:0;
+      opacity:0;
+      overflow:hidden;
+      border-width:0;
+      transition:max-height .28s ease, opacity .2s ease, margin-top .28s ease, padding .28s ease, border-width .28s ease;
     }
-    .navbar-links.open{display:flex;}
+    .navbar-links.open{
+      max-height:400px;
+      opacity:1;
+      margin-top:12px;
+      padding:10px;
+      border-width:1px;
+    }
+    @media (prefers-reduced-motion: reduce){
+      .navbar-links{transition:opacity .01s linear;}
+    }
     .navbar-link{width:100%; padding:12px 14px;}
   }
 
@@ -448,4 +860,155 @@
     font-size:14px;
     color:var(--text-low);
     margin:0;
+  }
+
+  /* ---------- Home: Explore section ---------- */
+  .home-explore{
+    flex-shrink:0;
+    padding:72px 48px 88px;
+    background:var(--bg-panel);
+    border-top:1px solid var(--line);
+  }
+  .home-explore-intro{
+    max-width:640px;
+    margin:0 auto 44px;
+    text-align:center;
+  }
+  .home-explore-eyebrow{
+    font-size:11px;
+    letter-spacing:0.16em;
+    color:var(--cyan);
+    margin:0 0 10px 0;
+  }
+  .home-explore-heading{
+    font-size:32px;
+    font-weight:600;
+    color:var(--text-hi);
+    margin:0;
+  }
+  .home-explore-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+    gap:20px;
+    max-width:1100px;
+    margin:0 auto;
+  }
+  .home-explore-card{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    padding:26px 24px;
+    background:rgba(255,255,255,0.02);
+    border:1px solid var(--line);
+    border-radius:14px;
+    text-decoration:none;
+    transition:border-color .18s ease, background .18s ease, transform .18s ease;
+  }
+  .home-explore-card:hover{
+    border-color:var(--cyan);
+    background:rgba(79,217,199,0.05);
+    transform:translateY(-2px);
+  }
+  .home-explore-card:active{
+    transform:translateY(-2px) scale(0.97);
+  }
+  .home-explore-card-label{
+    font-size:19px;
+    font-weight:600;
+    color:var(--text-hi);
+  }
+  .home-explore-card-desc{
+    flex:1;
+    font-size:13px;
+    line-height:1.55;
+    color:var(--text-mid);
+    margin:0;
+  }
+  .home-explore-card-arrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:16px;
+    color:var(--cyan);
+    display:inline-block;
+    transition:transform .18s ease;
+  }
+  .home-explore-card:hover .home-explore-card-arrow{
+    transform:translateX(4px);
+  }
+
+  @media (max-width: 640px){
+    .home-explore{padding:56px 20px 64px;}
+    .home-explore-heading{font-size:26px;}
+  }
+
+  /* ---------- Sitewide footer ---------- */
+  .site-footer{
+    flex-shrink:0;
+    padding:36px 48px 28px;
+    background:var(--bg-deep);
+    border-top:1px solid var(--line);
+  }
+  .site-footer-top{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    padding-bottom:24px;
+    border-bottom:1px solid var(--line);
+  }
+  .site-footer-brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .site-footer-logo{
+    width:28px;
+    height:28px;
+    object-fit:contain;
+    flex-shrink:0;
+  }
+  .site-footer-title{
+    font-size:16px;
+    font-weight:600;
+    color:var(--text-hi);
+  }
+  .site-footer-links{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px 4px;
+  }
+  .site-footer-link{
+    padding:6px 12px;
+    border-radius:8px;
+    font-size:13px;
+    color:var(--text-mid);
+    text-decoration:none;
+    transition:color .15s ease, background .15s ease;
+  }
+  .site-footer-link:hover{
+    color:var(--text-hi);
+    background:rgba(79,217,199,0.08);
+  }
+  .site-footer-bottom{
+    padding-top:18px;
+  }
+  .site-footer-copyright{
+    margin:0;
+    font-size:12px;
+    color:var(--text-low);
+  }
+  .site-footer-parent{
+    margin:6px 0 0 0;
+    font-size:12px;
+    color:var(--text-low);
+  }
+  .site-footer-parent a{
+    color:var(--text-mid);
+    transition:color .15s ease;
+  }
+  .site-footer-parent a:hover{color:var(--cyan);}
+
+  @media (max-width: 640px){
+    .site-footer{padding:28px 20px 22px;}
+    .site-footer-top{flex-direction:column; align-items:flex-start;}
   }
