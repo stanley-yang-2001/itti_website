@@ -18,6 +18,7 @@ import ForgotPassword from './pages/ForgotPassword.jsx';
 import ResetPassword from './pages/ResetPassword.jsx';
 import Unavailable from './pages/Unavailable.jsx';
 import Publish from './pages/Publish.jsx';
+import PublisherDashboard from './pages/PublisherDashboard.jsx';
 import PublishGlobeData from './pages/PublishGlobeData.jsx';
 import Docs from './pages/Docs.jsx';
 import Donate from './pages/Donate.jsx';
@@ -77,6 +78,14 @@ export default function App() {
           element={
             <ProtectedRoute requireRole="publisher">
               <Publish />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/publisher"
+          element={
+            <ProtectedRoute requireRole="publisher">
+              <PublisherDashboard />
             </ProtectedRoute>
           }
         />

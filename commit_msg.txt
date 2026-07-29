@@ -1,47 +1,41 @@
-Donations (embedded Payment Element + admin view) and Country
-Profiles/Reports style unification, reconciled onto latest main
+Add a real user menu to NavBar, consolidating all account functionality
 
-Donations
-- Switch /donate from a Stripe Checkout redirect to an embedded
-  Payment Element: PaymentIntent created server-side
-  (POST /api/donations/payment-intent), confirmed client-side via
-  stripe.confirmPayment(), webhook + thank-you-page status check both
-  funnel through the same idempotent finalize_succeeded_donation().
-- New admin-only donations list (/admin/donations, GET /api/donations,
-  GET /api/donations/lookup/<code>): searchable by name/email/
-  confirmation code, filterable by status, lifetime totals summary.
-- Donate button moved out of the collapsible nav-links list into the
-  top-right auth cluster, so it's always visible as a CTA.
-- Added server/.env.example and docs/DONATIONS_SETUP.md (Stripe keys,
-  webhook, Apple Pay domain verification, SMTP email delivery,
-  migrations, promoting an admin) plus a placeholder
-  apple-developer-merchantid-domain-association file.
+There was no proper entry point for account-related pages: the navbar
+only showed a plain "name + role badge" link to /profile and a
+separate Log out button. Settings.jsx and PublisherDashboard.jsx
+existed in the codebase (the latter with no route registered in
+App.jsx at all - completely unreachable) but had no way to get to them
+from the nav.
 
-Country Profiles / Reports style unification
-- Both pages were still on the old light theme; rewrote both on the
-  same dark-theme tokens used elsewhere (Docs/About/Observatory), with
-  matching Reveal scroll animations.
-- Country Profiles: every country now shows at once (no more
-  click-a-letter-to-filter) as expandable rows with a flag, an
-  available/unavailable indicator dot, and an inline data overview or
-  the shared "unavailable" message. The A-Z bar is now a jump-to-section
-  nav rather than a filter.
-- Extracted UnavailableMessage (page vs. inline variant) from the old
-  Unavailable page; both Country Profiles and Reports now redirect to
-  /unavailable specifically on a 400 response (new isBadRequest()
-  helper), with a configurable back-link via query params.
-- Added a numeric-to-alpha-2 country code mapping (countryAlpha2.js,
-  generated via pycountry, verified against every code in
-  country_data.json) and a CountryFlag component using flagcdn.com.
-- Found and fixed a real bug while unifying: Reports/Profile's
-  .btn/.btn-primary/.btn-secondary classes were referenced but never
-  defined anywhere - added them as a proper sitewide utility in
-  App.css.
+- NavBar.jsx: replaced the static profile link with a proper
+  dropdown (click the avatar/name to open, click outside or Escape to
+  close). Contains View Profile, Account Settings, Publisher Dashboard
+  (publisher/admin only), Donations (Admin) (admin only), and Log out.
+  Publish and "Donations (Admin)" no longer clutter the main site nav
+  (which is about content sections - Home, About, Observatory, etc.) -
+  they're account-scoped functionality and now live under the same
+  menu as everything else account-related.
+- App.jsx: registered the missing /publisher route for
+  PublisherDashboard (ProtectedRoute requireRole="publisher", matching
+  the role check already documented in that file's own comment).
+- PublisherDashboard.jsx: fixed a broken internal link - it pointed to
+  /publish-globe-data (hyphen), but the actual registered route is
+  /publish/globe-data (slash), so its own "Globe Data" card 404'd.
+- App.css: dropdown panel styling, avatar circle (initials fallback
+  when there's no picture_url), and turned .navbar-user from a plain
+  link into a proper toggle button.
 
-Reconciled onto 775d2d3 (three rounds of upstream commits since this
-work started: navbar/profile-link changes, GTBI+ETTI workbook upload,
-report favorites + Profile page) - merged rather than overwritten
-where those commits touched the same files (NavBar.jsx, App.jsx,
-Reports.jsx, app.py, models/__init__.py). Full npm run build and a
-backend smoke test (donations, countries, reports, favorites, admin
-listing) both pass clean on top of the current remote HEAD.
+Reconciled onto database's current tip (33d837c, "Donations (embedded
+Payment Element + admin view) and Country Profiles/Reports style
+unification") - that commit independently modified NavBar.jsx too
+(moved Donate to its own always-visible button, added an isAdmin flag
+and an Admin Donations link). Merged both: kept their Donate-button
+repositioning as-is, and folded their Admin Donations link into the
+new dropdown alongside Publisher Dashboard rather than leaving it in
+the main nav. Also picked up @stripe/react-stripe-js +
+@stripe/stripe-js as new client dependencies from that commit (fresh
+npm install required to build).
+
+Verified with `vite build` and a live dev-server run that NavBar,
+PublisherDashboard, AdminDonations all serve correctly and every new
+route (/publisher, /admin/donations, /publish) is registered.

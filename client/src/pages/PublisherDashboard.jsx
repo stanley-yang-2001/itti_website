@@ -52,7 +52,7 @@ export default function PublisherDashboard() {
             <h3>Documents</h3>
             <p>Upload, list, or remove documents attached to your account.</p>
           </Link>
-          <Link to="/publish-globe-data" className="pub-dashboard-card">
+          <Link to="/publish/globe-data" className="pub-dashboard-card">
             <h3>Globe Data</h3>
             <p>Upload a GTBI or ETTI workbook to update the figures shown on the globe.</p>
           </Link>
