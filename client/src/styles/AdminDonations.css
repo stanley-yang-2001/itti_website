@@ -1,0 +1,138 @@
+.admin-donations-page{
+  max-width:1080px;
+  margin:0 auto;
+  padding:48px 24px 64px;
+}
+
+.admin-donations-header{
+  margin-bottom:24px;
+}
+.admin-donations-header h1{
+  font-size:30px;
+  color:var(--text-hi);
+  margin:0 0 8px 0;
+}
+.admin-donations-subtitle{
+  color:var(--text-mid);
+  margin:0;
+}
+.admin-donations-subtitle strong{
+  color:var(--cyan);
+  font-family:'JetBrains Mono',monospace;
+}
+
+.admin-donations-controls{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:12px;
+  margin-bottom:18px;
+}
+.admin-donations-search{
+  flex:1 1 260px;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--bg-deep);
+  color:var(--text-hi);
+  font-size:14px;
+}
+.admin-donations-search:focus{outline:none; border-color:var(--cyan);}
+
+.admin-donations-status-filters{
+  display:flex;
+  gap:6px;
+}
+.admin-donations-status-chip{
+  padding:8px 12px;
+  border:1px solid var(--line);
+  border-radius:20px;
+  background:transparent;
+  color:var(--text-mid);
+  font-size:13px;
+  cursor:pointer;
+}
+.admin-donations-status-chip:hover{color:var(--text-hi); border-color:var(--cyan);}
+.admin-donations-status-chip.active{
+  background:rgba(79,217,199,0.12);
+  border-color:var(--cyan);
+  color:var(--cyan);
+}
+
+.admin-donations-error{
+  background:rgba(216,68,68,0.1);
+  border:1px solid #D84444;
+  color:#F3B4B4;
+  border-radius:8px;
+  padding:10px 14px;
+  font-size:13px;
+  margin:0 0 14px 0;
+}
+
+.admin-donations-table-wrap{
+  overflow-x:auto;
+  border:1px solid var(--line);
+  border-radius:10px;
+}
+.admin-donations-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+.admin-donations-table th{
+  text-align:left;
+  padding:12px 14px;
+  background:var(--bg-panel);
+  color:var(--text-mid);
+  font-weight:600;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:0.04em;
+  border-bottom:1px solid var(--line);
+  white-space:nowrap;
+}
+.admin-donations-table td{
+  padding:12px 14px;
+  border-bottom:1px solid var(--line);
+  color:var(--text-hi);
+  white-space:nowrap;
+}
+.admin-donations-table tbody tr:last-child td{border-bottom:none;}
+.admin-donations-table tbody tr:hover{background:rgba(255,255,255,0.02);}
+.admin-donations-table .mono{font-family:'JetBrains Mono',monospace;}
+.admin-donations-empty{
+  text-align:center;
+  color:var(--text-low);
+  padding:28px 14px !important;
+}
+
+.admin-donations-status-badge{
+  display:inline-block;
+  padding:3px 10px;
+  border-radius:12px;
+  font-size:12px;
+  text-transform:capitalize;
+}
+.admin-donations-status-badge.status-succeeded{background:rgba(79,217,199,0.15); color:var(--cyan);}
+.admin-donations-status-badge.status-pending{background:rgba(230,180,60,0.15); color:#E6B43C;}
+.admin-donations-status-badge.status-failed{background:rgba(216,68,68,0.15); color:#F3B4B4;}
+
+.admin-donations-pagination{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  margin-top:18px;
+  color:var(--text-mid);
+  font-size:13px;
+}
+.admin-donations-pagination button{
+  padding:7px 14px;
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:transparent;
+  color:var(--text-hi);
+  cursor:pointer;
+}
+.admin-donations-pagination button:hover:not(:disabled){border-color:var(--cyan); color:var(--cyan);}
+.admin-donations-pagination button:disabled{opacity:0.4; cursor:not-allowed;}
