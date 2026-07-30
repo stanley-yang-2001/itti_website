@@ -44,18 +44,16 @@
 
 /* ---------- Letter jump nav ----------
    Was a 2-row grid of filter buttons; now every country shows at once,
-   so this is pure jump-to-section navigation - a slim sticky bar of
-   pill chips instead of a big fixed grid. */
+   so this is pure jump-to-section navigation - a slim row of pill chips
+   right above the list. It scrolls with the page like everything else
+   (no position: sticky) rather than staying pinned while the country
+   list scrolls underneath it. */
 .country-letter-jump {
-  position: sticky;
-  top: var(--navbar-height, 0px);
-  z-index: 5;
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
   padding: 10px 0;
   margin-bottom: 20px;
-  background: var(--bg-deep);
   border-bottom: 1px solid var(--line);
 }
 
@@ -86,7 +84,10 @@
 
 /* ---------- Letter sections ---------- */
 .country-letter-section {
-  scroll-margin-top: calc(var(--navbar-height, 0px) + 56px);
+  /* Only the navbar itself is sticky now (the letter-jump bar above
+     scrolls normally), so a jump only needs to clear the navbar's own
+     height plus a little breathing room. */
+  scroll-margin-top: calc(var(--navbar-height, 0px) + 16px);
   margin-bottom: 28px;
 }
 .country-letter-section-heading {

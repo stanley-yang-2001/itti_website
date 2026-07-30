@@ -1,41 +1,17 @@
-Add a real user menu to NavBar, consolidating all account functionality
+Contact page: updated the domain email to actual existing emails
 
-There was no proper entry point for account-related pages: the navbar
-only showed a plain "name + role badge" link to /profile and a
-separate Log out button. Settings.jsx and PublisherDashboard.jsx
-existed in the codebase (the latter with no route registered in
-App.jsx at all - completely unreachable) but had no way to get to them
-from the nav.
 
-- NavBar.jsx: replaced the static profile link with a proper
-  dropdown (click the avatar/name to open, click outside or Escape to
-  close). Contains View Profile, Account Settings, Publisher Dashboard
-  (publisher/admin only), Donations (Admin) (admin only), and Log out.
-  Publish and "Donations (Admin)" no longer clutter the main site nav
-  (which is about content sections - Home, About, Observatory, etc.) -
-  they're account-scoped functionality and now live under the same
-  menu as everything else account-related.
-- App.jsx: registered the missing /publisher route for
-  PublisherDashboard (ProtectedRoute requireRole="publisher", matching
-  the role check already documented in that file's own comment).
-- PublisherDashboard.jsx: fixed a broken internal link - it pointed to
-  /publish-globe-data (hyphen), but the actual registered route is
-  /publish/globe-data (slash), so its own "Globe Data" card 404'd.
-- App.css: dropdown panel styling, avatar circle (initials fallback
-  when there's no picture_url), and turned .navbar-user from a plain
-  link into a proper toggle button.
+Fix Country Profiles letter-jump bar scrolling behavior
 
-Reconciled onto database's current tip (33d837c, "Donations (embedded
-Payment Element + admin view) and Country Profiles/Reports style
-unification") - that commit independently modified NavBar.jsx too
-(moved Donate to its own always-visible button, added an isAdmin flag
-and an Admin Donations link). Merged both: kept their Donate-button
-repositioning as-is, and folded their Admin Donations link into the
-new dropdown alongside Publisher Dashboard rather than leaving it in
-the main nav. Also picked up @stripe/react-stripe-js +
-@stripe/stripe-js as new client dependencies from that commit (fresh
-npm install required to build).
+The A-Z jump nav was set to position: sticky, pinning it near the top
+of the viewport while the country list scrolled underneath it -
+visually disconnecting it from the content it's meant to navigate.
 
-Verified with `vite build` and a live dev-server run that NavBar,
-PublisherDashboard, AdminDonations all serve correctly and every new
-route (/publisher, /admin/donations, /publish) is registered.
+- Remove position: sticky (and its top/z-index/background offset) from
+  .country-letter-jump so it's a normal in-flow element again: it now
+  scrolls together with the country list and scrolls out of view like
+  everything else once you pass it, instead of staying pinned.
+- Reduce .country-letter-section's scroll-margin-top from
+  navbar-height + 56px to navbar-height + 16px, since a jump-to-letter
+  click only needs to clear the (still sticky) top navbar now, not the
+  letter bar's own height.
