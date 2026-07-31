@@ -43,6 +43,18 @@ export default function Signup() {
     return Object.keys(errors).length === 0;
   }
 
+  // Live "do these match yet?" feedback as the person types, rather than
+  // only finding out after they submit. Shown once they've actually
+  // started typing a confirmation (an empty field isn't a "mismatch" -
+  // it's just not filled in yet, which the on-submit error below still
+  // catches).
+  const confirmPasswordHint =
+    confirmPassword.length === 0
+      ? null
+      : password === confirmPassword
+      ? { text: 'Passwords match', kind: 'match' }
+      : { text: 'Passwords do not match', kind: 'mismatch' };
+
   async function handleSubmit(e) {
     e.preventDefault();
     setFormError(null);
@@ -132,10 +144,19 @@ export default function Signup() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               autoComplete="new-password"
             />
-            {fieldErrors.confirmPassword && (
+            {confirmPasswordHint && (
+              <span className={`signup-field-hint ${confirmPasswordHint.kind}`}>
+                {confirmPasswordHint.text}
+              </span>
+            )}
+            {fieldErrors.confirmPassword && confirmPassword.length === 0 && (
               <span className="signup-field-error">{fieldErrors.confirmPassword}</span>
             )}
           </label>
+
+          <p className="signup-privacy-note">
+            By creating an account, you agree to our <Link to="/privacy">Privacy Policy</Link>.
+          </p>
 
           <button type="submit" className="signup-submit-button" disabled={loading}>
             Create account

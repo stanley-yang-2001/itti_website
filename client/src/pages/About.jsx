@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Reveal from '../components/Reveal.jsx';
 import '../styles/About.css';
 
-const OFH_URL = 'https://ofhusa.org/#itti';
+const OFH_URL = 'https://ofhusa.org';
 
 // This site's html/body sizing makes <body> the actual scrolling container
 // rather than the window, so anything that scrolls the page programmatically
@@ -172,34 +172,65 @@ export default function About() {
   const sectionRefs = useRef({});
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
-        });
-      },
-      { rootMargin: '-12% 0px -55% 0px', threshold: 0 }
-    );
-
-    Object.values(sectionRefs.current).forEach((el) => el && observer.observe(el));
-
-    // The scrollspy band above sits in the upper part of the viewport, so a
-    // short final section can never scroll into it once the page hits the
-    // bottom. Treat "scrolled to the bottom" as a special case so the last
-    // section still gets marked active.
     const scroller = getScroller();
-    function onScroll() {
+
+    // Which section is "active": the last one whose top has scrolled up
+    // past a fixed reference line near the top of the viewport - the
+    // standard scrollspy algorithm (same idea Bootstrap/most doc sites
+    // use). This is purely positional, so it can't miss a section
+    // regardless of how short it is.
+    //
+    // The previous approach used an IntersectionObserver watching for
+    // entries becoming visible in a band partway down the viewport. That
+    // works for tall sections, but a short one (like "A Division of
+    // Outlets for Hope, Inc." - much shorter than its neighbors) could
+    // enter AND exit that band within a single scroll before the browser
+    // ever delivered a callback reporting it as intersecting, so its
+    // sidebar link would never light up. Comparing section positions
+    // directly on every scroll tick doesn't have that gap.
+    function computeActiveSection() {
+      const navbarHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--navbar-height')) || 0;
+      const referenceLine = navbarHeight + 40;
+
+      // The reference line lives in the upper part of the viewport, so a
+      // short final section can never scroll up to meet it once the page
+      // is already at the bottom. Treat "scrolled to the bottom" as its
+      // own case so the last section still gets marked active.
       if (scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 4) {
         setActiveSection(SECTIONS[SECTIONS.length - 1].id);
+        return;
       }
+
+      let current = SECTIONS[0].id;
+      for (const s of SECTIONS) {
+        const el = sectionRefs.current[s.id];
+        if (!el) continue;
+        if (el.getBoundingClientRect().top - referenceLine <= 0) {
+          current = s.id;
+        } else {
+          break;
+        }
+      }
+      setActiveSection(current);
     }
+
+    let ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        computeActiveSection();
+        ticking = false;
+      });
+    }
+
+    computeActiveSection();
     scroller.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
 
     return () => {
-      observer.disconnect();
       scroller.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
     };
   }, []);
 
@@ -212,6 +243,11 @@ export default function About() {
   function scrollToSection(id) {
     const el = sectionRefs.current[id];
     if (!el) return;
+    // Highlight immediately on click rather than waiting for the scroll
+    // listener to catch up mid-animation - the smooth-scroll below takes
+    // a few hundred ms, and the user clicked this link specifically to
+    // go here, so there's no reason to wait for position math to agree.
+    setActiveSection(id);
     const scroller = getScroller();
     const navbarHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--navbar-height')) || 0;
     const top = el.getBoundingClientRect().top + scroller.scrollTop - navbarHeight - 16;
@@ -293,7 +329,7 @@ export default function About() {
               Visit Outlets for Hope, Inc.
               <span aria-hidden="true">↗</span>
             </a>
-            <p className="about-note">ofhusa.org/#itti</p>
+            <p className="about-note">ofhusa.org</p>
           </section>
           </Reveal>
 
@@ -499,7 +535,7 @@ export default function About() {
                 itti@ofhusa.org
               </a>
               <a href={OFH_URL} target="_blank" rel="noopener noreferrer" className="about-link-btn secondary">
-                ofhusa.org/#itti
+                ofhusa.org
                 <span aria-hidden="true">↗</span>
               </a>
             </div>

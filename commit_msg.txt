@@ -1,17 +1,63 @@
-Contact page: updated the domain email to actual existing emails
+Add certification enrollment payments, live password match check,
+privacy policy, and reconcile bright-theme/navbar/About fixes
 
+Certification enrollment (Stripe):
+- New Enrollment model + migration (chained onto a1f9c3d7e5b2, since
+  6ff385893016_add_category_to_reports.py upstream is an empty/broken
+  migration file - flagging that separately, not fixed here).
+- server-side CERTIFICATION_CATALOG in app.py is the source of truth
+  for cert_code -> name/tuition_cents; the client only ever sends a
+  code, so pricing can never be tampered with from the browser.
+- New routes: checkout-session, webhook, session-status, my-enrollments,
+  and an admin-only refund route - all mirroring the existing donations
+  Stripe pattern closely.
+- Refund policy enforced server-side, not just displayed as text: 50%
+  refund within 7 days of purchase, none after. (Note: the requested
+  policy - "before 1 week: 50%, after 4 weeks: no refund" - left the
+  1-4 week window unspecified; implemented as a strict two-tier policy
+  rather than guessing at a middle tier.)
+- New pages CertificationEnroll.jsx (shows cert/price/refund policy,
+  requires login, hands off to Stripe Checkout) and
+  CertificationEnrollThankYou.jsx (polls for payment confirmation,
+  mirrors DonateThankYou.jsx). "Enroll" buttons on Certifications.jsx
+  now route here instead of /contact.
+- Removed the "It is not a clinical license..." disclaimer sentence
+  from all 11 certifications' notice field in certifications.js,
+  keeping only the "what this credential is" sentence.
+- New send_enrollment_confirmation_email in email_backend.py.
 
-Fix Country Profiles letter-jump bar scrolling behavior
+Sign-up / reset-password:
+- Live "Passwords match" / "Passwords do not match" feedback as the
+  person types, instead of only finding out after submitting. Applied
+  to both SignUp.jsx and ResetPassword.jsx (same confirm-password
+  pattern existed on both).
 
-The A-Z jump nav was set to position: sticky, pinning it near the top
-of the viewport while the country list scrolled underneath it -
-visually disconnecting it from the content it's meant to navigate.
+Privacy policy:
+- New /privacy page, written from the actual schema (User, Donation,
+  Enrollment, SavedChart, FavoriteReport, UserEvent) rather than
+  generic boilerplate: what's collected, how it's used, who it's
+  shared with (only Google->us and Stripe, no selling/ads), and user
+  rights (view via Profile, edit via Settings, self-delete with
+  reactivation, request export/erasure via Contact). Linked from
+  Sign-up and the site footer.
 
-- Remove position: sticky (and its top/z-index/background offset) from
-  .country-letter-jump so it's a normal in-flow element again: it now
-  scrolls together with the country list and scrolls out of view like
-  everything else once you pass it, instead of staying pinned.
-- Reduce .country-letter-section's scroll-margin-top from
-  navbar-height + 56px to navbar-height + 16px, since a jump-to-letter
-  click only needs to clear the (still sticky) top navbar now, not the
-  letter bar's own height.
+Reconciled from a previous session (the remote repo didn't have these
+applied yet - discovered via a stale /#itti link still in Footer.jsx):
+- Unified bright/white theme across every page (App.css root palette
+  flip + matching overlay/gradient fixes across About/Certifications/
+  Docs/Fellowship, plus the six previously-independently-light pages
+  repointed at the same shared var(--bg-deep)).
+- Navbar collapses (hides logo/name, shrinks padding) once scrolled
+  away from the top, restores at the top - merged onto NavBar.jsx
+  without losing the newer /profile link that had been added upstream.
+- About page: ofhusa.org link no longer points at the dead /#itti
+  anchor (About.jsx and Footer.jsx); scrollspy rewritten from
+  IntersectionObserver to a position-based check so a short section
+  ("Outlets for Hope") can't be skipped and fail to highlight.
+
+Verified: `vite build` clean; backend route-level tests via Flask test
+client (auth/role gating, bad cert_code, refund policy boundaries);
+full pipeline smoke test of workbook validate/rotate/merge; headless-
+browser pass confirming body background, navbar scroll classes, About
+scrollspy highlight, cert notice text, enroll link target, and footer
+links all behave correctly together.

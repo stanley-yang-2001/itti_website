@@ -22,3 +22,9 @@ client/.env
 
 # Local Postgres data if run via docker-compose
 pgdata/
+
+# Local git commit message file
+commit_msg.txt
+
+# doc
+client/public/country-profiles/

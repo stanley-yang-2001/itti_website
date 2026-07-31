@@ -162,6 +162,13 @@ export default function CountryProfiles() {
 
                       {expandedCode === c.code && (
                         <div className="country-profile-dropdown">
+                          <a
+                            href={`/country-profiles/${encodeURIComponent(c.name)}.docx`}
+                            download
+                            className="country-overview-link"
+                          >
+                            Download Profile
+                          </a>
                           {c.available ? (
                             <CountryOverview country={c} />
                           ) : (

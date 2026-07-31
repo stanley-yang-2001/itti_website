@@ -7,7 +7,8 @@ const YEAR = new Date().getFullYear();
 // point repeating the same links in both places. Add future footer-only
 // items (legal pages, resources, social, etc.) to this list.
 const FOOTER_LINKS = [
-  { to: '/docs', label: 'Docs' }
+  { to: '/docs', label: 'Docs' },
+  { to: '/privacy', label: 'Privacy Policy' }
 ];
 
 export default function Footer() {
@@ -32,7 +33,7 @@ export default function Footer() {
         <p className="site-footer-copyright">&copy; {YEAR} ITTI. All rights reserved.</p>
         <p className="site-footer-parent">
           A division of{' '}
-          <a href="https://ofhusa.org/#itti" target="_blank" rel="noopener noreferrer">
+          <a href="https://ofhusa.org" target="_blank" rel="noopener noreferrer">
             Outlets for Hope, Inc.
           </a>
         </p>

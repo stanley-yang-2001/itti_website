@@ -1,53 +1,37 @@
 .unavailable-page {
-  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 60vh;
+  min-height: 100vh;
+  background: var(--bg-deep);
   padding: 2rem;
   box-sizing: border-box;
-  text-align: center;
 }
 
-/* ---------- Shared message (components/UnavailableMessage.jsx) ---------- */
-/* Used both full-page here and inline (variant="inline") wherever a
-   single item - e.g. a Country Profiles row - has no content yet. */
-
-.unavailable-message {
+.unavailable-content {
+  text-align: center;
   max-width: 480px;
 }
-.unavailable-message-heading {
+
+.unavailable-content h1 {
   font-size: 1.4rem;
-  color: var(--text-hi);
-  margin: 0 0 0.5rem 0;
-}
-.unavailable-message-body {
-  color: var(--text-mid);
-  font-size: 0.95rem;
-  margin: 0;
+  color: #1a1a1a;
+  margin-bottom: 0.75rem;
 }
 
-.unavailable-message--inline {
-  max-width: none;
-  text-align: left;
-  padding: 4px 2px;
-}
-.unavailable-message--inline .unavailable-message-heading {
+.unavailable-content p {
+  color: #666;
   font-size: 0.95rem;
-  font-weight: 600;
-  margin: 0 0 0.25rem 0;
-}
-.unavailable-message--inline .unavailable-message-body {
-  font-size: 0.85rem;
+  margin-bottom: 1.5rem;
 }
 
 .unavailable-back-link {
   display: inline-block;
-  margin-top: 1.25rem;
-  color: var(--cyan);
+  color: #4285f4;
   text-decoration: none;
   font-size: 0.9rem;
 }
+
 .unavailable-back-link:hover {
   text-decoration: underline;
 }

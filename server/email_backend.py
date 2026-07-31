@@ -85,6 +85,42 @@ def send_password_reset_email(backend, to_email, reset_link):
     )
 
 
+def send_enrollment_confirmation_email(backend, enrollment, to_email, to_name):
+    """
+    enrollment is a models.enrollment.Enrollment row already marked
+    succeeded - mirrors send_donation_confirmation_email above (compose
+    + send only, doesn't touch status itself). to_email/to_name come from
+    the logged-in user's account since Enrollment doesn't store its own
+    copy of either (see enrollment.py's docstring).
+    """
+    enrolled_on = enrollment.created_at.strftime("%B %d, %Y") if enrollment.created_at else ""
+    backend.send(
+        to=to_email,
+        subject=f"You're enrolled in {enrollment.cert_code}™ — {enrollment.confirmation_code}",
+        body=(
+            f"Dear {to_name},\n\n"
+            f"Thank you for enrolling in {enrollment.cert_name} ({enrollment.cert_code}™) "
+            "through the International Truth & Trauma Institute. Your enrollment is "
+            "confirmed - watch your email for program access details.\n\n"
+            "Enrollment receipt\n"
+            "-------------------\n"
+            f"Confirmation number: {enrollment.confirmation_code}\n"
+            f"Certification: {enrollment.cert_name} ({enrollment.cert_code}™)\n"
+            f"Tuition paid: {enrollment.tuition_display} ({enrollment.currency.upper()})\n"
+            f"Date: {enrolled_on}\n\n"
+            "Refund policy: enrollments canceled within 7 days of purchase are eligible "
+            "for a 50% refund of tuition paid. No refunds are issued more than 7 days "
+            "after purchase. To request a refund, contact us with your confirmation "
+            "number.\n\n"
+            "Please keep this email for your records - your confirmation number is also "
+            "stored on file with us and can be used as a reference in any correspondence "
+            "about this enrollment.\n\n"
+            "With gratitude,\n"
+            "The International Truth & Trauma Institute"
+        ),
+    )
+
+
 def send_donation_confirmation_email(backend, donation):
     """
     donation is a models.donation.Donation row that has already been

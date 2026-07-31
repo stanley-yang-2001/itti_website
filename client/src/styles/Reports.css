@@ -1,12 +1,14 @@
 .reports-page {
-  flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg-deep);
+  color: #1a1a1a;
 }
 
 .reports-content {
   flex: 1;
-  padding: 48px 24px 64px;
+  padding: 2.5rem 2rem 4rem;
   max-width: 1000px;
   margin: 0 auto;
   width: 100%;
@@ -18,36 +20,48 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 1.5rem;
 }
 .reports-header h2 {
-  margin: 0 0 6px 0;
-  font-size: 30px;
-  color: var(--text-hi);
+  margin: 0 0 0.4rem 0;
+  font-size: 1.75rem;
+  color: #1a1a1a;
 }
 .reports-header p {
-  color: var(--text-mid);
+  color: #555;
   font-size: 0.95rem;
   margin: 0;
 }
 
-/* The Upload Report button itself uses the sitewide .btn/.btn-primary
-   utility classes (see App.css) rather than a page-specific class, so it
-   matches the same action button used on the Profile page. */
+.reports-upload-toggle {
+  flex-shrink: 0;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #1a1a1a;
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.reports-upload-toggle:hover {
+  background: #333;
+}
 
 .reports-status {
-  color: var(--text-mid);
+  color: #777;
   font-size: 0.9rem;
 }
 .reports-error {
-  color: #F3B4B4;
+  color: #b3261e;
   font-size: 0.9rem;
 }
 
 .reports-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+  gap: 1.25rem;
 }
 
 /* ---------- Report card ---------- */
@@ -55,15 +69,15 @@
 .report-card {
   display: flex;
   flex-direction: column;
-  background: var(--bg-panel);
-  border: 1px solid var(--line);
+  background: #fff;
+  border: 1px solid #e2e2e2;
   border-radius: 10px;
   overflow: hidden;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .report-card:hover {
-  border-color: var(--cyan);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+  border-color: #999;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .report-card-image {
@@ -71,52 +85,28 @@
   height: 160px;
   object-fit: cover;
   display: block;
-  background: var(--bg-deep);
+  background: #f0f0f0;
 }
 
 .report-card-body {
-  padding: 16px;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.5rem;
   flex: 1;
-}
-
-.report-card-heading {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 8px;
 }
 
 .report-card-title {
   margin: 0;
   font-size: 1rem;
-  color: var(--text-hi);
+  color: #1a1a1a;
   line-height: 1.3;
-}
-
-.report-card-favorite {
-  flex-shrink: 0;
-  background: transparent;
-  border: none;
-  color: var(--text-low);
-  font-size: 1.15rem;
-  line-height: 1;
-  cursor: pointer;
-  padding: 0 0 0 4px;
-}
-.report-card-favorite:hover {
-  color: var(--cyan);
-}
-.report-card-favorite.is-favorited {
-  color: var(--cyan);
 }
 
 .report-card-description {
   margin: 0;
   font-size: 0.85rem;
-  color: var(--text-mid);
+  color: #555;
   line-height: 1.5;
   flex: 1;
 }
@@ -125,26 +115,24 @@
   display: flex;
   gap: 0.6rem;
   font-size: 0.72rem;
-  color: var(--text-low);
+  color: #888;
 }
 .report-card-filetype {
   font-family: 'JetBrains Mono', monospace;
   letter-spacing: 0.05em;
-  color: var(--cyan);
 }
 
 .report-card-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 4px;
+  margin-top: 0.25rem;
 }
 
 .report-card-download {
   font-size: 0.85rem;
-  color: var(--cyan);
+  color: #4285f4;
   text-decoration: none;
-  font-weight: 600;
 }
 .report-card-download:hover {
   text-decoration: underline;
@@ -152,16 +140,16 @@
 
 .report-card-delete {
   background: transparent;
-  border: 1px solid var(--line);
-  color: var(--text-mid);
+  border: 1px solid #e2e2e2;
+  color: #666;
   border-radius: 6px;
-  padding: 4px 10px;
+  padding: 0.25rem 0.6rem;
   font-size: 0.75rem;
   cursor: pointer;
 }
 .report-card-delete:hover {
-  color: #F3B4B4;
-  border-color: #D84444;
+  color: #b3261e;
+  border-color: rgba(179, 38, 30, 0.4);
 }
 
 /* ---------- Upload form ---------- */
@@ -169,28 +157,28 @@
 .report-upload-form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  background: var(--bg-panel);
-  border: 1px solid var(--line);
+  gap: 0.9rem;
+  background: #fafafa;
+  border: 1px solid #e2e2e2;
   border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 28px;
+  padding: 1.25rem;
+  margin-bottom: 1.75rem;
 }
 
 .report-upload-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0.35rem;
   font-size: 0.85rem;
-  color: var(--text-mid);
+  color: #333;
 }
 .report-upload-field input[type='text'],
 .report-upload-field textarea {
-  padding: 8px 11px;
+  padding: 0.5rem 0.7rem;
   border-radius: 6px;
-  border: 1px solid var(--line);
-  background: var(--bg-deep);
-  color: var(--text-hi);
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #1a1a1a;
   font-size: 0.9rem;
   font-family: inherit;
   resize: vertical;
@@ -198,15 +186,15 @@
 .report-upload-field input[type='text']:focus,
 .report-upload-field textarea:focus {
   outline: none;
-  border-color: var(--cyan);
+  border-color: #4285f4;
 }
 .report-upload-field input[type='file'] {
-  color: var(--text-mid);
+  color: #555;
   font-size: 0.85rem;
 }
 
 .report-upload-field-error {
-  color: #F3B4B4;
+  color: #b3261e;
   font-size: 0.78rem;
 }
 
@@ -215,30 +203,30 @@
   margin: 0;
 }
 .report-upload-status--error {
-  color: #F3B4B4;
+  color: #b3261e;
 }
 .report-upload-status--success {
-  color: var(--cyan);
+  color: #1e7b34;
 }
 
 .report-upload-actions {
   display: flex;
-  gap: 10px;
-  margin-top: 4px;
+  gap: 0.6rem;
+  margin-top: 0.25rem;
 }
 
 .report-upload-submit {
-  padding: 8px 18px;
+  padding: 0.5rem 1.1rem;
   border-radius: 6px;
   border: none;
-  background: var(--cyan);
-  color: var(--bg-deep);
+  background: #1a1a1a;
+  color: #fff;
   font-size: 0.85rem;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
 }
 .report-upload-submit:hover:not(:disabled) {
-  opacity: 0.9;
+  background: #333;
 }
 .report-upload-submit:disabled {
   opacity: 0.5;
@@ -246,22 +234,22 @@
 }
 
 .report-upload-cancel {
-  padding: 8px 18px;
+  padding: 0.5rem 1.1rem;
   border-radius: 6px;
-  border: 1px solid var(--line);
-  background: transparent;
-  color: var(--text-mid);
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #555;
   font-size: 0.85rem;
   cursor: pointer;
 }
 .report-upload-cancel:hover:not(:disabled) {
-  color: var(--text-hi);
-  border-color: var(--cyan);
+  color: #1a1a1a;
+  border-color: #999;
 }
 
 @media (max-width: 600px) {
   .reports-content {
-    padding: 32px 16px 48px;
+    padding: 1.5rem 1rem 3rem;
   }
   .reports-header {
     flex-direction: column;

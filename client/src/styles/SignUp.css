@@ -3,7 +3,7 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: #f5f5f5;
+  background: var(--bg-deep);
   font-family: 'Times New Roman', Times, serif;
 }
 
@@ -58,6 +58,26 @@
 .signup-field-error {
   color: #A82A20;
   font-size: 0.78rem;
+}
+
+.signup-field-hint {
+  font-size: 0.78rem;
+}
+.signup-field-hint.match {
+  color: #1B7A3D;
+}
+.signup-field-hint.mismatch {
+  color: #A82A20;
+}
+
+.signup-privacy-note {
+  font-size: 0.78rem;
+  color: #5A6472;
+  margin: -0.25rem 0 0 0;
+}
+.signup-privacy-note a {
+  color: #14213D;
+  text-decoration: underline;
 }
 
 .signup-submit-button {
