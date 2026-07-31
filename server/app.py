@@ -7,6 +7,12 @@ Serves:
                                  3-digit ISO numeric code (matches TopoJSON
                                  feature.id, zero-padded)
   GET /api/countries/<code>  -> single country's metric record
+  GET /api/country-profiles         -> dict of narrative country profiles
+                                        (historical overview + reference,
+                                        plus a dashboard note for the
+                                        subset with GTBI/ETTI data), keyed
+                                        the same way as /api/countries
+  GET /api/country-profiles/<code>  -> single country's narrative profile
 
 All country metrics (GTBI / ETTI / EVS / TIE / PDL / ITS) currently live as
 placeholders (0) in data/country_data.json. Swap that file's values — or
@@ -117,6 +123,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 WORLD_DATA_PATH = os.path.join(DATA_DIR, "world-110m.json")
 COUNTRY_DATA_PATH = os.path.join(DATA_DIR, "country_data.json")
+COUNTRY_PROFILES_PATH = os.path.join(DATA_DIR, "country_profiles.json")
 UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
 
 IS_PRODUCTION = os.environ.get("FLASK_ENV") == "production"
@@ -303,6 +310,30 @@ def get_country(code):
     record = data.get(code.zfill(3)) or data.get(code)
     if record is None:
         abort(404, description=f"No data for country code '{code}'")
+    return jsonify(record)
+
+
+@app.get("/api/country-profiles")
+def get_country_profiles():
+    """
+    All narrative country profiles (historical trauma overview + APA
+    reference, plus an Observatory dashboard note for the subset of
+    countries with GTBI/ETTI data), keyed by the same zero-padded ISO
+    numeric code as /api/countries. Not every code in /api/countries has
+    an entry here - see data_scripts/country_profiles_extract.py's
+    docstring for which countries are covered and why a couple aren't
+    (most notably Kosovo, which has no ISO 3166-1 numeric code at all).
+    """
+    return jsonify(load_json(COUNTRY_PROFILES_PATH))
+
+
+@app.get("/api/country-profiles/<code>")
+def get_country_profile(code):
+    """A single country's narrative profile, if one exists."""
+    data = load_json(COUNTRY_PROFILES_PATH)
+    record = data.get(code.zfill(3)) or data.get(code)
+    if record is None:
+        abort(404, description=f"No profile for country code '{code}'")
     return jsonify(record)
 
 

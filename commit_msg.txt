@@ -1,63 +1,37 @@
-Add certification enrollment payments, live password match check,
-privacy policy, and reconcile bright-theme/navbar/About fixes
+Restore Country Profiles narrative-data feature (regressed in 86e7c43)
 
-Certification enrollment (Stripe):
-- New Enrollment model + migration (chained onto a1f9c3d7e5b2, since
-  6ff385893016_add_category_to_reports.py upstream is an empty/broken
-  migration file - flagging that separately, not fixed here).
-- server-side CERTIFICATION_CATALOG in app.py is the source of truth
-  for cert_code -> name/tuition_cents; the client only ever sends a
-  code, so pricing can never be tampered with from the browser.
-- New routes: checkout-session, webhook, session-status, my-enrollments,
-  and an admin-only refund route - all mirroring the existing donations
-  Stripe pattern closely.
-- Refund policy enforced server-side, not just displayed as text: 50%
-  refund within 7 days of purchase, none after. (Note: the requested
-  policy - "before 1 week: 50%, after 4 weeks: no refund" - left the
-  1-4 week window unspecified; implemented as a strict two-tier policy
-  rather than guessing at a middle tier.)
-- New pages CertificationEnroll.jsx (shows cert/price/refund policy,
-  requires login, hands off to Stripe Checkout) and
-  CertificationEnrollThankYou.jsx (polls for payment confirmation,
-  mirrors DonateThankYou.jsx). "Enroll" buttons on Certifications.jsx
-  now route here instead of /contact.
-- Removed the "It is not a clinical license..." disclaimer sentence
-  from all 11 certifications' notice field in certifications.js,
-  keeping only the "what this credential is" sentence.
-- New send_enrollment_confirmation_email in email_backend.py.
+The "reconcile bright-theme/navbar/About fixes" commit merged from a
+stale branch and silently reverted this feature along with the theme
+change. Restoring it on top of the new bright theme rather than
+undoing the theme work:
 
-Sign-up / reset-password:
-- Live "Passwords match" / "Passwords do not match" feedback as the
-  person types, instead of only finding out after submitting. Applied
-  to both SignUp.jsx and ResetPassword.jsx (same confirm-password
-  pattern existed on both).
+- server/data/country_profiles.json was committed as an empty (0-byte)
+  file - restored the real 164-country dataset.
+- GET /api/country-profiles and GET /api/country-profiles/<code> had
+  been dropped from app.py entirely - re-added, matching the existing
+  /api/countries route pattern.
+- server/data_scripts/country_profiles_extract.py and its two source
+  .docx files were never committed in the first place - added now.
+- CountryProfiles.jsx had lost the fetch-and-merge logic that pulls in
+  narrative profiles alongside GTBI/ETTI dashboard data, and had
+  picked up a stray "Download Profile" link pointing at .docx files
+  that don't exist anywhere on the site (a leftover from the Option-1
+  approach we didn't take) - removed the dead link, restored the
+  narrative overview/dashboard-note rendering.
+- CountryProfiles.css and Unavailable.css had reverted to old
+  versions whose class names no longer matched their current JSX
+  (both pages would render essentially unstyled) - rewritten to match
+  the actual markup, now using the new bright-theme CSS variables
+  (--bg-deep, --text-hi/mid/low, --cyan, --line) instead of the
+  hardcoded dark-theme hex values they previously had, so they render
+  correctly under the site's current color scheme.
 
-Privacy policy:
-- New /privacy page, written from the actual schema (User, Donation,
-  Enrollment, SavedChart, FavoriteReport, UserEvent) rather than
-  generic boilerplate: what's collected, how it's used, who it's
-  shared with (only Google->us and Stripe, no selling/ads), and user
-  rights (view via Profile, edit via Settings, self-delete with
-  reactivation, request export/erasure via Contact). Linked from
-  Sign-up and the site footer.
+Verified: clean npm run build, plus a live backend check confirming
+/api/country-profiles returns all 164 profiles and /api/countries
+still returns all 249 countries.
 
-Reconciled from a previous session (the remote repo didn't have these
-applied yet - discovered via a stale /#itti link still in Footer.jsx):
-- Unified bright/white theme across every page (App.css root palette
-  flip + matching overlay/gradient fixes across About/Certifications/
-  Docs/Fellowship, plus the six previously-independently-light pages
-  repointed at the same shared var(--bg-deep)).
-- Navbar collapses (hides logo/name, shrinks padding) once scrolled
-  away from the top, restores at the top - merged onto NavBar.jsx
-  without losing the newer /profile link that had been added upstream.
-- About page: ofhusa.org link no longer points at the dead /#itti
-  anchor (About.jsx and Footer.jsx); scrollspy rewritten from
-  IntersectionObserver to a position-based check so a short section
-  ("Outlets for Hope") can't be skipped and fail to highlight.
-
-Verified: `vite build` clean; backend route-level tests via Flask test
-client (auth/role gating, bad cert_code, refund policy boundaries);
-full pipeline smoke test of workbook validate/rotate/merge; headless-
-browser pass confirming body background, navbar scroll classes, About
-scrollspy highlight, cert notice text, enroll link target, and footer
-links all behave correctly together.
+Note: this same stale-branch merge also reverted the donations flow
+(embedded Payment Element + admin view, back to the old Checkout
+redirect) and left Reports.css with the same classname-mismatch
+pattern fixed here for Country Profiles. Neither is addressed in this
+commit - out of scope for this pass, flagged separately.

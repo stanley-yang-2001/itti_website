@@ -12,12 +12,23 @@ const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 /**
  * Country Profiles page. Every country is listed at once, grouped under
  * a letter heading, rather than requiring a letter click to reveal
- * anything - the A-Z bar is now a jump-to-section nav (smooth-scrolls to
- * that letter's group) instead of a filter. Each country is a row you
- * click to expand inline: countries with real ETTI/GTBI data show a
- * quick overview, everything else shows the shared "unavailable"
- * message (see components/UnavailableMessage.jsx) right there instead
- * of navigating away.
+ * anything - the A-Z bar is jump-to-section nav (smooth-scrolls to that
+ * letter's group) rather than a filter, and scrolls with the page like
+ * everything else (no position: sticky).
+ *
+ * Each country is a row you click to expand inline, drawing on two
+ * independent sources that a country can have either, both, or neither
+ * of:
+ *   - /api/country-profiles: a narrative historical overview + APA
+ *     reference (server/data_scripts/country_profiles_extract.py),
+ *     covering ~165 countries.
+ *   - /api/countries: live GTBI/ETTI dashboard figures, covering a much
+ *     smaller set - shown as both a quick stat readout and, where the
+ *     narrative source also has a matching "dashboard note", the prose
+ *     tying the two together.
+ * A country counts as "available" if either source has something for
+ * it; only a country with neither shows the shared "unavailable"
+ * message (components/UnavailableMessage.jsx).
  *
  * country_data.json fields are never assumed to be numbers - every
  * ETTI/GTBI field can be the literal string "Data Pending" instead of
@@ -34,24 +45,33 @@ export default function CountryProfiles() {
   useEffect(() => {
     let cancelled = false;
 
-    fetch("/api/countries")
-      .then((res) => {
-        if (isBadRequest(res)) {
+    Promise.all([fetch("/api/countries"), fetch("/api/country-profiles")])
+      .then(([countriesRes, profilesRes]) => {
+        if (isBadRequest(countriesRes) || isBadRequest(profilesRes)) {
           navigate("/unavailable?from=%2Fcountry-profiles&fromLabel=Back%20to%20Country%20Profiles");
           return null;
         }
-        if (!res.ok) throw new Error("Failed to load country data");
-        return res.json();
+        if (!countriesRes.ok) throw new Error("Failed to load country data");
+        // Narrative profiles are a nice-to-have on top of the dashboard data,
+        // not the core of the page - degrade to "no profiles" rather than
+        // failing the whole page if just this fetch has a problem.
+        const profiles = profilesRes.ok ? profilesRes.json() : Promise.resolve({});
+        return Promise.all([countriesRes.json(), profiles]);
       })
-      .then((data) => {
-        if (cancelled || data == null) return;
-        const list = Object.entries(data).map(([code, record]) => ({
-          code,
-          name: record?.name || code,
-          available: hasProfile(record),
-          gtbi: getLatestYearRecord(record?.GTBI),
-          etti: getLatestYearRecord(record?.ETTI),
-        }));
+      .then((result) => {
+        if (cancelled || result == null) return;
+        const [data, profiles] = result;
+        const list = Object.entries(data).map(([code, record]) => {
+          const profile = profiles[code] || null;
+          return {
+            code,
+            name: record?.name || profile?.name || code,
+            available: hasProfile(record) || !!profile,
+            gtbi: getLatestYearRecord(record?.GTBI),
+            etti: getLatestYearRecord(record?.ETTI),
+            profile,
+          };
+        });
         list.sort((a, b) => a.name.localeCompare(b.name));
         setCountries(list);
       })
@@ -162,13 +182,6 @@ export default function CountryProfiles() {
 
                       {expandedCode === c.code && (
                         <div className="country-profile-dropdown">
-                          <a
-                            href={`/country-profiles/${encodeURIComponent(c.name)}.docx`}
-                            download
-                            className="country-overview-link"
-                          >
-                            Download Profile
-                          </a>
                           {c.available ? (
                             <CountryOverview country={c} />
                           ) : (
@@ -188,9 +201,10 @@ export default function CountryProfiles() {
   );
 }
 
-/** Compact overview shown when a country row expands and has real data. */
+/** Shown when a country row expands and has either a narrative profile,
+ *  live dashboard data, or both. */
 function CountryOverview({ country }) {
-  const { gtbi, etti } = country;
+  const { gtbi, etti, profile } = country;
   const gtbiScore = getNumericValue(gtbi?.gtbi);
   const traumaLevel = getValueOrNull(gtbi?.trauma_level);
   const burdenRate = getNumericValue(gtbi?.burden_rate);
@@ -206,6 +220,20 @@ function CountryOverview({ country }) {
 
   return (
     <div className="country-overview">
+      {profile?.overview && (
+        <div className="country-overview-section">
+          {profile.overview.paragraphs.map((p, i) => (
+            <p key={i} className="country-overview-paragraph">{p}</p>
+          ))}
+          {profile.overview.reference && (
+            <p className="country-overview-reference">
+              <strong>Reference: </strong>
+              {profile.overview.reference}
+            </p>
+          )}
+        </div>
+      )}
+
       {stats.length > 0 && (
         <div className="country-overview-stats">
           {stats.map((s) => (
@@ -217,6 +245,24 @@ function CountryOverview({ country }) {
         </div>
       )}
       {keyEvents && <p className="country-overview-events">{keyEvents}</p>}
+
+      {profile?.dashboard_note && (
+        <div className="country-overview-section country-overview-dashboard-note">
+          <h4 className="country-overview-subheading">Observatory Dashboard Profile</h4>
+          {profile.dashboard_note.paragraphs.map((p, i) => (
+            <p key={i} className="country-overview-paragraph">{p}</p>
+          ))}
+          {profile.dashboard_note.references?.length > 0 && (
+            <div className="country-overview-references">
+              <strong>APA 7 References</strong>
+              {profile.dashboard_note.references.map((r, i) => (
+                <p key={i} className="country-overview-reference">{r}</p>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       <a href="/observatory" className="country-overview-link">
         Explore full data in the Observatory →
       </a>
