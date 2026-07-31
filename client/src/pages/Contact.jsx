@@ -5,31 +5,31 @@ import '../styles/Contact.css';
 const CONTACTS = [
   {
     label: 'Contact',
-    email: 'contact@itti.org',
+    email: 'contact@ittiglobal.org',
     description:
       "General inquiries. Start here if you're not sure who to reach, or your question doesn't fit any category below."
   },
   {
     label: 'Fellowship',
-    email: 'fellowship@itti.org',
+    email: 'fellowship@ittiglobal.org',
     description:
       'For prospective and current fellows \u2014 program questions, applications, and anything related to joining or participating in the fellowship.'
   },
   {
     label: 'Chancellor',
-    email: 'chancellor@itti.org',
+    email: 'chancellor@ittiglobal.org',
     description:
       "Correspondence for ITTI's leadership \u2014 partnership proposals, institutional inquiries, and matters that need the office of the Chancellor directly."
   },
   {
     label: 'Press',
-    email: 'press@itti.org',
+    email: 'press@ittiglobal.org',
     description:
       "Media inquiries \u2014 interview requests, press kits, and questions from journalists or outlets covering ITTI's work."
   },
   {
     label: 'Support',
-    email: 'support@itti.org',
+    email: 'support@ittiglobal.org',
     description:
       'Technical help \u2014 issues with the website or your account, bug reports, and general troubleshooting.'
   }

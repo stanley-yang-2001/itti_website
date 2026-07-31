@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/Observatory.css";
 import { fetchAllCountries } from "../api.js";
+import { getCountriesWithData } from "../utils/ObservatoryData";
 import DataExplorerPanel from "../components/observatory/DataExplorerPanel.jsx";
 import AnalysisViews from "../components/observatory/AnalysisViews.jsx";
 import NigeriaObservatory from "../components/observatory/NigeriaObservatory.jsx";
@@ -70,6 +71,40 @@ export default function Observatory() {
     setPanels((prev) => prev.map((p) => (p.indicator === indicator ? { ...p, selected: value } : p)));
   }
 
+  /** Adds a data panel for every country/year on file, across BOTH GTBI
+   *  and ETTI at once, skipping anything already added (per indicator,
+   *  same de-dup rule the normal picker uses). */
+  function handleSelectAllData() {
+    if (!countries) return;
+    setPanels((prev) => {
+      let next = prev;
+      for (const indicator of ["GTBI", "ETTI"]) {
+        const countriesWithData = getCountriesWithData(countries, indicator);
+        const existingKeys = new Set(
+          next.filter((p) => p.indicator === indicator).map((p) => `${p.countryCode}:${p.year}`)
+        );
+        const additions = [];
+        countriesWithData.forEach((c) => {
+          c.years.forEach((year) => {
+            const key = `${c.code}:${year}`;
+            if (!existingKeys.has(key)) {
+              additions.push({
+                id: nextPanelId.current++,
+                indicator,
+                countryCode: c.code,
+                countryName: c.name,
+                year,
+                selected: false,
+              });
+            }
+          });
+        });
+        next = [...next, ...additions];
+      }
+      return next;
+    });
+  }
+
   const chartablePanels = panels.filter((p) => p.selected);
 
   return (
@@ -124,6 +159,7 @@ export default function Observatory() {
             onEditPanel={handleEditPanel}
             onRemovePanel={handleRemovePanel}
             onSelectAll={handleSelectAll}
+            onSelectAllData={handleSelectAllData}
           />
 
           <p className="obs-cross-tab-note">

@@ -100,3 +100,13 @@ export function getYearRecord(yearKeyedSection, year) {
 export function formatField(value) {
   return isDataPending(value) || value === undefined || value === null ? DATA_PENDING : value;
 }
+
+/**
+ * Whether a country has enough real data to show a profile at all - true
+ * if either its ETTI or GTBI section has at least one real (non-"Data
+ * Pending") year on file. Countries with neither show the shared
+ * "unavailable" message instead of an overview.
+ */
+export function hasProfile(record) {
+  return getLatestYearRecord(record?.GTBI) !== null || getLatestYearRecord(record?.ETTI) !== null;
+}

@@ -10,13 +10,108 @@ const NAV_LINKS = [
   { to: '/country-profiles', label: 'Country Profiles' },
   { to: '/fellows', label: 'Fellowship' },
   { to: '/certifications', label: 'Certifications' },
-  { to: '/contact', label: 'Contact' },
-  { to: '/donate', label: 'Donate', emphasize: true }
+  { to: '/contact', label: 'Contact' }
 ];
+
+function initials(name, email) {
+  const source = (name || email || '?').trim();
+  const parts = source.split(/\s+/);
+  if (parts.length === 1) return parts[0][0].toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+/**
+ * Everything account-related lives behind this one menu instead of
+ * being scattered across the main nav or only reachable by already
+ * knowing the URL: Publish and "Donations (Admin)" used to be (or, in
+ * Settings/PublisherDashboard's case, never were) top-level nav items;
+ * now Profile, Settings, Publisher Dashboard, and Admin Donations are
+ * all one click away from the same place.
+ */
+function UserMenu({ user, isPublisher, isAdmin, onLogout }) {
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    function handleClickOutside(e) {
+      if (menuRef.current && !menuRef.current.contains(e.target)) setOpen(false);
+    }
+    function handleEscape(e) {
+      if (e.key === 'Escape') setOpen(false);
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [open]);
+
+  return (
+    <div className="navbar-user-menu" ref={menuRef}>
+      <button
+        type="button"
+        className="navbar-user"
+        aria-haspopup="true"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className="navbar-user-avatar">
+          {user.picture_url ? <img src={user.picture_url} alt="" /> : <span>{initials(user.name, user.email)}</span>}
+        </span>
+        <span className="navbar-user-name">{user.name || user.email}</span>
+        <span className={`role-badge role-${user.role}`}>{user.role}</span>
+        <span className={`navbar-user-caret${open ? ' open' : ''}`} aria-hidden="true">▾</span>
+      </button>
+
+      {open && (
+        <div className="navbar-user-dropdown" role="menu">
+          <div className="navbar-user-dropdown-head">
+            <span className="navbar-user-dropdown-name">{user.name || 'Account'}</span>
+            <span className="navbar-user-dropdown-email">{user.email}</span>
+          </div>
+
+          <Link to="/profile" className="navbar-user-dropdown-link" role="menuitem" onClick={() => setOpen(false)}>
+            View Profile
+          </Link>
+          <Link to="/settings" className="navbar-user-dropdown-link" role="menuitem" onClick={() => setOpen(false)}>
+            Account Settings
+          </Link>
+
+          {isPublisher && (
+            <>
+              <div className="navbar-user-dropdown-divider" />
+              <Link to="/publisher" className="navbar-user-dropdown-link" role="menuitem" onClick={() => setOpen(false)}>
+                Publisher Dashboard
+              </Link>
+            </>
+          )}
+
+          {isAdmin && (
+            <Link to="/admin/donations" className="navbar-user-dropdown-link" role="menuitem" onClick={() => setOpen(false)}>
+              Donations (Admin)
+            </Link>
+          )}
+
+          <div className="navbar-user-dropdown-divider" />
+          <button
+            type="button"
+            className="navbar-user-dropdown-link navbar-user-dropdown-logout"
+            role="menuitem"
+            onClick={() => { setOpen(false); onLogout(); }}
+          >
+            Log out
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function NavBar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { user, isAuthenticated, isPublisher, logout } = useAuth();
+  const { user, isAuthenticated, isPublisher, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
   const navRef = useRef(null);
 
@@ -40,11 +135,8 @@ export default function NavBar() {
 
   async function handleLogout() {
     await logout();
-    setMenuOpen(false);
     navigate('/');
   }
-
-  const links = isPublisher ? [...NAV_LINKS, { to: '/publish', label: 'Publish' }] : NAV_LINKS;
 
   return (
     <nav className="navbar" ref={navRef}>
@@ -56,15 +148,7 @@ export default function NavBar() {
 
         <div className="navbar-auth">
           {isAuthenticated ? (
-            <>
-              <span className="navbar-user">
-                {user.name || user.email}
-                <span className={`role-badge role-${user.role}`}>{user.role}</span>
-              </span>
-              <button className="navbar-auth-btn" onClick={handleLogout}>
-                Log out
-              </button>
-            </>
+            <UserMenu user={user} isPublisher={isPublisher} isAdmin={isAdmin} onLogout={handleLogout} />
           ) : (
             <>
               <NavLink to="/login" className="navbar-auth-btn">
@@ -75,6 +159,14 @@ export default function NavBar() {
               </NavLink>
             </>
           )}
+
+          <NavLink
+            to="/donate"
+            className={({ isActive }) => 'navbar-auth-btn navbar-donate-btn' + (isActive ? ' active' : '')}
+            onClick={() => setMenuOpen(false)}
+          >
+            Donate
+          </NavLink>
 
           <button
             className="navbar-toggle"
@@ -90,14 +182,12 @@ export default function NavBar() {
       </div>
 
       <ul className={`navbar-links${menuOpen ? ' open' : ''}`}>
-        {links.map((link) => (
+        {NAV_LINKS.map((link) => (
           <li key={link.to}>
             <NavLink
               to={link.to}
               end={link.end}
-              className={({ isActive }) =>
-                'navbar-link' + (link.emphasize ? ' navbar-link-donate' : '') + (isActive ? ' active' : '')
-              }
+              className={({ isActive }) => 'navbar-link' + (isActive ? ' active' : '')}
               onClick={() => setMenuOpen(false)}
             >
               {link.label}

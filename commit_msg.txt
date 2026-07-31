@@ -1,47 +1,17 @@
-build: add DigitalOcean App Platform deployment config
+Contact page: updated the domain email to actual existing emails
 
-Adds everything needed to deploy the backend (Flask + gunicorn +
-Postgres via Alembic) and frontend (Vite static build) to DigitalOcean
-App Platform, plus the Brevo SMTP setup this depends on.
 
-  - server/Dockerfile: builds the backend container. Installs
-    requirements-prod.txt, copies the server/ source, and on every
-    container start runs `alembic upgrade head` before starting
-    gunicorn - migrations apply automatically on each deploy rather
-    than needing a manual step.
+Fix Country Profiles letter-jump bar scrolling behavior
 
-  - app.yaml: the full App Platform spec - backend service (from the
-    Dockerfile), frontend static site (npm install && npm run build,
-    serving dist/), and a managed Postgres 16 database, wired together
-    via ${db.DATABASE_URL} and ${APP_URL}. Every secret (FLASK_SECRET_KEY,
-    SMTP credentials, Stripe keys, Google client ID) is a <PLACEHOLDER>
-    to fill in before use, not a real value.
+The A-Z jump nav was set to position: sticky, pinning it near the top
+of the viewport while the country list scrolled underneath it -
+visually disconnecting it from the content it's meant to navigate.
 
-  - server/.env.example: documents every environment variable the
-    server actually reads (cross-checked against every os.environ.get()
-    call in app.py, storage.py, email_backend.py, and
-    models/database.py), including the Brevo/SMTP config
-    email_backend.py already supported but was never actually
-    documented anywhere.
-
-  - docs/DEPLOYMENT.md: step-by-step guide covering both halves of
-    this - deploying to App Platform, and setting up a Brevo sending
-    address (single-address verification for a quick start, or full
-    domain verification via DKIM/SPF for production-quality
-    deliverability), plus how to get the resulting SMTP credentials
-    into the five SMTP_* env vars the app expects.
-
-Verified: requirements-prod.txt installs cleanly in a fresh venv,
-gunicorn app:app resolves the real Flask app object, and the Dockerfile's
-`alembic upgrade head` step runs correctly against Postgres (confirmed
-Base.metadata.create_all() only fires for a local sqlite DATABASE_URL,
-so it never collides with Alembic in the actual production path). Did
-not run an actual `docker build` - no Docker available in this
-environment - so a local build/run before the first real deploy is
-still worth doing.
-
-Files added:
-  app.yaml
-  server/Dockerfile
-  server/.env.example
-  docs/DEPLOYMENT.md
+- Remove position: sticky (and its top/z-index/background offset) from
+  .country-letter-jump so it's a normal in-flow element again: it now
+  scrolls together with the country list and scrolls out of view like
+  everything else once you pass it, instead of staying pinned.
+- Reduce .country-letter-section's scroll-margin-top from
+  navbar-height + 56px to navbar-height + 16px, since a jump-to-letter
+  click only needs to clear the (still sticky) top navbar now, not the
+  letter bar's own height.

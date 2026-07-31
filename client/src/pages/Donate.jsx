@@ -1,14 +1,73 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { checkEmail, checkName, checkDonationAmount } from '../utils/formValidation.js';
 import Reveal from '../components/Reveal.jsx';
 import '../styles/Donate.css';
 
-const FALLBACK_PRESETS_CENTS = [2500, 5000, 10000, 25000]; // used only if /api/donations/presets can't be reached
+const FALLBACK_PRESETS_CENTS = [2500, 5000, 10000, 25000]; // used only if /api/donations/config can't be reached
 
 function centsToDollarLabel(cents) {
   return `$${(cents / 100).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+}
+
+/**
+ * Mounted only once a PaymentIntent's client_secret exists (see Donate,
+ * below), inside <Elements> - useStripe/useElements only work in that
+ * context. This is where the actual payment method entry and the actual
+ * charge happen: Stripe's own <PaymentElement> collects card/bank/wallet
+ * details (never touching this app's code or servers), and
+ * confirmPayment() is the API call that submits the real transaction.
+ */
+function DonationPaymentForm({ amountDollars, confirmationCode }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+
+  async function handlePay(e) {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+
+    setSubmitting(true);
+    setError(null);
+
+    const { error: confirmError } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/donate/thank-you`,
+      },
+    });
+
+    // confirmPayment redirects the browser on success, so reaching this
+    // line at all means it didn't - either a validation problem with the
+    // payment details (card declined, etc.) or a network hiccup.
+    if (confirmError) {
+      setError(confirmError.message || 'Your payment could not be processed. Please try again.');
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <form className="donate-card" onSubmit={handlePay}>
+      {error && <p className="donate-error">{error}</p>}
+      <p className="donate-payment-amount">
+        Donating <strong>${amountDollars.toFixed(2)}</strong>
+        <span className="donate-payment-confirmation"> · Confirmation {confirmationCode}</span>
+      </p>
+      <PaymentElement />
+      <button type="submit" className="donate-submit-button" disabled={!stripe || submitting}>
+        {submitting ? 'Processing…' : `Donate $${amountDollars.toFixed(2)}`}
+      </button>
+      <p className="donate-stripe-note">
+        Payments are processed securely by Stripe. Card, bank, and wallet options (e.g. Apple Pay, Cash App
+        Pay, Link) are offered automatically based on your device and location — ITTI never sees or stores
+        your payment details.
+      </p>
+    </form>
+  );
 }
 
 export default function Donate() {
@@ -17,6 +76,9 @@ export default function Donate() {
   const wasCanceled = searchParams.get('canceled') === '1';
 
   const [presetsCents, setPresetsCents] = useState(FALLBACK_PRESETS_CENTS);
+  const [publishableKey, setPublishableKey] = useState(null);
+  const [configError, setConfigError] = useState(false);
+
   const [selectedPreset, setSelectedPreset] = useState(null);
   const [customAmount, setCustomAmount] = useState('');
 
@@ -26,6 +88,12 @@ export default function Donate() {
 
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // Step 2 state: once a PaymentIntent exists, the amount/details are
+  // locked in and the embedded payment form takes over.
+  const [clientSecret, setClientSecret] = useState(null);
+  const [confirmedAmountDollars, setConfirmedAmountDollars] = useState(null);
+  const [confirmationCode, setConfirmationCode] = useState(null);
 
   // Prefill from the logged-in account, if any — donating doesn't require
   // an account, this is purely a convenience when one exists.
@@ -41,15 +109,23 @@ export default function Donate() {
   }, [user]);
 
   useEffect(() => {
-    fetch('/api/donations/presets')
-      .then((res) => (res.ok ? res.json() : null))
+    fetch('/api/donations/config')
+      .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then((data) => {
         if (data?.presets_cents?.length) setPresetsCents(data.presets_cents);
+        setPublishableKey(data?.publishable_key || '');
       })
       .catch(() => {
-        /* fall back to FALLBACK_PRESETS_CENTS, already the default state */
+        setConfigError(true);
+        setPublishableKey('');
       });
   }, []);
+
+  // loadStripe() only needs to run once per key, not on every render.
+  const stripePromise = useMemo(
+    () => (publishableKey ? loadStripe(publishableKey) : null),
+    [publishableKey]
+  );
 
   function selectPreset(cents) {
     setSelectedPreset(cents);
@@ -63,7 +139,7 @@ export default function Donate() {
 
   const amountDollars = selectedPreset != null ? selectedPreset / 100 : parseFloat(customAmount);
 
-  async function handleSubmit(e) {
+  async function handleContinue(e) {
     e.preventDefault();
     setError(null);
 
@@ -79,7 +155,7 @@ export default function Donate() {
 
     setLoading(true);
     try {
-      const res = await fetch('/api/donations/checkout-session', {
+      const res = await fetch('/api/donations/payment-intent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -93,15 +169,17 @@ export default function Donate() {
       if (!res.ok) {
         throw new Error(data.description || data.error || 'Something went wrong. Please try again.');
       }
-      // Hand off to Stripe's own hosted Checkout page — it decides which
-      // payment methods to actually show (card, bank debit, wallets,
-      // etc.), so nothing here has to enumerate them.
-      window.location.href = data.checkout_url;
+      setClientSecret(data.client_secret);
+      setConfirmationCode(data.confirmation_code);
+      setConfirmedAmountDollars(amountDollars);
     } catch (err) {
       setError(err.message);
+    } finally {
       setLoading(false);
     }
   }
+
+  const showingPaymentStep = !!clientSecret && !!stripePromise;
 
   return (
     <div className="donate-page">
@@ -116,95 +194,102 @@ export default function Donate() {
         </div>
       </Reveal>
 
-      <form className="donate-card" onSubmit={handleSubmit}>
-        {wasCanceled && (
-          <p className="donate-notice">Your payment was canceled — no charge was made. You can try again below.</p>
-        )}
-        {error && <p className="donate-error">{error}</p>}
+      {showingPaymentStep ? (
+        <Elements stripe={stripePromise} options={{ clientSecret }}>
+          <DonationPaymentForm amountDollars={confirmedAmountDollars} confirmationCode={confirmationCode} />
+        </Elements>
+      ) : (
+        <form className="donate-card" onSubmit={handleContinue}>
+          {wasCanceled && (
+            <p className="donate-notice">Your previous payment attempt didn't go through. You can try again below.</p>
+          )}
+          {configError && (
+            <p className="donate-notice">
+              We're having trouble reaching our payment processor right now. You can still fill out the form —
+              try submitting in a moment.
+            </p>
+          )}
+          {error && <p className="donate-error">{error}</p>}
 
-        <Reveal delay={90}>
-          <fieldset className="donate-fieldset">
-            <legend>Choose an amount</legend>
-            <div className="donate-amount-grid">
-              {presetsCents.map((cents) => (
-                <button
-                  key={cents}
-                  type="button"
-                  className={`donate-amount-chip${selectedPreset === cents ? ' active' : ''}`}
-                  onClick={() => selectPreset(cents)}
-                >
-                  {centsToDollarLabel(cents)}
-                </button>
-              ))}
-            </div>
-            <label className="donate-field donate-custom-amount">
-              <span>Custom amount (USD)</span>
-              <div className="donate-custom-amount-input">
-                <span className="donate-currency-prefix">$</span>
-                <input
-                  type="number"
-                  min="1"
-                  step="1"
-                  inputMode="decimal"
-                  placeholder="Other amount"
-                  value={customAmount}
-                  onChange={handleCustomAmountChange}
-                />
+          <Reveal delay={90}>
+            <fieldset className="donate-fieldset">
+              <legend>Choose an amount</legend>
+              <div className="donate-amount-grid">
+                {presetsCents.map((cents) => (
+                  <button
+                    key={cents}
+                    type="button"
+                    className={`donate-amount-chip${selectedPreset === cents ? ' active' : ''}`}
+                    onClick={() => selectPreset(cents)}
+                  >
+                    {centsToDollarLabel(cents)}
+                  </button>
+                ))}
               </div>
-            </label>
-          </fieldset>
-        </Reveal>
+              <label className="donate-field donate-custom-amount">
+                <span>Custom amount (USD)</span>
+                <div className="donate-custom-amount-input">
+                  <span className="donate-currency-prefix">$</span>
+                  <input
+                    type="number"
+                    min="1"
+                    step="1"
+                    inputMode="decimal"
+                    placeholder="Other amount"
+                    value={customAmount}
+                    onChange={handleCustomAmountChange}
+                  />
+                </div>
+              </label>
+            </fieldset>
+          </Reveal>
 
-        <Reveal delay={170}>
-          <fieldset className="donate-fieldset">
-            <legend>Your information</legend>
-            <div className="donate-name-row">
+          <Reveal delay={170}>
+            <fieldset className="donate-fieldset">
+              <legend>Your information</legend>
+              <div className="donate-name-row">
+                <label className="donate-field">
+                  <span>First name</span>
+                  <input
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    autoComplete="given-name"
+                    required
+                  />
+                </label>
+                <label className="donate-field">
+                  <span>Last name</span>
+                  <input
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    autoComplete="family-name"
+                    required
+                  />
+                </label>
+              </div>
               <label className="donate-field">
-                <span>First name</span>
+                <span>Email address</span>
                 <input
-                  type="text"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  autoComplete="given-name"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
                   required
                 />
               </label>
-              <label className="donate-field">
-                <span>Last name</span>
-                <input
-                  type="text"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  autoComplete="family-name"
-                  required
-                />
-              </label>
-            </div>
-            <label className="donate-field">
-              <span>Email address</span>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-                required
-              />
-            </label>
-            <p className="donate-email-note">Your donation receipt and confirmation number will be sent here.</p>
-          </fieldset>
-        </Reveal>
+              <p className="donate-email-note">Your donation receipt and confirmation number will be sent here.</p>
+            </fieldset>
+          </Reveal>
 
-        <Reveal delay={250}>
-          <button type="submit" className="donate-submit-button" disabled={loading}>
-            {loading ? 'Redirecting to secure checkout…' : 'Continue to secure checkout'}
-          </button>
-        </Reveal>
-        <p className="donate-stripe-note">
-          Payments are processed securely by Stripe. Card, bank, and wallet options (e.g. Apple Pay, Cash App
-          Pay, Link) are offered automatically based on your device and location — ITTI never sees or stores
-          your payment details.
-        </p>
-      </form>
+          <Reveal delay={250}>
+            <button type="submit" className="donate-submit-button" disabled={loading}>
+              {loading ? 'Preparing payment…' : 'Continue to payment'}
+            </button>
+          </Reveal>
+        </form>
+      )}
     </div>
   );
 }

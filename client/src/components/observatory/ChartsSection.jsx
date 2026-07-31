@@ -5,9 +5,10 @@ import {
   ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ZAxis,
 } from "recharts";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { INDICATOR_VARIABLES, GTBI_EXPOSURE_TYPES, getYearRecord, getNumericValue } from "../../utils/ObservatoryData";
+import { INDICATOR_VARIABLES, GTBI_EXPOSURE_TYPES, getYearRecord, getNumericValue, getCountriesWithData } from "../../utils/ObservatoryData";
 import { colorForCountry } from "../../utils/countryColors";
 import { saveObservatoryChart } from "../../api.js";
+import BoxPlotView, { computeBoxStats } from "./BoxPlotView.jsx";
 
 let chartIdSeq = 1;
 
@@ -38,6 +39,7 @@ const CHART_TYPES = [
   { key: "bar", label: "Bar chart", available: () => true },
   { key: "line", label: "Line chart", available: () => true },
   { key: "pie", label: "Pie chart", available: () => true },
+  { key: "boxplot", label: "Box plot (vs. all countries)", available: (indicator) => indicator !== "mixed" },
   { key: "radar", label: "Radar chart", available: (indicator) => indicator !== "mixed" },
   { key: "scatter", label: "Scatter plot (2 variables)", available: (indicator) => indicator !== "mixed" },
   { key: "stackedDomain", label: "Stacked bar: ETTI domain breakdown", available: (indicator) => indicator === "ETTI" },
@@ -144,6 +146,40 @@ function buildChartPayload(panels, countries, variableKey, chartType) {
   return { data, seriesKeys: uniqueCountries(panels).map((c) => ({ key: c.code, name: c.name, color: c.color })), xKey: "name", mode: "flat" };
 }
 
+/**
+ * The box itself summarizes one variable across EVERY country that has
+ * real data for the given indicator (each country's most recent year on
+ * file) - not just the checked panels. The checked panels are plotted as
+ * individual colored points against that population, so a chart answers
+ * "how does my selection compare to everyone else" rather than only
+ * showing the selection in isolation.
+ */
+function buildBoxPlotPayload(panels, countries, indicator, variableKey) {
+  const countriesWithData = getCountriesWithData(countries, indicator);
+  const key = variableKey === "__composite__" ? (indicator === "ETTI" ? "etti" : "gtbi") : variableKey;
+
+  const values = [];
+  countriesWithData.forEach((c) => {
+    const latestYear = c.years[c.years.length - 1];
+    const record = getYearRecord(countries, indicator, c.code, latestYear);
+    const value = getNumericValue(record?.[key]);
+    if (value !== null) values.push(value);
+  });
+
+  const stats = computeBoxStats(values);
+
+  const points = panels
+    .filter((p) => p.indicator === indicator)
+    .map((panel) => {
+      const value = getPanelValue(panel, countries, variableKey);
+      if (value === null) return null;
+      return { value, label: `${panel.countryName} ${panel.year}`, color: colorForCountry(panel.countryCode) };
+    })
+    .filter(Boolean);
+
+  return { stats, points };
+}
+
 function buildScatterPayload(panels, countries, xVariable, yVariable) {
   const data = panels
     .map((panel) => {
@@ -214,7 +250,7 @@ export default function ChartsSection({ chartablePanels, countries }) {
     const opts = INDICATOR_VARIABLES[indicatorOfSelection]
       .filter((v) => v.numeric)
       .map((v) => ({ key: v.key, label: v.label, group: v.group || "Variables" }));
-    if (chartablePanels.length === 1 && effectiveChartType !== "scatter") {
+    if (chartablePanels.length === 1 && effectiveChartType !== "scatter" && effectiveChartType !== "boxplot") {
       opts.unshift({ key: "__all__", label: "All variables (this panel)", group: "Composite" });
     }
     return opts;
@@ -276,6 +312,19 @@ export default function ChartsSection({ chartablePanels, countries }) {
         indicator: "GTBI",
         panels: chartablePanels.map((p) => ({ indicator: p.indicator, countryCode: p.countryCode, countryName: p.countryName, year: p.year })),
         data, xKey, seriesKeys: [], mode: "stacked",
+      };
+    } else if (effectiveChartType === "boxplot") {
+      if (!effectiveVariable) return;
+      const variableLabel = variableOptions.find((o) => o.key === effectiveVariable)?.label || effectiveVariable;
+      const { stats, points } = buildBoxPlotPayload(chartablePanels, countries, indicatorOfSelection, effectiveVariable);
+      chart = {
+        id: chartIdSeq++,
+        title: `${variableLabel} — distribution across all ${indicatorOfSelection} countries`,
+        chartType: "boxplot",
+        indicator: indicatorOfSelection,
+        panels: chartablePanels.map((p) => ({ indicator: p.indicator, countryCode: p.countryCode, countryName: p.countryName, year: p.year })),
+        variableKey: effectiveVariable, variableLabel,
+        stats, points,
       };
     } else {
       if (!effectiveVariable) return;
@@ -466,6 +515,10 @@ const TOOLTIP_STYLE = { background: "#0E1626", border: "1px solid #1D2A3E", colo
 
 export function ChartView({ chart, height = 280 }) {
   const { chartType, data, seriesKeys, xKey, variableLabel } = chart;
+
+  if (chartType === "boxplot") {
+    return <BoxPlotView chart={chart} height={height} />;
+  }
 
   if (chartType === "scatter") {
     return (

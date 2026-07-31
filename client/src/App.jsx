@@ -18,10 +18,14 @@ import ForgotPassword from './pages/ForgotPassword.jsx';
 import ResetPassword from './pages/ResetPassword.jsx';
 import Unavailable from './pages/Unavailable.jsx';
 import Publish from './pages/Publish.jsx';
+import PublisherDashboard from './pages/PublisherDashboard.jsx';
 import PublishGlobeData from './pages/PublishGlobeData.jsx';
 import Docs from './pages/Docs.jsx';
 import Donate from './pages/Donate.jsx';
 import DonateThankYou from './pages/DonateThankYou.jsx';
+import AdminDonations from './pages/AdminDonations.jsx';
+import Profile from './pages/Profile.jsx';
+import Settings from './pages/Settings.jsx';
 
 /**
  * Gives routed page content a gentle fade-in on navigation instead of
@@ -77,6 +81,30 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/publisher"
+          element={
+            <ProtectedRoute requireRole="publisher">
+              <PublisherDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Settings />
+            </ProtectedRoute>
+          }
+        />
         {/* Not wrapped in ProtectedRoute on purpose - see the comment atop
             PublishGlobeData.jsx: it does its own auth/role check so a
             non-publisher/admin landing here sees an explanation instead
@@ -84,6 +112,14 @@ export default function App() {
             gate (@roles_required("publisher", "admin") on
             POST /api/globe-data/upload). */}
         <Route path="/publish/globe-data" element={<PublishGlobeData />} />
+        <Route
+          path="/admin/donations"
+          element={
+            <ProtectedRoute requireRole="admin">
+              <AdminDonations />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
       </PageTransition>
       <Footer />

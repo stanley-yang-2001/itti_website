@@ -23,11 +23,12 @@ function InterpretationBlurb({ indicator }) {
   );
 }
 
-export default function DataExplorerPanel({ indicator, countries, panels, onAddPanels, onTogglePanelSelect, onEditPanel, onRemovePanel, onSelectAll }) {
+export default function DataExplorerPanel({ indicator, countries, panels, onAddPanels, onTogglePanelSelect, onEditPanel, onRemovePanel, onSelectAll, onSelectAllData }) {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [removingId, setRemovingId] = useState(null);
   const [showTrend, setShowTrend] = useState(false);
+  const [confirmSelectAllData, setConfirmSelectAllData] = useState(false);
 
   const countriesWithData = getCountriesWithData(countries, indicator);
   const indicatorPanels = panels.filter((p) => p.indicator === indicator);
@@ -61,6 +62,9 @@ export default function DataExplorerPanel({ indicator, countries, panels, onAddP
       <div className="obs-explorer-toolbar">
         <button type="button" className="obs-btn obs-btn-primary" onClick={() => setPickerOpen(true)}>
           + Select Data
+        </button>
+        <button type="button" className="obs-btn" onClick={() => setConfirmSelectAllData(true)}>
+          Select all data (GTBI + ETTI)
         </button>
         {indicatorPanels.length > 0 && (
           <button type="button" className="obs-btn" onClick={() => onSelectAll(indicator, !allSelected)}>
@@ -123,6 +127,17 @@ export default function DataExplorerPanel({ indicator, countries, panels, onAddP
           message={`This will remove the ${indicator} data panel for ${removingPanel.countryName}, ${removingPanel.year}.`}
           onConfirm={() => { onRemovePanel(removingPanel.id); setRemovingId(null); }}
           onCancel={() => setRemovingId(null)}
+        />
+      )}
+
+      {confirmSelectAllData && (
+        <ConfirmModal
+          title="Select all data?"
+          message="This adds a data panel for every country and year on file, across both GTBI and ETTI. You can remove individual panels afterward, or use the per-indicator picker for a smaller selection instead."
+          confirmLabel="Select all"
+          confirmClassName="obs-btn-primary"
+          onConfirm={() => { onSelectAllData(); setConfirmSelectAllData(false); }}
+          onCancel={() => setConfirmSelectAllData(false)}
         />
       )}
     </div>

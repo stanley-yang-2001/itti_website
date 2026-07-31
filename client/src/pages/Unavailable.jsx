@@ -1,24 +1,32 @@
-import { Link } from "react-router-dom";
-import Reveal from '../components/Reveal.jsx';
+import { Link, useSearchParams } from "react-router-dom";
+import UnavailableMessage from "../components/UnavailableMessage.jsx";
 import "../styles/Unavailable.css";
 
 /**
- * Generic placeholder page for content that doesn't exist yet
- * (e.g. individual country profile pages). Linked to from anywhere
- * that needs a "not built yet" destination.
+ * Generic "this isn't available" destination for the whole site - not
+ * just missing country profiles anymore. Any page that fetches something
+ * the user navigated directly to and gets a 400 Bad Request back (see
+ * utils/apiError.js's isBadRequest) should send the user here rather
+ * than showing a raw error string, since a 400 in that situation means
+ * "what you were looking for was never going to exist" rather than
+ * "something broke."
+ *
+ * The back link is configurable via query params so this stays generic
+ * across every page that might land here:
+ *   /unavailable?from=/country-profiles&fromLabel=Back%20to%20Country%20Profiles
+ * Falls back to the homepage if none are given.
  */
 export default function Unavailable() {
+  const [params] = useSearchParams();
+  const backTo = params.get("from") || "/";
+  const backLabel = params.get("fromLabel") || "Back home";
+
   return (
     <div className="unavailable-page">
-      <Reveal delay={0}>
-        <div className="unavailable-content">
-          <h1>Sorry, this content is currently unavailable</h1>
-          <p>Please check back later.</p>
-          <Link to="/country-profiles" className="unavailable-back-link">
-            Back to Country Profiles
-          </Link>
-        </div>
-      </Reveal>
+      <UnavailableMessage />
+      <Link to={backTo} className="unavailable-back-link">
+        {backLabel}
+      </Link>
     </div>
   );
 }

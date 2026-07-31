@@ -67,14 +67,31 @@ export default function SidePanel({ country, record, onClose }) {
   const gtbiYears = getAvailableYears(record?.GTBI);
   const ettiYears = getAvailableYears(record?.ETTI);
 
-  // Reset to the overview tab and the latest available year for each index
-  // whenever a new country is selected.
+  // Reset to the overview tab whenever a new country is selected. (Picking
+  // the default year is handled below, not here - see effectiveGtbiYear/
+  // effectiveEttiYear.)
   useEffect(() => {
     setActiveTab('overview');
-    setGtbiYear(getAvailableYears(record?.GTBI)[0] ?? null);
-    setEttiYear(getAvailableYears(record?.ETTI)[0] ?? null);
+    setGtbiYear(null);
+    setEttiYear(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [country?.iso]);
+
+  // Home.jsx sets `country` synchronously the instant a globe click
+  // happens, but `record` (this country's actual GTBI/ETTI data) only
+  // arrives once its async fetch resolves - a render or two later. If the
+  // dropdown's default year were only ever set from an effect keyed on
+  // country.iso, that effect would fire on the *first* render (before
+  // `record` has loaded), lock in gtbiYear/ettiYear as null since
+  // getAvailableYears(undefined) is [], and then never fire again once
+  // country.iso stops changing - even after `record` shows up with real
+  // years available. That's the "shows Data Pending until you touch the
+  // year dropdown" bug. Instead, derive the year to actually use fresh on
+  // every render: fall back to the latest available year whenever the
+  // stored selection isn't valid for the *current* record, so it's always
+  // correct regardless of fetch timing, with no race possible.
+  const effectiveGtbiYear = gtbiYears.includes(gtbiYear) ? gtbiYear : gtbiYears[0] ?? null;
+  const effectiveEttiYear = ettiYears.includes(ettiYear) ? ettiYear : ettiYears[0] ?? null;
 
   if (!country) {
     return (
@@ -91,8 +108,8 @@ export default function SidePanel({ country, record, onClose }) {
 
   const gtbiOverview = getYearRecord(record?.GTBI, gtbiYears[0]) || {};
   const ettiOverview = getYearRecord(record?.ETTI, ettiYears[0]) || {};
-  const gtbiSelected = getYearRecord(record?.GTBI, gtbiYear) || {};
-  const ettiSelected = getYearRecord(record?.ETTI, ettiYear) || {};
+  const gtbiSelected = getYearRecord(record?.GTBI, effectiveGtbiYear) || {};
+  const ettiSelected = getYearRecord(record?.ETTI, effectiveEttiYear) || {};
 
   return (
     <aside id="side-panel">
@@ -146,7 +163,7 @@ export default function SidePanel({ country, record, onClose }) {
           <div className="score-card">
             <div className="score-card-head">
               <p className="score-label">GTBI — Global Trauma Burden Index</p>
-              <YearSelect label="Year" years={gtbiYears} value={gtbiYear} onChange={setGtbiYear} />
+              <YearSelect label="Year" years={gtbiYears} value={effectiveGtbiYear} onChange={setGtbiYear} />
             </div>
             <div className="score-value" id="gtbi-value"><Score value={gtbiSelected.gtbi} countryKey={iso} /></div>
             <p className="score-desc">
@@ -182,7 +199,7 @@ export default function SidePanel({ country, record, onClose }) {
           <div className="score-card">
             <div className="score-card-head">
               <p className="score-label">ETTI — Composite Score</p>
-              <YearSelect label="Year" years={ettiYears} value={ettiYear} onChange={setEttiYear} />
+              <YearSelect label="Year" years={ettiYears} value={effectiveEttiYear} onChange={setEttiYear} />
             </div>
             <div className="score-value" id="etti-value"><Score value={ettiSelected.etti} countryKey={iso} /></div>
             <p className="score-desc">ETTI aggregates four underlying variables into a single composite score.</p>

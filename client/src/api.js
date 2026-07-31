@@ -46,3 +46,26 @@ export function fetchSavedObservatoryCharts() {
 export function deleteSavedObservatoryChart(chartId) {
   return sendJson(`/observatory/saved-charts/${chartId}`, "DELETE");
 }
+
+/** The logged-in user's own uploaded reports, any review_status. */
+export function fetchMyReports() {
+  return sendJson("/reports/mine", "GET");
+}
+
+/** The logged-in user's favorited reports, full report objects. */
+export function fetchFavoriteReports() {
+  return sendJson("/reports/favorites", "GET");
+}
+
+/** Just the id set - cheap for marking stars on a list of report cards. */
+export function fetchFavoriteReportIds() {
+  return sendJson("/reports/favorites/ids", "GET");
+}
+
+export function favoriteReport(reportId) {
+  return sendJson(`/reports/${reportId}/favorite`, "POST");
+}
+
+export function unfavoriteReport(reportId) {
+  return sendJson(`/reports/${reportId}/favorite`, "DELETE");
+}
