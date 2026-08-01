@@ -1,30 +1,22 @@
 :root{
-    /* Page chrome (background/text/borders) - unified bright theme across
-       every page. --bg-deep is the page canvas; --bg-panel is a pure-white
-       "lifted" surface for cards/panels, same relationship the previous
-       dark theme had (panel a shade lighter than the page canvas behind
-       it), just inverted for a light theme. */
-    --bg-deep:#F7F9FC;
-    --bg-panel:#FFFFFF;
-    --line:#E1E7EE;
-    /* --ocean-a/--ocean-b/--land/--land-hover intentionally NOT part of
-       this - they're the 3D globe's ocean/continent rendering colors
-       (see Globe.jsx / #globe-container), not page background, and
-       changing them would alter the data visualization itself rather
-       than the page chrome around it. */
+    --bg-deep:#FFFFFF;
+    --bg-panel:#F6F8FB;
+    --line:#E1E6EE;
     --ocean-a:#0A1526;
     --ocean-b:#0D1F36;
     --land:#1B2A40;
     --land-hover:#2C5B63;
-    /* Darkened from the original dark-theme values (#4FD9C7 / #EFB84E)
-       so they still pass WCAG AA contrast when used as text/accent color
-       on the new white/bright backgrounds - same hue family, just deep
-       enough to stay readable. */
-    --cyan:#0F766E;
-    --gold:#B45309;
-    --text-hi:#111827;
-    --text-mid:#4B5768;
-    --text-low:#6B7686;
+    /* The globe is its own deliberately dark "space" visualization -
+       country fills (--land/--land-hover above) are calibrated for a
+       dark backdrop and would be unreadable on white. --bg-deep now
+       means "white page background" everywhere else, so the globe box
+       keeps its own dedicated dark background instead. */
+    --globe-bg:#080D16;
+    --cyan:#0D8A7C;
+    --gold:#AD7A1E;
+    --text-hi:#151B26;
+    --text-mid:#51607A;
+    --text-low:#6B7A93;
   }
   *{box-sizing:border-box;}
   html,body{
@@ -37,6 +29,44 @@
   }
   .display{font-family:'Times New Roman', Times, serif;}
   .mono{font-family:'JetBrains Mono',monospace;}
+
+  /* ---------- Shared button utility ----------
+     .btn is the base; pair it with .btn-primary (solid, cyan) or
+     .btn-secondary (outlined) - used on Reports and Profile so an
+     "Upload"/"Go to X"-style action looks the same everywhere instead
+     of every page inventing its own button class. */
+  .btn{
+    display:inline-block;
+    padding:9px 18px;
+    border-radius:6px;
+    border:1px solid var(--line);
+    font-size:0.85rem;
+    font-weight:700;
+    text-align:center;
+    text-decoration:none;
+    cursor:pointer;
+    transition:opacity 0.15s ease, border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+  }
+  .btn-primary{
+    background:var(--cyan);
+    border-color:var(--cyan);
+    color:#FFFFFF;
+  }
+  .btn-primary:hover:not(:disabled){
+    opacity:0.9;
+  }
+  .btn-secondary{
+    background:transparent;
+    color:var(--text-hi);
+  }
+  .btn-secondary:hover:not(:disabled){
+    border-color:var(--cyan);
+    color:var(--cyan);
+  }
+  .btn:disabled{
+    opacity:0.5;
+    cursor:not-allowed;
+  }
 
   /* ---------- Page transition ---------- */
   /* Wraps whatever <Routes> renders (see App.jsx). Has to behave as a
@@ -243,7 +273,7 @@
     cursor:pointer;
     color:var(--text-mid);
   }
-  #suggestions div:hover{background:rgba(79,217,199,0.08); color:var(--text-hi);}
+  #suggestions div:hover{background:rgba(13,138,124,0.08); color:var(--text-hi);}
 
   /* ---------- Main wrapper (Part 1 + Part 2) ---------- */
   main{
@@ -298,7 +328,7 @@
     border-radius:20px;
     overflow:hidden;
     border:1px solid var(--line);
-    background:radial-gradient(circle at 38% 32%, #0F2033, var(--bg-deep));
+    background:radial-gradient(circle at 38% 32%, #0F2033, var(--globe-bg));
   }
   .home-globe-right{
     display:flex;
@@ -306,6 +336,7 @@
   }
 
   #globe-container{
+    position:relative;
     width:100%; height:100%;
     display:flex; align-items:center; justify-content:center;
   }
@@ -314,6 +345,38 @@
     cursor:grab;
   }
   #globe-container svg:active{cursor:grabbing;}
+
+  .globe-tooltip{
+    position:absolute;
+    top:0; left:0;
+    z-index:4;
+    pointer-events:none;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:9px 12px;
+    min-width:150px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.3);
+    opacity:0;
+    transition:opacity .1s ease;
+  }
+  .globe-tooltip-name{
+    font-family:'Times New Roman', Times, serif;
+    font-size:14px;
+    font-weight:600;
+    color:var(--text-hi);
+    margin-bottom:6px;
+  }
+  .globe-tooltip-row{
+    display:flex;
+    justify-content:space-between;
+    gap:16px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--text-mid);
+    line-height:1.6;
+  }
+  .globe-tooltip-row span:first-child{color:var(--text-low); letter-spacing:0.05em;}
 
   .sphere-glow{fill:url(#glow);}
   .sphere-fill{fill:url(#ocean);}
@@ -410,7 +473,7 @@
   #side-panel{
     position:relative;
     flex:1;
-    background:linear-gradient(180deg, var(--bg-panel), var(--bg-deep));
+    background:var(--bg-deep);
     border:1px solid var(--line);
     border-radius:14px;
     display:flex;
@@ -518,7 +581,7 @@
   }
 
   .score-card{
-    background:rgba(79,217,199,0.05);
+    background:rgba(13,138,124,0.05);
     border:1px solid var(--line);
     border-radius:12px;
     padding:22px;
@@ -570,7 +633,7 @@
     white-space:nowrap;
   }
   .year-select{
-    background:rgba(17,24,39,0.04);
+    background:rgba(21,27,38,0.04);
     border:1px solid var(--line);
     border-radius:7px;
     color:var(--text-hi);
@@ -597,7 +660,7 @@
     gap:12px;
   }
   .metric{
-    background:rgba(17,24,39,0.02);
+    background:rgba(21,27,38,0.02);
     border:1px solid var(--line);
     border-radius:10px;
     padding:14px 16px;
@@ -641,14 +704,14 @@
     padding:14px 16px;
     border:1px solid var(--line);
     border-radius:10px;
-    background:rgba(79,217,199,0.05);
+    background:rgba(13,138,124,0.05);
     color:var(--cyan);
     font-size:13px;
     font-weight:500;
     text-decoration:none;
     transition:border-color .15s ease, background .15s ease;
   }
-  .panel-observatory-link:hover{border-color:var(--cyan); background:rgba(79,217,199,0.1);}
+  .panel-observatory-link:hover{border-color:var(--cyan); background:rgba(13,138,124,0.1);}
   .panel-observatory-link svg{width:16px; height:16px; flex-shrink:0;}
 
   ::-webkit-scrollbar{width:8px;}
@@ -674,7 +737,6 @@
     top:0;
     z-index:50;
     background:var(--bg-deep);
-    transition:padding .25s ease;
   }
   .navbar-brand{
     display:flex;
@@ -682,16 +744,12 @@
     gap:14px;
     text-decoration:none;
     color:var(--text-hi);
-    max-height:100px;
-    overflow:hidden;
-    transition:max-height .25s ease, opacity .2s ease, margin .25s ease;
   }
   .navbar-logo{
     width:76px;
     height:76px;
     object-fit:contain;
     flex-shrink:0;
-    transition:width .25s ease, height .25s ease;
   }
   .navbar-title{
     display:block;
@@ -711,30 +769,7 @@
     margin:14px 0 0 0;
     padding:0;
     width:100%;
-    transition:margin-top .25s ease;
   }
-
-  /* ---------- Navbar: compact/scrolled state ----------
-     Applied once the page scrolls away from the very top (see NavBar.jsx's
-     scroll listener). Hides the logo + site name and tightens the padding
-     so only the nav links, Donate button, and user info/log out remain -
-     reverts automatically once scrolled back to the top. */
-  .navbar--scrolled{
-    padding:6px 32px;
-  }
-  .navbar--scrolled .navbar-brand{
-    max-height:0;
-    opacity:0;
-    margin:0;
-    pointer-events:none;
-  }
-  .navbar--scrolled .navbar-links{
-    margin-top:6px;
-  }
-  @media (prefers-reduced-motion: reduce){
-    .navbar, .navbar-brand, .navbar-logo, .navbar-links{transition:none;}
-  }
-
   .navbar-link{
     display:inline-block;
     padding:8px 14px;
@@ -750,24 +785,25 @@
   }
   .navbar-link:hover{
     color:var(--text-hi);
-    background:rgba(79,217,199,0.08);
+    background:rgba(13,138,124,0.08);
   }
   .navbar-link.active{
-    color:var(--bg-deep);
+    color:#FFFFFF;
     background:var(--cyan);
   }
-  .navbar-link-donate{
-    border:1px solid var(--cyan);
-    color:var(--cyan);
-    font-weight:600;
-  }
-  .navbar-link-donate:hover{
-    color:var(--bg-deep);
+  .navbar-donate-btn{
     background:var(--cyan);
+    border-color:var(--cyan);
+    color:#FFFFFF;
+    font-weight:700;
   }
-  .navbar-link-donate.active{
-    color:var(--bg-deep);
-    background:var(--cyan);
+  .navbar-donate-btn:hover{
+    color:var(--text-hi);
+    opacity:0.9;
+  }
+  .navbar-donate-btn.active{
+    outline:2px solid var(--text-hi);
+    outline-offset:1px;
   }
   .navbar-toggle{
     display:none;
@@ -795,6 +831,9 @@
     align-items:center;
     gap:10px;
   }
+  .navbar-user-menu{
+    position:relative;
+  }
   .navbar-user{
     display:flex;
     align-items:center;
@@ -803,6 +842,101 @@
     font-size:13px;
     color:var(--text-mid);
     white-space:nowrap;
+    background:transparent;
+    border:1px solid transparent;
+    border-radius:8px;
+    padding:5px 8px 5px 5px;
+    cursor:pointer;
+  }
+  .navbar-user:hover{border-color:var(--line);}
+  .navbar-user-avatar{
+    width:26px; height:26px;
+    border-radius:50%;
+    background:var(--cyan);
+    color:#FFFFFF;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    font-weight:700;
+    flex-shrink:0;
+    overflow:hidden;
+  }
+  .navbar-user-avatar img{width:100%; height:100%; object-fit:cover;}
+  .navbar-user-name{max-width:140px; overflow:hidden; text-overflow:ellipsis;}
+  .navbar-user-caret{
+    font-size:10px;
+    color:var(--text-low);
+    transition:transform .15s ease;
+  }
+  .navbar-user-caret.open{transform:rotate(180deg);}
+
+  .navbar-user-dropdown{
+    position:absolute;
+    top:calc(100% + 8px);
+    right:0;
+    width:230px;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    box-shadow:0 12px 32px rgba(0,0,0,0.35);
+    padding:6px;
+    z-index:60;
+    animation:tabFadeIn .15s ease;
+  }
+  .navbar-user-dropdown-head{
+    padding:10px 12px 8px;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
+  .navbar-user-dropdown-name{
+    font-size:13px;
+    font-weight:600;
+    color:var(--text-hi);
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .navbar-user-dropdown-email{
+    font-size:11.5px;
+    color:var(--text-low);
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .navbar-user-dropdown-divider{
+    height:1px;
+    background:var(--line);
+    margin:6px 4px;
+  }
+  .navbar-user-dropdown-link{
+    display:block;
+    width:100%;
+    text-align:left;
+    padding:9px 12px;
+    border-radius:6px;
+    border:none;
+    background:transparent;
+    color:var(--text-mid);
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    text-decoration:none;
+    cursor:pointer;
+  }
+  .navbar-user-dropdown-link:hover{
+    background:rgba(13,138,124,0.08);
+    color:var(--text-hi);
+  }
+  .navbar-user-dropdown-logout{
+    color:#C0453A;
+  }
+  .navbar-user-dropdown-logout:hover{
+    background:rgba(232,131,122,0.1);
+    color:#C0453A;
+  }
+  @media (max-width: 640px){
+    .navbar-user-name{max-width:80px;}
+    .navbar-user-dropdown{right:-8px; width:210px;}
   }
   .role-badge{
     font-family:'JetBrains Mono',monospace;
@@ -815,7 +949,7 @@
     color:var(--text-low);
   }
   .role-badge.role-publisher{
-    color:var(--bg-deep);
+    color:#FFFFFF;
     background:var(--gold);
     border-color:var(--gold);
   }
@@ -840,10 +974,10 @@
   .navbar-auth-btn.primary{
     background:var(--cyan);
     border-color:var(--cyan);
-    color:var(--bg-deep);
+    color:#FFFFFF;
   }
   .navbar-auth-btn.primary:hover{
-    color:var(--bg-deep);
+    color:var(--text-hi);
     opacity:0.9;
   }
 
@@ -940,7 +1074,7 @@
     flex-direction:column;
     gap:14px;
     padding:26px 24px;
-    background:rgba(17,24,39,0.02);
+    background:rgba(21,27,38,0.02);
     border:1px solid var(--line);
     border-radius:14px;
     text-decoration:none;
@@ -948,7 +1082,7 @@
   }
   .home-explore-card:hover{
     border-color:var(--cyan);
-    background:rgba(79,217,199,0.05);
+    background:rgba(13,138,124,0.05);
     transform:translateY(-2px);
   }
   .home-explore-card:active{
@@ -1029,7 +1163,7 @@
   }
   .site-footer-link:hover{
     color:var(--text-hi);
-    background:rgba(79,217,199,0.08);
+    background:rgba(13,138,124,0.08);
   }
   .site-footer-bottom{
     padding-top:18px;

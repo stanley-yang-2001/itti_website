@@ -114,7 +114,7 @@
   color: var(--text-mid);
 }
 .settings-btn--danger {
-  color: #f2a9a9;
+  color: #C0392B;
   border-color: rgba(220, 90, 90, 0.4);
 }
 .settings-btn--danger:hover:not(:disabled) {
@@ -134,10 +134,10 @@
   font-size: 12px;
 }
 .settings-status--success {
-  color: #8fd4a3;
+  color: #1E8449;
 }
 .settings-status--error {
-  color: #f2a9a9;
+  color: #C0392B;
 }
 
 .settings-section--danger {

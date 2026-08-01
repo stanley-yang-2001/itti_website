@@ -8,8 +8,8 @@
   color:var(--text-hi);
   font-size:14px;
   line-height:1.7;
-  background:rgba(79,217,199,0.06);
-  border:1px solid rgba(79,217,199,0.25);
+  background:rgba(13,138,124,0.06);
+  border:1px solid rgba(13,138,124,0.25);
   border-radius:8px;
   padding:14px 16px;
   margin-bottom:14px;
@@ -34,7 +34,7 @@
   .docs-cards{grid-template-columns:1fr;}
 }
 .docs-card{
-  background:rgba(17,24,39,0.02);
+  background:rgba(21,27,38,0.02);
   border:1px solid var(--line);
   border-radius:8px;
   padding:14px 16px;
@@ -88,7 +88,7 @@
 }
 
 .about-section code{
-  background:rgba(17,24,39,0.04);
+  background:rgba(21,27,38,0.04);
   border:1px solid var(--line);
   border-radius:4px;
   padding:1px 5px;

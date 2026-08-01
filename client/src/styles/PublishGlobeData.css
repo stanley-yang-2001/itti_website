@@ -98,12 +98,12 @@
   border-radius: 6px;
 }
 .globe-upload-status--success {
-  color: #8fd4a3;
+  color: #1E8449;
   background: rgba(90, 200, 130, 0.1);
   border: 1px solid rgba(90, 200, 130, 0.3);
 }
 .globe-upload-status--error {
-  color: #f2a9a9;
+  color: #C0392B;
   background: rgba(220, 90, 90, 0.1);
   border: 1px solid rgba(220, 90, 90, 0.3);
 }

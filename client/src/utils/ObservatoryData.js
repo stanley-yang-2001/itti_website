@@ -67,12 +67,12 @@ export const INDICATOR_VARIABLES = {
  *  "GTBI exposure-type breakdown" stacked chart, the GTBI mirror of ETTI's
  *  EVS/TIE/PDL/ITS stacked-domain chart. */
 export const GTBI_EXPOSURE_TYPES = [
-  { key: "armed_conflict", label: "Armed Conflict", color: "#E86B6B" },
-  { key: "political_repression", label: "Political Repression", color: "#B98BD8" },
-  { key: "communal_violence", label: "Communal Violence", color: "#E0956B" },
-  { key: "terrorism", label: "Terrorism", color: "#4FD9C7" },
-  { key: "forced_displacement", label: "Forced Displacement", color: "#7FA8E0" },
-  { key: "disaster", label: "Disaster (Trauma-Linked)", color: "#E8B84B" },
+  { key: "armed_conflict", label: "Armed Conflict", color: "#D14545" },
+  { key: "political_repression", label: "Political Repression", color: "#8B5FBF" },
+  { key: "communal_violence", label: "Communal Violence", color: "#C06B3D" },
+  { key: "terrorism", label: "Terrorism", color: "#14A38F" },
+  { key: "forced_displacement", label: "Forced Displacement", color: "#4A78C2" },
+  { key: "disaster", label: "Disaster (Trauma-Linked)", color: "#C9932A" },
 ];
 
 export function variableLabel(indicator, key) {

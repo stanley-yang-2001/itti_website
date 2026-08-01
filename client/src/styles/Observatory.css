@@ -91,7 +91,7 @@
 .obs-btn-primary {
   background: var(--cyan);
   border-color: var(--cyan);
-  color: var(--bg-deep);
+  color: #FFFFFF;
   font-weight: 600;
 }
 .obs-btn-primary:hover:not(:disabled) {
@@ -99,7 +99,7 @@
 }
 .obs-btn-danger {
   border-color: #a34848;
-  color: #f2a9a9;
+  color: #C0392B;
 }
 .obs-btn-danger:hover:not(:disabled) {
   background: rgba(163, 72, 72, 0.15);
@@ -189,7 +189,7 @@
   font-size: 13px;
 }
 .obs-data-panel-remove:hover {
-  color: #f2a9a9;
+  color: #C0392B;
 }
 .obs-data-panel-body {
   display: block;
@@ -408,7 +408,7 @@
   padding: 8px;
 }
 .obs-modal-error {
-  color: #f2a9a9;
+  color: #C0392B;
   font-size: 12px;
   margin: 0 0 10px 0;
 }
@@ -483,6 +483,8 @@
 }
 .obs-chart-view {
   width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 .obs-chart-legend {
   display: flex;
@@ -576,7 +578,7 @@
   font-family: 'Space Grotesk', sans-serif;
 }
 .obs-view-tab.active {
-  color: var(--bg-deep);
+  color: #FFFFFF;
   background: var(--cyan);
   border-color: var(--cyan);
   font-weight: 600;

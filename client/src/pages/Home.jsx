@@ -6,7 +6,7 @@ import Reveal from '../components/Reveal.jsx';
 import SearchBar from '../components/SearchBar.jsx';
 import SidePanel from '../components/SidePanel.jsx';
 import { fetchWorldData, fetchCountry, fetchAllCountries } from '../api.js';
-import { computeCountryDataStatus } from '../utils/countryDataStatus.js';
+import { computeCountryDataStatus, computeCountryQuickStats } from '../utils/countryDataStatus.js';
 
 const EXPLORE_CARDS = [
   {
@@ -42,6 +42,7 @@ export default function Home() {
   const [country, setCountry] = useState(null); // { name, iso }
   const [metrics, setMetrics] = useState(null);
   const [countryStatus, setCountryStatus] = useState({}); // iso -> 'etti' | 'gtbi' | 'both'
+  const [countryQuickStats, setCountryQuickStats] = useState({}); // iso -> { name, etti, gtbi } for the hover tooltip
   const globeRef = useRef(null);
 
   useEffect(() => {
@@ -51,8 +52,14 @@ export default function Home() {
       setFeatures(parsed.features);
     });
     fetchAllCountries()
-      .then((countries) => setCountryStatus(computeCountryDataStatus(countries)))
-      .catch(() => setCountryStatus({})); // globe still renders fine with default colors
+      .then((countries) => {
+        setCountryStatus(computeCountryDataStatus(countries));
+        setCountryQuickStats(computeCountryQuickStats(countries));
+      })
+      .catch(() => {
+        setCountryStatus({}); // globe still renders fine with default colors
+        setCountryQuickStats({}); // hover tooltip just won't show ETTI/GTBI lines
+      });
   }, []);
 
   function openCountry(name, iso) {
@@ -101,6 +108,7 @@ export default function Home() {
                     worldData={worldData}
                     onCountryClick={handleCountryClick}
                     countryStatus={countryStatus}
+                    countryQuickStats={countryQuickStats}
                   />
                 )}
                 <div className="globe-legend">

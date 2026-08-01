@@ -38,22 +38,24 @@
   font-size: 0.9rem;
 }
 .country-profiles-error {
-  color: #b3261e;
+  color: #C0392B;
   font-size: 0.9rem;
 }
 
 /* ---------- Letter jump nav ----------
-   Every country shows at once, so this is pure jump-to-section
-   navigation - a slim row of pill chips right above the list. It
-   scrolls with the page like everything else (no position: sticky)
-   rather than staying pinned while the country list scrolls
-   underneath it. */
+   Was a 2-row grid of filter buttons; now every country shows at once,
+   so this is pure jump-to-section navigation - a slim sticky bar of
+   pill chips instead of a big fixed grid. */
 .country-letter-jump {
+  position: sticky;
+  top: var(--navbar-height, 0px);
+  z-index: 5;
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
   padding: 10px 0;
   margin-bottom: 20px;
+  background: var(--bg-deep);
   border-bottom: 1px solid var(--line);
 }
 
@@ -84,10 +86,7 @@
 
 /* ---------- Letter sections ---------- */
 .country-letter-section {
-  /* Only the navbar itself is sticky (the letter-jump bar above scrolls
-     normally), so a jump only needs to clear the navbar's own height
-     plus a little breathing room. */
-  scroll-margin-top: calc(var(--navbar-height, 0px) + 16px);
+  scroll-margin-top: calc(var(--navbar-height, 0px) + 56px);
   margin-bottom: 28px;
 }
 .country-letter-section-heading {
@@ -129,14 +128,14 @@
   cursor: pointer;
 }
 .country-profile-row:hover{
-  background: rgba(0,0,0,0.03);
+  background: rgba(21,27,38,0.03);
 }
 
 .country-flag{
   flex-shrink: 0;
   border-radius: 2px;
   object-fit: cover;
-  box-shadow: 0 0 0 1px var(--line);
+  box-shadow: 0 0 0 1px rgba(21,27,38,0.08);
 }
 .country-flag--fallback{
   display: inline-flex;
@@ -157,6 +156,7 @@
 }
 .country-availability-dot--available{
   background: var(--cyan);
+  box-shadow: 0 0 6px rgba(13,138,124,0.5);
 }
 .country-availability-dot--unavailable{
   background: var(--text-low);
@@ -179,47 +179,6 @@
 }
 
 /* ---------- Inline overview (available countries) ---------- */
-
-.country-overview-section{
-  margin-bottom: 12px;
-}
-.country-overview-paragraph{
-  font-size: 0.88rem;
-  color: var(--text-mid);
-  line-height: 1.6;
-  margin: 0 0 10px 0;
-}
-.country-overview-reference{
-  font-size: 0.78rem;
-  color: var(--text-low);
-  line-height: 1.5;
-  margin: 0 0 6px 0;
-}
-.country-overview-reference strong{
-  color: var(--text-mid);
-}
-.country-overview-subheading{
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--cyan);
-  margin: 0 0 8px 0;
-}
-.country-overview-dashboard-note{
-  padding-top: 10px;
-  border-top: 1px dashed var(--line);
-}
-.country-overview-references{
-  font-size: 0.78rem;
-  color: var(--text-low);
-  margin-top: 6px;
-}
-.country-overview-references strong{
-  display: block;
-  color: var(--text-mid);
-  margin-bottom: 4px;
-}
-
 .country-overview-stats{
   display: flex;
   flex-wrap: wrap;

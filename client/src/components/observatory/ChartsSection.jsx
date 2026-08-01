@@ -12,7 +12,7 @@ import BoxPlotView, { computeBoxStats } from "./BoxPlotView.jsx";
 
 let chartIdSeq = 1;
 
-const DOMAIN_COLORS = { evs: "#4FD9C7", tie: "#E8B84B", pdl: "#E86B6B", its: "#B98BD8" };
+const DOMAIN_COLORS = { evs: "#14A38F", tie: "#C9932A", pdl: "#D14545", its: "#8B5FBF" };
 
 function getPanelValue(panel, countries, variableKey) {
   const record = getYearRecord(countries, panel.indicator, panel.countryCode, panel.year);
@@ -511,7 +511,26 @@ function FlatLegend({ items }) {
   );
 }
 
-const TOOLTIP_STYLE = { background: "#0E1626", border: "1px solid #1D2A3E", color: "#EAF1F5" };
+const TOOLTIP_STYLE = { background: "#FFFFFF", border: "1px solid #E1E6EE", color: "#151B26", boxShadow: "0 6px 16px rgba(20,30,45,0.12)" };
+
+/** Keeps Y-axis labels short regardless of how large the underlying
+ *  numbers get (e.g. YLL/YLD can run into the tens of thousands) -
+ *  without this, wide labels either get clipped by the axis's default
+ *  width or push the plotted values off the edge of the card. */
+function formatAxisTick(value) {
+  if (typeof value !== "number" || !Number.isFinite(value)) return value;
+  return new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(value);
+}
+
+/** Bar/line-style charts can grow wider than their card once there are
+ *  enough categories (years, countries, etc.) for the x-axis labels to
+ *  get cramped. Rather than silently squeezing everything into a fixed
+ *  width, give the chart a minimum width based on how many categories
+ *  it has and let .obs-chart-view's overflow-x:auto (see Observatory.css)
+ *  turn it into a horizontal scroll instead. */
+function chartMinWidth(pointCount) {
+  return Math.max(320, (pointCount || 0) * 64);
+}
 
 export function ChartView({ chart, height = 280 }) {
   const { chartType, data, seriesKeys, xKey, variableLabel } = chart;
@@ -523,10 +542,10 @@ export function ChartView({ chart, height = 280 }) {
   if (chartType === "scatter") {
     return (
       <ResponsiveContainer width="100%" height={height}>
-        <ScatterChart margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
-          <CartesianGrid stroke="#1D2A3E" strokeDasharray="3 3" />
-          <XAxis type="number" dataKey="x" name={chart.xLabel} stroke="#9FB0C3" tick={{ fontSize: 11 }} />
-          <YAxis type="number" dataKey="y" name={chart.yLabel} stroke="#9FB0C3" tick={{ fontSize: 11 }} />
+        <ScatterChart margin={{ top: 10, right: 20, left: 8, bottom: 10 }}>
+          <CartesianGrid stroke="#E1E6EE" strokeDasharray="3 3" />
+          <XAxis type="number" dataKey="x" name={chart.xLabel} stroke="#51607A" tick={{ fontSize: 11 }} tickFormatter={formatAxisTick} />
+          <YAxis type="number" dataKey="y" name={chart.yLabel} stroke="#51607A" tick={{ fontSize: 11 }} tickFormatter={formatAxisTick} width={56} />
           <ZAxis range={[80, 80]} />
           <Tooltip cursor={{ strokeDasharray: "3 3" }} contentStyle={TOOLTIP_STYLE} formatter={(v) => v} />
           <Scatter data={data}>
@@ -539,12 +558,12 @@ export function ChartView({ chart, height = 280 }) {
 
   if (chartType === "stackedDomain") {
     return (
-      <>
+      <div style={{ minWidth: chartMinWidth(data.length) }}>
         <ResponsiveContainer width="100%" height={height}>
-          <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 30 }}>
-            <CartesianGrid stroke="#1D2A3E" strokeDasharray="3 3" />
-            <XAxis dataKey="name" stroke="#9FB0C3" angle={-20} textAnchor="end" height={60} interval={0} tick={{ fontSize: 11 }} />
-            <YAxis stroke="#9FB0C3" />
+          <BarChart data={data} margin={{ top: 10, right: 20, left: 8, bottom: 30 }}>
+            <CartesianGrid stroke="#E1E6EE" strokeDasharray="3 3" />
+            <XAxis dataKey="name" stroke="#51607A" angle={-20} textAnchor="end" height={60} interval={0} tick={{ fontSize: 11 }} />
+            <YAxis stroke="#51607A" tickFormatter={formatAxisTick} width={56} />
             <Tooltip contentStyle={TOOLTIP_STYLE} />
             <Legend />
             <Bar dataKey="evs" name="EVS" stackId="etti" fill={DOMAIN_COLORS.evs} />
@@ -553,18 +572,18 @@ export function ChartView({ chart, height = 280 }) {
             <Bar dataKey="its" name="ITS" stackId="etti" fill={DOMAIN_COLORS.its} radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
-      </>
+      </div>
     );
   }
 
   if (chartType === "stackedExposure") {
     return (
-      <>
+      <div style={{ minWidth: chartMinWidth(data.length) }}>
         <ResponsiveContainer width="100%" height={height}>
-          <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 30 }}>
-            <CartesianGrid stroke="#1D2A3E" strokeDasharray="3 3" />
-            <XAxis dataKey="name" stroke="#9FB0C3" angle={-20} textAnchor="end" height={60} interval={0} tick={{ fontSize: 11 }} />
-            <YAxis stroke="#9FB0C3" />
+          <BarChart data={data} margin={{ top: 10, right: 20, left: 8, bottom: 30 }}>
+            <CartesianGrid stroke="#E1E6EE" strokeDasharray="3 3" />
+            <XAxis dataKey="name" stroke="#51607A" angle={-20} textAnchor="end" height={60} interval={0} tick={{ fontSize: 11 }} />
+            <YAxis stroke="#51607A" tickFormatter={formatAxisTick} width={56} />
             <Tooltip contentStyle={TOOLTIP_STYLE} />
             <Legend />
             {GTBI_EXPOSURE_TYPES.map((t, i) => (
@@ -579,7 +598,7 @@ export function ChartView({ chart, height = 280 }) {
             ))}
           </BarChart>
         </ResponsiveContainer>
-      </>
+      </div>
     );
   }
 
@@ -605,9 +624,9 @@ export function ChartView({ chart, height = 280 }) {
     return (
       <ResponsiveContainer width="100%" height={height + 20}>
         <RadarChart data={data} outerRadius={Math.min(100, height / 2.6)}>
-          <PolarGrid stroke="#1D2A3E" />
-          <PolarAngleAxis dataKey={xKey} tick={{ fill: "#9FB0C3", fontSize: 11 }} />
-          <PolarRadiusAxis stroke="#1D2A3E" tick={{ fill: "#9FB0C3", fontSize: 10 }} />
+          <PolarGrid stroke="#E1E6EE" />
+          <PolarAngleAxis dataKey={xKey} tick={{ fill: "#51607A", fontSize: 11 }} />
+          <PolarRadiusAxis stroke="#E1E6EE" tick={{ fill: "#51607A", fontSize: 10 }} />
           <Tooltip contentStyle={TOOLTIP_STYLE} />
           {seriesKeys.length > 1 && <Legend />}
           {seriesKeys.map((s) => (
@@ -620,37 +639,41 @@ export function ChartView({ chart, height = 280 }) {
 
   if (chartType === "line") {
     return (
-      <ResponsiveContainer width="100%" height={height}>
-        <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 30 }}>
-          <CartesianGrid stroke="#1D2A3E" strokeDasharray="3 3" />
-          <XAxis dataKey={xKey} stroke="#9FB0C3" angle={-20} textAnchor="end" height={60} interval={0} tick={{ fontSize: 11 }} />
-          <YAxis stroke="#9FB0C3" />
-          <Tooltip contentStyle={TOOLTIP_STYLE} />
-          {seriesKeys.length > 1 && <Legend />}
-          {seriesKeys.map((s) => (
-            <Line key={s.key} type="monotone" dataKey={s.key} name={s.name} stroke={s.color} strokeWidth={2} dot={{ r: 3 }} connectNulls />
-          ))}
-        </LineChart>
-      </ResponsiveContainer>
+      <div style={{ minWidth: chartMinWidth(data.length) }}>
+        <ResponsiveContainer width="100%" height={height}>
+          <LineChart data={data} margin={{ top: 10, right: 20, left: 8, bottom: 30 }}>
+            <CartesianGrid stroke="#E1E6EE" strokeDasharray="3 3" />
+            <XAxis dataKey={xKey} stroke="#51607A" angle={-20} textAnchor="end" height={60} interval={0} tick={{ fontSize: 11 }} />
+            <YAxis stroke="#51607A" tickFormatter={formatAxisTick} width={56} domain={["auto", "auto"]} />
+            <Tooltip contentStyle={TOOLTIP_STYLE} />
+            {seriesKeys.length > 1 && <Legend />}
+            {seriesKeys.map((s) => (
+              <Line key={s.key} type="monotone" dataKey={s.key} name={s.name} stroke={s.color} strokeWidth={2} dot={{ r: 3 }} connectNulls />
+            ))}
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     );
   }
 
   // bar (default)
   return (
     <>
-      <ResponsiveContainer width="100%" height={height}>
-        <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 30 }}>
-          <CartesianGrid stroke="#1D2A3E" strokeDasharray="3 3" />
-          <XAxis dataKey={xKey} stroke="#9FB0C3" angle={-20} textAnchor="end" height={60} interval={0} tick={{ fontSize: 11 }} />
-          <YAxis stroke="#9FB0C3" />
-          <Tooltip contentStyle={TOOLTIP_STYLE} />
-          <Bar dataKey="value" name={variableLabel} radius={[4, 4, 0, 0]}>
-            {data.map((entry, i) => (
-              <Cell key={i} fill={entry.color} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+      <div style={{ minWidth: chartMinWidth(data.length) }}>
+        <ResponsiveContainer width="100%" height={height}>
+          <BarChart data={data} margin={{ top: 10, right: 20, left: 8, bottom: 30 }}>
+            <CartesianGrid stroke="#E1E6EE" strokeDasharray="3 3" />
+            <XAxis dataKey={xKey} stroke="#51607A" angle={-20} textAnchor="end" height={60} interval={0} tick={{ fontSize: 11 }} />
+            <YAxis stroke="#51607A" tickFormatter={formatAxisTick} width={56} />
+            <Tooltip contentStyle={TOOLTIP_STYLE} />
+            <Bar dataKey="value" name={variableLabel} radius={[4, 4, 0, 0]}>
+              {data.map((entry, i) => (
+                <Cell key={i} fill={entry.color} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
       <FlatLegend items={seriesKeys} />
     </>
   );

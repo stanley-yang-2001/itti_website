@@ -12,7 +12,7 @@
   gap:10px;
   padding:56px 24px 40px;
   border-bottom:1px solid var(--line);
-  background:radial-gradient(ellipse at 50% 0%, rgba(79,217,199,0.07), transparent 60%);
+  background:radial-gradient(ellipse at 50% 0%, rgba(13,138,124,0.07), transparent 60%);
 }
 .donate-hero-eyebrow{
   font-size:11px;
@@ -89,7 +89,7 @@
   color:var(--cyan);
 }
 .donate-amount-chip.active{
-  background:rgba(79,217,199,0.12);
+  background:rgba(13,138,124,0.12);
   border-color:var(--cyan);
   color:var(--cyan);
   animation:chipSelect .18s ease;
@@ -169,7 +169,7 @@
   border:none;
   border-radius:8px;
   background:var(--cyan);
-  color:#06231F;
+  color:#FFFFFF;
   font-size:15px;
   font-weight:700;
   cursor:pointer;
@@ -189,7 +189,7 @@
 }
 
 .donate-notice{
-  background:rgba(79,217,199,0.08);
+  background:rgba(13,138,124,0.08);
   border:1px solid var(--cyan);
   color:var(--text-hi);
   border-radius:8px;
@@ -199,8 +199,8 @@
 }
 .donate-error{
   background:rgba(216,68,68,0.1);
-  border:1px solid #D84444;
-  color:#F3B4B4;
+  border:1px solid #B83232;
+  color:#C0392B;
   border-radius:8px;
   padding:10px 14px;
   font-size:13px;

@@ -63,6 +63,6 @@
   cursor: pointer;
 }
 .publish-doc-list button:hover {
-  color: #f2a9a9;
+  color: #C0392B;
   border-color: rgba(220, 90, 90, 0.4);
 }

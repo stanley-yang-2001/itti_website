@@ -23,9 +23,11 @@ function dataClassFor(feature, countryStatus) {
   return '';
 }
 
-const Globe = forwardRef(function Globe({ worldData, onCountryClick, countryStatus }, ref) {
+const Globe = forwardRef(function Globe({ worldData, onCountryClick, countryStatus, countryQuickStats }, ref) {
   const containerRef = useRef(null);
   const d3State = useRef({}); // stash mutable d3 objects across renders
+  const quickStatsRef = useRef(countryQuickStats);
+  quickStatsRef.current = countryQuickStats; // always read the latest without re-running the main effect
 
   useEffect(() => {
     if (!worldData || !containerRef.current) return;
@@ -88,10 +90,27 @@ const Globe = forwardRef(function Globe({ worldData, onCountryClick, countryStat
 
     const countriesLayer = g.append('g');
 
+    const tooltip = d3
+      .select(container)
+      .append('div')
+      .attr('class', 'globe-tooltip')
+      .style('opacity', 0);
+
     const countries = topojson.feature(worldData, worldData.objects.countries);
     const allFeatures = countries.features;
 
     let selectedNode = null;
+
+    function tooltipHtml(feature) {
+      const stats = quickStatsRef.current?.[isoGuess(feature)];
+      const name = feature.properties.name;
+      const fmt = (entry) => (entry ? `${entry.score !== null ? entry.score.toFixed(2) : 'Data Pending'} (${entry.year})` : '—');
+      return `
+        <div class="globe-tooltip-name">${name}</div>
+        <div class="globe-tooltip-row"><span>ETTI</span><span>${fmt(stats?.etti)}</span></div>
+        <div class="globe-tooltip-row"><span>GTBI</span><span>${fmt(stats?.gtbi)}</span></div>
+      `;
+    }
 
     const land = countriesLayer
       .selectAll('path.land')
@@ -99,6 +118,25 @@ const Globe = forwardRef(function Globe({ worldData, onCountryClick, countryStat
       .join('path')
       .attr('class', (d) => `land ${dataClassFor(d, countryStatus)}`.trim())
       .attr('d', path)
+      .on('pointerenter', function (event, d) {
+        tooltip.html(tooltipHtml(d)).style('opacity', 1);
+      })
+      .on('pointermove', function (event) {
+        const [x, y] = d3.pointer(event, container);
+        const tooltipNode = tooltip.node();
+        const containerRect = container.getBoundingClientRect();
+        const tw = tooltipNode.offsetWidth;
+        const th = tooltipNode.offsetHeight;
+        // Keep it beside the cursor but never past the container's edge.
+        let left = x + 16;
+        let top = y - th / 2;
+        if (left + tw > containerRect.width) left = x - tw - 16;
+        top = Math.max(6, Math.min(top, containerRect.height - th - 6));
+        tooltip.style('left', `${left}px`).style('top', `${top}px`);
+      })
+      .on('pointerleave', function () {
+        tooltip.style('opacity', 0);
+      })
       .on('click', function (event, d) {
         event.stopPropagation();
         selectCountry(d, this);
@@ -114,7 +152,11 @@ const Globe = forwardRef(function Globe({ worldData, onCountryClick, countryStat
     }
 
     const sensitivity = 0.8;
-    const drag = d3.drag().on('drag', function (event) {
+    const drag = d3.drag()
+      .on('start', function () {
+        tooltip.style('opacity', 0);
+      })
+      .on('drag', function (event) {
       const rotate = projection.rotate();
       const k = sensitivity / (projection.scale() / 100);
       const nextLongitude = rotate[0] + event.dx * k;
