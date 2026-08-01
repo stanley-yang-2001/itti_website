@@ -61,6 +61,38 @@
   font-size: 0.78rem;
 }
 
+.signup-field-hint {
+  font-size: 0.78rem;
+}
+.signup-field-hint.match {
+  color: #1B7A3D;
+}
+.signup-field-hint.mismatch {
+  color: #A82A20;
+}
+
+.signup-checkbox-field {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--text-mid);
+  line-height: 1.4;
+}
+.signup-checkbox-field input[type="checkbox"] {
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+}
+.signup-privacy-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--text-hi);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .signup-submit-button {
   padding: 0.7rem 1rem;
   border: none;

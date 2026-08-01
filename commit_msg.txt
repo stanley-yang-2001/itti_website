@@ -1,37 +1,54 @@
-Restore Country Profiles narrative-data feature (regressed in 86e7c43)
+Reconcile modal/admin work with upstream, fix broken migration chain
 
-The "reconcile bright-theme/navbar/About fixes" commit merged from a
-stale branch and silently reverted this feature along with the theme
-change. Restoring it on top of the new bright theme rather than
-undoing the theme work:
+Merged my prior work (Stripe enrollment modal, privacy policy modal +
+checkbox, admin user management) onto a substantially reworked upstream
+baseline (refined color palette, --globe-bg separating the globe
+visualization from page chrome, new shared .btn utility classes, a new
+country-profiles narrative content feature, an AdminDonations page).
+Adopted upstream's version of each shared file as the new baseline,
+then re-layered my specific additions on top rather than overwriting:
 
-- server/data/country_profiles.json was committed as an empty (0-byte)
-  file - restored the real 164-country dataset.
-- GET /api/country-profiles and GET /api/country-profiles/<code> had
-  been dropped from app.py entirely - re-added, matching the existing
-  /api/countries route pattern.
-- server/data_scripts/country_profiles_extract.py and its two source
-  .docx files were never committed in the first place - added now.
-- CountryProfiles.jsx had lost the fetch-and-merge logic that pulls in
-  narrative profiles alongside GTBI/ETTI dashboard data, and had
-  picked up a stray "Download Profile" link pointing at .docx files
-  that don't exist anywhere on the site (a leftover from the Option-1
-  approach we didn't take) - removed the dead link, restored the
-  narrative overview/dashboard-note rendering.
-- CountryProfiles.css and Unavailable.css had reverted to old
-  versions whose class names no longer matched their current JSX
-  (both pages would render essentially unstyled) - rewritten to match
-  the actual markup, now using the new bright-theme CSS variables
-  (--bg-deep, --text-hi/mid/low, --cyan, --line) instead of the
-  hardcoded dark-theme hex values they previously had, so they render
-  correctly under the site's current color scheme.
+- App.css: restored .navbar--scrolled (see below) and the .app-modal-*
+  generic modal system, both missing from the upstream rework.
+- Certifications.css: restored .cert-refund-note.
+- Settings.css: restored .manage-users-* (admin panel styles).
+- SignUp.css: restored .signup-checkbox-field/.signup-field-hint/
+  .signup-privacy-link, updated to the new var()-based color
+  conventions upstream introduced for this file.
+- Login.css: restored .login-field-hint (used by ResetPassword.jsx,
+  which upstream hadn't touched but whose CSS lives in this file).
+- app.py: kept the new GET /api/country-profiles routes, re-added the
+  admin user-management routes and the get_all_users/VALID_ROLES
+  import they need.
 
-Verified: clean npm run build, plus a live backend check confirming
-/api/country-profiles returns all 164 profiles and /api/countries
-still returns all 249 countries.
+Bug found and fixed: NavBar.jsx's scroll-shrink behavior was silently
+broken on the deployed site - it still applies the "navbar--scrolled"
+class on scroll, but the CSS rules for that class had been dropped
+during the upstream palette rework. Restored them.
 
-Note: this same stale-branch merge also reverted the donations flow
-(embedded Payment Element + admin view, back to the old Checkout
-redirect) and left Reports.css with the same classname-mismatch
-pattern fixed here for Country Profiles. Neither is addressed in this
-commit - out of scope for this pass, flagged separately.
+Migration chain fork found and fixed: a1f9c3d7e5b2 (add_favorite_reports)
+and c8e4f1a02b3d (index donations.stripe_payment_intent_id) were both
+independently chained onto the same parent (9a7c1e2b6f4d, add_donations),
+producing two divergent heads - `alembic upgrade head` would fail
+outright with "Multiple head revisions are present" for anyone running
+it. Added f3a29d6c81e0, a standard Alembic merge migration (no schema
+changes, just reconciles the graph into one linear head).
+
+Also removed: 6ff385893016_add_category_to_reports.py, an empty file
+with no `revision` variable at all. Confirmed nothing in the codebase
+actually implements a reports "category" column, and a migration
+Alembic can't parse could never have been applied to any database, so
+it was pure dead weight - and was actively blocking Alembic from
+loading the migration directory at all, a bigger problem than
+previously flagged.
+
+Verified: `vite build` clean against the fully merged frontend; fresh
+`alembic upgrade head` against a clean SQLite database applies the
+entire chain without error and produces all 11 expected tables
+(including enrollments); backend route tests confirm both the restored
+admin routes and the new country-profiles routes work together.
+
+Not done here: AdminDonations.jsx exists but isn't wired into App.jsx's
+routing - same "built but not connected" pattern seen elsewhere in this
+repo (PublisherDashboard.jsx, ReportUploadForm.jsx were the same before
+being routed in earlier work). Flagged, not fixed, pending direction.

@@ -47,6 +47,16 @@
   color: var(--text-mid);
 }
 
+.login-field-hint {
+  font-size: 0.78rem;
+}
+.login-field-hint.match {
+  color: #1B7A3D;
+}
+.login-field-hint.mismatch {
+  color: #A82A20;
+}
+
 .login-field input {
   padding: 0.6rem 0.7rem;
   border: 1px solid var(--line);

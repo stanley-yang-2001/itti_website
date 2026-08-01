@@ -412,6 +412,14 @@
   border-top:1px solid var(--line);
 }
 
+.cert-refund-note{
+  font-size:11px;
+  color:var(--text-low);
+  line-height:1.5;
+  margin:10px 0 0 0;
+  text-align:center;
+}
+
 /* ---------- Comparison table ---------- */
 .certs-compare{
   max-width:1200px;

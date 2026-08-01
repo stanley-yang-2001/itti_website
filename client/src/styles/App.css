@@ -737,6 +737,7 @@
     top:0;
     z-index:50;
     background:var(--bg-deep);
+    transition:padding .25s ease;
   }
   .navbar-brand{
     display:flex;
@@ -744,12 +745,16 @@
     gap:14px;
     text-decoration:none;
     color:var(--text-hi);
+    max-height:100px;
+    overflow:hidden;
+    transition:max-height .25s ease, opacity .2s ease, margin .25s ease;
   }
   .navbar-logo{
     width:76px;
     height:76px;
     object-fit:contain;
     flex-shrink:0;
+    transition:width .25s ease, height .25s ease;
   }
   .navbar-title{
     display:block;
@@ -769,6 +774,28 @@
     margin:14px 0 0 0;
     padding:0;
     width:100%;
+    transition:margin-top .25s ease;
+  }
+
+  /* ---------- Navbar: compact/scrolled state ----------
+     Applied once the page scrolls away from the very top (see NavBar.jsx's
+     scroll listener). Hides the logo + site name and tightens the padding
+     so only the nav links, Donate button, and user info/log out remain -
+     reverts automatically once scrolled back to the top. */
+  .navbar--scrolled{
+    padding:6px 32px;
+  }
+  .navbar--scrolled .navbar-brand{
+    max-height:0;
+    opacity:0;
+    margin:0;
+    pointer-events:none;
+  }
+  .navbar--scrolled .navbar-links{
+    margin-top:6px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .navbar, .navbar-brand, .navbar-logo, .navbar-links{transition:none;}
   }
   .navbar-link{
     display:inline-block;
@@ -1188,3 +1215,102 @@
     .site-footer{padding:28px 20px 22px;}
     .site-footer-top{flex-direction:column; align-items:flex-start;}
   }
+/* ---------------------------------------------------------------------
+   Generic modal system - shared by the privacy policy popup (sign-up),
+   the certification enrollment confirmation (refund policy + proceed to
+   checkout), and the admin "confirm role changes" panel. One consistent
+   look/feel instead of three one-off implementations.
+   --------------------------------------------------------------------- */
+.app-modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,32,0.55);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:200;
+  padding:24px;
+}
+.app-modal{
+  background:var(--bg-panel);
+  border:1px solid var(--line);
+  border-radius:12px;
+  width:100%;
+  max-width:520px;
+  max-height:85vh;
+  display:flex;
+  flex-direction:column;
+  box-shadow:0 24px 60px rgba(15,23,32,0.25);
+}
+.app-modal--wide{max-width:720px;}
+.app-modal-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  padding:22px 24px 0 24px;
+}
+.app-modal-header h3{
+  margin:0;
+  color:var(--text-hi);
+  font-size:19px;
+}
+.app-modal-close{
+  background:none;
+  border:none;
+  color:var(--text-low);
+  font-size:22px;
+  line-height:1;
+  cursor:pointer;
+  padding:2px 6px;
+  border-radius:6px;
+  transition:color .15s ease, background .15s ease;
+}
+.app-modal-close:hover{color:var(--text-hi); background:rgba(21,27,38,0.06);}
+.app-modal-body{
+  padding:14px 24px 4px 24px;
+  overflow-y:auto;
+  color:var(--text-mid);
+  font-size:14px;
+  line-height:1.65;
+}
+.app-modal-body p{margin:0 0 12px 0;}
+.app-modal-body ul{margin:0 0 12px 0; padding-left:20px;}
+.app-modal-body li{margin-bottom:4px;}
+.app-modal-body h4{
+  color:var(--text-hi);
+  font-size:14px;
+  margin:18px 0 6px 0;
+}
+.app-modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  padding:16px 24px 22px 24px;
+  border-top:1px solid var(--line);
+  margin-top:12px;
+}
+.app-modal-btn{
+  padding:10px 20px;
+  border-radius:8px;
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  border:1px solid var(--line);
+  background:var(--bg-deep);
+  color:var(--text-hi);
+  transition:opacity .15s ease, background .15s ease;
+}
+.app-modal-btn:hover{background:rgba(21,27,38,0.05);}
+.app-modal-btn--primary{
+  background:var(--cyan);
+  border-color:var(--cyan);
+  color:#fff;
+}
+.app-modal-btn--primary:hover{opacity:0.9;}
+.app-modal-btn:disabled{opacity:0.55; cursor:not-allowed;}
+.app-modal-error{
+  color:#A82A20;
+  font-size:13px;
+  margin:0 24px 12px 24px;
+}

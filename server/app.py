@@ -58,7 +58,7 @@ from models.database import Base, DATABASE_URL, engine
 from models.user import (
     create_user, get_user, get_user_by_google_sub, get_user_by_email,
     update_user, delete_user, restore_user, STATUS_HIDDEN,
-    ROLE_ADMIN, ROLE_PUBLISHER,
+    get_all_users, VALID_ROLES, ROLE_ADMIN, ROLE_PUBLISHER,
 )
 from models.document import (
     create_document, get_documents_by_user, get_document, delete_document,
@@ -599,6 +599,65 @@ def delete_account():
     create_user_event(user_id=user.id, document_id=None, action=CRUDAction.DELETE)
     session.pop("user_id", None)
     return jsonify({"status": "account deleted"})
+
+
+# ---------------------------------------------------------------------------
+# Admin: user access-level management. Backs the "Manage Users" panel in
+# Settings (admin-only). Role changes were previously CLI-only on purpose
+# (see promote_user.py's docstring) - this adds an in-app path for the
+# same action, still gated to admin and still logged as a UserEvent per
+# change, same accountability the CLI script already had.
+# ---------------------------------------------------------------------------
+
+@app.get("/api/admin/users")
+@roles_required("admin")
+def list_all_users():
+    """All visible (non-deleted) user accounts, for the admin role-management panel."""
+    users = get_all_users()
+    return jsonify([u.to_public_dict() for u in users])
+
+
+@app.post("/api/admin/users/roles")
+@roles_required("admin")
+def update_user_roles():
+    """
+    Body: { "changes": [ { "user_id": 12, "role": "publisher" }, ... ] }
+    Applies a batch of role changes in one request - the admin panel
+    stages multiple dropdown edits client-side and sends them all at
+    once on "Confirm", rather than one request per row.
+
+    Validates every change BEFORE applying any of them, so a single bad
+    entry (unknown user, invalid role) can't leave the batch half-applied.
+    """
+    body = request.get_json(silent=True) or {}
+    changes = body.get("changes")
+    if not isinstance(changes, list) or not changes:
+        abort(400, description="'changes' must be a non-empty list of {user_id, role}")
+
+    admin_user = get_current_user()
+    resolved = []  # [(target_user, new_role), ...]
+    for change in changes:
+        user_id = change.get("user_id")
+        role = (change.get("role") or "").strip().lower()
+        if not isinstance(user_id, int):
+            abort(400, description=f"Invalid user_id: {change.get('user_id')!r}")
+        if role not in VALID_ROLES:
+            abort(400, description=f"'{role}' is not a valid role. Choose from: {', '.join(sorted(VALID_ROLES))}")
+        target = get_user(user_id)
+        if target is None:
+            abort(404, description=f"No user found with id {user_id}")
+        resolved.append((target, role))
+
+    updated = []
+    for target, role in resolved:
+        if target.role != role:
+            old_role = target.role
+            update_user(target.id, role=role)
+            create_user_event(user_id=admin_user.id, document_id=None, action=CRUDAction.UPDATE)
+            logger.info("admin_user_id=%s changed user_id=%s role: %s -> %s", admin_user.id, target.id, old_role, role)
+        updated.append(get_user(target.id))
+
+    return jsonify([u.to_public_dict() for u in updated])
 
 
 # ---------------------------------------------------------------------------
