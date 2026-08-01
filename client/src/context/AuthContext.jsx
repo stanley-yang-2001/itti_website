@@ -70,6 +70,40 @@ export function AuthProvider({ children }) {
     setUser(null);
   }
 
+  /** fields: { name?, current_password?, new_password? } - each is independent, see server/app.py. */
+  async function updateAccount(fields) {
+    const data = await postJson('/api/auth/update-profile', fields);
+    setUser(data);
+    return data;
+  }
+
+  /** file: a File/Blob from an <input type="file">. */
+  async function updatePicture(file) {
+    const formData = new FormData();
+    formData.append('picture', file);
+    const res = await fetch('/api/auth/update-picture', {
+      method: 'POST',
+      credentials: 'include',
+      body: formData, // no Content-Type header - the browser sets the multipart boundary itself
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(data.description || data.error || 'Failed to update picture');
+    }
+    setUser(data);
+    return data;
+  }
+
+  async function deleteAccount() {
+    const res = await fetch('/api/auth/me', { method: 'DELETE', credentials: 'include' });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(data.description || data.error || 'Failed to delete account');
+    }
+    setUser(null);
+    return data;
+  }
+
   const value = {
     user,
     loading,
@@ -86,6 +120,9 @@ export function AuthProvider({ children }) {
     signup,
     requestPasswordReset,
     resetPassword,
+    updateAccount,
+    updatePicture,
+    deleteAccount,
     logout
   };
 

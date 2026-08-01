@@ -38,6 +38,13 @@ class User(Base):
     password_hash = Column(String, nullable=True)
     name = Column(String, nullable=True)
     picture_url = Column(String, nullable=True)
+    # Internal storage path/mimetype for a picture the user uploaded
+    # themselves (mirrors Report.image_path) - null if picture_url is an
+    # external URL (e.g. a Google avatar) rather than something this app
+    # is serving from its own storage. See models/user.py's
+    # to_public_dict() and app.py's /api/auth/update-picture.
+    picture_path = Column(String, nullable=True)
+    picture_mime_type = Column(String, nullable=True)
     role = Column(String(20), nullable=False, default=ROLE_BASIC, index=True)
     # 1 = visible/active (default), 0 = hidden (soft-deleted account).
     # The row is never removed; "deleting" an account just flips this to 0.
@@ -53,13 +60,16 @@ class User(Base):
 
     def to_public_dict(self):
         """Fields safe to send to the client. google_sub/password_hash are
-        intentionally excluded."""
+        intentionally excluded (has_password/google_linked below expose
+        just their presence, not the values themselves)."""
         return {
             "id": self.id,
             "email": self.email,
             "name": self.name,
             "picture_url": self.picture_url,
             "role": self.role,
+            "has_password": self.password_hash is not None,
+            "google_linked": self.google_sub is not None,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 

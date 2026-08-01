@@ -58,7 +58,7 @@ from models.database import Base, DATABASE_URL, engine
 from models.user import (
     create_user, get_user, get_user_by_google_sub, get_user_by_email,
     update_user, delete_user, restore_user, STATUS_HIDDEN,
-    get_all_users, VALID_ROLES, ROLE_ADMIN, ROLE_PUBLISHER,
+    ROLE_ADMIN, ROLE_PUBLISHER,
 )
 from models.document import (
     create_document, get_documents_by_user, get_document, delete_document,
@@ -264,6 +264,9 @@ if DATABASE_URL.startswith("sqlite"):
 storage = get_storage(UPLOAD_DIR)
 REPORTS_UPLOAD_DIR = os.path.join(BASE_DIR, "report_uploads")
 report_storage = get_storage(REPORTS_UPLOAD_DIR, s3_prefix="reports")
+
+PROFILE_PICTURES_UPLOAD_DIR = os.path.join(BASE_DIR, "profile_picture_uploads")
+profile_picture_storage = get_storage(PROFILE_PICTURES_UPLOAD_DIR, s3_prefix="profile-pictures")
 email_backend = get_email_backend()
 
 MAX_UPLOAD_BYTES = 20 * 1024 * 1024  # 20 MB per file
@@ -276,6 +279,9 @@ ALLOWED_UPLOAD_EXTENSIONS = {".pdf", ".doc", ".docx", ".ppt", ".pptx", ".xls", "
 ALLOWED_REPORT_FILE_EXTENSIONS = {".pdf", ".doc", ".docx"}
 ALLOWED_REPORT_IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp"}
 MAX_REPORT_IMAGE_BYTES = 5 * 1024 * 1024  # 5 MB per cover image
+
+ALLOWED_PROFILE_PICTURE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp"}
+MAX_PROFILE_PICTURE_BYTES = 5 * 1024 * 1024  # 5 MB per profile picture
 
 # GTBI/ETTI workbooks: same shape the data_scripts/{kind}_extract.py CLI
 # scripts already expect (a multi-sheet .xlsx workbook, not a flat CSV -
@@ -601,63 +607,111 @@ def delete_account():
     return jsonify({"status": "account deleted"})
 
 
-# ---------------------------------------------------------------------------
-# Admin: user access-level management. Backs the "Manage Users" panel in
-# Settings (admin-only). Role changes were previously CLI-only on purpose
-# (see promote_user.py's docstring) - this adds an in-app path for the
-# same action, still gated to admin and still logged as a UserEvent per
-# change, same accountability the CLI script already had.
-# ---------------------------------------------------------------------------
-
-@app.get("/api/admin/users")
-@roles_required("admin")
-def list_all_users():
-    """All visible (non-deleted) user accounts, for the admin role-management panel."""
-    users = get_all_users()
-    return jsonify([u.to_public_dict() for u in users])
-
-
-@app.post("/api/admin/users/roles")
-@roles_required("admin")
-def update_user_roles():
+@app.post("/api/auth/update-profile")
+@login_required
+@limiter.limit("20 per hour")
+def update_profile():
     """
-    Body: { "changes": [ { "user_id": 12, "role": "publisher" }, ... ] }
-    Applies a batch of role changes in one request - the admin panel
-    stages multiple dropdown edits client-side and sends them all at
-    once on "Confirm", rather than one request per row.
-
-    Validates every change BEFORE applying any of them, so a single bad
-    entry (unknown user, invalid role) can't leave the batch half-applied.
+    Updates the logged-in user's display name and/or password. Both are
+    optional and independent - a request can change just one, or both at
+    once - but each is validated as a complete, correct change on its own
+    (e.g. changing the password still requires current_password to be
+    right) rather than silently skipping whichever half is invalid.
     """
+    user = get_current_user()
     body = request.get_json(silent=True) or {}
-    changes = body.get("changes")
-    if not isinstance(changes, list) or not changes:
-        abort(400, description="'changes' must be a non-empty list of {user_id, role}")
+    updates = {}
 
-    admin_user = get_current_user()
-    resolved = []  # [(target_user, new_role), ...]
-    for change in changes:
-        user_id = change.get("user_id")
-        role = (change.get("role") or "").strip().lower()
-        if not isinstance(user_id, int):
-            abort(400, description=f"Invalid user_id: {change.get('user_id')!r}")
-        if role not in VALID_ROLES:
-            abort(400, description=f"'{role}' is not a valid role. Choose from: {', '.join(sorted(VALID_ROLES))}")
-        target = get_user(user_id)
-        if target is None:
-            abort(404, description=f"No user found with id {user_id}")
-        resolved.append((target, role))
+    if "name" in body:
+        name = (body.get("name") or "").strip()
+        error = validation.check_donor_name(name, "Name")
+        if error:
+            abort(400, description=error)
+        updates["name"] = name
 
-    updated = []
-    for target, role in resolved:
-        if target.role != role:
-            old_role = target.role
-            update_user(target.id, role=role)
-            create_user_event(user_id=admin_user.id, document_id=None, action=CRUDAction.UPDATE)
-            logger.info("admin_user_id=%s changed user_id=%s role: %s -> %s", admin_user.id, target.id, old_role, role)
-        updated.append(get_user(target.id))
+    if "new_password" in body:
+        if user.password_hash is None:
+            abort(400, description="This account signs in with Google and doesn't have a password to change.")
 
-    return jsonify([u.to_public_dict() for u in updated])
+        current_password = body.get("current_password") or ""
+        new_password = body.get("new_password") or ""
+        if not check_password_hash(user.password_hash, current_password):
+            abort(400, description="Current password is incorrect.")
+
+        error = validation.run_check("password", new_password)
+        if error:
+            abort(400, description=error)
+
+        updates["password_hash"] = generate_password_hash(new_password)
+
+    if not updates:
+        abort(400, description="Nothing to update.")
+
+    updated = update_user(user.id, **updates)
+    return jsonify(updated.to_public_dict())
+
+
+@app.post("/api/auth/update-picture")
+@login_required
+@limiter.limit("20 per hour")
+def update_profile_picture():
+    """
+    Multipart form field "picture" - replaces the logged-in user's
+    profile picture. Deletes the previous file first (only if it was one
+    of ours to begin with; an external picture_url, e.g. from Google, has
+    no picture_path and is just left alone, not "deleted").
+    """
+    user = get_current_user()
+
+    if "picture" not in request.files:
+        abort(400, description="No picture in request")
+    picture = request.files["picture"]
+    if picture.filename == "":
+        abort(400, description="No picture selected")
+
+    ext = os.path.splitext(picture.filename)[1].lower()
+    if ext not in ALLOWED_PROFILE_PICTURE_EXTENSIONS:
+        abort(400, description="Profile picture must be a PNG, JPG, or WEBP file")
+
+    picture.stream.seek(0, os.SEEK_END)
+    size = picture.stream.tell()
+    picture.stream.seek(0)
+    if size > MAX_PROFILE_PICTURE_BYTES:
+        abort(400, description=f"Profile picture exceeds the {MAX_PROFILE_PICTURE_BYTES // (1024 * 1024)}MB limit")
+    if size == 0:
+        abort(400, description="Picture is empty")
+
+    new_path, _ = profile_picture_storage.save(user.id, picture.filename, picture)
+
+    old_path = user.picture_path
+    # Cache-bust with a timestamp query param so the browser doesn't keep
+    # showing the old picture from cache under the same URL.
+    picture_url = f"/api/users/{user.id}/picture?t={int(datetime.utcnow().timestamp())}"
+
+    updated = update_user(
+        user.id,
+        picture_path=new_path,
+        picture_mime_type=picture.mimetype,
+        picture_url=picture_url,
+    )
+
+    if old_path:
+        profile_picture_storage.delete(old_path)
+
+    return jsonify(updated.to_public_dict())
+
+
+@app.get("/api/users/<int:user_id>/picture")
+def get_user_picture(user_id):
+    """Streams a user's uploaded profile picture. Public - a picture a
+    user chose to set is not sensitive, and other pages (e.g. a report's
+    author byline) may want to show it without requiring login."""
+    user = get_user(user_id)
+    if user is None or user.picture_path is None:
+        abort(404, description="No profile picture for this user")
+    return profile_picture_storage.get_file_response(
+        user.picture_path, download_name=f"user-{user.id}-picture", mimetype=user.picture_mime_type
+    )
 
 
 # ---------------------------------------------------------------------------

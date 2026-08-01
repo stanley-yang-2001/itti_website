@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import ReportCard from '../components/ReportCard.jsx';
 import ReportUploadForm from './ReportUploadForm.jsx';
 import Reveal from '../components/Reveal.jsx';
+import SettingsPanel from '../components/SettingsPanel.jsx';
 import {
   fetchSavedObservatoryCharts, deleteSavedObservatoryChart,
   fetchFavoriteReports, unfavoriteReport,
@@ -30,6 +31,13 @@ const REVIEW_STATUS_LABEL = {
   pending_review: { label: 'Pending Review', className: 'pending' },
   changes_requested: { label: 'Changes Requested', className: 'changes' },
 };
+
+const TABS = [
+  { key: 'profile', label: 'Profile' },
+  { key: 'favorites', label: 'Favorites' },
+  { key: 'publications', label: 'Publications' },
+  { key: 'settings', label: 'Settings' },
+];
 
 function SavedChartCard({ chart, onDelete }) {
   const config = chart.config || {};
@@ -60,6 +68,8 @@ function SavedChartCard({ chart, onDelete }) {
 export default function Profile() {
   const { user } = useAuth();
   const canPublish = user?.role === 'publisher' || user?.role === 'admin';
+
+  const [activeTab, setActiveTab] = useState('profile');
 
   const [charts, setCharts] = useState(null); // null = loading
   const [chartsError, setChartsError] = useState(null);
@@ -122,143 +132,160 @@ export default function Profile() {
 
   return (
     <div className="profile-page">
-      {/* ---------- Header ---------- */}
-      <Reveal delay={0}>
-      <section className="profile-header">
-        <div className="profile-avatar">
-          {user.picture_url ? (
-            <img src={user.picture_url} alt={user.name || user.email} />
-          ) : (
-            <span>{initials(user.name, user.email)}</span>
-          )}
-        </div>
-        <div className="profile-header-info">
-          <h1 className="profile-name display">{user.name || user.email}</h1>
-          <p className="profile-email">{user.email}</p>
-          <div className="profile-header-meta">
-            <span className={`role-badge role-${user.role}`}>{user.role}</span>
-            {user.created_at && <span className="profile-member-since">Member since {formatDate(user.created_at)}</span>}
-          </div>
-        </div>
-        <Link to="/settings" className="btn btn-secondary profile-settings-link">
-          Account settings
-        </Link>
-      </section>
-      </Reveal>
-
-      {/* ---------- Favorites ---------- */}
-      <Reveal delay={90}>
-      <section className="profile-section">
-        <h2 className="profile-section-title display">Favorites</h2>
-
-        <h3 className="profile-subsection-title">Observatory charts</h3>
-        {chartsError && <p className="profile-error">{chartsError}</p>}
-        {!chartsError && charts === null && <p className="profile-status">Loading saved charts…</p>}
-        {!chartsError && charts !== null && charts.length === 0 && (
-          <div className="profile-empty">
-            <p>No saved charts yet.</p>
-            <Link to="/observatory" className="btn btn-secondary">Go to Observatory</Link>
-          </div>
-        )}
-        {!chartsError && charts !== null && charts.length > 0 && (
-          <div className="profile-charts-grid">
-            {charts.map((chart) => (
-              <SavedChartCard key={chart.id} chart={chart} onDelete={handleDeleteChart} />
-            ))}
-          </div>
-        )}
-
-        <h3 className="profile-subsection-title">Reports</h3>
-        {favoritesError && <p className="profile-error">{favoritesError}</p>}
-        {!favoritesError && favoriteReports === null && <p className="profile-status">Loading favorite reports…</p>}
-        {!favoritesError && favoriteReports !== null && favoriteReports.length === 0 && (
-          <div className="profile-empty">
-            <p>No favorited reports yet.</p>
-            <Link to="/reports" className="btn btn-secondary">Browse Reports</Link>
-          </div>
-        )}
-        {!favoritesError && favoriteReports !== null && favoriteReports.length > 0 && (
-          <div className="profile-reports-grid">
-            {favoriteReports.map((report) => (
-              <ReportCard
-                key={report.id}
-                report={report}
-                canManage={false}
-                isFavorited
-                onToggleFavorite={handleUnfavoriteReport}
-              />
-            ))}
-          </div>
-        )}
-      </section>
-      </Reveal>
-
-      {/* ---------- Publications ---------- */}
-      <Reveal delay={180}>
-      <section className="profile-section">
-        <div className="profile-section-head">
-          <h2 className="profile-section-title display">Publications</h2>
-          {canPublish && !showUploadForm && (
-            <button type="button" className="btn btn-primary" onClick={() => setShowUploadForm(true)}>
-              New Report
+      <div className="profile-layout">
+        {/* ---------- Vertical nav ---------- */}
+        <nav className="profile-sidebar" aria-label="Profile sections">
+          {TABS.map((tab) => (
+            <button
+              key={tab.key}
+              type="button"
+              className={`profile-sidebar-link${activeTab === tab.key ? ' active' : ''}`}
+              onClick={() => setActiveTab(tab.key)}
+              aria-current={activeTab === tab.key ? 'page' : undefined}
+            >
+              {tab.label}
             </button>
+          ))}
+        </nav>
+
+        <div className="profile-content">
+          {/* ---------- Profile ---------- */}
+          {activeTab === 'profile' && (
+            <Reveal delay={0}>
+              <section className="profile-header">
+                <div className="profile-avatar">
+                  {user.picture_url ? (
+                    <img src={user.picture_url} alt={user.name || user.email} />
+                  ) : (
+                    <span>{initials(user.name, user.email)}</span>
+                  )}
+                </div>
+                <div className="profile-header-info">
+                  <h1 className="profile-name display">{user.name || user.email}</h1>
+                  <p className="profile-email">{user.email}</p>
+                  <div className="profile-header-meta">
+                    <span className={`role-badge role-${user.role}`}>{user.role}</span>
+                    {user.created_at && <span className="profile-member-since">Member since {formatDate(user.created_at)}</span>}
+                  </div>
+                </div>
+              </section>
+            </Reveal>
+          )}
+
+          {/* ---------- Favorites ---------- */}
+          {activeTab === 'favorites' && (
+            <Reveal delay={0}>
+              <section className="profile-section">
+                <h2 className="profile-section-title display">Favorites</h2>
+
+                <h3 className="profile-subsection-title">Observatory charts</h3>
+                {chartsError && <p className="profile-error">{chartsError}</p>}
+                {!chartsError && charts === null && <p className="profile-status">Loading saved charts…</p>}
+                {!chartsError && charts !== null && charts.length === 0 && (
+                  <div className="profile-empty">
+                    <p>No saved charts yet.</p>
+                    <Link to="/observatory" className="btn btn-secondary">Go to Observatory</Link>
+                  </div>
+                )}
+                {!chartsError && charts !== null && charts.length > 0 && (
+                  <div className="profile-charts-grid">
+                    {charts.map((chart) => (
+                      <SavedChartCard key={chart.id} chart={chart} onDelete={handleDeleteChart} />
+                    ))}
+                  </div>
+                )}
+
+                <h3 className="profile-subsection-title">Reports</h3>
+                {favoritesError && <p className="profile-error">{favoritesError}</p>}
+                {!favoritesError && favoriteReports === null && <p className="profile-status">Loading favorite reports…</p>}
+                {!favoritesError && favoriteReports !== null && favoriteReports.length === 0 && (
+                  <div className="profile-empty">
+                    <p>No favorited reports yet.</p>
+                    <Link to="/reports" className="btn btn-secondary">Browse Reports</Link>
+                  </div>
+                )}
+                {!favoritesError && favoriteReports !== null && favoriteReports.length > 0 && (
+                  <div className="profile-reports-grid">
+                    {favoriteReports.map((report) => (
+                      <ReportCard
+                        key={report.id}
+                        report={report}
+                        canManage={false}
+                        isFavorited
+                        onToggleFavorite={handleUnfavoriteReport}
+                      />
+                    ))}
+                  </div>
+                )}
+              </section>
+            </Reveal>
+          )}
+
+          {/* ---------- Publications ---------- */}
+          {activeTab === 'publications' && (
+            <Reveal delay={0}>
+              <section className="profile-section">
+                <div className="profile-section-head">
+                  <h2 className="profile-section-title display">Publications</h2>
+                  {canPublish && !showUploadForm && (
+                    <button type="button" className="btn btn-primary" onClick={() => setShowUploadForm(true)}>
+                      New Report
+                    </button>
+                  )}
+                </div>
+
+                {!canPublish && (
+                  <div className="profile-callout">
+                    <p>Publishing is available to Publisher accounts.</p>
+                    <p>
+                      To request access, contact{' '}
+                      <a href="mailto:contact@itti.org">contact@itti.org</a>.
+                    </p>
+                  </div>
+                )}
+
+                {canPublish && showUploadForm && (
+                  <ReportUploadForm onUploaded={handleReportUploaded} onCancel={() => setShowUploadForm(false)} />
+                )}
+
+                {canPublish && (
+                  <>
+                    {myReportsError && <p className="profile-error">{myReportsError}</p>}
+                    {!myReportsError && myReports === null && <p className="profile-status">Loading your publications…</p>}
+                    {!myReportsError && myReports !== null && myReports.length === 0 && !showUploadForm && (
+                      <p className="profile-status">You haven't published any reports yet.</p>
+                    )}
+                    {!myReportsError && myReports !== null && myReports.length > 0 && (
+                      <div className="profile-publications-list">
+                        {myReports.map((report) => {
+                          const statusInfo = REVIEW_STATUS_LABEL[report.review_status] || { label: report.review_status, className: '' };
+                          return (
+                            <div key={report.id} className="profile-publication-row">
+                              <div className="profile-publication-info">
+                                <span className="profile-publication-title">{report.title}</span>
+                                <span className="profile-publication-date">{formatDate(report.created_at)} · v{report.version}</span>
+                              </div>
+                              <span className={`profile-status-badge ${statusInfo.className}`}>{statusInfo.label}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </>
+                )}
+              </section>
+            </Reveal>
+          )}
+
+          {/* ---------- Settings ---------- */}
+          {activeTab === 'settings' && (
+            <section className="profile-section profile-settings-section">
+              <h2 className="profile-section-title display">Settings</h2>
+              <SettingsPanel />
+            </section>
           )}
         </div>
-
-        {!canPublish && (
-          <div className="profile-callout">
-            <p>Publishing is available to Publisher accounts.</p>
-            <p>
-              To request access, contact{' '}
-              <a href="mailto:contact@itti.org">contact@itti.org</a>.
-            </p>
-          </div>
-        )}
-
-        {canPublish && showUploadForm && (
-          <ReportUploadForm onUploaded={handleReportUploaded} onCancel={() => setShowUploadForm(false)} />
-        )}
-
-        {canPublish && (
-          <>
-            {myReportsError && <p className="profile-error">{myReportsError}</p>}
-            {!myReportsError && myReports === null && <p className="profile-status">Loading your publications…</p>}
-            {!myReportsError && myReports !== null && myReports.length === 0 && !showUploadForm && (
-              <p className="profile-status">You haven't published any reports yet.</p>
-            )}
-            {!myReportsError && myReports !== null && myReports.length > 0 && (
-              <div className="profile-publications-list">
-                {myReports.map((report) => {
-                  const statusInfo = REVIEW_STATUS_LABEL[report.review_status] || { label: report.review_status, className: '' };
-                  return (
-                    <div key={report.id} className="profile-publication-row">
-                      <div className="profile-publication-info">
-                        <span className="profile-publication-title">{report.title}</span>
-                        <span className="profile-publication-date">{formatDate(report.created_at)} · v{report.version}</span>
-                      </div>
-                      <span className={`profile-status-badge ${statusInfo.className}`}>{statusInfo.label}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </>
-        )}
-      </section>
-      </Reveal>
-
-      {/* ---------- Quick links ---------- */}
-      <Reveal delay={270}>
-      <section className="profile-section">
-        <h2 className="profile-section-title display">Quick Links</h2>
-        <div className="profile-quicklinks">
-          <Link to="/settings" className="chip">Account settings</Link>
-          <Link to="/certifications" className="chip">Browse certifications</Link>
-          <Link to="/donate" className="chip">Support ITTI</Link>
-          <Link to="/contact" className="chip">Contact us</Link>
-        </div>
-      </section>
-      </Reveal>
+      </div>
     </div>
   );
 }

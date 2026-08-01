@@ -4,6 +4,66 @@
   padding:48px 32px 80px;
 }
 
+/* ---------- Sidebar + content layout ---------- */
+.profile-layout{
+  display:flex;
+  align-items:flex-start;
+  gap:var(--space-6);
+}
+.profile-sidebar{
+  flex-shrink:0;
+  width:180px;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  position:sticky;
+  top:calc(var(--navbar-height, 0px) + 24px);
+}
+.profile-sidebar-link{
+  display:block;
+  width:100%;
+  text-align:left;
+  padding:10px 14px;
+  border-radius:8px;
+  border:1px solid transparent;
+  background:transparent;
+  color:var(--text-mid);
+  font-size:14px;
+  font-weight:500;
+  cursor:pointer;
+  transition:color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+.profile-sidebar-link:hover{
+  color:var(--text-hi);
+  background:var(--bg-panel);
+}
+.profile-sidebar-link.active{
+  color:var(--cyan);
+  background:var(--bg-panel);
+  border-color:var(--line);
+  font-weight:700;
+}
+.profile-content{
+  flex:1;
+  min-width:0;
+}
+
+@media (max-width:720px){
+  .profile-layout{flex-direction:column;}
+  .profile-sidebar{
+    position:static;
+    width:100%;
+    flex-direction:row;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  .profile-sidebar-link{
+    width:auto;
+    flex:1 1 auto;
+    text-align:center;
+  }
+}
+
 /* ---------- Header ---------- */
 .profile-header{
   display:flex;
@@ -58,7 +118,6 @@
   font-size:12px;
   color:var(--text-low);
 }
-.profile-settings-link{flex-shrink:0;}
 
 /* ---------- Sections ---------- */
 .profile-section{margin-bottom:var(--space-6);}
@@ -238,24 +297,8 @@
 .profile-status-badge.pending{color:var(--gold); background:rgba(173,122,30,0.12);}
 .profile-status-badge.changes{color:#C0453A; background:rgba(229,131,122,0.12);}
 
-/* ---------- Quick links ---------- */
-.profile-quicklinks{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-}
-.profile-quicklinks a.chip{
-  text-decoration:none;
-  transition:border-color .15s ease, color .15s ease;
-}
-.profile-quicklinks a.chip:hover{
-  border-color:var(--cyan);
-  color:var(--cyan);
-}
-
 /* ---------- Responsive ---------- */
 @media (max-width: 640px){
   .profile-page{padding:36px 20px 56px;}
   .profile-header{flex-wrap:wrap;}
-  .profile-settings-link{width:100%; text-align:center;}
 }
