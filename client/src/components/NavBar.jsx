@@ -25,8 +25,7 @@ const NAV_LINKS = [
   { to: '/country-profiles', label: 'Country Profiles' },
   { to: '/fellows', label: 'Fellowship' },
   { to: '/certifications', label: 'Certifications' },
-  { to: '/contact', label: 'Contact' },
-  { to: '/donate', label: 'Donate', emphasize: true }
+  { to: '/contact', label: 'Contact' }
 ];
 
 export default function NavBar() {
@@ -106,6 +105,14 @@ export default function NavBar() {
               </NavLink>
             </>
           )}
+
+          <NavLink
+            to="/donate"
+            className={({ isActive }) => 'navbar-donate-btn' + (isActive ? ' active' : '')}
+            onClick={() => setMenuOpen(false)}
+          >
+            Donate
+          </NavLink>
 
           <button
             className="navbar-toggle"
