@@ -674,7 +674,6 @@
     top:0;
     z-index:50;
     background:var(--bg-deep);
-    transition:padding .25s ease;
   }
   .navbar-brand{
     display:flex;
@@ -682,16 +681,12 @@
     gap:14px;
     text-decoration:none;
     color:var(--text-hi);
-    max-height:100px;
-    overflow:hidden;
-    transition:max-height .25s ease, opacity .2s ease, margin .25s ease;
   }
   .navbar-logo{
     width:76px;
     height:76px;
     object-fit:contain;
     flex-shrink:0;
-    transition:width .25s ease, height .25s ease;
   }
   .navbar-title{
     display:block;
@@ -711,28 +706,6 @@
     margin:14px 0 0 0;
     padding:0;
     width:100%;
-    transition:margin-top .25s ease;
-  }
-
-  /* ---------- Navbar: compact/scrolled state ----------
-     Applied once the page scrolls away from the very top (see NavBar.jsx's
-     scroll listener). Hides the logo + site name and tightens the padding
-     so only the nav links, Donate button, and user info/log out remain -
-     reverts automatically once scrolled back to the top. */
-  .navbar--scrolled{
-    padding:6px 32px;
-  }
-  .navbar--scrolled .navbar-brand{
-    max-height:0;
-    opacity:0;
-    margin:0;
-    pointer-events:none;
-  }
-  .navbar--scrolled .navbar-links{
-    margin-top:6px;
-  }
-  @media (prefers-reduced-motion: reduce){
-    .navbar, .navbar-brand, .navbar-logo, .navbar-links{transition:none;}
   }
 
   .navbar-link{
@@ -756,22 +729,16 @@
     color:var(--bg-deep);
     background:var(--cyan);
   }
-  .navbar-donate-btn{
-    display:inline-flex;
-    align-items:center;
-    padding:8px 16px;
-    border-radius:6px;
+  .navbar-link-donate{
     border:1px solid var(--cyan);
     color:var(--cyan);
-    font-family:'Inter',sans-serif;
-    font-size:13px;
     font-weight:600;
-    text-decoration:none;
-    white-space:nowrap;
-    cursor:pointer;
   }
-  .navbar-donate-btn:hover,
-  .navbar-donate-btn.active{
+  .navbar-link-donate:hover{
+    color:#FFFFFF;
+    background:var(--cyan);
+  }
+  .navbar-link-donate.active{
     color:#FFFFFF;
     background:var(--cyan);
   }
