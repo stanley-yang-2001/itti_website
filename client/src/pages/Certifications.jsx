@@ -235,9 +235,12 @@ export default function Certifications() {
                               </ul>
                             </div>
 
-                            <Link to="/contact" className="certs-btn primary full">
-                              {c.ctaVerb} in {c.code}™
+                            <Link to={`/certifications/enroll/${c.code}`} className="certs-btn primary full">
+                              {c.ctaVerb} in {c.code}™ — {c.tuition}
                             </Link>
+                            <p className="cert-refund-note">
+                              Refund policy: 50% refundable within 7 days of purchase; no refunds after 7 days.
+                            </p>
                           </div>
                         </div>
 

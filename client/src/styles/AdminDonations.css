@@ -54,15 +54,15 @@
 }
 .admin-donations-status-chip:hover{color:var(--text-hi); border-color:var(--cyan);}
 .admin-donations-status-chip.active{
-  background:rgba(79,217,199,0.12);
+  background:rgba(13,138,124,0.12);
   border-color:var(--cyan);
   color:var(--cyan);
 }
 
 .admin-donations-error{
   background:rgba(216,68,68,0.1);
-  border:1px solid #D84444;
-  color:#F3B4B4;
+  border:1px solid #B83232;
+  color:#C0392B;
   border-radius:8px;
   padding:10px 14px;
   font-size:13px;
@@ -98,7 +98,7 @@
   white-space:nowrap;
 }
 .admin-donations-table tbody tr:last-child td{border-bottom:none;}
-.admin-donations-table tbody tr:hover{background:rgba(255,255,255,0.02);}
+.admin-donations-table tbody tr:hover{background:rgba(21,27,38,0.02);}
 .admin-donations-table .mono{font-family:'JetBrains Mono',monospace;}
 .admin-donations-empty{
   text-align:center;
@@ -113,9 +113,9 @@
   font-size:12px;
   text-transform:capitalize;
 }
-.admin-donations-status-badge.status-succeeded{background:rgba(79,217,199,0.15); color:var(--cyan);}
-.admin-donations-status-badge.status-pending{background:rgba(230,180,60,0.15); color:#E6B43C;}
-.admin-donations-status-badge.status-failed{background:rgba(216,68,68,0.15); color:#F3B4B4;}
+.admin-donations-status-badge.status-succeeded{background:rgba(13,138,124,0.15); color:var(--cyan);}
+.admin-donations-status-badge.status-pending{background:rgba(230,180,60,0.15); color:#9C7318;}
+.admin-donations-status-badge.status-failed{background:rgba(216,68,68,0.15); color:#C0392B;}
 
 .admin-donations-pagination{
   display:flex;

@@ -40,7 +40,7 @@
   font-size: 0.9rem;
 }
 .reports-error {
-  color: #F3B4B4;
+  color: #C0392B;
   font-size: 0.9rem;
 }
 
@@ -160,8 +160,8 @@
   cursor: pointer;
 }
 .report-card-delete:hover {
-  color: #F3B4B4;
-  border-color: #D84444;
+  color: #C0392B;
+  border-color: #B83232;
 }
 
 /* ---------- Upload form ---------- */
@@ -206,7 +206,7 @@
 }
 
 .report-upload-field-error {
-  color: #F3B4B4;
+  color: #C0392B;
   font-size: 0.78rem;
 }
 
@@ -215,7 +215,7 @@
   margin: 0;
 }
 .report-upload-status--error {
-  color: #F3B4B4;
+  color: #C0392B;
 }
 .report-upload-status--success {
   color: var(--cyan);
@@ -232,7 +232,7 @@
   border-radius: 6px;
   border: none;
   background: var(--cyan);
-  color: var(--bg-deep);
+  color: #FFFFFF;
   font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;

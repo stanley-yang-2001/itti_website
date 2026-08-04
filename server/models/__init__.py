@@ -18,3 +18,4 @@ from . import report  # noqa: F401
 from . import report_review  # noqa: F401
 from . import donation  # noqa: F401
 from . import favorite_report  # noqa: F401
+from . import enrollment  # noqa: F401

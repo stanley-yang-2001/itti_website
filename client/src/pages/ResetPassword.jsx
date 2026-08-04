@@ -21,6 +21,15 @@ export default function ResetPassword() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // Same live "do these match yet?" feedback as the sign-up page, rather
+  // than only finding out after submitting.
+  const confirmPasswordHint =
+    confirmPassword.length === 0
+      ? null
+      : password === confirmPassword
+      ? { text: 'Passwords match', kind: 'match' }
+      : { text: 'Passwords do not match', kind: 'mismatch' };
+
   async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
@@ -94,6 +103,11 @@ export default function ResetPassword() {
               autoComplete="new-password"
               required
             />
+            {confirmPasswordHint && (
+              <span className={`login-field-hint ${confirmPasswordHint.kind}`}>
+                {confirmPasswordHint.text}
+              </span>
+            )}
           </label>
           <button type="submit" className="login-submit-button" disabled={loading}>
             Reset password

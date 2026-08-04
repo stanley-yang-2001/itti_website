@@ -3,37 +3,107 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: #f5f5f5;
+  background: var(--bg-panel);
   font-family: 'Times New Roman', Times, serif;
 }
 
 .login-card {
-  background: #fff;
+  background: var(--bg-deep);
   padding: 2.5rem;
   border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--line);
+  box-shadow: 0 2px 16px rgba(20, 30, 45, 0.06);
   width: 100%;
   max-width: 360px;
   text-align: center;
-  color: #1B2431;
+  color: var(--text-hi);
 }
 
 .login-card h1 {
   margin-bottom: 1.5rem;
   font-size: 1.5rem;
-  color: #14213D;
+  color: var(--text-hi);
 }
 
-.login-google {
+.login-password-form {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  gap: 1rem;
+  text-align: left;
   margin-bottom: 1.5rem;
+}
+
+.login-status {
+  color: var(--text-mid);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--text-mid);
+}
+
+.login-field-hint {
+  font-size: 0.78rem;
+}
+.login-field-hint.match {
+  color: #1B7A3D;
+}
+.login-field-hint.mismatch {
+  color: #A82A20;
+}
+
+.login-field input {
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--text-hi);
+  background: var(--bg-deep);
+}
+
+.login-field input:focus {
+  outline: none;
+  border-color: var(--cyan);
+}
+
+.login-field-error {
+  color: #A82A20;
+  font-size: 0.78rem;
+}
+
+.login-submit-button {
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: var(--cyan);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.25rem;
+}
+
+.login-submit-button:hover {
+  background: #0A6E62;
+}
+
+.login-submit-button:disabled {
+  background: #D3D9E0;
+  color: #8593A8;
+  cursor: not-allowed;
 }
 
 .login-divider {
   display: flex;
   align-items: center;
-  color: #5B6472;
+  color: var(--text-mid);
   font-size: 0.85rem;
   margin: 1rem 0;
 }
@@ -42,27 +112,17 @@
 .login-divider::after {
   content: "";
   flex: 1;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--line);
 }
 
 .login-divider span {
   padding: 0 0.75rem;
 }
 
-.login-signup-button {
-  width: 100%;
-  padding: 0.65rem 1rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background: #fff;
-  color: #1B2431;
-  font-family: inherit;
-  font-size: 0.95rem;
-  cursor: pointer;
-}
-
-.login-signup-button:hover {
-  background: #f0f0f0;
+.login-google {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.25rem;
 }
 
 .login-error {
@@ -71,67 +131,14 @@
   margin-bottom: 1rem;
 }
 
-.login-status {
-  color: #3D4652;
-  font-size: 0.85rem;
-  margin-bottom: 1rem;
-}
-
-.login-password-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
-  text-align: left;
-}
-
-.login-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  font-size: 0.85rem;
-  color: #2B3440;
-}
-
-.login-field input {
-  padding: 0.55rem 0.7rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-family: inherit;
-  font-size: 0.95rem;
-  color: #14213D;
-  background: #fff;
-}
-
-.login-submit-button {
-  width: 100%;
-  padding: 0.65rem 1rem;
-  border: none;
-  border-radius: 6px;
-  background: #14213D;
-  color: #fff;
-  font-family: inherit;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.login-submit-button:hover {
-  opacity: 0.9;
-}
-
-.login-submit-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 .login-forgot-link {
-  margin: -0.5rem 0 0 0;
   text-align: right;
   font-size: 0.8rem;
+  margin: -0.5rem 0 1rem;
 }
 
 .login-forgot-link a {
-  color: #3D4652;
+  color: var(--text-mid);
   text-decoration: none;
 }
 
@@ -140,13 +147,12 @@
 }
 
 .login-signup-link {
-  margin: 1.25rem 0 0 0;
   font-size: 0.85rem;
-  color: #3D4652;
+  color: var(--text-mid);
 }
 
 .login-signup-link a {
-  color: #14213D;
+  color: var(--text-hi);
   font-weight: 600;
   text-decoration: none;
 }

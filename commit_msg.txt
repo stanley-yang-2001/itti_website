@@ -1,17 +1,52 @@
-Contact page: updated the domain email to actual existing emails
+Fix broken donations backend, match certifications to it, fix bugs
 
+Certification enrollment (the actual ask) surfaced a bigger problem:
+Donate.jsx already used embedded Stripe Elements (PaymentElement,
+stripe.confirmPayment()) calling /api/donations/config and
+/api/donations/payment-intent - neither of which existed in app.py.
+The backend still only had the old Checkout-Session-redirect routes,
+which nothing called anymore. Donations were 404ing end-to-end.
 
-Fix Country Profiles letter-jump bar scrolling behavior
+Fixed donations first, since it's the reference implementation:
+- server/models/donation.py: added attach_payment_intent() and
+  get_donation_by_payment_intent(), the PaymentIntent-flow equivalents
+  of attach_checkout_session()/get_donation_by_checkout_session().
+- server/app.py: replaced /api/donations/presets + checkout-session +
+  session/<id> with config + payment-intent + payment-intent/<id>.
+  Webhook now listens for payment_intent.succeeded instead of
+  checkout.session.completed.
 
-The A-Z jump nav was set to position: sticky, pinning it near the top
-of the viewport while the country list scrolled underneath it -
-visually disconnecting it from the content it's meant to navigate.
+Then built the same for certifications:
+- server/models/enrollment.py: same two new functions, mirrored.
+- server/app.py: replaced /api/certifications/catalog + checkout-session
+  + enrollments/session/<id> with config + payment-intent +
+  enrollments/payment-intent/<id>.
+- CertificationEnrollModal.jsx rebuilt to mount Stripe's <PaymentElement>
+  directly in the modal (matching Donate.jsx exactly) instead of
+  redirecting to a hosted Checkout page.
+- CertificationEnrollThankYou.jsx updated to read Stripe.js's redirect
+  params (?payment_intent=&redirect_status=) instead of ?session_id=.
+- Removed the now-dead CertificationEnroll.jsx page and its route -
+  enrollment starts from the modal on /certifications now, and the old
+  page used the removed checkout-session API. Confirmed nothing else
+  referenced any of the removed routes/page before deleting.
 
-- Remove position: sticky (and its top/z-index/background offset) from
-  .country-letter-jump so it's a normal in-flow element again: it now
-  scrolls together with the country list and scrolls out of view like
-  everything else once you pass it, instead of staying pinned.
-- Reduce .country-letter-section's scroll-margin-top from
-  navbar-height + 56px to navbar-height + 16px, since a jump-to-letter
-  click only needs to clear the (still sticky) top navbar now, not the
-  letter bar's own height.
+Fellowship.jsx: removed "founded and chartered under Dr. Luke Chike
+Igweobi, Chancellor" from the Invitation panel.
+
+Navbar oscillation bug: root cause was CSS scroll anchoring - the
+browser was auto-adjusting scrollTop to compensate for the navbar's own
+height change (full <-> compact), which pushed scroll position back
+across the compact/full threshold near the top of the page, causing a
+feedback loop (navbar flickering open/closed repeatedly). Fixed with
+overflow-anchor:none on .navbar (the actual fix) plus hysteresis in
+NavBar.jsx's scroll handler (separate enter/exit thresholds instead of
+one shared value) as defense-in-depth against any residual jitter.
+
+Verified: backend compiles and route-tests pass (config/payment-intent
+endpoints, auth gating, 503-when-unconfigured); `vite build` clean;
+grepped for stale references to every removed route/page before
+deleting anything; headless-browser pass confirms Fellowship text is
+gone and the navbar produces zero state toggles under tight scroll
+jitter both near the old threshold and near the top (previously the
+exact failure condition).

@@ -36,10 +36,10 @@ export function computeBoxStats(values) {
   return { n, min: sorted[0], max: sorted[n - 1], q1, median, q3, whiskerLow, whiskerHigh, outliers };
 }
 
-const BOX_COLOR = '#4FD9C7';
-const GRID_COLOR = '#1D2A3E';
-const AXIS_TEXT = '#9FB0C3';
-const OUTLIER_COLOR = '#5A6B82';
+const BOX_COLOR = '#0D8A7C';
+const GRID_COLOR = '#E1E6EE';
+const AXIS_TEXT = '#51607A';
+const OUTLIER_COLOR = '#8A97AB';
 
 function fmtTick(v) {
   return Math.abs(v) >= 100 ? Math.round(v).toString() : v.toFixed(1);
@@ -108,7 +108,7 @@ export default function BoxPlotView({ chart, height = 280 }) {
           y={y(stats.q3)}
           width={boxHalfWidth * 2}
           height={Math.max(1, y(stats.q1) - y(stats.q3))}
-          fill="rgba(79,217,199,0.14)"
+          fill="rgba(13,138,124,0.14)"
           stroke={BOX_COLOR}
           strokeWidth="1.5"
         />

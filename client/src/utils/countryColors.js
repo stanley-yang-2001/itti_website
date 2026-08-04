@@ -17,8 +17,8 @@
 // color everywhere on the Observatory page (data panels, charts,
 // legends) for the lifetime of the session.
 const GOLDEN_ANGLE = 137.508;
-const SATURATION = 68;
-const LIGHTNESS = 62;
+const SATURATION = 62;
+const LIGHTNESS = 46;
 
 const assignedColors = new Map(); // countryCode -> color string
 let nextHueIndex = 0;

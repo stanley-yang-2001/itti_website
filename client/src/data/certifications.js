@@ -53,7 +53,7 @@ export const CERTIFICATIONS = [
     ],
     requirements: ['Complete all required learning modules', 'Participate in assigned case exercises', 'Pass the final knowledge assessment', 'Complete an applied trauma-informed practice plan', 'Agree to the ITTI professional standards and ethical-use statement'],
     credentialPackage: ['CTICP™ professional certificate', 'Digital credential badge', 'Certificate-verification access', 'Eligibility for listing in the ITTI professional directory', 'Eligibility to pursue advanced ITTI certifications and fellowship pathways'],
-    notice: 'CTICP™ is a professional-development credential issued by the International Truth and Trauma Institute. It is not a clinical license, treatment qualification, or substitute for professional licensure.'
+    notice: 'CTICP™ is a professional-development credential issued by the International Truth and Trauma Institute.'
   },
   {
     rank: 2,
@@ -97,7 +97,7 @@ export const CERTIFICATIONS = [
     ],
     requirements: ['Complete all required learning modules', 'Participate in assigned workplace case exercises', 'Pass the final knowledge assessment', 'Complete a workplace mental health and resilience action plan', 'Agree to the ITTI professional standards and scope-of-practice statement'],
     credentialPackage: ['CWMHRP™ professional certificate', 'Digital credential badge', 'Workplace mental health assessment toolkit', 'Supportive-conversation guide', 'Certificate-verification access', 'Eligibility for listing in the ITTI professional directory'],
-    notice: 'CWMHRP™ is a professional-development credential issued by the International Truth and Trauma Institute. It is not a clinical license, mental health treatment qualification, or substitute for professional licensure.'
+    notice: 'CWMHRP™ is a professional-development credential issued by the International Truth and Trauma Institute.'
   },
   {
     rank: 3,
@@ -140,7 +140,7 @@ export const CERTIFICATIONS = [
     ],
     requirements: ['Complete all required learning modules', 'Participate in assigned systems-analysis exercises', 'Pass the final knowledge assessment', 'Complete a trauma-informed systems assessment', 'Submit an institutional improvement or transformation plan'],
     credentialPackage: ['CTISP™ professional certificate', 'Digital credential badge', 'Trauma-informed systems assessment toolkit', 'Institutional-practice review checklist', 'Certificate-verification access', 'Eligibility to pursue FITTI™ and advanced ITTI pathways'],
-    notice: 'CTISP™ is a professional-development credential issued by the International Truth and Trauma Institute. It is not an academic degree, clinical license, or substitute for regulated professional licensure.'
+    notice: 'CTISP™ is a professional-development credential issued by the International Truth and Trauma Institute.'
   },
   {
     rank: 4,
@@ -183,7 +183,7 @@ export const CERTIFICATIONS = [
     ],
     requirements: ['Complete all required learning modules', 'Participate in assigned conflict-analysis exercises', 'Complete a mediation or dialogue simulation', 'Pass the final knowledge assessment', 'Submit a trauma-informed peacebuilding strategy'],
     credentialPackage: ['CGPCRP™ professional certificate', 'Digital credential badge', 'Conflict-analysis toolkit', 'Stakeholder-mapping template', 'Certificate-verification access', 'Consideration for selected peacebuilding, research, or Observatory initiatives'],
-    notice: 'CGPCRP™ is a professional-development credential issued by the International Truth and Trauma Institute. It does not constitute appointment as a diplomat, government negotiator, or accredited mediator.'
+    notice: 'CGPCRP™ is a professional-development credential issued by the International Truth and Trauma Institute.'
   },
   {
     rank: 5,
@@ -224,7 +224,7 @@ export const CERTIFICATIONS = [
     ],
     requirements: ['Maintain political impartiality', 'Avoid partisan advocacy while acting in an analytical capacity', 'Document evidence accurately', 'Follow the official ITTI ETTI coding and reporting standards'],
     credentialPackage: ['CEOPTA™ professional certificate', 'Digital credential badge', 'ITTI professional-directory listing', 'ETTI observation and coding toolkit', 'Election-trauma assessment template', 'Eligibility for selected Observatory projects'],
-    notice: 'CEOPTA™ is an ITTI professional-development credential. It does not constitute appointment, accreditation, or deployment as an official election observer for the UN, AU, EU, OSCE, or any national election commission.'
+    notice: 'CEOPTA™ is an ITTI professional-development credential.'
   },
   {
     rank: 6,
@@ -266,7 +266,7 @@ export const CERTIFICATIONS = [
     ],
     requirements: ['Complete all required learning modules', 'Participate in assigned data exercises', 'Produce and defend a trauma epidemiology profile', 'Agree to ITTI\u2019s research-integrity standards'],
     credentialPackage: ['CGTEA™ professional certificate', 'Digital credential badge', 'ITTI professional-directory listing', 'Trauma epidemiology profile template', 'Applied analytical toolkit', 'Eligibility for advanced ITTI burden-science and fellowship pathways'],
-    notice: 'CGTEA™ is a professional-development credential issued by the International Truth and Trauma Institute. It does not confer licensure as an epidemiologist, psychiatrist, or psychologist.'
+    notice: 'CGTEA™ is a professional-development credential issued by the International Truth and Trauma Institute.'
   },
   {
     rank: 7,
@@ -308,7 +308,7 @@ export const CERTIFICATIONS = [
     ],
     requirements: ['Complete all required learning modules', 'Participate in guided GTBI coding exercises', 'Produce and defend a GTBI country profile'],
     credentialPackage: ['Level 1 CGTBA™ certificate', 'Digital credential badge', 'ITTI professional-directory listing', 'GTBI coding manual', 'GTBI country-profile template', 'Eligibility to apply for Level 2 GTBSF™'],
-    notice: 'CGTBA™ certifies demonstrated application of ITTI\u2019s GTBI methodology. It does not confer an academic degree or independent professional status as a statistician, epidemiologist, or scientist.'
+    notice: 'CGTBA™ certifies demonstrated application of ITTI\u2019s GTBI methodology.'
   },
   {
     rank: 8,
@@ -350,7 +350,7 @@ export const CERTIFICATIONS = [
     ],
     requirements: ['Complete all required learning modules', 'Complete a structured country or community assessment', 'Submit a national-healing framework', 'Agree to ITTI\u2019s ethical standards for survivor dignity and political impartiality'],
     credentialPackage: ['CCTNHS™ professional certificate', 'Digital credential badge', 'Collective-trauma assessment framework', 'National-healing planning template', 'Eligibility for FITTI™ and advanced ITTI pathways', 'Opportunity to submit qualifying work for publication consideration'],
-    notice: 'CCTNHS™ is a professional-development credential issued by the International Truth and Trauma Institute. It does not constitute appointment to a government commission, truth commission, or international tribunal.'
+    notice: 'CCTNHS™ is a professional-development credential issued by the International Truth and Trauma Institute.'
   },
   {
     rank: 9,
@@ -392,7 +392,7 @@ export const CERTIFICATIONS = [
     ],
     requirements: ['Complete all required learning modules', 'Complete an approved Observatory capstone', 'Document all major evidence sources', 'Present or submit a written defense of the final product'],
     credentialPackage: ['CTODAF™ professional certificate', 'Digital credential badge', 'Country-profile template', 'Observatory coding and documentation tools', 'Eligibility for selected ITTI research assignments', 'Eligibility to pursue advanced ETTI, GTBI, and fellowship pathways'],
-    notice: 'CTODAF™ is a professional-development credential issued by the International Truth and Trauma Institute. It does not confer an academic degree or independent licensure as a statistician, epidemiologist, or data scientist.'
+    notice: 'CTODAF™ is a professional-development credential issued by the International Truth and Trauma Institute.'
   },
   {
     rank: 10,
@@ -435,7 +435,7 @@ export const CERTIFICATIONS = [
     ],
     requirements: ['Complete all required executive seminars', 'Complete mentor-guided institutional exercises', 'Submit an executive institutional assessment', 'Develop and present an institutional-transformation plan'],
     credentialPackage: ['EFTLIT™ Executive Fellow certificate', 'Digital executive credential badge', 'Executive institutional-assessment toolkit', 'Executive profile in the ITTI professional directory', 'Eligibility for selected advisory, speaking, or institutional initiatives', 'Eligibility for advanced ITTI fellowship and advisory pathways'],
-    notice: 'EFTLIT™ is a selective professional fellowship and executive-development credential issued by ITTI. It is not an academic degree, government appointment, or regulated professional license.'
+    notice: 'EFTLIT™ is a selective professional fellowship and executive-development credential issued by ITTI.'
   },
   {
     rank: 11,
@@ -478,7 +478,7 @@ export const CERTIFICATIONS = [
     ],
     requirements: ['Meet the admission requirement (CGTBA™ or equivalent)', 'Complete all required seminars and mentor sessions', 'Produce and defend an advanced GTBI research product'],
     credentialPackage: ['GTBSF™ advanced fellowship designation', 'Digital fellowship badge', 'Scientist Fellow profile in the ITTI professional directory', 'Eligibility for selected GTBI technical working groups', 'Eligibility for selected Observatory leadership roles', 'Publication or presentation consideration for qualifying work'],
-    notice: 'GTBSF™ is a selective professional fellowship designation issued by ITTI. It does not replace an accredited academic science degree, professional licensure, or institutional research appointment.'
+    notice: 'GTBSF™ is a selective professional fellowship designation issued by ITTI.'
   }
 ];
 

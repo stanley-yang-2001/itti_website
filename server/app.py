@@ -7,6 +7,12 @@ Serves:
                                  3-digit ISO numeric code (matches TopoJSON
                                  feature.id, zero-padded)
   GET /api/countries/<code>  -> single country's metric record
+  GET /api/country-profiles         -> dict of narrative country profiles
+                                        (historical overview + reference,
+                                        plus a dashboard note for the
+                                        subset with GTBI/ETTI data), keyed
+                                        the same way as /api/countries
+  GET /api/country-profiles/<code>  -> single country's narrative profile
 
 All country metrics (GTBI / ETTI / EVS / TIE / PDL / ITS) currently live as
 placeholders (0) in data/country_data.json. Swap that file's values — or
@@ -32,6 +38,7 @@ import json
 import os
 import re
 import tempfile
+from datetime import datetime
 
 import stripe
 from dotenv import load_dotenv
@@ -51,7 +58,7 @@ from models.database import Base, DATABASE_URL, engine
 from models.user import (
     create_user, get_user, get_user_by_google_sub, get_user_by_email,
     update_user, delete_user, restore_user, STATUS_HIDDEN,
-    ROLE_ADMIN, ROLE_PUBLISHER,
+    get_all_users, VALID_ROLES, ROLE_ADMIN, ROLE_PUBLISHER,
 )
 from models.document import (
     create_document, get_documents_by_user, get_document, delete_document,
@@ -75,10 +82,18 @@ from models.donation import (
     create_donation, get_donation, get_donation_by_confirmation_code,
     get_donation_by_payment_intent, attach_payment_intent,
     finalize_succeeded_donation, mark_donation_failed,
-    list_donations, get_donation_totals,
+)
+from models.enrollment import (
+    create_enrollment, get_enrollment, get_enrollment_by_payment_intent,
+    get_enrollments_for_user, attach_payment_intent as attach_enrollment_payment_intent,
+    finalize_succeeded_enrollment, mark_enrollment_failed, record_refund,
+    STATUS_SUCCEEDED as ENROLLMENT_STATUS_SUCCEEDED,
 )
 from storage import get_storage
-from email_backend import get_email_backend, send_password_reset_email, send_donation_confirmation_email
+from email_backend import (
+    get_email_backend, send_password_reset_email, send_donation_confirmation_email,
+    send_enrollment_confirmation_email,
+)
 import validation
 
 # Loads the repo-root .env (same file vite.config.js reads for
@@ -108,6 +123,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 WORLD_DATA_PATH = os.path.join(DATA_DIR, "world-110m.json")
 COUNTRY_DATA_PATH = os.path.join(DATA_DIR, "country_data.json")
+COUNTRY_PROFILES_PATH = os.path.join(DATA_DIR, "country_profiles.json")
 UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
 
 IS_PRODUCTION = os.environ.get("FLASK_ENV") == "production"
@@ -125,8 +141,10 @@ CLIENT_ORIGIN = os.environ.get("CLIENT_ORIGIN", "http://localhost:5173")
 # for the secret key, Webhooks page (after adding an endpoint pointing at
 # /api/donations/webhook) for the webhook signing secret.
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
-STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "")
 STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
+# Safe to send to the browser (that's the whole point of a publishable
+# key) - loadStripe() on the frontend needs it to mount <Elements>.
+STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "")
 if STRIPE_SECRET_KEY:
     stripe.api_key = STRIPE_SECRET_KEY
 
@@ -143,8 +161,6 @@ if IS_PRODUCTION:
         missing.append("GOOGLE_CLIENT_ID")
     if not STRIPE_SECRET_KEY:
         missing.append("STRIPE_SECRET_KEY")
-    if not STRIPE_PUBLISHABLE_KEY:
-        missing.append("STRIPE_PUBLISHABLE_KEY")
     if not STRIPE_WEBHOOK_SECRET:
         missing.append("STRIPE_WEBHOOK_SECRET")
     if missing:
@@ -297,6 +313,30 @@ def get_country(code):
     record = data.get(code.zfill(3)) or data.get(code)
     if record is None:
         abort(404, description=f"No data for country code '{code}'")
+    return jsonify(record)
+
+
+@app.get("/api/country-profiles")
+def get_country_profiles():
+    """
+    All narrative country profiles (historical trauma overview + APA
+    reference, plus an Observatory dashboard note for the subset of
+    countries with GTBI/ETTI data), keyed by the same zero-padded ISO
+    numeric code as /api/countries. Not every code in /api/countries has
+    an entry here - see data_scripts/country_profiles_extract.py's
+    docstring for which countries are covered and why a couple aren't
+    (most notably Kosovo, which has no ISO 3166-1 numeric code at all).
+    """
+    return jsonify(load_json(COUNTRY_PROFILES_PATH))
+
+
+@app.get("/api/country-profiles/<code>")
+def get_country_profile(code):
+    """A single country's narrative profile, if one exists."""
+    data = load_json(COUNTRY_PROFILES_PATH)
+    record = data.get(code.zfill(3)) or data.get(code)
+    if record is None:
+        abort(404, description=f"No profile for country code '{code}'")
     return jsonify(record)
 
 
@@ -562,6 +602,65 @@ def delete_account():
     create_user_event(user_id=user.id, document_id=None, action=CRUDAction.DELETE)
     session.pop("user_id", None)
     return jsonify({"status": "account deleted"})
+
+
+# ---------------------------------------------------------------------------
+# Admin: user access-level management. Backs the "Manage Users" panel in
+# Settings (admin-only). Role changes were previously CLI-only on purpose
+# (see promote_user.py's docstring) - this adds an in-app path for the
+# same action, still gated to admin and still logged as a UserEvent per
+# change, same accountability the CLI script already had.
+# ---------------------------------------------------------------------------
+
+@app.get("/api/admin/users")
+@roles_required("admin")
+def list_all_users():
+    """All visible (non-deleted) user accounts, for the admin role-management panel."""
+    users = get_all_users()
+    return jsonify([u.to_public_dict() for u in users])
+
+
+@app.post("/api/admin/users/roles")
+@roles_required("admin")
+def update_user_roles():
+    """
+    Body: { "changes": [ { "user_id": 12, "role": "publisher" }, ... ] }
+    Applies a batch of role changes in one request - the admin panel
+    stages multiple dropdown edits client-side and sends them all at
+    once on "Confirm", rather than one request per row.
+
+    Validates every change BEFORE applying any of them, so a single bad
+    entry (unknown user, invalid role) can't leave the batch half-applied.
+    """
+    body = request.get_json(silent=True) or {}
+    changes = body.get("changes")
+    if not isinstance(changes, list) or not changes:
+        abort(400, description="'changes' must be a non-empty list of {user_id, role}")
+
+    admin_user = get_current_user()
+    resolved = []  # [(target_user, new_role), ...]
+    for change in changes:
+        user_id = change.get("user_id")
+        role = (change.get("role") or "").strip().lower()
+        if not isinstance(user_id, int):
+            abort(400, description=f"Invalid user_id: {change.get('user_id')!r}")
+        if role not in VALID_ROLES:
+            abort(400, description=f"'{role}' is not a valid role. Choose from: {', '.join(sorted(VALID_ROLES))}")
+        target = get_user(user_id)
+        if target is None:
+            abort(404, description=f"No user found with id {user_id}")
+        resolved.append((target, role))
+
+    updated = []
+    for target, role in resolved:
+        if target.role != role:
+            old_role = target.role
+            update_user(target.id, role=role)
+            create_user_event(user_id=admin_user.id, document_id=None, action=CRUDAction.UPDATE)
+            logger.info("admin_user_id=%s changed user_id=%s role: %s -> %s", admin_user.id, target.id, old_role, role)
+        updated.append(get_user(target.id))
+
+    return jsonify([u.to_public_dict() for u in updated])
 
 
 # ---------------------------------------------------------------------------
@@ -1254,28 +1353,29 @@ def remove_observatory_chart(chart_id):
 
 
 # ---------------------------------------------------------------------------
-# Donations - Stripe Payment Element, embedded directly on /donate rather
-# than a redirect to a Stripe-hosted page. Open to anyone, logged in or not.
+# Donations - embedded Stripe Payment Element. Open to anyone, logged in or
+# not.
 #
 # Flow:
 #   1. POST /api/donations/payment-intent creates a "pending" Donation row
 #      (so a confirmation_code exists up front) and a Stripe PaymentIntent
-#      with automatic_payment_methods enabled - Stripe itself decides
-#      which methods the embedded Payment Element actually offers (card,
-#      Cash App Pay, Link, US bank debit, etc.) based on the amount,
-#      currency, and what's turned on in the Stripe Dashboard, so nothing
-#      here hardcodes a payment method list. Returns the PaymentIntent's
-#      client_secret to the frontend.
-#   2. The frontend mounts <PaymentElement> using that client_secret and
-#      calls stripe.confirmPayment() when the donor submits - the actual
-#      card/bank/wallet entry and the charge itself both happen through
-#      Stripe.js, so no card data ever touches this server.
-#   3. confirmPayment() redirects to /donate/thank-you?payment_intent=...
-#      Two independent paths both funnel through the same
+#      with automatic_payment_methods enabled - Stripe itself decides which
+#      methods to actually offer (card, Cash App Pay, Link, US bank debit,
+#      etc.) based on the amount, currency, and what's turned on in the
+#      Stripe Dashboard, so nothing here has to hardcode a payment method
+#      list. Returns the PaymentIntent's client_secret, which the frontend
+#      uses to mount Stripe's own <PaymentElement> directly on /donate -
+#      card details are entered there and never touch this app's code or
+#      servers.
+#   2. stripe.confirmPayment() (frontend) submits the charge and redirects
+#      the browser back to /donate/thank-you?payment_intent=...&redirect_
+#      status=... on completion (Stripe.js appends these itself).
+#   3. Two independent paths both funnel through the same
 #      finalize_succeeded_donation() (models/donation.py), which is safe
 #      to call twice for one donation:
 #        a. POST /api/donations/webhook - Stripe's own server-to-server
-#           notification, the authoritative path in production.
+#           notification (listens for payment_intent.succeeded), the
+#           authoritative path in production.
 #        b. GET /api/donations/payment-intent/<id> - called by the
 #           thank-you page itself, so the flow still works end-to-end in
 #           local dev with no public webhook URL configured at all.
@@ -1290,11 +1390,7 @@ DONATION_CURRENCY = "usd"
 
 @app.get("/api/donations/config")
 def get_donation_config():
-    """
-    Preset amounts + the Stripe *publishable* key (safe to expose - it's
-    designed to be public, unlike STRIPE_SECRET_KEY) so the frontend can
-    load Stripe.js and never has to hardcode either one separately.
-    """
+    """Preset amounts + the publishable key, so the frontend never hardcodes either separately from this server-side source of truth."""
     return jsonify({
         "presets_cents": DONATION_PRESETS_CENTS,
         "currency": DONATION_CURRENCY,
@@ -1326,16 +1422,12 @@ def create_donation_payment_intent():
     donation = create_donation(first_name, last_name, email, amount_cents, currency=DONATION_CURRENCY)
 
     try:
-        intent = stripe.PaymentIntent.create(
+        payment_intent = stripe.PaymentIntent.create(
             amount=amount_cents,
             currency=DONATION_CURRENCY,
             automatic_payment_methods={"enabled": True},
-            # Deliberately NOT setting receipt_email here - that would make
-            # Stripe send its own generic receipt on top of the branded
-            # confirmation email send_donation_confirmation_email already
-            # sends (with the confirmation code, thank-you message, etc.),
-            # so donors would get two emails for one gift.
-            description=f"Donation to the International Truth & Trauma Institute — {donation.confirmation_code}",
+            receipt_email=email,
+            description=f"Donation to the International Truth & Trauma Institute - Confirmation {donation.confirmation_code}",
             metadata={
                 "donation_id": str(donation.id),
                 "confirmation_code": donation.confirmation_code,
@@ -1346,15 +1438,15 @@ def create_donation_payment_intent():
         mark_donation_failed(donation.id)
         abort(502, description="We couldn't reach our payment processor. Please try again in a moment.")
 
-    attach_payment_intent(donation.id, intent.id)
+    attach_payment_intent(donation.id, payment_intent.id)
 
     return jsonify({
-        "client_secret": intent.client_secret,
+        "client_secret": payment_intent.client_secret,
         "confirmation_code": donation.confirmation_code,
     }), 201
 
 
-def _finalize_from_payment_intent(intent):
+def _finalize_donation_from_payment_intent(stripe_payment_intent):
     """
     Shared by the webhook and the thank-you page's status check: given a
     Stripe PaymentIntent object that's already known to have succeeded,
@@ -1362,18 +1454,22 @@ def _finalize_from_payment_intent(intent):
     Sends the confirmation email exactly once (only on the call that
     actually transitions the row from pending -> succeeded).
     """
-    donation_id = (intent.get("metadata") or {}).get("donation_id")
+    donation_id = (stripe_payment_intent.get("metadata") or {}).get("donation_id")
     if not donation_id:
-        logger.warning("PaymentIntent %s has no donation_id in metadata", intent.get("id"))
+        logger.warning("Stripe PaymentIntent %s has no donation_id in metadata", stripe_payment_intent.get("id"))
         return None
 
-    # payment_method_types reflects the types Stripe was willing to offer
-    # for this PaymentIntent (via automatic_payment_methods) - informational
-    # only, always present without needing to expand anything on the intent.
+    charges = (stripe_payment_intent.get("charges") or {}).get("data") or []
+    payment_method_types = stripe_payment_intent.get("payment_method_types")
+    if not payment_method_types and charges:
+        pm_details = charges[0].get("payment_method_details") or {}
+        if pm_details.get("type"):
+            payment_method_types = [pm_details["type"]]
+
     donation, just_finalized = finalize_succeeded_donation(
         int(donation_id),
-        stripe_payment_intent_id=intent.get("id"),
-        payment_method_types=intent.get("payment_method_types"),
+        stripe_payment_intent_id=stripe_payment_intent.get("id"),
+        payment_method_types=payment_method_types,
     )
     if donation and just_finalized:
         try:
@@ -1406,34 +1502,37 @@ def stripe_donation_webhook():
         abort(400, description="Invalid signature")
 
     if event["type"] == "payment_intent.succeeded":
-        _finalize_from_payment_intent(event["data"]["object"])
+        _finalize_donation_from_payment_intent(event["data"]["object"])
 
     return jsonify({"received": True})
 
 
-@app.get("/api/donations/payment-intent/<intent_id>")
+@app.get("/api/donations/payment-intent/<payment_intent_id>")
 @limiter.limit("60 per hour")
-def get_donation_by_payment_intent_route(intent_id):
+def get_donation_by_payment_intent_id(payment_intent_id):
     """
-    Called by the thank-you page right after Stripe.js redirects back
-    from confirming payment. Re-checks the PaymentIntent with Stripe
-    directly and finalizes the donation if it's succeeded but the
-    webhook hasn't landed yet (or isn't configured at all, e.g. local
-    dev) - see _finalize_from_payment_intent for why this is safe to run
+    Called by the thank-you page right after Stripe redirects back from
+    confirmPayment(). Re-checks the PaymentIntent with Stripe directly and
+    finalizes the donation if it's already succeeded but the webhook
+    hasn't landed yet (or isn't configured at all, e.g. local dev) - see
+    _finalize_donation_from_payment_intent for why this is safe to run
     alongside the webhook rather than in place of it.
     """
     if not STRIPE_SECRET_KEY:
         abort(503, description="Donations aren't configured on this server yet.")
 
     try:
-        intent = stripe.PaymentIntent.retrieve(intent_id)
+        payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
     except stripe.StripeError:
-        abort(404, description="Donation not found")
+        abort(404, description="Payment not found")
 
-    if intent.get("status") == "succeeded":
-        donation = _finalize_from_payment_intent(intent)
+    if payment_intent.get("status") == "succeeded":
+        donation = _finalize_donation_from_payment_intent(payment_intent)
     else:
-        donation = get_donation_by_payment_intent(intent_id)
+        donation = get_donation_by_payment_intent(payment_intent_id)
+        if donation and payment_intent.get("status") in ("canceled",):
+            mark_donation_failed(donation.id)
+            donation = get_donation(donation.id)
 
     if donation is None:
         abort(404, description="Donation not found")
@@ -1441,42 +1540,231 @@ def get_donation_by_payment_intent_route(intent_id):
     return jsonify(donation.to_dict())
 
 
-@app.get("/api/donations")
-@roles_required("admin")
-def list_donations_route():
-    """
-    Admin-only donations list, for looking a gift up (e.g. a donor calls
-    in with just their confirmation code) or getting a quick sense of
-    recent activity. Not exposed to publishers - donor PII (email, name)
-    is more sensitive than the content-moderation data publishers
-    otherwise see.
-    """
-    status = request.args.get("status") or None
-    search = request.args.get("q") or None
-    try:
-        limit = min(int(request.args.get("limit", 50)), 200)
-        offset = max(int(request.args.get("offset", 0)), 0)
-    except ValueError:
-        abort(400, description="limit/offset must be integers")
+# ---------------------------------------------------------------------------
+# Certification enrollment - embedded Stripe Payment Element, same pattern
+# as donations above, but with two key differences:
+#   1. Requires login (tuition payments are tied to a user's account, not
+#      a one-off guest purchase) - the confirmation email and receipt use
+#      the logged-in user's name/email rather than collecting them again.
+#   2. The price is NEVER taken from the client. CERTIFICATION_CATALOG
+#      below is the server-side source of truth for cert_code -> name/
+#      tuition_cents; the client only ever sends a cert_code, and the
+#      amount charged always comes from this dict. Keep it in sync with
+#      client/src/data/certifications.js if a certification's name or
+#      tuition changes there.
+#
+# Refund policy (also shown to the user before checkout - see
+# CertificationEnrollModal.jsx): enrollments canceled within 7 days of
+# purchase are eligible for a 50% refund; no refunds after 7 days.
+# refund_enrollment() below enforces this from the server side rather
+# than trusting a client-supplied refund amount.
+# ---------------------------------------------------------------------------
 
-    donations, total = list_donations(status=status, search=search, limit=limit, offset=offset)
+CERTIFICATION_CATALOG = {
+    "CTICP": {"name": "Certified Trauma-Informed Care Practitioner", "tuition_cents": 34900},
+    "CWMHRP": {"name": "Certified Workplace Mental Health & Resilience Practitioner", "tuition_cents": 49900},
+    "CTISP": {"name": "Certified Trauma-Informed Systems Practitioner", "tuition_cents": 49900},
+    "CGPCRP": {"name": "Certified Global Peace & Conflict Resolution Practitioner", "tuition_cents": 49900},
+    "CEOPTA": {"name": "Certified Election Observation & Political Trauma Analyst", "tuition_cents": 49900},
+    "CGTEA": {"name": "Certified Global Trauma Epidemiology Analyst", "tuition_cents": 69900},
+    "CGTBA": {"name": "Certified Global Trauma Burden Analyst", "tuition_cents": 79900},
+    "CCTNHS": {"name": "Certified Collective Trauma & National Healing Specialist", "tuition_cents": 99700},
+    "CTODAF": {"name": "Certified Trauma Observatory & Data Analytics Fellow", "tuition_cents": 125000},
+    "EFTLIT": {"name": "Executive Fellow in Trauma Leadership & Institutional Transformation", "tuition_cents": 250000},
+    "GTBSF": {"name": "Global Trauma Burden Scientist Fellow", "tuition_cents": 250000},
+}
+ENROLLMENT_CURRENCY = "usd"
+
+# Refund policy thresholds, in days since enrollment. Matches the copy
+# shown on the enroll modal and in the confirmation email - change all
+# three together if this policy ever changes.
+REFUND_FULL_WINDOW_DAYS = 0  # no full-refund window; see REFUND_PARTIAL_WINDOW_DAYS
+REFUND_PARTIAL_WINDOW_DAYS = 7
+REFUND_PARTIAL_FRACTION = 0.5
+
+
+@app.get("/api/certifications/config")
+def get_certification_config():
+    """Cert code -> name/tuition, plus the publishable key - mirrors get_donation_config above."""
     return jsonify({
-        "donations": [d.to_admin_dict() for d in donations],
-        "total": total,
-        "limit": limit,
-        "offset": offset,
-        "totals": get_donation_totals(),
+        "certifications": [
+            {"cert_code": code, "name": info["name"], "tuition_cents": info["tuition_cents"]}
+            for code, info in CERTIFICATION_CATALOG.items()
+        ],
+        "currency": ENROLLMENT_CURRENCY,
+        "publishable_key": STRIPE_PUBLISHABLE_KEY,
     })
 
 
-@app.get("/api/donations/lookup/<confirmation_code>")
+@app.post("/api/certifications/payment-intent")
+@login_required
+@limiter.limit("20 per hour")
+def create_enrollment_payment_intent():
+    if not STRIPE_SECRET_KEY:
+        abort(503, description="Enrollment isn't configured on this server yet. Please try again later.")
+
+    body = request.get_json(silent=True) or {}
+    cert_code = (body.get("cert_code") or "").strip().upper()
+    catalog_entry = CERTIFICATION_CATALOG.get(cert_code)
+    if catalog_entry is None:
+        abort(400, description="Unknown certification code")
+
+    user = get_current_user()
+    enrollment = create_enrollment(
+        user.id, cert_code, catalog_entry["name"], catalog_entry["tuition_cents"], currency=ENROLLMENT_CURRENCY
+    )
+
+    try:
+        payment_intent = stripe.PaymentIntent.create(
+            amount=catalog_entry["tuition_cents"],
+            currency=ENROLLMENT_CURRENCY,
+            automatic_payment_methods={"enabled": True},
+            receipt_email=user.email,
+            description=f"{catalog_entry['name']} ({cert_code}\u2122) \u2014 ITTI Certification - Confirmation {enrollment.confirmation_code}",
+            metadata={
+                "enrollment_id": str(enrollment.id),
+                "confirmation_code": enrollment.confirmation_code,
+                "cert_code": cert_code,
+            },
+        )
+    except stripe.StripeError as e:
+        logger.warning("Stripe PaymentIntent creation failed for enrollment_id=%s: %s", enrollment.id, e)
+        mark_enrollment_failed(enrollment.id)
+        abort(502, description="We couldn't reach our payment processor. Please try again in a moment.")
+
+    attach_enrollment_payment_intent(enrollment.id, payment_intent.id)
+
+    return jsonify({
+        "client_secret": payment_intent.client_secret,
+        "confirmation_code": enrollment.confirmation_code,
+    }), 201
+
+
+def _finalize_enrollment_from_payment_intent(stripe_payment_intent):
+    """Mirrors _finalize_donation_from_payment_intent above, for enrollments instead of donations."""
+    enrollment_id = (stripe_payment_intent.get("metadata") or {}).get("enrollment_id")
+    if not enrollment_id:
+        logger.warning("Stripe PaymentIntent %s has no enrollment_id in metadata", stripe_payment_intent.get("id"))
+        return None
+
+    charges = (stripe_payment_intent.get("charges") or {}).get("data") or []
+    payment_method_types = stripe_payment_intent.get("payment_method_types")
+    if not payment_method_types and charges:
+        pm_details = charges[0].get("payment_method_details") or {}
+        if pm_details.get("type"):
+            payment_method_types = [pm_details["type"]]
+
+    enrollment, just_finalized = finalize_succeeded_enrollment(
+        int(enrollment_id),
+        stripe_payment_intent_id=stripe_payment_intent.get("id"),
+        payment_method_types=payment_method_types,
+    )
+    if enrollment and just_finalized:
+        try:
+            send_enrollment_confirmation_email(email_backend, enrollment, enrollment.user.email, enrollment.user.name or enrollment.user.email)
+        except Exception:
+            logger.exception("Failed to send enrollment confirmation email for enrollment_id=%s", enrollment.id)
+    return enrollment
+
+
+@app.post("/api/certifications/webhook")
+def stripe_enrollment_webhook():
+    """Stripe's server-to-server notification for enrollment payments - see stripe_donation_webhook's docstring, same reasoning applies here."""
+    if not STRIPE_WEBHOOK_SECRET:
+        abort(503, description="Webhook not configured")
+
+    payload = request.get_data()
+    sig_header = request.headers.get("Stripe-Signature", "")
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, STRIPE_WEBHOOK_SECRET)
+    except (ValueError, stripe.SignatureVerificationError):
+        logger.warning("Rejected enrollment webhook: invalid payload or signature")
+        abort(400, description="Invalid signature")
+
+    if event["type"] == "payment_intent.succeeded":
+        _finalize_enrollment_from_payment_intent(event["data"]["object"])
+
+    return jsonify({"received": True})
+
+
+@app.get("/api/certifications/enrollments/payment-intent/<payment_intent_id>")
+@limiter.limit("60 per hour")
+def get_enrollment_by_payment_intent_id(payment_intent_id):
+    """Called by the enrollment thank-you page right after a Stripe redirect - see get_donation_by_payment_intent_id's docstring, same reasoning applies here."""
+    if not STRIPE_SECRET_KEY:
+        abort(503, description="Enrollment isn't configured on this server yet.")
+
+    try:
+        payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+    except stripe.StripeError:
+        abort(404, description="Payment not found")
+
+    if payment_intent.get("status") == "succeeded":
+        enrollment = _finalize_enrollment_from_payment_intent(payment_intent)
+    else:
+        enrollment = get_enrollment_by_payment_intent(payment_intent_id)
+        if enrollment and payment_intent.get("status") in ("canceled",):
+            mark_enrollment_failed(enrollment.id)
+            enrollment = get_enrollment(enrollment.id)
+
+    if enrollment is None:
+        abort(404, description="Enrollment not found")
+
+    return jsonify(enrollment.to_dict())
+
+
+@app.get("/api/certifications/enrollments/me")
+@login_required
+def get_my_enrollments():
+    """The logged-in user's own enrollment history (successful, pending, refunded, etc.) - shown on their Profile page."""
+    user = get_current_user()
+    enrollments = get_enrollments_for_user(user.id)
+    return jsonify([e.to_dict() for e in enrollments])
+
+
+@app.post("/api/certifications/enrollments/<int:enrollment_id>/refund")
 @roles_required("admin")
-def lookup_donation_route(confirmation_code):
-    """Direct single-donation lookup by confirmation code, for support use."""
-    donation = get_donation_by_confirmation_code(confirmation_code)
-    if donation is None:
-        abort(404, description="No donation found with that confirmation code")
-    return jsonify(donation.to_admin_dict())
+def refund_enrollment(enrollment_id):
+    """
+    Issues a refund through Stripe for a succeeded enrollment, following
+    the stated policy rather than an amount supplied in the request:
+      - Within REFUND_PARTIAL_WINDOW_DAYS (7) of purchase: 50% refund.
+      - After that: no refund (this route 400s rather than issuing $0).
+    Admin-only since this moves real money - not self-service for the
+    enrolled user (they contact ITTI, per the confirmation email, and an
+    admin processes it here).
+    """
+    if not STRIPE_SECRET_KEY:
+        abort(503, description="Enrollment isn't configured on this server yet.")
+
+    enrollment = get_enrollment(enrollment_id)
+    if enrollment is None:
+        abort(404, description="Enrollment not found")
+    if enrollment.status != ENROLLMENT_STATUS_SUCCEEDED:
+        abort(400, description=f"Only a succeeded enrollment can be refunded (current status: {enrollment.status})")
+    if not enrollment.stripe_payment_intent_id:
+        abort(400, description="This enrollment has no associated payment to refund")
+
+    days_since_purchase = (datetime.utcnow() - enrollment.created_at).days
+    if days_since_purchase > REFUND_PARTIAL_WINDOW_DAYS:
+        abort(400, description=(
+            f"This enrollment is {days_since_purchase} days old. Per policy, refunds are only available "
+            f"within {REFUND_PARTIAL_WINDOW_DAYS} days of purchase."
+        ))
+    refund_cents = round(enrollment.tuition_cents * REFUND_PARTIAL_FRACTION)
+
+    try:
+        stripe_refund = stripe.Refund.create(
+            payment_intent=enrollment.stripe_payment_intent_id,
+            amount=refund_cents,
+        )
+    except stripe.StripeError as e:
+        logger.warning("Stripe refund failed for enrollment_id=%s: %s", enrollment.id, e)
+        abort(502, description="We couldn't reach our payment processor. Please try again in a moment.")
+
+    updated = record_refund(enrollment.id, refund_cents, stripe_refund.id, full=(refund_cents >= enrollment.tuition_cents))
+    logger.info("Refunded enrollment_id=%s amount_cents=%d admin_user_id=%s", enrollment.id, refund_cents, get_current_user().id)
+    return jsonify(updated.to_dict())
 
 
 if __name__ == "__main__":

@@ -5,7 +5,7 @@ import { fetchWorldData } from "../../api.js";
 import { INDICATOR_VARIABLES, getCountriesWithData, getYearRecord, getNumericValue } from "../../utils/ObservatoryData";
 import { formatNumber } from "../../utils/statsHelpers";
 
-const MUTED_FILL = "#1B2434";
+const MUTED_FILL = "#DCE1E9";
 
 /**
  * A flat (non-globe) choropleth: one snapshot year + one variable at a
@@ -90,7 +90,7 @@ export default function WorldMapView({ indicator, countries }) {
         const value = valuesByCode[code];
         return value === undefined ? MUTED_FILL : colorScale(value);
       })
-      .attr("stroke", "#080D16")
+      .attr("stroke", "#FFFFFF")
       .attr("stroke-width", 0.5)
       .append("title")
       .text((d) => {

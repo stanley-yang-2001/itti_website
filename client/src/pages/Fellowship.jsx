@@ -112,7 +112,10 @@ export default function Fellowship() {
             The International Truth &amp; Trauma Institute is a program of Outlets for Hope, Inc. — founded and
             chartered under Dr. Luke Chike Igweobi, Chancellor.
           </p>
-          <a href="mailto:itti@ofhusa.org" className="fellows-btn primary">Inquire About a Nomination</a>
+          <p>
+            For more information, please contact{' '}
+            <a href="mailto:fellowship@ittiglobal.org" className="fellows-contact-link">fellowship@ittiglobal.org</a>.
+          </p>
         </div>
       </section>
       </Reveal>
@@ -142,7 +145,7 @@ export default function Fellowship() {
 
         {FELLOWS.length === 0 ? (
           <div className="fellows-empty">
-            <p className="fellows-empty-title">Our inaugural cohort is being announced soon.</p>
+            <p className="fellows-empty-title">Fellows.</p>
             <p className="fellows-empty-sub">
               Fellows will be presented here with their photo, name, biography, and fellowship level as they're
               admitted into the program.

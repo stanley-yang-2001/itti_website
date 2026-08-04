@@ -8,6 +8,20 @@ function sectionHasRealData(section) {
   return Object.keys(section).some((year) => year !== 'Data Pending');
 }
 
+function latestRealYear(section) {
+  if (!section || typeof section !== 'object') return null;
+  const years = Object.keys(section)
+    .filter((year) => year !== 'Data Pending')
+    .map((year) => parseInt(year, 10))
+    .filter((year) => Number.isFinite(year));
+  if (years.length === 0) return null;
+  return Math.max(...years);
+}
+
+function numericOrNull(value) {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
 /**
  * Turns the /api/countries payload (keyed by zero-padded ISO numeric code,
  * matching the TopoJSON feature ids the globe already uses) into a lookup
@@ -27,4 +41,25 @@ export function computeCountryDataStatus(countriesByCode) {
   }
 
   return status;
+}
+
+/**
+ * Lightweight per-country lookup for the globe's hover tooltip: just
+ * the most recent real year + score for each index, not the full
+ * record. Same "Data Pending" skip logic as computeCountryDataStatus()
+ * above and getAvailableYears() in countryData.js.
+ */
+export function computeCountryQuickStats(countriesByCode) {
+  const stats = {};
+  if (!countriesByCode) return stats;
+
+  for (const [code, record] of Object.entries(countriesByCode)) {
+    const ettiYear = latestRealYear(record?.ETTI);
+    const gtbiYear = latestRealYear(record?.GTBI);
+    const etti = ettiYear !== null ? { year: ettiYear, score: numericOrNull(record.ETTI[String(ettiYear)]?.etti) } : null;
+    const gtbi = gtbiYear !== null ? { year: gtbiYear, score: numericOrNull(record.GTBI[String(gtbiYear)]?.gtbi) } : null;
+    if (etti || gtbi) stats[code] = { name: record?.name, etti, gtbi };
+  }
+
+  return stats;
 }

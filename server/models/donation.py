@@ -2,10 +2,10 @@
 Donation model and CRUD functions.
 
 A donation row is created (status="pending") the moment someone submits
-the donate form, BEFORE Stripe is ever involved - so a confirmation_code
-exists and can be embedded in the PaymentIntent's metadata up front, and
-reconciling a Stripe webhook/event back to a row never depends on Stripe
-having succeeded first.
+the donate form, BEFORE they're sent to Stripe Checkout - so a
+confirmation_code exists and can be embedded in the Checkout Session's
+metadata up front, and reconciling a Stripe webhook/event back to a row
+never depends on Stripe having succeeded first.
 
 finalize_succeeded_donation() is the single place a donation is ever
 marked paid. It's written to be safely callable twice for the same
@@ -17,7 +17,7 @@ because it only acts when status is still "pending".
 import secrets
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, DateTime, Text, func
+from sqlalchemy import Column, Integer, String, DateTime, Text
 
 from .database import Base, Session
 
@@ -48,14 +48,10 @@ class Donation(Base):
 
     status = Column(String(20), nullable=False, default=STATUS_PENDING, index=True)
 
-    # Legacy: populated only by donations created before the switch to an
-    # embedded Payment Element (see attach_payment_intent below). Left in
-    # place rather than migrated away since it costs nothing to keep and
-    # avoids rewriting historical rows.
     stripe_checkout_session_id = Column(String(255), nullable=True, index=True)
-    stripe_payment_intent_id = Column(String(255), nullable=True, index=True)
+    stripe_payment_intent_id = Column(String(255), nullable=True)
     # Comma-joined list of payment method types Stripe actually offered/used for
-    # this donation (e.g. "card", "card,cashapp,link") - informational only.
+    # this session (e.g. "card", "card,cashapp,link") - informational only.
     payment_method_types = Column(String(255), nullable=True)
 
     # Free-text note from the donor, if the frontend ever grows one - not
@@ -92,18 +88,6 @@ class Donation(Base):
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 
-    def to_admin_dict(self):
-        """Everything in to_dict() plus internal/Stripe references - only
-        ever returned from admin-only routes, unlike to_dict()."""
-        data = self.to_dict()
-        data.update({
-            "id": self.id,
-            "stripe_payment_intent_id": self.stripe_payment_intent_id,
-            "payment_method_types": self.payment_method_types.split(",") if self.payment_method_types else [],
-            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
-        })
-        return data
-
 
 # ---------- CRUD ----------
 
@@ -128,8 +112,30 @@ def create_donation(first_name, last_name, email, amount_cents, currency="usd"):
         session.close()
 
 
+def attach_checkout_session(donation_id, stripe_checkout_session_id):
+    """Records which Stripe Checkout Session a pending donation is waiting on."""
+    session = Session()
+    try:
+        donation = session.query(Donation).filter(Donation.id == donation_id).first()
+        if donation is None:
+            return None
+        donation.stripe_checkout_session_id = stripe_checkout_session_id
+        session.commit()
+        session.refresh(donation)
+        return donation
+    finally:
+        session.close()
+
+
 def attach_payment_intent(donation_id, stripe_payment_intent_id):
-    """Records which Stripe PaymentIntent a pending donation is waiting on."""
+    """
+    Records which Stripe PaymentIntent a pending donation is waiting on -
+    the embedded Payment Element flow's equivalent of
+    attach_checkout_session above, called right after the PaymentIntent
+    is created (before payment succeeds), so the webhook and the
+    thank-you page's status check both have something to look this
+    donation up by.
+    """
     session = Session()
     try:
         donation = session.query(Donation).filter(Donation.id == donation_id).first()
@@ -159,6 +165,18 @@ def get_donation_by_confirmation_code(confirmation_code):
         session.close()
 
 
+def get_donation_by_checkout_session(stripe_checkout_session_id):
+    session = Session()
+    try:
+        return (
+            session.query(Donation)
+            .filter(Donation.stripe_checkout_session_id == stripe_checkout_session_id)
+            .first()
+        )
+    finally:
+        session.close()
+
+
 def get_donation_by_payment_intent(stripe_payment_intent_id):
     session = Session()
     try:
@@ -167,53 +185,6 @@ def get_donation_by_payment_intent(stripe_payment_intent_id):
             .filter(Donation.stripe_payment_intent_id == stripe_payment_intent_id)
             .first()
         )
-    finally:
-        session.close()
-
-
-def list_donations(status=None, search=None, limit=50, offset=0):
-    """
-    Admin-facing listing: newest first, optionally filtered by status and/or
-    a search term matched against confirmation code, email, and name
-    (case-insensitive substring match on each, OR'd together). Returns
-    (donations, total_count) so the frontend can page through results
-    without loading everything at once.
-    """
-    session = Session()
-    try:
-        query = session.query(Donation)
-        if status:
-            query = query.filter(Donation.status == status)
-        if search:
-            like = f"%{search.strip()}%"
-            query = query.filter(
-                (Donation.confirmation_code.ilike(like))
-                | (Donation.email.ilike(like))
-                | (Donation.first_name.ilike(like))
-                | (Donation.last_name.ilike(like))
-            )
-        total = query.count()
-        donations = (
-            query.order_by(Donation.created_at.desc())
-            .limit(limit)
-            .offset(offset)
-            .all()
-        )
-        return donations, total
-    finally:
-        session.close()
-
-
-def get_donation_totals():
-    """Lifetime succeeded-donation totals, for a small summary strip above the admin list."""
-    session = Session()
-    try:
-        count, total_cents = (
-            session.query(func.count(Donation.id), func.coalesce(func.sum(Donation.amount_cents), 0))
-            .filter(Donation.status == STATUS_SUCCEEDED)
-            .one()
-        )
-        return {"count": count, "total_cents": int(total_cents)}
     finally:
         session.close()
 

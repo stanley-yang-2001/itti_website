@@ -138,6 +138,10 @@ const Globe = forwardRef(function Globe({ worldData, onCountryClick, countryStat
         g.select('.sphere-glow').attr('r', scaleBase * k * 1.5);
       });
     svg.call(zoom);
+    // Start noticeably more zoomed out than the natural 1x scale, so the
+    // whole sphere reads clearly as a globe floating in its box with
+    // room around it, rather than nearly filling the frame.
+    svg.call(zoom.transform, d3.zoomIdentity.scale(0.65));
 
     let autorotate = d3.timer(function () {
       const rotate = projection.rotate();
