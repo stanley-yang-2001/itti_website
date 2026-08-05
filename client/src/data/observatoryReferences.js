@@ -27,6 +27,17 @@ export const ETTI_METHODOLOGY_NOTES = [
       "kidnappings/abductions, and attack or incident counts, normalized to 0-100. It's the clearest " +
       "representation of overt coercive violence in the election cycle. Injuries are not operationalized - " +
       "ACLED doesn't provide injury data, so this component is acknowledged as unavailable rather than estimated.",
+    formula: "EVS_raw = 0.40·D + 0.20·K + 0.15·A",
+    formulaVariables: [
+      { symbol: "D", meaning: "Deaths — total fatalities recorded across all events in the election's coverage window." },
+      { symbol: "K", meaning: "Kidnappings — count of abduction / forced-disappearance events." },
+      { symbol: "A", meaning: "Attacks/Incidents — total event count, excluding Protests and Riots." },
+    ],
+    formulaNote:
+      "Injuries (I) appear in the source workbook's weighting scheme but are not currently populated - ACLED has " +
+      "no injury field, so this term is omitted from the raw score rather than estimated. EVS_raw is then " +
+      "min-max normalized to 0-100 across all country-elections in the panel: " +
+      "EVS = (EVS_raw − min(EVS_raw)) / (max(EVS_raw) − min(EVS_raw)) × 100.",
   },
   {
     variable: "TIE — Threat & Intimidation Environment",
@@ -35,6 +46,16 @@ export const ETTI_METHODOLOGY_NOTES = [
       "political intimidation, threats to candidates/press/voters, harassment, and politically-motivated " +
       "arrests or detentions, mapped from ACLED-coded event categories to reflect wider patterns of fear, " +
       "pressure, and disruption around the vote.",
+    formula: "TIE_raw = 0.35·P + 0.30·T + 0.20·H + 0.15·R",
+    formulaVariables: [
+      { symbol: "P", meaning: "Political Intimidation — violence against civilians (attacks, sexual violence) and armed clashes/battles." },
+      { symbol: "T", meaning: "Threats to Candidates/Press/Voters — violent demonstrations, mob violence, and explosions/remote violence." },
+      { symbol: "H", meaning: "Harassment — protests met with intervention or excessive force, strategic developments, and looting/property destruction." },
+      { symbol: "R", meaning: "Politically-Motivated Arrests/Detentions — arrests, disrupted weapons use, and changes to group/activity status." },
+    ],
+    formulaNote:
+      "TIE_raw is then min-max normalized to 0-100 across the panel: " +
+      "TIE = (TIE_raw − min(TIE_raw)) / (max(TIE_raw) − min(TIE_raw)) × 100.",
   },
   {
     variable: "PDL — Psychological Distress Load",
@@ -43,6 +64,15 @@ export const ETTI_METHODOLOGY_NOTES = [
       "societal-distress measure built from total ACLED events in the coverage window. A search/media " +
       "distress signal that would strengthen this component remains unpopulated - it would require Google " +
       "Trends or comparable media data that isn't available from ACLED.",
+    formula: "PDL_raw = 0.40·S",
+    formulaVariables: [
+      { symbol: "S", meaning: "Societal Distress Composite — total ACLED event count in the election's coverage window (estimated proxy)." },
+      { symbol: "G", meaning: "Search/Media Distress Signal — left blank for every row; would require Google Trends or comparable media data not available from ACLED." },
+    ],
+    formulaNote:
+      "The workbook's design reserves a second weighted term for G (Search/Media Distress Signal), but since G " +
+      "is entirely unpopulated, PDL_raw currently reduces to the S term alone. PDL_raw is then min-max " +
+      "normalized to 0-100 across the panel: PDL = (PDL_raw − min(PDL_raw)) / (max(PDL_raw) − min(PDL_raw)) × 100.",
   },
   {
     variable: "ITS — Institutional Trauma Score",
@@ -51,8 +81,38 @@ export const ETTI_METHODOLOGY_NOTES = [
       "chiefly on protests and security interventions. Court challenges and legal disputes are marked " +
       "unavailable in the current data, so ITS should be read as a partial institutional-stress indicator, " +
       "not a complete legal-institutional accounting.",
+    formula: "ITS_raw = 0.20·P + 0.20·S",
+    formulaVariables: [
+      { symbol: "C", meaning: "Court Challenges — not available in current data (no ACLED equivalent); term omitted." },
+      { symbol: "L", meaning: "Legal Disputes — not available in current data (no ACLED equivalent); term omitted." },
+      { symbol: "P", meaning: "Protests — peaceful-protest event count." },
+      { symbol: "S", meaning: "Security Interventions — protests met with intervention, arrests, attacks, and violent demonstrations." },
+    ],
+    formulaNote:
+      "The workbook's design reserves weighted terms for C (Court Challenges) and L (Legal Disputes), but both " +
+      "are unpopulated for every row, so ITS_raw currently reduces to the P and S terms alone. ITS_raw is then " +
+      "min-max normalized to 0-100 across the panel: ITS = (ITS_raw − min(ITS_raw)) / (max(ITS_raw) − min(ITS_raw)) × 100.",
   },
 ];
+
+// The final composite ETTI score, computed from the four already-normalized
+// (0-100) domain scores above. Shown at the end of the ETTI panel/section
+// since it depends on all four.
+export const ETTI_FORMULA =
+  "ETTI = 0.30·EVS + 0.20·TIE + 0.30·PDL + 0.20·ITS";
+
+export const ETTI_FORMULA_VARIABLES = [
+  { symbol: "EVS", meaning: "Election Violence Severity (0-100, see above) — weighted 30%." },
+  { symbol: "TIE", meaning: "Threat & Intimidation Environment (0-100, see above) — weighted 20%." },
+  { symbol: "PDL", meaning: "Psychological Distress Load (0-100, see above) — weighted 30%." },
+  { symbol: "ITS", meaning: "Institutional Trauma Score (0-100, see above) — weighted 20%." },
+];
+
+export const ETTI_FORMULA_NOTE =
+  "All four domain scores are already normalized to a common 0-100 scale before this step, so ETTI is a direct " +
+  "weighted average of them rather than a further-normalized composite. EVS and PDL carry the heaviest weight " +
+  "(30% each), reflecting direct violence and societal distress as the two dominant contributors to election-" +
+  "related trauma load, with TIE and ITS each contributing 20%.";
 
 export const ETTI_KNOWN_GAP =
   "Several fields that would strengthen the model are absent or only partially observed in the current ACLED-derived " +

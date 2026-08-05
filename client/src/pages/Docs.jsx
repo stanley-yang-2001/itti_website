@@ -4,6 +4,7 @@ import Reveal from '../components/Reveal.jsx';
 import {
   GTBI_SOURCES, GTBI_FORMULA_NOTES, GTBI_KNOWN_GAP, GTBI_INTERPRETATION_SHORT, GTBI_PANEL_SUMMARY,
   ETTI_METHODOLOGY_NOTES, ETTI_KNOWN_GAP, ETTI_INTERPRETATION_SHORT, ETTI_PANEL_SUMMARY,
+  ETTI_FORMULA, ETTI_FORMULA_VARIABLES, ETTI_FORMULA_NOTE,
   UNDERLYING_EVENT_SOURCE,
   NTO_MAP_AUTHOR, NTO_MAP_PUBLISHED_DATE, NTO_MAP_CAPTION, NTO_MAP_REFERENCES, NTO_MAP_FORMATTING_NOTES,
   USER_GUIDE_INTRO, USER_GUIDE_STEPS,
@@ -148,8 +149,32 @@ export default function Docs() {
                 <div key={item.variable} className="docs-card">
                   <h3>{item.variable}</h3>
                   <p>{item.note}</p>
+                  {item.formula && (
+                    <div className="docs-formula-block">
+                      <code className="docs-formula-eq">{item.formula}</code>
+                      {item.formulaVariables?.length > 0 && (
+                        <ul className="docs-formula-vars">
+                          {item.formulaVariables.map((v) => (
+                            <li key={v.symbol}><code>{v.symbol}</code> — {v.meaning}</li>
+                          ))}
+                        </ul>
+                      )}
+                      {item.formulaNote && <p className="docs-formula-note">{item.formulaNote}</p>}
+                    </div>
+                  )}
                 </div>
               ))}
+            </div>
+
+            <h3 className="about-subsection-title display">ETTI Composite Formula</h3>
+            <div className="docs-formula-block docs-formula-block--final">
+              <code className="docs-formula-eq">{ETTI_FORMULA}</code>
+              <ul className="docs-formula-vars">
+                {ETTI_FORMULA_VARIABLES.map((v) => (
+                  <li key={v.symbol}><code>{v.symbol}</code> — {v.meaning}</li>
+                ))}
+              </ul>
+              <p className="docs-formula-note">{ETTI_FORMULA_NOTE}</p>
             </div>
           </section>
           </Reveal>

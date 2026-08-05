@@ -156,6 +156,59 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      <section className="home-connect">
+        <Reveal delay={0}>
+          <div className="home-connect-intro">
+            <p className="home-explore-eyebrow mono">CONNECT</p>
+            <h2 className="home-explore-heading display">Watch, follow, and learn more</h2>
+          </div>
+        </Reveal>
+
+        <div className="home-connect-grid">
+          <Reveal delay={90}>
+            <a
+              className="home-connect-card home-connect-card--video"
+              href="https://youtube.com/shorts/XLbzQiiqUXU?si=IkReWAJ-HWrFvdzU"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span className="home-connect-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <rect x="2.5" y="5.5" width="19" height="13" rx="3.5" />
+                  <path d="M10.5 9.5v5l4.3-2.5-4.3-2.5Z" fill="currentColor" stroke="none" />
+                </svg>
+              </span>
+              <span className="home-explore-card-label display">ITTI on YouTube</span>
+              <p className="home-explore-card-desc">
+                Watch a short introduction to the Institute's work on our YouTube channel.
+              </p>
+              <span className="home-explore-card-arrow" aria-hidden="true">&rarr;</span>
+            </a>
+          </Reveal>
+
+          <Reveal delay={160}>
+            <a
+              className="home-connect-card"
+              href="https://ofhusa.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span className="home-connect-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M3 12h18M12 3c2.5 2.7 3.8 6 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-6-3.8-9S9.5 5.7 12 3Z" />
+                </svg>
+              </span>
+              <span className="home-explore-card-label display">Outlets for Hope, Inc.</span>
+              <p className="home-explore-card-desc">
+                ITTI is a global research division of Outlets for Hope, Inc. Visit the parent organization's site.
+              </p>
+              <span className="home-explore-card-arrow" aria-hidden="true">&rarr;</span>
+            </a>
+          </Reveal>
+        </div>
+      </section>
     </>
   );
 }

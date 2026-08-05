@@ -102,6 +102,16 @@ COUNTRY_NAME_ALIASES = {
     "Congo": "Congo, The Democratic Republic of the",
 }
 
+# Display name to actually store for country_data.json's "name" field,
+# keyed by the *raw* source label (not the alias used to resolve the ISO
+# code). Needed because "Congo" in the source workbook is aliased above
+# to resolve to the Democratic Republic of the Congo's ISO code (180),
+# but storing the raw label verbatim would display as plain "Congo" -
+# indistinguishable from the separate Republic of the Congo (code 178).
+DISPLAY_NAME_OVERRIDES = {
+    "Congo": "Democratic Republic of the Congo",
+}
+
 YEAR_PATTERN = re.compile(r"(\d{4})")
 
 # 0-based column indices per detail sheet. Country/Election are always
@@ -223,7 +233,9 @@ def build_country_data(workbook_path):
             continue
 
         key = (country_name, election_label)
-        entry = country_data.setdefault(code, {"name": country_name, "ETTI": {}})
+        entry = country_data.setdefault(
+            code, {"name": DISPLAY_NAME_OVERRIDES.get(country_name, country_name), "ETTI": {}}
+        )
 
         record = {field: (value if value is not None else MISSING) for field, value in final_record.items()}
         for field, value in evs_by_key.get(key, {}).items():

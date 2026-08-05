@@ -125,6 +125,10 @@ K = 100  # see module docstring: reverse-derived from the workbook's own figures
 # the real one, not the corrupted workbook text.
 DISPLAY_NAME_OVERRIDES = {
     "Chi-": "China",
+    # ISO/pycountry's bare name for this country is just "Congo", which
+    # is ambiguous next to the Democratic Republic of the Congo (see
+    # etti_extract.py's own DISPLAY_NAME_OVERRIDES for that side).
+    "Congo": "Republic of the Congo",
 }
 
 SHEET_NAME = "GTBI Panel"
