@@ -1,52 +1,37 @@
-Fix broken donations backend, match certifications to it, fix bugs
+Reduce RAM usage on the basic-xxs backend instance
 
-Certification enrollment (the actual ask) surfaced a bigger problem:
-Donate.jsx already used embedded Stripe Elements (PaymentElement,
-stripe.confirmPayment()) calling /api/donations/config and
-/api/donations/payment-intent - neither of which existed in app.py.
-The backend still only had the old Checkout-Session-redirect routes,
-which nothing called anymore. Donations were 404ing end-to-end.
+- Paginate previously-unbounded queries (get_published_reports,
+  get_pending_reports, get_changes_requested_reports, get_all_users)
+  via new server/pagination.py; /api/reports, /api/reports/pending,
+  /api/reports/changes-requested, and /api/admin/users now cap
+  results (default 100, max 200) instead of loading full tables on
+  every request. Response bodies are unchanged (still plain arrays);
+  totals are carried in X-Total-Count/X-Limit/X-Offset headers.
+- Cache country_data.json, country_profiles.json, and world-110m.json
+  in-process instead of re-reading/re-parsing from disk on every
+  request; country_data.json's cache entry is invalidated right after
+  POST /api/globe-data/upload writes to it.
+- Stream GTBI/ETTI XLSX workbooks via openpyxl's read_only=True
+  instead of fully materializing them in memory, for both the CLI
+  extract scripts and the in-app upload path (up to 20MB). Required
+  padding short/blank trailing rows, since read_only mode doesn't pad
+  rows to sheet width. Verified byte-identical output against the
+  non-streaming path on both real source workbooks.
+- Recycle gunicorn workers periodically (--max-requests 500
+  --max-requests-jitter 50) so any slow per-request growth doesn't
+  accumulate for the life of the process.
+- Set explicit, conservative SQLAlchemy pool sizing (pool_size=3,
+  max_overflow=2) instead of the library defaults, given 2 worker
+  processes sharing a 512MB instance.
+- Document the Flask-Limiter in-memory storage tradeoff and why
+  worker recycling covers its main risk at current scale.
+- CountryProfiles.jsx: only render the narrative profile's own
+  overview + reference in the expanded country view (no GTBI/ETTI
+  stats, key events, or the second source doc's dashboard note);
+  "available" now means "has a narrative profile" rather than "has a
+  profile or live dashboard numbers", so the list's availability
+  indicator matches what's actually displayed.
 
-Fixed donations first, since it's the reference implementation:
-- server/models/donation.py: added attach_payment_intent() and
-  get_donation_by_payment_intent(), the PaymentIntent-flow equivalents
-  of attach_checkout_session()/get_donation_by_checkout_session().
-- server/app.py: replaced /api/donations/presets + checkout-session +
-  session/<id> with config + payment-intent + payment-intent/<id>.
-  Webhook now listens for payment_intent.succeeded instead of
-  checkout.session.completed.
-
-Then built the same for certifications:
-- server/models/enrollment.py: same two new functions, mirrored.
-- server/app.py: replaced /api/certifications/catalog + checkout-session
-  + enrollments/session/<id> with config + payment-intent +
-  enrollments/payment-intent/<id>.
-- CertificationEnrollModal.jsx rebuilt to mount Stripe's <PaymentElement>
-  directly in the modal (matching Donate.jsx exactly) instead of
-  redirecting to a hosted Checkout page.
-- CertificationEnrollThankYou.jsx updated to read Stripe.js's redirect
-  params (?payment_intent=&redirect_status=) instead of ?session_id=.
-- Removed the now-dead CertificationEnroll.jsx page and its route -
-  enrollment starts from the modal on /certifications now, and the old
-  page used the removed checkout-session API. Confirmed nothing else
-  referenced any of the removed routes/page before deleting.
-
-Fellowship.jsx: removed "founded and chartered under Dr. Luke Chike
-Igweobi, Chancellor" from the Invitation panel.
-
-Navbar oscillation bug: root cause was CSS scroll anchoring - the
-browser was auto-adjusting scrollTop to compensate for the navbar's own
-height change (full <-> compact), which pushed scroll position back
-across the compact/full threshold near the top of the page, causing a
-feedback loop (navbar flickering open/closed repeatedly). Fixed with
-overflow-anchor:none on .navbar (the actual fix) plus hysteresis in
-NavBar.jsx's scroll handler (separate enter/exit thresholds instead of
-one shared value) as defense-in-depth against any residual jitter.
-
-Verified: backend compiles and route-tests pass (config/payment-intent
-endpoints, auth gating, 503-when-unconfigured); `vite build` clean;
-grepped for stale references to every removed route/page before
-deleting anything; headless-browser pass confirms Fellowship text is
-gone and the navbar produces zero state toggles under tight scroll
-jitter both near the old threshold and near the top (previously the
-exact failure condition).
+Rebased onto origin/database (the branch app.yaml actually deploys)
+rather than main - no overlapping lines with that branch's own
+recent changes (Congo display-name fix, heading text).

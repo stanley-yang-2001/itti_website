@@ -28,6 +28,7 @@ from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, BigI
 from sqlalchemy.orm import relationship
 
 from .database import Base, Session
+from pagination import DEFAULT_PAGE_SIZE, clamp_limit, clamp_offset
 
 STATUS_VISIBLE = 1
 STATUS_HIDDEN = 0
@@ -212,54 +213,71 @@ def get_report(report_id):
         session.close()
 
 
-def get_published_reports(include_hidden=False):
+def get_published_reports(include_hidden=False, limit=DEFAULT_PAGE_SIZE, offset=0):
     """
-    Fetch all PUBLISHED reports, newest first - what the public Reports
-    page shows. By default only status=1 (visible) reports are
+    Fetch a page of PUBLISHED reports, newest first - what the public
+    Reports page shows. By default only status=1 (visible) reports are
     returned; pass include_hidden=True to also get status=0 (hidden)
-    ones. Returns a list of Report.
+    ones. limit is always clamped to [1, MAX_PAGE_SIZE] here (not just
+    at the route layer), so this can never return an unbounded result
+    even if a future caller forgets to page. Returns (reports, total)
+    where total is the full matching count before paging.
     """
+    limit = clamp_limit(limit)
+    offset = clamp_offset(offset)
     session = Session()
     try:
         query = session.query(Report).filter(Report.review_status == REVIEW_STATUS_PUBLISHED)
         if not include_hidden:
             query = query.filter(Report.status == STATUS_VISIBLE)
-        return query.order_by(Report.created_at.desc()).all()
+        total = query.count()
+        reports = query.order_by(Report.created_at.desc()).offset(offset).limit(limit).all()
+        return reports, total
     finally:
         session.close()
 
 
-def get_pending_reports(include_hidden=False):
+def get_pending_reports(include_hidden=False, limit=DEFAULT_PAGE_SIZE, offset=0):
     """
-    Fetch reports with review_status=pending_review, oldest first (so
-    the longest-waiting submissions surface first on the Peer Review
-    page). Returns a list of Report.
+    Fetch a page of reports with review_status=pending_review, oldest
+    first (so the longest-waiting submissions surface first on the Peer
+    Review page). limit is clamped as in get_published_reports().
+    Returns (reports, total).
     """
+    limit = clamp_limit(limit)
+    offset = clamp_offset(offset)
     session = Session()
     try:
         query = session.query(Report).filter(Report.review_status == REVIEW_STATUS_PENDING)
         if not include_hidden:
             query = query.filter(Report.status == STATUS_VISIBLE)
-        return query.order_by(Report.created_at.asc()).all()
+        total = query.count()
+        reports = query.order_by(Report.created_at.asc()).offset(offset).limit(limit).all()
+        return reports, total
     finally:
         session.close()
 
 
-def get_changes_requested_reports(include_hidden=False):
+def get_changes_requested_reports(include_hidden=False, limit=DEFAULT_PAGE_SIZE, offset=0):
     """
-    Fetch reports with review_status=changes_requested, newest first
-    (most recently rejected at the top). Shown in a separate section on
-    the Peer Review page rather than mixed with pending_review, per
-    product decision - visible to reviewers so they can see what's
-    stalled, but not counted toward anyone's review queue. Returns a
-    list of Report.
+    Fetch a page of reports with review_status=changes_requested, newest
+    first (most recently rejected at the top). Shown in a separate
+    section on the Peer Review page rather than mixed with
+    pending_review, per product decision - visible to reviewers so they
+    can see what's stalled, but not counted toward anyone's review
+    queue. limit is clamped as in get_published_reports(). Returns
+    (reports, total).
     """
+    limit = clamp_limit(limit)
+    offset = clamp_offset(offset)
     session = Session()
     try:
         query = session.query(Report).filter(Report.review_status == REVIEW_STATUS_CHANGES_REQUESTED)
         if not include_hidden:
             query = query.filter(Report.status == STATUS_VISIBLE)
-        return query.order_by(Report.updated_at.desc()).all()
+        total = query.count()
+        reports = query.order_by(Report.updated_at.desc()).offset(offset).limit(limit).all()
+        return reports, total
     finally:
         session.close()
 

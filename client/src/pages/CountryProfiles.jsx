@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import Reveal from '../components/Reveal.jsx';
 import CountryFlag from '../components/CountryFlag.jsx';
 import UnavailableMessage from '../components/UnavailableMessage.jsx';
-import { getNumericValue, getValueOrNull, getLatestYearRecord, hasProfile } from "../utils/countryData";
 import { isBadRequest } from "../utils/apiError";
 import "../styles/CountryProfiles.css";
 
@@ -16,25 +15,18 @@ const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
  * letter's group) rather than a filter, and scrolls with the page like
  * everything else (no position: sticky).
  *
- * Each country is a row you click to expand inline, drawing on two
- * independent sources that a country can have either, both, or neither
- * of:
- *   - /api/country-profiles: a narrative historical overview + APA
- *     reference (server/data_scripts/country_profiles_extract.py),
- *     covering ~165 countries.
- *   - /api/countries: live GTBI/ETTI dashboard figures, covering a much
- *     smaller set - shown as both a quick stat readout and, where the
- *     narrative source also has a matching "dashboard note", the prose
- *     tying the two together.
- * A country counts as "available" if either source has something for
- * it; only a country with neither shows the shared "unavailable"
- * message (components/UnavailableMessage.jsx).
- *
- * country_data.json fields are never assumed to be numbers - every
- * ETTI/GTBI field can be the literal string "Data Pending" instead of
- * a real value (see utils/countryData.js), so any place this component
- * reads a numeric field goes through getNumericValue()/isDataPending()
- * rather than comparing or doing math on the raw value directly.
+ * Each country is a row you click to expand inline. The expanded content
+ * is sourced only from /api/country-profiles - the narrative overview
+ * paragraphs and their APA reference, straight from
+ * country_profile_section_of_our_international_observatory_website.docx
+ * (server/data_scripts/country_profiles_extract.py), covering ~164
+ * countries. /api/countries' live GTBI/ETTI dashboard figures and the
+ * second source doc's "dashboard note" are not part of this document's
+ * content and are intentionally not shown here - see the Observatory
+ * page for that data. A country counts as "available" only if it has
+ * this narrative profile; a country without one shows the shared
+ * "unavailable" message (components/UnavailableMessage.jsx), even if
+ * live dashboard figures exist for it elsewhere.
  */
 export default function CountryProfiles() {
   const navigate = useNavigate();
@@ -66,9 +58,7 @@ export default function CountryProfiles() {
           return {
             code,
             name: record?.name || profile?.name || code,
-            available: hasProfile(record) || !!profile,
-            gtbi: getLatestYearRecord(record?.GTBI),
-            etti: getLatestYearRecord(record?.ETTI),
+            available: !!profile,
             profile,
           };
         });
@@ -201,22 +191,15 @@ export default function CountryProfiles() {
   );
 }
 
-/** Shown when a country row expands and has either a narrative profile,
- *  live dashboard data, or both. */
+/** Shown when a country row expands. Only renders the narrative profile's
+ *  own overview paragraphs + reference (from country_profile_section_of_
+ *  our_international_observatory_website.docx via /api/country-profiles) -
+ *  no GTBI/ETTI dashboard stats, key events, or the second doc's
+ *  "dashboard note", none of which come from that source document. A
+ *  country only reaches this component when `available` (= !!profile)
+ *  is true in the parent, so profile.overview is always present here. */
 function CountryOverview({ country }) {
-  const { gtbi, etti, profile } = country;
-  const gtbiScore = getNumericValue(gtbi?.gtbi);
-  const traumaLevel = getValueOrNull(gtbi?.trauma_level);
-  const burdenRate = getNumericValue(gtbi?.burden_rate);
-  const ettiScore = getNumericValue(etti?.etti);
-  const keyEvents = getValueOrNull(gtbi?.key_events);
-
-  const stats = [
-    gtbiScore != null && { label: "GTBI", value: gtbiScore.toFixed(1) },
-    traumaLevel != null && { label: "Trauma Level", value: traumaLevel },
-    ettiScore != null && { label: "ETTI", value: ettiScore.toFixed(1) },
-    burdenRate != null && { label: "Burden Rate", value: burdenRate.toFixed(2) },
-  ].filter(Boolean);
+  const { profile } = country;
 
   return (
     <div className="country-overview">
@@ -230,35 +213,6 @@ function CountryOverview({ country }) {
               <strong>Reference: </strong>
               {profile.overview.reference}
             </p>
-          )}
-        </div>
-      )}
-
-      {stats.length > 0 && (
-        <div className="country-overview-stats">
-          {stats.map((s) => (
-            <div key={s.label} className="country-overview-stat">
-              <span className="country-overview-stat-label">{s.label}</span>
-              <span className="country-overview-stat-value mono">{s.value}</span>
-            </div>
-          ))}
-        </div>
-      )}
-      {keyEvents && <p className="country-overview-events">{keyEvents}</p>}
-
-      {profile?.dashboard_note && (
-        <div className="country-overview-section country-overview-dashboard-note">
-          <h4 className="country-overview-subheading">Observatory Dashboard Profile</h4>
-          {profile.dashboard_note.paragraphs.map((p, i) => (
-            <p key={i} className="country-overview-paragraph">{p}</p>
-          ))}
-          {profile.dashboard_note.references?.length > 0 && (
-            <div className="country-overview-references">
-              <strong>APA 7 References</strong>
-              {profile.dashboard_note.references.map((r, i) => (
-                <p key={i} className="country-overview-reference">{r}</p>
-              ))}
-            </div>
           )}
         </div>
       )}

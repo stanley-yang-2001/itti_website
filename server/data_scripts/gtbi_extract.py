@@ -233,8 +233,19 @@ def aggregate_by_country_year(ws):
     different one - both are kept, in the order first seen). Returns:
         { (country_name, year): {"population", "yld", "yll", "severity_term", "key_events": [str, ...]} }
     """
+    # In read_only mode, iter_rows(values_only=True) trims each row's
+    # tuple to that row's own last used column rather than padding
+    # every row to the sheet's overall width - a blank or short trailing
+    # row can come back shorter than the highest COL_* index below (or
+    # empty entirely), so pad every row out first instead of indexing
+    # into it directly.
+    min_width = max(COL_COUNTRY, COL_POPULATION, COL_YEAR, COL_EXPOSURE_PCT,
+                     COL_SEVERITY_WEIGHT, COL_EXPOSURE_TYPE, COL_YLD, COL_YLL, COL_KEY_EVENT) + 1
+
     totals = {}
     for row in ws.iter_rows(min_row=2, values_only=True):
+        if len(row) < min_width:
+            row = row + (None,) * (min_width - len(row))
         country_name = row[COL_COUNTRY]
         if country_name is None or str(country_name).strip() == "":
             continue
@@ -285,7 +296,15 @@ def aggregate_by_country_year(ws):
 
 
 def build_country_data(workbook_path):
-    wb = openpyxl.load_workbook(workbook_path, data_only=True)
+    # read_only=True streams rows instead of materializing the whole
+    # workbook (every cell, style, etc.) in memory - safe here because
+    # the sheet is only ever read once, top-to-bottom, via
+    # iter_rows(values_only=True) in aggregate_by_country_year() below;
+    # nothing needs random cell access or write-back. Matters most for
+    # the in-app upload path (app.py's /api/globe-data/upload accepts
+    # workbooks up to 20MB), where a non-streaming parse can use many
+    # times the file's size in RAM.
+    wb = openpyxl.load_workbook(workbook_path, data_only=True, read_only=True)
     totals = aggregate_by_country_year(wb[SHEET_NAME])
 
     country_data = {}

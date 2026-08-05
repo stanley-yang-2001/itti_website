@@ -17,6 +17,7 @@ from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 
 from .database import Base, Session
+from pagination import DEFAULT_PAGE_SIZE, clamp_limit, clamp_offset
 
 STATUS_VISIBLE = 1
 STATUS_HIDDEN = 0
@@ -153,18 +154,26 @@ def get_user_by_email(email, include_hidden=False):
         session.close()
 
 
-def get_all_users(include_hidden=False):
+def get_all_users(include_hidden=False, limit=DEFAULT_PAGE_SIZE, offset=0):
     """
-    Fetch all users. By default only status=1 (visible) users are
-    returned; pass include_hidden=True to also get status=0 (hidden)
-    ones. Returns a list of User.
+    Fetch a page of users, newest first. By default only status=1
+    (visible) users are returned; pass include_hidden=True to also get
+    status=0 (hidden) ones. limit is clamped to [1, MAX_PAGE_SIZE] here
+    (not just at the route layer), so this can never return an
+    unbounded result even if a future caller forgets to page. Returns
+    (users, total) where total is the full matching count before
+    paging.
     """
+    limit = clamp_limit(limit)
+    offset = clamp_offset(offset)
     session = Session()
     try:
         query = session.query(User)
         if not include_hidden:
             query = query.filter(User.status == STATUS_VISIBLE)
-        return query.all()
+        total = query.count()
+        users = query.order_by(User.id.desc()).offset(offset).limit(limit).all()
+        return users, total
     finally:
         session.close()
 
