@@ -217,6 +217,14 @@
   font-style:italic;
 }
 .fellows-invitation .fellows-btn{margin-top:6px;}
+.fellows-contact-link{
+  color:var(--cyan);
+  font-weight:600;
+  text-decoration:underline;
+}
+.fellows-contact-link:hover{
+  text-decoration:none;
+}
 
 /* ---------- Roster ---------- */
 .fellows-filter-pills{
