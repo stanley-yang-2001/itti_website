@@ -111,7 +111,7 @@ export default function CountryProfiles() {
     <div className="country-profiles-page">
       <Reveal delay={0}>
         <div className="country-profiles-intro">
-          <h1 className="country-profiles-heading display">Country Profiles</h1>
+          <h1 className="country-profiles-heading display">Collective Trauma Profile By Country</h1>
           <p className="country-profiles-subheading">
             Every country we track, in one list. Click a country to see its overview, or jump straight to a
             letter below.

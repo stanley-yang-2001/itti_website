@@ -127,6 +127,28 @@ def attach_checkout_session(donation_id, stripe_checkout_session_id):
         session.close()
 
 
+def attach_payment_intent(donation_id, stripe_payment_intent_id):
+    """
+    Records which Stripe PaymentIntent a pending donation is waiting on -
+    the embedded Payment Element flow's equivalent of
+    attach_checkout_session above, called right after the PaymentIntent
+    is created (before payment succeeds), so the webhook and the
+    thank-you page's status check both have something to look this
+    donation up by.
+    """
+    session = Session()
+    try:
+        donation = session.query(Donation).filter(Donation.id == donation_id).first()
+        if donation is None:
+            return None
+        donation.stripe_payment_intent_id = stripe_payment_intent_id
+        session.commit()
+        session.refresh(donation)
+        return donation
+    finally:
+        session.close()
+
+
 def get_donation(donation_id):
     session = Session()
     try:
@@ -149,6 +171,18 @@ def get_donation_by_checkout_session(stripe_checkout_session_id):
         return (
             session.query(Donation)
             .filter(Donation.stripe_checkout_session_id == stripe_checkout_session_id)
+            .first()
+        )
+    finally:
+        session.close()
+
+
+def get_donation_by_payment_intent(stripe_payment_intent_id):
+    session = Session()
+    try:
+        return (
+            session.query(Donation)
+            .filter(Donation.stripe_payment_intent_id == stripe_payment_intent_id)
             .first()
         )
     finally:

@@ -1,58 +1,52 @@
-Profile page: vertical sidebar nav + working account settings
+Fix broken donations backend, match certifications to it, fix bugs
 
-Profile page restructured around a vertical sidebar (Profile ->
-Favorites -> Publications -> Settings) instead of a flat scroll of
-sections:
-- Removed the Quick Links section and the "Account settings" button
-  next to the avatar/name (and their now-dead CSS).
-- "Settings" (renamed from "Account settings") is now a tab in this
-  same sidebar, backed by a new shared SettingsPanel component also
-  used by the standalone /settings route (kept working since
-  PrivacyPolicy.jsx links to it directly) - one implementation, not
-  two copies to drift apart.
+Certification enrollment (the actual ask) surfaced a bigger problem:
+Donate.jsx already used embedded Stripe Elements (PaymentElement,
+stripe.confirmPayment()) calling /api/donations/config and
+/api/donations/payment-intent - neither of which existed in app.py.
+The backend still only had the old Checkout-Session-redirect routes,
+which nothing called anymore. Donations were 404ing end-to-end.
 
-Discovered while building this that account settings didn't actually
-work at all: Settings.jsx called useAuth().updateAccount and
-.deleteAccount, neither of which existed anywhere, and the UI checked
-user.has_password/user.google_linked, neither of which the API
-returned. Built the missing stack rather than just wiring up new UI
-to it:
-- POST /api/auth/update-profile: updates name and/or password.
-  Password changes require the correct current_password (verified
-  server-side) and a new password meeting the length requirement;
-  Google-only accounts (no password_hash) are rejected with a clear
-  message instead of a confusing failure.
-- POST /api/auth/update-picture + GET /api/users/<id>/picture: profile
-  picture upload/serving, reusing the same storage abstraction
-  (server/storage.py) reports already use. New picture_path/
-  picture_mime_type columns (migration b7e3f9a1c2d4) keep an uploaded
-  picture's internal storage path separate from picture_url (which
-  stays the public-facing value the frontend reads directly, whether
-  that's our own serving route or an external Google avatar URL).
-- User.to_public_dict() now includes has_password and google_linked.
-- AuthContext gained updateAccount(fields), updatePicture(file), and
-  deleteAccount() to match what the UI was already trying to call.
+Fixed donations first, since it's the reference implementation:
+- server/models/donation.py: added attach_payment_intent() and
+  get_donation_by_payment_intent(), the PaymentIntent-flow equivalents
+  of attach_checkout_session()/get_donation_by_checkout_session().
+- server/app.py: replaced /api/donations/presets + checkout-session +
+  session/<id> with config + payment-intent + payment-intent/<id>.
+  Webhook now listens for payment_intent.succeeded instead of
+  checkout.session.completed.
 
-Every "Confirm" button in the new Settings tab is disabled until its
-own section has an actual, validly-formed change pending: picture
-(disabled until a file is chosen), username (disabled until it
-differs from the current name), password (disabled until current/
-new/confirm are all filled in, new/confirm match, and new meets the
-length requirement).
+Then built the same for certifications:
+- server/models/enrollment.py: same two new functions, mirrored.
+- server/app.py: replaced /api/certifications/catalog + checkout-session
+  + enrollments/session/<id> with config + payment-intent +
+  enrollments/payment-intent/<id>.
+- CertificationEnrollModal.jsx rebuilt to mount Stripe's <PaymentElement>
+  directly in the modal (matching Donate.jsx exactly) instead of
+  redirecting to a hosted Checkout page.
+- CertificationEnrollThankYou.jsx updated to read Stripe.js's redirect
+  params (?payment_intent=&redirect_status=) instead of ?session_id=.
+- Removed the now-dead CertificationEnroll.jsx page and its route -
+  enrollment starts from the modal on /certifications now, and the old
+  page used the removed checkout-session API. Confirmed nothing else
+  referenced any of the removed routes/page before deleting.
 
-Also re-fixed CountryProfiles.css's sticky-nav regression and restored
-its narrative-profile overview styles - the third time this same
-pattern has reverted on this file from what looks like a stale-branch
-merge; flagging for investigation into what keeps reintroducing it.
+Fellowship.jsx: removed "founded and chartered under Dr. Luke Chike
+Igweobi, Chancellor" from the Invitation panel.
 
-Verified: clean npm run build; backend smoke tests covering wrong
-current password (400), empty name (400), weak new password (400),
-unauthenticated requests (401), and a full picture upload -> serve
-round-trip.
+Navbar oscillation bug: root cause was CSS scroll anchoring - the
+browser was auto-adjusting scrollTop to compensate for the navbar's own
+height change (full <-> compact), which pushed scroll position back
+across the compact/full threshold near the top of the page, causing a
+feedback loop (navbar flickering open/closed repeatedly). Fixed with
+overflow-anchor:none on .navbar (the actual fix) plus hysteresis in
+NavBar.jsx's scroll handler (separate enter/exit thresholds instead of
+one shared value) as defense-in-depth against any residual jitter.
 
-Note: while adding this migration, found the alembic chain is
-currently broken independent of this change - migrations/versions/
-6ff385893016_add_category_to_reports.py is committed as an empty
-(0-byte) file, which makes `alembic upgrade head` fail immediately,
-and there are two other diverged heads beneath it. Not addressed here
-- unrelated to this feature and its original intent is unknown.
+Verified: backend compiles and route-tests pass (config/payment-intent
+endpoints, auth gating, 503-when-unconfigured); `vite build` clean;
+grepped for stale references to every removed route/page before
+deleting anything; headless-browser pass confirms Fellowship text is
+gone and the navbar produces zero state toggles under tight scroll
+jitter both near the old threshold and near the top (previously the
+exact failure condition).

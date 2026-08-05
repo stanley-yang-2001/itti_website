@@ -22,7 +22,6 @@ import PublishGlobeData from './pages/PublishGlobeData.jsx';
 import Docs from './pages/Docs.jsx';
 import Donate from './pages/Donate.jsx';
 import DonateThankYou from './pages/DonateThankYou.jsx';
-import CertificationEnroll from './pages/CertificationEnroll.jsx';
 import CertificationEnrollThankYou from './pages/CertificationEnrollThankYou.jsx';
 import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
 import Profile from './pages/Profile.jsx';
@@ -68,7 +67,6 @@ export default function App() {
         <Route path="/donate" element={<Donate />} />
         <Route path="/donate/thank-you" element={<DonateThankYou />} />
         <Route path="/certifications/enroll/thank-you" element={<CertificationEnrollThankYou />} />
-        <Route path="/certifications/enroll/:code" element={<CertificationEnroll />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
 
         <Route path="/login" element={<Login />} />

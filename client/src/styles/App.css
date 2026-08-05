@@ -674,7 +674,6 @@
     top:0;
     z-index:50;
     background:var(--bg-deep);
-    transition:padding .25s ease;
   }
   .navbar-brand{
     display:flex;
@@ -682,16 +681,12 @@
     gap:14px;
     text-decoration:none;
     color:var(--text-hi);
-    max-height:100px;
-    overflow:hidden;
-    transition:max-height .25s ease, opacity .2s ease, margin .25s ease;
   }
   .navbar-logo{
     width:76px;
     height:76px;
     object-fit:contain;
     flex-shrink:0;
-    transition:width .25s ease, height .25s ease;
   }
   .navbar-title{
     display:block;
@@ -711,28 +706,6 @@
     margin:14px 0 0 0;
     padding:0;
     width:100%;
-    transition:margin-top .25s ease;
-  }
-
-  /* ---------- Navbar: compact/scrolled state ----------
-     Applied once the page scrolls away from the very top (see NavBar.jsx's
-     scroll listener). Hides the logo + site name and tightens the padding
-     so only the nav links, Donate button, and user info/log out remain -
-     reverts automatically once scrolled back to the top. */
-  .navbar--scrolled{
-    padding:6px 32px;
-  }
-  .navbar--scrolled .navbar-brand{
-    max-height:0;
-    opacity:0;
-    margin:0;
-    pointer-events:none;
-  }
-  .navbar--scrolled .navbar-links{
-    margin-top:6px;
-  }
-  @media (prefers-reduced-motion: reduce){
-    .navbar, .navbar-brand, .navbar-logo, .navbar-links{transition:none;}
   }
 
   .navbar-link{
@@ -756,22 +729,16 @@
     color:var(--bg-deep);
     background:var(--cyan);
   }
-  .navbar-donate-btn{
-    display:inline-flex;
-    align-items:center;
-    padding:8px 16px;
-    border-radius:6px;
+  .navbar-link-donate{
     border:1px solid var(--cyan);
     color:var(--cyan);
-    font-family:'Inter',sans-serif;
-    font-size:13px;
     font-weight:600;
-    text-decoration:none;
-    white-space:nowrap;
-    cursor:pointer;
   }
-  .navbar-donate-btn:hover,
-  .navbar-donate-btn.active{
+  .navbar-link-donate:hover{
+    color:#FFFFFF;
+    background:var(--cyan);
+  }
+  .navbar-link-donate.active{
     color:#FFFFFF;
     background:var(--cyan);
   }
@@ -1059,4 +1026,114 @@
   @media (max-width: 640px){
     .site-footer{padding:28px 20px 22px;}
     .site-footer-top{flex-direction:column; align-items:flex-start;}
+  }
+
+  /* ---------- Shared modal (components/Modal.jsx) ----------
+     Generic overlay + panel used wherever a page needs an in-place
+     dialog instead of a full route navigation - currently just
+     certification enrollment (CertificationEnroll.jsx), but written as
+     a sitewide utility so any future modal reuses it instead of
+     rolling its own. */
+  .app-modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(10,14,20,0.55);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:1000;
+  }
+  .app-modal{
+    width:100%;
+    max-width:520px;
+    max-height:calc(100vh - 40px);
+    overflow-y:auto;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    box-shadow:0 12px 40px rgba(0,0,0,0.3);
+  }
+  .app-modal-header{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    padding:20px 20px 0 20px;
+  }
+  .app-modal-title{
+    font-size:19px;
+    font-weight:700;
+    color:var(--text-hi);
+    margin:0;
+  }
+  .app-modal-close{
+    flex-shrink:0;
+    background:transparent;
+    border:none;
+    color:var(--text-low);
+    font-size:24px;
+    line-height:1;
+    cursor:pointer;
+    padding:0 2px;
+  }
+  .app-modal-close:hover{color:var(--text-hi);}
+  .app-modal-body{
+    padding:16px 20px;
+    color:var(--text-mid);
+    font-size:14px;
+    line-height:1.6;
+  }
+  .app-modal-body h4{
+    color:var(--text-hi);
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    margin:16px 0 6px 0;
+  }
+  .app-modal-body p{margin:0 0 10px 0;}
+  .app-modal-error{
+    background:rgba(192,57,43,0.1);
+    border:1px solid rgba(192,57,43,0.35);
+    color:#C0392B;
+    border-radius:8px;
+    padding:10px 14px;
+    font-size:13px;
+  }
+  .app-modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    padding:16px 20px 20px 20px;
+    border-top:1px solid var(--line);
+    margin-top:4px;
+  }
+  .app-modal-btn{
+    padding:9px 18px;
+    border-radius:6px;
+    border:1px solid var(--line);
+    background:transparent;
+    color:var(--text-mid);
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .app-modal-btn:hover:not(:disabled){
+    color:var(--text-hi);
+    border-color:var(--cyan);
+  }
+  .app-modal-btn:disabled{opacity:0.5; cursor:not-allowed;}
+  .app-modal-btn--primary{
+    background:var(--cyan);
+    border-color:var(--cyan);
+    color:var(--bg-deep);
+  }
+  .app-modal-btn--primary:hover:not(:disabled){
+    opacity:0.9;
+    color:var(--bg-deep);
+  }
+
+  @media (max-width: 480px){
+    .app-modal-actions{flex-direction:column-reverse;}
+    .app-modal-btn{width:100%; text-align:center;}
   }

@@ -90,7 +90,7 @@ export default function Home() {
           <section className="home-welcome">
             <p className="home-welcome-eyebrow">WELCOME</p>
             <h1 className="home-welcome-title display">
-              Welcome to the International Truth &amp; Trauma Institute
+              Welcome <br />to the <br />International Truth &amp; Trauma Institute
             </h1>
             <p className="home-welcome-message">{MISSION_MESSAGE}</p>
           </section>

@@ -142,6 +142,28 @@ def attach_checkout_session(enrollment_id, stripe_checkout_session_id):
         session.close()
 
 
+def attach_payment_intent(enrollment_id, stripe_payment_intent_id):
+    """
+    Records which Stripe PaymentIntent a pending enrollment is waiting
+    on - the embedded Payment Element flow's equivalent of
+    attach_checkout_session above, called right after the PaymentIntent
+    is created (before payment succeeds), so the webhook and the
+    thank-you page's status check both have something to look this
+    enrollment up by.
+    """
+    session = Session()
+    try:
+        enrollment = session.query(Enrollment).filter(Enrollment.id == enrollment_id).first()
+        if enrollment is None:
+            return None
+        enrollment.stripe_payment_intent_id = stripe_payment_intent_id
+        session.commit()
+        session.refresh(enrollment)
+        return enrollment
+    finally:
+        session.close()
+
+
 def get_enrollment(enrollment_id):
     session = Session()
     try:
@@ -156,6 +178,18 @@ def get_enrollment_by_checkout_session(stripe_checkout_session_id):
         return (
             session.query(Enrollment)
             .filter(Enrollment.stripe_checkout_session_id == stripe_checkout_session_id)
+            .first()
+        )
+    finally:
+        session.close()
+
+
+def get_enrollment_by_payment_intent(stripe_payment_intent_id):
+    session = Session()
+    try:
+        return (
+            session.query(Enrollment)
+            .filter(Enrollment.stripe_payment_intent_id == stripe_payment_intent_id)
             .first()
         )
     finally:
