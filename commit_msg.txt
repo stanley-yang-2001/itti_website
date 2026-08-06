@@ -1,11 +1,43 @@
-Redesign Profile layout, add favorite chart/report links, align page widths
+Add admin version-history restore + Fellows management to the Control panel
 
-- Profile.jsx: fix broken avatar fallback, rework header spacing,
-  left-align sidebar nav, standardize page container to 1080px
-- Saved-chart cards link to /observatory?chart=<id>; Observatory
-  restores the saved panels/indicator and shows a status banner
-- Favorited report cards link to /reports?highlight=<id>, which
-  scrolls to and outlines that card in the Reports list
-- app.py: add GET /api/observatory/saved-charts/<id>
-- api.js: add fetchSavedObservatoryChart(chartId)
-- About.css/Observatory.css: align page container max-width to 1080px
+Version history / restore (Observatory data + Country profiles):
+- globe_data.py: add list_uploads() and restore_upload(kind, filename),
+  reusing the existing validate/archive/rotate/merge pipeline against an
+  archived file instead of a fresh one.
+- country_profiles_upload.py: same pair (list_uploads(), restore_docx())
+  for the two country-profile source docx files.
+- app.py: 4 new admin-only routes - GET/POST /api/globe-data/uploads,
+  /restore and GET/POST /api/country-profiles/uploads, /restore.
+- ControlPanel.jsx: each upload section now has a "restore a previous
+  version" dropdown (RestoreSection) populated from the new history
+  endpoints, remounted after every upload/restore so it stays current.
+- Control.css: styles for the dropdown/restore row.
+
+Fellows management (new feature):
+- models/fellow.py: new Fellow model (name, level, bio, photo_path)
+  and CRUD, with FELLOW_LEVEL_CODES matching the site's AFITTI/FITTI/
+  SFITTI/DFITTI tiers.
+- migrations/versions/fcca6582f99d_add_fellows_table.py: creates the
+  fellows table. Needs `alembic upgrade head` run against the real
+  database before this feature can go live.
+- image_processing.py: normalize_photo() - converts any uploaded image
+  (format, aspect ratio, EXIF orientation, transparency) into a
+  consistent 600x600 center-cropped JPEG before it's stored, so every
+  fellow's photo renders identically regardless of what was uploaded.
+- app.py: GET /api/fellows (public roster), GET /api/fellows/<id>/photo
+  (public), POST/PUT/DELETE /api/fellows[/<id>] (admin only). Requires
+  Pillow (added to requirements.txt).
+- Fellowship.jsx: now fetches the roster from GET /api/fellows instead
+  of the permanently-empty static FELLOWS array in data/fellowship.js
+  (that file now only documents the shape /api/fellows returns).
+- FellowsControl.jsx (new) + ControlPanel.jsx: admin UI to add a new
+  fellow or edit an existing one's name/level/bio/photo, including
+  explicit photo removal and delete-from-roster.
+
+Verified end-to-end against a freshly-migrated test database: role
+gating (403 for non-admin), upload -> restore round trips with actual
+file rotation into old/ confirmed on disk, fellow create/update/delete
+with real image normalization (RGBA/odd-aspect-ratio input -> 600x600
+JPEG), and a combined smoke test hitting every endpoint touched this
+session in one process. All touched .py files py_compile clean; all
+touched .jsx files esbuild clean.
