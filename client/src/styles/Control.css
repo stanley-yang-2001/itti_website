@@ -1,0 +1,106 @@
+.control-section {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.control-section h3 {
+  margin: 0 0 6px 0;
+  font-size: 16px;
+  color: var(--text-hi);
+}
+.control-section-desc {
+  color: var(--text-mid);
+  font-size: 13px;
+  margin: 0 0 16px 0;
+  line-height: 1.5;
+}
+
+.control-kind-choice {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.control-kind-btn {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  background: var(--bg-body, transparent);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.control-kind-btn:hover {
+  border-color: var(--text-mid);
+}
+.control-kind-btn.active {
+  border-color: var(--accent, #4285f4);
+  background: rgba(66, 133, 244, 0.08);
+}
+.control-kind-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-hi);
+}
+.control-kind-desc {
+  font-size: 12px;
+  color: var(--text-mid);
+}
+
+.control-upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.control-file-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-mid);
+}
+.control-file-label input[type='file'] {
+  color: var(--text-mid);
+  font-size: 13px;
+}
+
+.control-btn {
+  align-self: flex-start;
+  background: var(--accent, #4285f4);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.control-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.control-status {
+  margin-top: 14px;
+  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: 6px;
+}
+.control-status--success {
+  color: #1E8449;
+  background: rgba(90, 200, 130, 0.1);
+  border: 1px solid rgba(90, 200, 130, 0.3);
+}
+.control-status--error {
+  color: #C0392B;
+  background: rgba(220, 90, 90, 0.1);
+  border: 1px solid rgba(220, 90, 90, 0.3);
+}

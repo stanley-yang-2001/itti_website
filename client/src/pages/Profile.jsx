@@ -5,6 +5,7 @@ import ReportCard from '../components/ReportCard.jsx';
 import ReportUploadForm from './ReportUploadForm.jsx';
 import Reveal from '../components/Reveal.jsx';
 import SettingsPanel from '../components/SettingsPanel.jsx';
+import ControlPanel from '../components/ControlPanel.jsx';
 import {
   fetchSavedObservatoryCharts, deleteSavedObservatoryChart,
   fetchFavoriteReports, unfavoriteReport,
@@ -38,6 +39,10 @@ const TABS = [
   { key: 'publications', label: 'Publications' },
   { key: 'settings', label: 'Settings' },
 ];
+// Admin-only, appended in the component below rather than listed here
+// directly - keeps this base list meaningful on its own and the
+// role check colocated with the one place it's used.
+const CONTROL_TAB = { key: 'control', label: 'Control' };
 
 function SavedChartCard({ chart, onDelete }) {
   const config = chart.config || {};
@@ -68,6 +73,8 @@ function SavedChartCard({ chart, onDelete }) {
 export default function Profile() {
   const { user } = useAuth();
   const canPublish = user?.role === 'publisher' || user?.role === 'admin';
+  const isAdmin = user?.role === 'admin';
+  const tabs = isAdmin ? [...TABS, CONTROL_TAB] : TABS;
 
   const [activeTab, setActiveTab] = useState('profile');
 
@@ -135,7 +142,7 @@ export default function Profile() {
       <div className="profile-layout">
         {/* ---------- Vertical nav ---------- */}
         <nav className="profile-sidebar" aria-label="Profile sections">
-          {TABS.map((tab) => (
+          {tabs.map((tab) => (
             <button
               key={tab.key}
               type="button"
@@ -282,6 +289,19 @@ export default function Profile() {
             <section className="profile-section profile-settings-section">
               <h2 className="profile-section-title display">Settings</h2>
               <SettingsPanel />
+            </section>
+          )}
+
+          {/* ---------- Control (admin only) ---------- */}
+          {activeTab === 'control' && isAdmin && (
+            <section className="profile-section profile-settings-section">
+              <h2 className="profile-section-title display">Control</h2>
+              <p className="profile-section-desc">
+                Upload replacement data files for the Observatory and Country Profiles. Every
+                upload is validated before anything changes, and the file it replaces is kept
+                (not deleted) for version history.
+              </p>
+              <ControlPanel />
             </section>
           )}
         </div>

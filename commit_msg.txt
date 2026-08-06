@@ -1,37 +1,17 @@
-Reduce RAM usage on the basic-xxs backend instance
+New: client/src/pages/Profile.jsx — a "Control" tab now appears in the sidebar only when user.role === 'admin', rendering the new ControlPanel.jsx component.
 
-- Paginate previously-unbounded queries (get_published_reports,
-  get_pending_reports, get_changes_requested_reports, get_all_users)
-  via new server/pagination.py; /api/reports, /api/reports/pending,
-  /api/reports/changes-requested, and /api/admin/users now cap
-  results (default 100, max 200) instead of loading full tables on
-  every request. Response bodies are unchanged (still plain arrays);
-  totals are carried in X-Total-Count/X-Limit/X-Offset headers.
-- Cache country_data.json, country_profiles.json, and world-110m.json
-  in-process instead of re-reading/re-parsing from disk on every
-  request; country_data.json's cache entry is invalidated right after
-  POST /api/globe-data/upload writes to it.
-- Stream GTBI/ETTI XLSX workbooks via openpyxl's read_only=True
-  instead of fully materializing them in memory, for both the CLI
-  extract scripts and the in-app upload path (up to 20MB). Required
-  padding short/blank trailing rows, since read_only mode doesn't pad
-  rows to sheet width. Verified byte-identical output against the
-  non-streaming path on both real source workbooks.
-- Recycle gunicorn workers periodically (--max-requests 500
-  --max-requests-jitter 50) so any slow per-request growth doesn't
-  accumulate for the life of the process.
-- Set explicit, conservative SQLAlchemy pool sizing (pool_size=3,
-  max_overflow=2) instead of the library defaults, given 2 worker
-  processes sharing a 512MB instance.
-- Document the Flask-Limiter in-memory storage tradeoff and why
-  worker recycling covers its main risk at current scale.
-- CountryProfiles.jsx: only render the narrative profile's own
-  overview + reference in the expanded country view (no GTBI/ETTI
-  stats, key events, or the second source doc's dashboard note);
-  "available" now means "has a narrative profile" rather than "has a
-  profile or live dashboard numbers", so the list's availability
-  indicator matches what's actually displayed.
+New: client/src/components/ControlPanel.jsx + Control.css — two upload widgets:
 
-Rebased onto origin/database (the branch app.yaml actually deploys)
-rather than main - no overlapping lines with that branch's own
-recent changes (Congo display-name fix, heading text).
+Observatory data (GTBI/ETTI .xlsx) — reuses the existing POST /api/globe-data/upload endpoint (already had the same validate → archive → rotate pattern I mirrored below).
+Country profiles (.docx, "survey" or "dashboard" kind) — hits the new POST /api/country-profiles/upload endpoint.
+
+New: server/country_profiles_upload.py — the docx counterpart to globe_data.py, doing the same four-step pipeline:
+
+Validate — parses the upload with the exact same logic country_profiles.extract.py uses; nothing on disk changes if it fails.
+Archive — copies the raw upload into data_scripts/country_profiles_storage/, timestamped, as a permanent audit trail.
+Rotate (version control) — whatever file currently has that kind's canonical name in data_scripts/country_profiles_source/ moves into that folder's old/ subfolder, timestamped, before the new upload takes its place under the canonical name. Nothing is ever deleted.
+Regenerate — re-runs the extractor's own build_profiles() against both canonical source docs and overwrites server/data/country_profiles.json — the file GET /api/country-profiles actually serves. The in-memory cache is invalidated immediately after, so the change is live with no redeploy.
+
+Modified: server/app.py — new POST /api/country-profiles/upload route, gated @roles_required("admin") only (not publisher, per your "only admin" spec).
+
+Navbar feature reimplemented, now hides the logo without the bug
