@@ -1,17 +1,11 @@
-New: client/src/pages/Profile.jsx — a "Control" tab now appears in the sidebar only when user.role === 'admin', rendering the new ControlPanel.jsx component.
+Redesign Profile layout, add favorite chart/report links, align page widths
 
-New: client/src/components/ControlPanel.jsx + Control.css — two upload widgets:
-
-Observatory data (GTBI/ETTI .xlsx) — reuses the existing POST /api/globe-data/upload endpoint (already had the same validate → archive → rotate pattern I mirrored below).
-Country profiles (.docx, "survey" or "dashboard" kind) — hits the new POST /api/country-profiles/upload endpoint.
-
-New: server/country_profiles_upload.py — the docx counterpart to globe_data.py, doing the same four-step pipeline:
-
-Validate — parses the upload with the exact same logic country_profiles.extract.py uses; nothing on disk changes if it fails.
-Archive — copies the raw upload into data_scripts/country_profiles_storage/, timestamped, as a permanent audit trail.
-Rotate (version control) — whatever file currently has that kind's canonical name in data_scripts/country_profiles_source/ moves into that folder's old/ subfolder, timestamped, before the new upload takes its place under the canonical name. Nothing is ever deleted.
-Regenerate — re-runs the extractor's own build_profiles() against both canonical source docs and overwrites server/data/country_profiles.json — the file GET /api/country-profiles actually serves. The in-memory cache is invalidated immediately after, so the change is live with no redeploy.
-
-Modified: server/app.py — new POST /api/country-profiles/upload route, gated @roles_required("admin") only (not publisher, per your "only admin" spec).
-
-Navbar feature reimplemented, now hides the logo without the bug
+- Profile.jsx: fix broken avatar fallback, rework header spacing,
+  left-align sidebar nav, standardize page container to 1080px
+- Saved-chart cards link to /observatory?chart=<id>; Observatory
+  restores the saved panels/indicator and shows a status banner
+- Favorited report cards link to /reports?highlight=<id>, which
+  scrolls to and outlines that card in the Reports list
+- app.py: add GET /api/observatory/saved-charts/<id>
+- api.js: add fetchSavedObservatoryChart(chartId)
+- About.css/Observatory.css: align page container max-width to 1080px

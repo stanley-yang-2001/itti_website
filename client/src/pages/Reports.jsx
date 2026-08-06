@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import ReportCard from '../components/ReportCard.jsx';
 import ReportUploadForm from './ReportUploadForm.jsx';
@@ -10,6 +10,8 @@ import '../styles/Reports.css';
 
 export default function Reports() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const highlightId = searchParams.get('highlight');
   const { user, isAuthenticated } = useAuth();
   const [reports, setReports] = useState(null); // null = loading
   const [loadError, setLoadError] = useState(null);
@@ -40,6 +42,15 @@ export default function Reports() {
   useEffect(() => {
     loadReports();
   }, []);
+
+  // Coming from a favorited-report link on the Profile page (?highlight=<id>):
+  // there's no per-report detail page yet, so this scrolls the list to and
+  // outlines the matching card instead, once it's actually rendered.
+  useEffect(() => {
+    if (!highlightId || reports === null) return;
+    const el = document.getElementById(`report-${highlightId}`);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [highlightId, reports]);
 
   // Favorite state is a separate load, gated on being logged in at all -
   // a logged-out visitor simply never sees any star as filled (and
@@ -127,14 +138,19 @@ export default function Reports() {
           <Reveal delay={90}>
             <div className="reports-grid">
               {reports.map((report) => (
-                <ReportCard
+                <div
                   key={report.id}
-                  report={report}
-                  canManage={canUpload && (user?.role === 'admin' || user?.id === report.uploaded_by)}
-                  onDelete={handleDelete}
-                  isFavorited={favoriteIds.has(report.id)}
-                  onToggleFavorite={isAuthenticated ? handleToggleFavorite : undefined}
-                />
+                  id={`report-${report.id}`}
+                  className={String(report.id) === highlightId ? 'reports-card-highlight' : undefined}
+                >
+                  <ReportCard
+                    report={report}
+                    canManage={canUpload && (user?.role === 'admin' || user?.id === report.uploaded_by)}
+                    onDelete={handleDelete}
+                    isFavorited={favoriteIds.has(report.id)}
+                    onToggleFavorite={isAuthenticated ? handleToggleFavorite : undefined}
+                  />
+                </div>
               ))}
             </div>
           </Reveal>

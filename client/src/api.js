@@ -43,6 +43,10 @@ export function fetchSavedObservatoryCharts() {
   return sendJson("/observatory/saved-charts", "GET");
 }
 
+export function fetchSavedObservatoryChart(chartId) {
+  return sendJson(`/observatory/saved-charts/${chartId}`, "GET");
+}
+
 export function deleteSavedObservatoryChart(chartId) {
   return sendJson(`/observatory/saved-charts/${chartId}`, "DELETE");
 }

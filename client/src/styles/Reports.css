@@ -50,6 +50,18 @@
   gap: 20px;
 }
 
+.reports-card-highlight{
+  border-radius: var(--radius-md, 8px);
+  outline: 2px solid var(--cyan);
+  outline-offset: 4px;
+  animation: reports-card-highlight-fade 2.4s ease-out 1;
+}
+@keyframes reports-card-highlight-fade{
+  0%   { outline-color: var(--cyan); }
+  70%  { outline-color: var(--cyan); }
+  100% { outline-color: transparent; }
+}
+
 /* ---------- Report card ---------- */
 
 .report-card {

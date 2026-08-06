@@ -20,6 +20,24 @@ function initials(name, email) {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
+/** Shows the user's avatar image, falling back to initials if the URL
+ *  fails to load (e.g. a Google avatar URL that 403s) rather than
+ *  leaving a broken-image icon with overlapping alt text on the page. */
+function ProfileAvatar({ name, email, pictureUrl }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const showImage = pictureUrl && !imageFailed;
+
+  return (
+    <div className="profile-avatar">
+      {showImage ? (
+        <img src={pictureUrl} alt="" onError={() => setImageFailed(true)} />
+      ) : (
+        <span>{initials(name, email)}</span>
+      )}
+    </div>
+  );
+}
+
 function formatDate(isoString) {
   if (!isoString) return '';
   const date = new Date(isoString);
@@ -52,10 +70,15 @@ function SavedChartCard({ chart, onDelete }) {
     : 0;
 
   return (
-    <div className="profile-chart-card">
+    <Link to={`/observatory?chart=${chart.id}`} className="profile-chart-card">
       <div className="profile-chart-card-head">
         <span className={`profile-chart-badge indicator-${chart.indicator.toLowerCase()}`}>{chart.indicator}</span>
-        <button type="button" className="profile-chart-delete" onClick={() => onDelete(chart.id)} aria-label="Delete saved chart">
+        <button
+          type="button"
+          className="profile-chart-delete"
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(chart.id); }}
+          aria-label="Delete saved chart"
+        >
           ✕
         </button>
       </div>
@@ -66,7 +89,8 @@ function SavedChartCard({ chart, onDelete }) {
         {countryCount > 0 ? ` · ${countryCount} countr${countryCount === 1 ? 'y' : 'ies'}` : ''}
       </p>
       <p className="profile-chart-date">Saved {formatDate(chart.created_at)}</p>
-    </div>
+      <span className="profile-chart-card-cta">Open in Observatory &rarr;</span>
+    </Link>
   );
 }
 
@@ -160,13 +184,7 @@ export default function Profile() {
           {activeTab === 'profile' && (
             <Reveal delay={0}>
               <section className="profile-header">
-                <div className="profile-avatar">
-                  {user.picture_url ? (
-                    <img src={user.picture_url} alt={user.name || user.email} />
-                  ) : (
-                    <span>{initials(user.name, user.email)}</span>
-                  )}
-                </div>
+                <ProfileAvatar name={user.name} email={user.email} pictureUrl={user.picture_url} />
                 <div className="profile-header-info">
                   <h1 className="profile-name display">{user.name || user.email}</h1>
                   <p className="profile-email">{user.email}</p>
@@ -214,13 +232,17 @@ export default function Profile() {
                 {!favoritesError && favoriteReports !== null && favoriteReports.length > 0 && (
                   <div className="profile-reports-grid">
                     {favoriteReports.map((report) => (
-                      <ReportCard
-                        key={report.id}
-                        report={report}
-                        canManage={false}
-                        isFavorited
-                        onToggleFavorite={handleUnfavoriteReport}
-                      />
+                      <div key={report.id} className="profile-favorite-report">
+                        <ReportCard
+                          report={report}
+                          canManage={false}
+                          isFavorited
+                          onToggleFavorite={handleUnfavoriteReport}
+                        />
+                        <Link to={`/reports?highlight=${report.id}`} className="profile-favorite-report-link">
+                          View in Reports &rarr;
+                        </Link>
+                      </div>
                     ))}
                   </div>
                 )}

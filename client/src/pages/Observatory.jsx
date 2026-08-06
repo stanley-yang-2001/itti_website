@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import "../styles/Observatory.css";
-import { fetchAllCountries } from "../api.js";
+import { fetchAllCountries, fetchSavedObservatoryChart } from "../api.js";
 import { getCountriesWithData } from "../utils/ObservatoryData";
 import DataExplorerPanel from "../components/observatory/DataExplorerPanel.jsx";
 import AnalysisViews from "../components/observatory/AnalysisViews.jsx";
@@ -31,6 +31,8 @@ export default function Observatory() {
   const [indicatorTab, setIndicatorTab] = useState("ETTI");
   const [panels, setPanels] = useState([]);
   const nextPanelId = useRef(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [restoreStatus, setRestoreStatus] = useState(null); // null | "loading" | "error" | "done"
 
   useEffect(() => {
     let cancelled = false;
@@ -39,6 +41,56 @@ export default function Observatory() {
       .catch((err) => { if (!cancelled) setLoadError(err.message); });
     return () => { cancelled = true; };
   }, []);
+
+  // Restoring a chart from a profile Favorites link (?chart=<id>): only
+  // the config (indicator/panels/chart type) was ever persisted server-
+  // side - see server/app.py's comment on the saved-charts routes for why
+  // - so this re-adds and re-checks the same panels rather than trying to
+  // reconstruct a rendered chart. It lands the user one "Create Chart"
+  // click away from what they saved, on the Charts view, instead of
+  // silently guessing at ChartsSection's own internal variable/type state.
+  useEffect(() => {
+    const chartId = searchParams.get("chart");
+    if (!chartId || countries === null || restoreStatus !== null) return;
+
+    setRestoreStatus("loading");
+    fetchSavedObservatoryChart(chartId)
+      .then((chart) => {
+        const config = chart.config || {};
+        const configPanels = Array.isArray(config.panels) ? config.panels : [];
+        if (configPanels.length === 0) {
+          setRestoreStatus("error");
+          return;
+        }
+
+        setPanels((prev) => [
+          ...prev,
+          ...configPanels.map((p) => ({
+            id: nextPanelId.current++,
+            indicator: p.indicator,
+            countryCode: p.countryCode,
+            countryName: p.countryName,
+            year: p.year,
+            selected: true,
+          })),
+        ]);
+
+        const firstIndicator = configPanels[0]?.indicator;
+        if (firstIndicator === "ETTI" || firstIndicator === "GTBI") {
+          setIndicatorTab(firstIndicator);
+        }
+        setMainTab("international");
+        setRestoreStatus("done");
+
+        // Drop ?chart= from the URL once handled, so refreshing/re-visiting
+        // doesn't re-add the same panels a second time.
+        setSearchParams((next) => {
+          next.delete("chart");
+          return next;
+        }, { replace: true });
+      })
+      .catch(() => setRestoreStatus("error"));
+  }, [countries, searchParams, restoreStatus, setSearchParams]);
 
   function handleAddPanels(indicator, selections, countriesWithData) {
     const byCode = Object.fromEntries(countriesWithData.map((c) => [c.code, c.name]));
@@ -113,6 +165,21 @@ export default function Observatory() {
         <h1 className="display">Observatory</h1>
         <p className="obs-subheading">GTBI and ETTI dashboards, and a data query tool for building your own charts.</p>
       </div>
+
+      {restoreStatus === "loading" && (
+        <p className="obs-restore-banner">Loading your saved chart's data panels…</p>
+      )}
+      {restoreStatus === "done" && (
+        <p className="obs-restore-banner obs-restore-banner--done">
+          Your saved chart's data panels are loaded and checked below — select a chart type and variable, then
+          Create Chart to rebuild it.
+        </p>
+      )}
+      {restoreStatus === "error" && (
+        <p className="obs-restore-banner obs-restore-banner--error">
+          Couldn't load that saved chart. It may have been deleted.
+        </p>
+      )}
 
       <div className="obs-main-tabs" role="tablist">
         {MAIN_TABS.map((tab) => (
