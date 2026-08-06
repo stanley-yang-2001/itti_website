@@ -51,6 +51,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
+from google.auth import exceptions as google_auth_exceptions
 
 import globe_data
 import country_profiles_upload
@@ -410,14 +411,33 @@ def auth_google():
         abort(400, description="Missing 'credential' in request body")
 
     if not GOOGLE_CLIENT_ID:
+        logger.error("GOOGLE_CLIENT_ID is not configured on the server; rejecting Google sign-in attempt")
         abort(500, description="Server is missing GOOGLE_CLIENT_ID configuration")
 
     try:
         claims = id_token.verify_oauth2_token(
             credential, google_requests.Request(), GOOGLE_CLIENT_ID
         )
-    except ValueError:
+    except ValueError as exc:
+        # The common, expected failure: malformed token, expired token,
+        # or an audience ("aud" claim) that doesn't match GOOGLE_CLIENT_ID -
+        # e.g. the frontend and backend are configured with different
+        # client IDs. Logged at info level since this is routine
+        # (a stale tab, a misconfigured env var, or someone poking the API)
+        # rather than a server-side bug.
+        logger.info("google credential verification failed: %s", exc)
         abort(401, description="Invalid Google credential")
+    except google_auth_exceptions.GoogleAuthError as exc:
+        # Covers everything ValueError doesn't: wrong issuer, and - more
+        # commonly in production - a transport/network failure reaching
+        # Google's certs endpoint (accounts.google.com /
+        # www.googleapis.com), which would otherwise fall through to the
+        # generic 500 handler with no indication of *why*. Logged at
+        # warning level and surfaced as a distinct, honest error message
+        # rather than a bare 500, since this is often an infra/egress
+        # issue rather than anything wrong with the credential itself.
+        logger.warning("google auth transport/issuer error: %s", exc)
+        abort(503, description="Couldn't reach Google to verify sign-in. Please try again in a moment.")
 
     google_sub = claims["sub"]
     # Normalize the same way /api/auth/signup and /api/auth/login do. Google
@@ -1514,6 +1534,16 @@ def list_observatory_charts():
     user = get_current_user()
     charts = get_saved_charts_by_user(user.id)
     return jsonify([c.to_dict() for c in charts])
+
+
+@app.get("/api/observatory/saved-charts/<int:chart_id>")
+@login_required
+def get_observatory_chart(chart_id):
+    user = get_current_user()
+    chart = get_saved_chart(chart_id)
+    if chart is None or chart.user_id != user.id:
+        abort(404, description="Saved chart not found")
+    return jsonify(chart.to_dict())
 
 
 @app.delete("/api/observatory/saved-charts/<int:chart_id>")
