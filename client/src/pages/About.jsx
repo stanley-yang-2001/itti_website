@@ -123,6 +123,16 @@ const CONSUMER_GROUPS = [
     items: ['Ministries of Health', 'Ministries of Justice', 'Ministries of Interior', 'Post-conflict reconstruction authorities', 'Electoral commissions']
   },
   {
+    title: "Diplomatic Missions & Consular Bodies",
+    items: [
+      'Embassies and high commissions in fragile or conflict-affected states',
+      'Consular offices supporting displaced or at-risk nationals abroad',
+      "Foreign ministries' political and human rights sections",
+      'Bilateral development and stabilization attach\u00e9s',
+      'Permanent missions to the United Nations and regional bodies'
+    ]
+  },
+  {
     title: 'Multilateral Institutions',
     items: ['United Nations agencies', 'Regional bodies (e.g., African Union, ECOWAS)', 'Development banks', 'Democracy support institutions']
   },
@@ -441,6 +451,11 @@ export default function About() {
           <section id="who-we-serve" ref={registerSection('who-we-serve')} className="about-section">
             <h2 className="about-section-title display">Who We Serve</h2>
             <p>ITTI's services are particularly relevant to:</p>
+            <p className="about-note">
+              This includes diplomatic missions and consular bodies operating in or supporting fragile, conflict-affected,
+              or post-authoritarian states &mdash; where trauma-informed briefings, registry design, and early-warning
+              indicators like ETTI can directly inform bilateral engagement and duty-of-care planning for nationals abroad.
+            </p>
             <div className="about-accordion">
               {CONSUMER_GROUPS.map((group) => {
                 const isOpen = openGroup === group.title;

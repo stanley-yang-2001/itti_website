@@ -97,7 +97,26 @@ export default function SidePanel({ country, record, onClose }) {
     return (
       <aside id="side-panel">
         <div className="panel-placeholder">
-          <p>Click a country on the globe to see its GTBI and ETTI profile here.</p>
+          <svg className="panel-placeholder-icon" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+            <circle cx="60" cy="60" r="46" stroke="var(--line)" strokeWidth="1.5" />
+            <ellipse cx="60" cy="60" rx="46" ry="18" stroke="var(--line)" strokeWidth="1.5" />
+            <ellipse cx="60" cy="60" rx="46" ry="32" stroke="var(--line)" strokeWidth="1.5" />
+            <line x1="14" y1="60" x2="106" y2="60" stroke="var(--line)" strokeWidth="1.5" />
+            <line x1="60" y1="14" x2="60" y2="106" stroke="var(--line)" strokeWidth="1.5" />
+            <circle className="panel-placeholder-pulse" cx="78" cy="46" r="4" fill="var(--cyan)" />
+            <circle cx="78" cy="46" r="4" fill="var(--cyan)" opacity="0.9" />
+            <circle cx="40" cy="70" r="2.5" fill="var(--gold)" opacity="0.85" />
+          </svg>
+          <p className="panel-placeholder-title">No country selected</p>
+          <p>Click any country on the globe to load its GTBI and ETTI profile here — scores, trends, and a year-by-year breakdown.</p>
+          <div className="panel-placeholder-hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <path d="M9 9V7a3 3 0 1 1 6 0v2" />
+              <rect x="5" y="9" width="14" height="11" rx="2" />
+              <path d="M12 13v3" />
+            </svg>
+            <span>Tip: drag to rotate, scroll to zoom, then tap a country</span>
+          </div>
         </div>
       </aside>
     );
@@ -143,7 +162,7 @@ export default function SidePanel({ country, record, onClose }) {
             </div>
             <p className="score-desc">
               This profile brings together two composite indices — the Global Trauma Burden Index (GTBI) and the
-              Election Trauma &amp; Trust Index (ETTI) — for a single country. Switch tabs above to explore each
+              Election Trauma Temperature Index (ETTI) — for a single country. Switch tabs above to explore each
               index, including every year we have data for.
             </p>
           </div>

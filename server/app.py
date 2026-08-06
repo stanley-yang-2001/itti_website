@@ -53,7 +53,9 @@ from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 
 import globe_data
+import country_profiles_upload
 from decorators import get_current_user, login_required, roles_required
+from pagination import parse_pagination_args, paginated_json_response
 from models.database import Base, DATABASE_URL, engine
 from models.user import (
     create_user, get_user, get_user_by_google_sub, get_user_by_email,
@@ -190,6 +192,20 @@ app.config["MAX_CONTENT_LENGTH"] = 25 * 1024 * 1024  # 25 MB
 # once one exists - that part isn't code-solvable yet.
 CORS(app, supports_credentials=True, origins=[CLIENT_ORIGIN])
 
+# storage_uri="memory://" keeps each rate-limit counter in that worker
+# process's own memory - fine at this app's current scale (no shared
+# Redis/Memcached in app.yaml to point at instead), but worth knowing
+# the tradeoffs given the 512MB instance:
+#   - Not shared across gunicorn's 2 worker processes, so a client's
+#     real effective limit is up to (this number) x 2 depending on
+#     which worker handles each request, not a hard global cap.
+#   - It's an unbounded-until-restart dict of per-key counters for the
+#     life of the process. The Dockerfile's --max-requests/
+#     --max-requests-jitter now recycle each worker periodically, which
+#     also resets this - so it's not a long-term leak in practice, just
+#     not a precise limiter. If this app ever adds a Redis instance for
+#     other reasons, switching storage_uri to "redis://..." fixes both
+#     points at once (flask-limiter supports it out of the box).
 limiter = Limiter(get_remote_address, app=app, storage_uri="memory://", default_limits=[])
 
 
@@ -288,28 +304,60 @@ MAX_REPORT_IMAGE_BYTES = 5 * 1024 * 1024  # 5 MB per cover image
 ALLOWED_GLOBE_DATA_EXTENSIONS = {".xlsx"}
 MAX_GLOBE_DATA_UPLOAD_BYTES = 20 * 1024 * 1024  # 20 MB per file
 
+# Country-profile source documents: the real ones in
+# data_scripts/country_profiles_source/ are 60-70KB each, so this cap
+# is generous headroom rather than a reflection of expected size.
+ALLOWED_COUNTRY_PROFILE_EXTENSIONS = {".docx"}
+MAX_COUNTRY_PROFILE_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MB per file
+
 
 def load_json(path):
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
+# In-process cache for the three read-mostly JSON data files, keyed by
+# path. Each of these used to be re-opened and re-parsed from disk on
+# every single request to the endpoints below - harmless in isolation
+# given how small the files are (~1MB combined), but needless
+# allocation/GC churn under concurrent load, especially on the 512MB
+# instance app.yaml deploys to. world-110m.json and country_profiles.json
+# are never written by the running app (only ever regenerated offline
+# and redeployed), so they're cached for the process's whole lifetime.
+# country_data.json IS written at runtime, by
+# globe_data.apply_workbook_to_country_data() via POST
+# /api/globe-data/upload - that route calls _invalidate_json_cache()
+# right after a successful write so the next read picks up the change,
+# same as if the process had just restarted.
+_json_cache = {}
+
+
+def load_json_cached(path):
+    if path not in _json_cache:
+        _json_cache[path] = load_json(path)
+    return _json_cache[path]
+
+
+def _invalidate_json_cache(path):
+    _json_cache.pop(path, None)
+
+
 @app.get("/api/world-data")
 def get_world_data():
     """Raw TopoJSON topology used to draw the globe."""
-    return jsonify(load_json(WORLD_DATA_PATH))
+    return jsonify(load_json_cached(WORLD_DATA_PATH))
 
 
 @app.get("/api/countries")
 def get_countries():
     """All country metric records, keyed by zero-padded ISO numeric code."""
-    return jsonify(load_json(COUNTRY_DATA_PATH))
+    return jsonify(load_json_cached(COUNTRY_DATA_PATH))
 
 
 @app.get("/api/countries/<code>")
 def get_country(code):
     """A single country's metric record."""
-    data = load_json(COUNTRY_DATA_PATH)
+    data = load_json_cached(COUNTRY_DATA_PATH)
     record = data.get(code.zfill(3)) or data.get(code)
     if record is None:
         abort(404, description=f"No data for country code '{code}'")
@@ -327,13 +375,13 @@ def get_country_profiles():
     docstring for which countries are covered and why a couple aren't
     (most notably Kosovo, which has no ISO 3166-1 numeric code at all).
     """
-    return jsonify(load_json(COUNTRY_PROFILES_PATH))
+    return jsonify(load_json_cached(COUNTRY_PROFILES_PATH))
 
 
 @app.get("/api/country-profiles/<code>")
 def get_country_profile(code):
     """A single country's narrative profile, if one exists."""
-    data = load_json(COUNTRY_PROFILES_PATH)
+    data = load_json_cached(COUNTRY_PROFILES_PATH)
     record = data.get(code.zfill(3)) or data.get(code)
     if record is None:
         abort(404, description=f"No profile for country code '{code}'")
@@ -615,9 +663,13 @@ def delete_account():
 @app.get("/api/admin/users")
 @roles_required("admin")
 def list_all_users():
-    """All visible (non-deleted) user accounts, for the admin role-management panel."""
-    users = get_all_users()
-    return jsonify([u.to_public_dict() for u in users])
+    """A page of visible (non-deleted) user accounts, for the admin
+    role-management panel. Bounded by pagination.DEFAULT_PAGE_SIZE
+    unless ?limit=&offset= are passed - see list_reports() above for
+    why."""
+    limit, offset = parse_pagination_args()
+    users, total = get_all_users(limit=limit, offset=offset)
+    return paginated_json_response([u.to_public_dict() for u in users], total, limit, offset)
 
 
 @app.post("/api/admin/users/roles")
@@ -743,6 +795,11 @@ def upload_globe_data():
     globe_data.rotate_source_file(kind, tmp_path, original_filename)
     globe_data.sync_cached_extraction(kind, extracted)
     result = globe_data.apply_workbook_to_country_data(kind, extracted)
+    # This just wrote server/data/country_data.json on disk - drop the
+    # in-memory cache so the next /api/countries* request re-reads it
+    # instead of serving the pre-upload snapshot for the rest of this
+    # worker's life.
+    _invalidate_json_cache(COUNTRY_DATA_PATH)
 
     user = get_current_user()
     create_user_event(user_id=user.id, document_id=None, action=CRUDAction.UPDATE)
@@ -756,6 +813,114 @@ def upload_globe_data():
         "countries_updated": result["updated_codes"],
         "unresolved_country_names": result["unresolved_country_names"],
         "total_countries_in_file": result["total_countries_in_file"],
+    })
+
+
+# ---------------------------------------------------------------------------
+# Country profile documents (the two source .docx files
+# data_scripts/country_profiles.extract.py builds country_profiles.json
+# from) - admin only, unlike globe-data uploads above which publishers
+# can also do. Wires together country_profiles_upload.py the same way
+# the globe-data route above wires together globe_data.py.
+# ---------------------------------------------------------------------------
+
+@app.post("/api/country-profiles/upload")
+@roles_required("admin")
+@limiter.limit("20 per hour")
+def upload_country_profile_docx():
+    """
+    Body: multipart/form-data with:
+      kind = "survey" | "dashboard" (see country_profiles_upload.py's
+             module docstring for what each one is)
+      file = the replacement document (.docx)
+
+    Steps (each one backed by server/country_profiles_upload.py):
+      1. Validate the upload actually parses as at least one country
+         entry for `kind`, using the exact same parsing code
+         data_scripts/country_profiles.extract.py runs from the
+         command line. Nothing on disk changes if this fails.
+      2. Archive the raw upload into
+         data_scripts/country_profiles_storage/ (timestamped) as a
+         permanent record of every upload made.
+      3. Rotate data_scripts/country_profiles_source/: whatever
+         document currently has this kind's canonical filename moves
+         into that folder's old/ subfolder (timestamped), and the new
+         upload takes its place under that same canonical name - so
+         anyone re-running the CLI script by hand afterward reads the
+         same file this endpoint just applied. The other kind's source
+         document (not part of this upload) is left untouched.
+      4. Re-run country_profiles.extract.py's own profile-building
+         logic against both canonical source documents together and
+         overwrite server/data/country_profiles.json - the file
+         GET /api/country-profiles actually serves.
+    """
+    kind = (request.form.get("kind") or "").strip().lower()
+    if kind not in country_profiles_upload.VALID_KINDS:
+        abort(400, description=f"'kind' must be one of {', '.join(sorted(country_profiles_upload.VALID_KINDS))}")
+
+    upload = request.files.get("file")
+    if upload is None or upload.filename == "":
+        abort(400, description="Missing 'file' in request body")
+
+    original_filename = secure_filename(upload.filename)
+    if not original_filename:
+        abort(400, description="Invalid filename")
+
+    ext = os.path.splitext(original_filename)[1].lower()
+    if ext not in ALLOWED_COUNTRY_PROFILE_EXTENSIONS:
+        abort(400, description=f"Only {', '.join(sorted(ALLOWED_COUNTRY_PROFILE_EXTENSIONS))} documents are accepted")
+
+    # Nothing under data_scripts/ is touched until the document is proven
+    # to parse cleanly - it's saved to a scratch temp file first.
+    tmp_dir = os.path.join(country_profiles_upload.DATA_SCRIPTS_DIR, "_uploads_tmp")
+    os.makedirs(tmp_dir, exist_ok=True)
+    tmp_fd, tmp_path = tempfile.mkstemp(suffix=ext, dir=tmp_dir)
+    os.close(tmp_fd)
+    upload.save(tmp_path)
+
+    size = os.path.getsize(tmp_path)
+    if size > MAX_COUNTRY_PROFILE_UPLOAD_BYTES:
+        os.remove(tmp_path)
+        abort(400, description=f"File exceeds the {MAX_COUNTRY_PROFILE_UPLOAD_BYTES // (1024 * 1024)}MB limit")
+
+    try:
+        country_profiles_upload.validate_docx(kind, tmp_path)
+    except country_profiles_upload.DocxValidationError as e:
+        os.remove(tmp_path)
+        abort(400, description=str(e))
+
+    # Archive a copy for history, then move the validated file itself into
+    # the CLI-facing source folder (rotating whatever was there into old/).
+    country_profiles_upload.archive_docx(kind, tmp_path, original_filename)
+    country_profiles_upload.rotate_source_docx(kind, tmp_path, original_filename)
+
+    try:
+        result = country_profiles_upload.regenerate_profiles()
+    except FileNotFoundError as e:
+        # Only reachable on a brand-new deploy where the OTHER kind has
+        # never been uploaded (or placed by hand) at all yet - this
+        # kind's file is already installed above and will regenerate
+        # cleanly once the other one arrives.
+        abort(400, description=str(e))
+
+    # This just wrote server/data/country_profiles.json on disk - drop
+    # the in-memory cache so the next /api/country-profiles* request
+    # re-reads it instead of serving the pre-upload snapshot for the
+    # rest of this worker's life.
+    _invalidate_json_cache(COUNTRY_PROFILES_PATH)
+
+    user = get_current_user()
+    create_user_event(user_id=user.id, document_id=None, action=CRUDAction.UPDATE)
+    logger.info(
+        "country profile docx upload kind=%s user_id=%s profile_count=%d with_dashboard_note=%d skipped=%d",
+        kind, user.id, result["profile_count"], result["with_dashboard_note_count"], len(result["skipped"]),
+    )
+
+    return jsonify({
+        "kind": kind,
+        "profile_count": result["profile_count"],
+        "with_dashboard_note_count": result["with_dashboard_note_count"],
+        "skipped": result["skipped"],
     })
 
 
@@ -898,17 +1063,27 @@ def _can_view_report(report, user):
 
 @app.get("/api/reports")
 def list_reports():
-    """All PUBLISHED, visible reports, newest first. Public - no login required."""
-    reports = get_published_reports()
-    return jsonify([r.to_public_dict() for r in reports])
+    """
+    A page of PUBLISHED, visible reports, newest first. Public - no
+    login required. Bounded by pagination.DEFAULT_PAGE_SIZE unless
+    ?limit=&offset= are passed (see pagination.py) - this used to load
+    every published report on every request with no cap, which grows
+    unbounded with site content. The response body is still a plain
+    array so existing clients are unaffected; total count is in the
+    X-Total-Count header for any client that wants to page further.
+    """
+    limit, offset = parse_pagination_args()
+    reports, total = get_published_reports(limit=limit, offset=offset)
+    return paginated_json_response([r.to_public_dict() for r in reports], total, limit, offset)
 
 
 @app.get("/api/reports/pending")
 @roles_required("publisher", "admin")
 def list_pending_reports_route():
     """Reports awaiting review, oldest first. Peer Review page - publisher/admin only."""
-    reports = get_pending_reports()
-    return jsonify([r.to_public_dict() for r in reports])
+    limit, offset = parse_pagination_args()
+    reports, total = get_pending_reports(limit=limit, offset=offset)
+    return paginated_json_response([r.to_public_dict() for r in reports], total, limit, offset)
 
 
 @app.get("/api/reports/changes-requested")
@@ -920,8 +1095,9 @@ def list_changes_requested_reports_route():
     per product decision - visible to reviewers, but not part of
     anyone's active review queue until the uploader resubmits.
     """
-    reports = get_changes_requested_reports()
-    return jsonify([r.to_public_dict() for r in reports])
+    limit, offset = parse_pagination_args()
+    reports, total = get_changes_requested_reports(limit=limit, offset=offset)
+    return paginated_json_response([r.to_public_dict() for r in reports], total, limit, offset)
 
 
 @app.get("/api/reports/<int:report_id>")

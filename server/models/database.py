@@ -28,6 +28,18 @@ connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite")
 # pool_pre_ping avoids "server closed the connection unexpectedly" errors
 # after a Postgres connection has sat idle past the server's timeout -
 # irrelevant for SQLite but harmless to pass either way.
-engine = create_engine(DATABASE_URL, echo=False, pool_pre_ping=True, connect_args=connect_args)
+#
+# pool_size/max_overflow are set explicitly rather than left at
+# SQLAlchemy's defaults (5 + 10 = up to 15 connections per process).
+# app.yaml runs 2 gunicorn worker processes, each with its own engine/
+# pool, on a 512MB instance - at the default settings that's up to 30
+# possible Postgres connections plus their per-connection overhead from
+# a single tiny box. 3 + 2 = 5 per worker (10 total) is comfortably
+# above this app's actual concurrency (gunicorn's sync workers handle
+# one request at a time each) while capping the worst case.
+engine = create_engine(
+    DATABASE_URL, echo=False, pool_pre_ping=True, connect_args=connect_args,
+    pool_size=3, max_overflow=2,
+)
 Base = declarative_base()
 Session = sessionmaker(bind=engine)

@@ -102,6 +102,16 @@ COUNTRY_NAME_ALIASES = {
     "Congo": "Congo, The Democratic Republic of the",
 }
 
+# Display name to actually store for country_data.json's "name" field,
+# keyed by the *raw* source label (not the alias used to resolve the ISO
+# code). Needed because "Congo" in the source workbook is aliased above
+# to resolve to the Democratic Republic of the Congo's ISO code (180),
+# but storing the raw label verbatim would display as plain "Congo" -
+# indistinguishable from the separate Republic of the Congo (code 178).
+DISPLAY_NAME_OVERRIDES = {
+    "Congo": "Democratic Republic of the Congo",
+}
+
 YEAR_PATTERN = re.compile(r"(\d{4})")
 
 # 0-based column indices per detail sheet. Country/Election are always
@@ -185,8 +195,18 @@ def read_detail_sheet(ws, columns):
     Country | Election | Coverage Period | Subtypes | <value columns...>.
     Returns { (country_name, election_label): {field_name: value, ...} }.
     """
+    # In read_only mode, iter_rows(values_only=True) trims each row's
+    # tuple to that row's own last used column rather than padding
+    # every row to the sheet's overall width - a blank or short trailing
+    # row can come back shorter than the max column index this function
+    # needs (or empty entirely), so pad every row out first instead of
+    # indexing into it directly.
+    min_width = max(columns.values(), default=1) + 1
+
     results = {}
     for row in ws.iter_rows(min_row=2, values_only=True):
+        if len(row) < min_width:
+            row = row + (None,) * (min_width - len(row))
         country_name = row[0]
         election_label = row[1]
         if country_name is None or election_label is None:
@@ -200,7 +220,15 @@ def read_detail_sheet(ws, columns):
 
 
 def build_country_data(workbook_path):
-    wb = openpyxl.load_workbook(workbook_path, data_only=True)
+    # read_only=True streams rows instead of materializing the whole
+    # workbook (every cell, style, etc.) in memory - safe here because
+    # every sheet is only ever read once, top-to-bottom, via
+    # iter_rows(values_only=True) in read_detail_sheet() below; nothing
+    # needs random cell access or write-back. Matters most for the
+    # in-app upload path (app.py's /api/globe-data/upload accepts
+    # workbooks up to 20MB), where a non-streaming parse can use many
+    # times the file's size in RAM.
+    wb = openpyxl.load_workbook(workbook_path, data_only=True, read_only=True)
 
     evs_by_key = read_detail_sheet(wb["EVS"], EVS_COLUMNS)
     tie_by_key = read_detail_sheet(wb["TIE"], TIE_COLUMNS)
@@ -223,7 +251,9 @@ def build_country_data(workbook_path):
             continue
 
         key = (country_name, election_label)
-        entry = country_data.setdefault(code, {"name": country_name, "ETTI": {}})
+        entry = country_data.setdefault(
+            code, {"name": DISPLAY_NAME_OVERRIDES.get(country_name, country_name), "ETTI": {}}
+        )
 
         record = {field: (value if value is not None else MISSING) for field, value in final_record.items()}
         for field, value in evs_by_key.get(key, {}).items():

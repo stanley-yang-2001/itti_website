@@ -1,52 +1,17 @@
-Fix broken donations backend, match certifications to it, fix bugs
+New: client/src/pages/Profile.jsx — a "Control" tab now appears in the sidebar only when user.role === 'admin', rendering the new ControlPanel.jsx component.
 
-Certification enrollment (the actual ask) surfaced a bigger problem:
-Donate.jsx already used embedded Stripe Elements (PaymentElement,
-stripe.confirmPayment()) calling /api/donations/config and
-/api/donations/payment-intent - neither of which existed in app.py.
-The backend still only had the old Checkout-Session-redirect routes,
-which nothing called anymore. Donations were 404ing end-to-end.
+New: client/src/components/ControlPanel.jsx + Control.css — two upload widgets:
 
-Fixed donations first, since it's the reference implementation:
-- server/models/donation.py: added attach_payment_intent() and
-  get_donation_by_payment_intent(), the PaymentIntent-flow equivalents
-  of attach_checkout_session()/get_donation_by_checkout_session().
-- server/app.py: replaced /api/donations/presets + checkout-session +
-  session/<id> with config + payment-intent + payment-intent/<id>.
-  Webhook now listens for payment_intent.succeeded instead of
-  checkout.session.completed.
+Observatory data (GTBI/ETTI .xlsx) — reuses the existing POST /api/globe-data/upload endpoint (already had the same validate → archive → rotate pattern I mirrored below).
+Country profiles (.docx, "survey" or "dashboard" kind) — hits the new POST /api/country-profiles/upload endpoint.
 
-Then built the same for certifications:
-- server/models/enrollment.py: same two new functions, mirrored.
-- server/app.py: replaced /api/certifications/catalog + checkout-session
-  + enrollments/session/<id> with config + payment-intent +
-  enrollments/payment-intent/<id>.
-- CertificationEnrollModal.jsx rebuilt to mount Stripe's <PaymentElement>
-  directly in the modal (matching Donate.jsx exactly) instead of
-  redirecting to a hosted Checkout page.
-- CertificationEnrollThankYou.jsx updated to read Stripe.js's redirect
-  params (?payment_intent=&redirect_status=) instead of ?session_id=.
-- Removed the now-dead CertificationEnroll.jsx page and its route -
-  enrollment starts from the modal on /certifications now, and the old
-  page used the removed checkout-session API. Confirmed nothing else
-  referenced any of the removed routes/page before deleting.
+New: server/country_profiles_upload.py — the docx counterpart to globe_data.py, doing the same four-step pipeline:
 
-Fellowship.jsx: removed "founded and chartered under Dr. Luke Chike
-Igweobi, Chancellor" from the Invitation panel.
+Validate — parses the upload with the exact same logic country_profiles.extract.py uses; nothing on disk changes if it fails.
+Archive — copies the raw upload into data_scripts/country_profiles_storage/, timestamped, as a permanent audit trail.
+Rotate (version control) — whatever file currently has that kind's canonical name in data_scripts/country_profiles_source/ moves into that folder's old/ subfolder, timestamped, before the new upload takes its place under the canonical name. Nothing is ever deleted.
+Regenerate — re-runs the extractor's own build_profiles() against both canonical source docs and overwrites server/data/country_profiles.json — the file GET /api/country-profiles actually serves. The in-memory cache is invalidated immediately after, so the change is live with no redeploy.
 
-Navbar oscillation bug: root cause was CSS scroll anchoring - the
-browser was auto-adjusting scrollTop to compensate for the navbar's own
-height change (full <-> compact), which pushed scroll position back
-across the compact/full threshold near the top of the page, causing a
-feedback loop (navbar flickering open/closed repeatedly). Fixed with
-overflow-anchor:none on .navbar (the actual fix) plus hysteresis in
-NavBar.jsx's scroll handler (separate enter/exit thresholds instead of
-one shared value) as defense-in-depth against any residual jitter.
+Modified: server/app.py — new POST /api/country-profiles/upload route, gated @roles_required("admin") only (not publisher, per your "only admin" spec).
 
-Verified: backend compiles and route-tests pass (config/payment-intent
-endpoints, auth gating, 503-when-unconfigured); `vite build` clean;
-grepped for stale references to every removed route/page before
-deleting anything; headless-browser pass confirms Fellowship text is
-gone and the navbar produces zero state toggles under tight scroll
-jitter both near the old threshold and near the top (previously the
-exact failure condition).
+Navbar feature reimplemented, now hides the logo without the bug

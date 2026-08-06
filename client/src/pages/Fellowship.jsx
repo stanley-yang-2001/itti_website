@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FELLOW_LEVELS, WHO_SHOULD_APPLY, EXECUTIVE_VALUE, FELLOWS_GAIN, FELLOWS } from '../data/fellowship.js';
+import { FELLOW_LEVELS, WHO_SHOULD_APPLY, EXECUTIVE_VALUE, FELLOWS_GAIN, FELLOWS, LEADERSHIP } from '../data/fellowship.js';
 import Reveal from '../components/Reveal.jsx';
 import '../styles/Fellowship.css';
 
@@ -30,7 +30,59 @@ function FellowCard({ fellow }) {
       {level && (
         <span className={`fellow-card-level level-${level.code.toLowerCase()}`}>{level.code}™ — {level.name}</span>
       )}
-      <p className="fellow-card-bio">{fellow.bio}</p>
+      {Array.isArray(fellow.bio)
+        ? fellow.bio.map((para, i) => <p key={i} className="fellow-card-bio">{para}</p>)
+        : <p className="fellow-card-bio">{fellow.bio}</p>}
+    </article>
+  );
+}
+
+function BioBlock({ block, i }) {
+  switch (block.type) {
+    case 'h4':
+      return <h4 key={i} className="leader-bio-heading">{block.text}</h4>;
+    case 'quote':
+      return <blockquote key={i} className="leader-bio-quote">{block.text}</blockquote>;
+    case 'book':
+      return (
+        <div key={i} className="leader-bio-book">
+          <p className="leader-bio-book-title">{block.title}</p>
+          <p className="leader-bio-book-text">{block.text}</p>
+        </div>
+      );
+    case 'p':
+    default:
+      return <p key={i} className="leader-bio-p">{block.text}</p>;
+  }
+}
+
+function LeaderCard({ leader }) {
+  const [expanded, setExpanded] = useState(false);
+  const preview = leader.bio.filter((b) => b.type === 'p').slice(0, 2);
+
+  return (
+    <article className="leader-card">
+      <div className="leader-card-photo">
+        {leader.photo ? (
+          <img src={leader.photo} alt={leader.name} loading="lazy" />
+        ) : (
+          <span className="fellow-card-initials">{initials(leader.name)}</span>
+        )}
+      </div>
+      <div className="leader-card-body">
+        <h3 className="leader-card-name">{leader.name}</h3>
+        <p className="leader-card-title">{leader.title}</p>
+        <div className="leader-bio">
+          {(expanded ? leader.bio : preview).map((block, i) => (
+            <BioBlock key={i} block={block} i={i} />
+          ))}
+        </div>
+        {leader.bio.length > preview.length && (
+          <button className="leader-bio-toggle" onClick={() => setExpanded((v) => !v)}>
+            {expanded ? 'Show less' : 'Read full bio'}
+          </button>
+        )}
+      </div>
     </article>
   );
 }
@@ -108,6 +160,7 @@ export default function Fellowship() {
           <h3 className="fellows-subtitle display">Invitation</h3>
           <p>We invite visionary leaders to help build the global architecture for truth, healing, and resilient societies.</p>
           <p>Become part of an international movement transforming evidence into institutional reform.</p>
+          <a href="mailto:itti@ofhusa.org" className="fellows-btn primary">Inquire About a Nomination</a>
           <p className="fellows-invitation-note">
             The International Truth &amp; Trauma Institute is a program of Outlets for Hope, Inc. — founded and
             chartered under Dr. Luke Chike Igweobi, Chancellor.
@@ -120,7 +173,20 @@ export default function Fellowship() {
       </section>
       </Reveal>
 
-      {/* ---------- Section 2: Our Fellows ---------- */}
+      {/* ---------- Section 2: Leadership ---------- */}
+      <Reveal delay={135}>
+      <section id="leadership" className="fellows-section">
+        <p className="fellows-section-eyebrow mono">Institute Leadership</p>
+        <h2 className="fellows-section-title display">Leadership</h2>
+        <div className="leadership-grid">
+          {LEADERSHIP.map((leader) => (
+            <LeaderCard key={leader.id} leader={leader} />
+          ))}
+        </div>
+      </section>
+      </Reveal>
+
+      {/* ---------- Section 3: Our Fellows ---------- */}
       <Reveal delay={180}>
       <section id="our-fellows" className="fellows-section">
         <p className="fellows-section-eyebrow mono">The Roster</p>

@@ -61,6 +61,19 @@ except ImportError:
 
 MISSING = "Data Pending"
 
+# pycountry's bare .name is ambiguous for a couple of countries (either
+# too short to distinguish from a similarly-named neighbor, or not the
+# form most readers expect) - overridden here so the *fallback* world
+# list (used before any real ETTI/GTBI data is overlaid) never collides.
+# The two Congos are the main case: pycountry's plain .name for code 178
+# is just "Congo", which is indistinguishable from code 180 (Democratic
+# Republic of the Congo) once its own extract-time name is stripped back
+# to the same bare word - see etti_extract.py's DISPLAY_NAME_OVERRIDES
+# for the code-180 side of this fix.
+FALLBACK_NAME_OVERRIDES = {
+    "178": "Republic of the Congo",
+}
+
 EMPTY_ETTI_SECTION = {
     MISSING: {
         "evs": MISSING,
@@ -132,7 +145,7 @@ def combine(etti_path, gtbi_path):
     # even ones absent from both source workbooks.
     for code, name in all_world_countries().items():
         combined[code] = {
-            "name": name,
+            "name": FALLBACK_NAME_OVERRIDES.get(code, name),
             "ETTI": dict(EMPTY_ETTI_SECTION),
             "GTBI": dict(EMPTY_GTBI_SECTION),
         }

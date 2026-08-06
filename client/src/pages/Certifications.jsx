@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { CATEGORIES, CERTIFICATIONS, COMPARISON_ROWS } from '../data/certifications.js';
 import Reveal from '../components/Reveal.jsx';
+import CertificationEnrollModal from './CertificationEnroll.jsx';
 import '../styles/Certifications.css';
 
 const BADGE_CLASS = {
@@ -19,6 +19,7 @@ export default function Certifications() {
   const [query, setQuery] = useState('');
   const [expanded, setExpanded] = useState(null);
   const [sortByPrice, setSortByPrice] = useState(false);
+  const [enrollingCert, setEnrollingCert] = useState(null);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -235,9 +236,13 @@ export default function Certifications() {
                               </ul>
                             </div>
 
-                            <Link to={`/certifications/enroll/${c.code}`} className="certs-btn primary full">
+                            <button
+                              type="button"
+                              onClick={() => setEnrollingCert(c)}
+                              className="certs-btn primary full"
+                            >
                               {c.ctaVerb} in {c.code}™ — {c.tuition}
-                            </Link>
+                            </button>
                             <p className="cert-refund-note">
                               Refund policy: 50% refundable within 7 days of purchase; no refunds after 7 days.
                             </p>
@@ -290,6 +295,10 @@ export default function Certifications() {
           </div>
         </section>
       </Reveal>
+
+      {enrollingCert && (
+        <CertificationEnrollModal cert={enrollingCert} onClose={() => setEnrollingCert(null)} />
+      )}
     </div>
   );
 }
