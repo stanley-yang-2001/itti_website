@@ -682,9 +682,11 @@ def list_all_users():
     """A page of visible (non-deleted) user accounts, for the admin
     role-management panel. Bounded by pagination.DEFAULT_PAGE_SIZE
     unless ?limit=&offset= are passed - see list_reports() above for
-    why."""
+    why. ?search= filters to users whose name or email contains it
+    (case-insensitive) - powers the Access Level panel's search bar."""
     limit, offset = parse_pagination_args()
-    users, total = get_all_users(limit=limit, offset=offset)
+    search = (request.args.get("search") or "").strip() or None
+    users, total = get_all_users(limit=limit, offset=offset, search=search)
     return paginated_json_response([u.to_public_dict() for u in users], total, limit, offset)
 
 

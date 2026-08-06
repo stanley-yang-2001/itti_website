@@ -205,3 +205,141 @@
   display: flex;
   gap: 10px;
 }
+/* ---------- Access Level panel ---------- */
+.access-level-search {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--bg-body, transparent);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--text-hi);
+  margin-bottom: 16px;
+}
+.access-level-search:focus {
+  outline: none;
+  border-color: var(--accent, #4285f4);
+}
+
+.access-level-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.access-level-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.access-level-table th,
+.access-level-table td {
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.access-level-table th:nth-child(2),
+.access-level-table td:nth-child(2) {
+  white-space: normal;
+  word-break: break-word;
+}
+.access-level-table th {
+  color: var(--text-mid);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.access-level-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.access-level-noname {
+  color: var(--text-low);
+}
+.access-level-empty {
+  color: var(--text-mid);
+  text-align: center !important;
+  padding: 20px 14px !important;
+}
+/* Dims the previous page's rows very slightly while a new search/page is
+   in flight, instead of flashing to an empty table between requests. */
+.access-level-row--stale {
+  opacity: 0.55;
+}
+
+.access-level-select {
+  background: var(--bg-panel);
+  color: var(--text-hi);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.access-level-select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.access-level-select.role-publisher {
+  color: var(--bg-deep);
+  background: var(--gold);
+  border-color: var(--gold);
+}
+.access-level-select.role-admin {
+  color: #fff;
+  background: var(--accent, #4285f4);
+  border-color: var(--accent, #4285f4);
+}
+
+.access-level-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+.access-level-page-info {
+  font-size: 12px;
+  color: var(--text-mid);
+  white-space: nowrap;
+}
+
+.access-level-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+.access-level-modal {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 24px;
+  max-width: 420px;
+  width: 100%;
+}
+.access-level-modal h4 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  color: var(--text-hi);
+}
+.access-level-modal p {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: var(--text-mid);
+  line-height: 1.5;
+}
+.access-level-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
