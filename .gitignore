@@ -2,7 +2,6 @@
 __pycache__/
 *.pyc
 server/app.db
-server/uploads/
 
 # Node
 node_modules/
