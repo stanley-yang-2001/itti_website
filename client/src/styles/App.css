@@ -318,6 +318,9 @@
   #globe-container{
     width:100%; height:100%;
     display:flex; align-items:center; justify-content:center;
+    /* Anchors the hover tooltip's position:absolute (see .globe-tooltip
+       below and Globe.jsx) to this box instead of the page. */
+    position:relative;
   }
   #globe-container svg{
     width:100%; height:100%;
@@ -395,6 +398,68 @@
   .globe-legend-swatch.data-etti{background:#7FA8E0;}
   .globe-legend-swatch.data-gtbi{background:#B98BD8;}
   .globe-legend-swatch.data-both{background:#6BC97A;}
+
+  /* ---------- Globe hover tooltip ---------- */
+  /* Floats over the globe's own dark ocean/space canvas rather than the
+     page's light theme, since that's the surface it actually sits on -
+     see Globe.jsx for why it's a plain DOM div (not SVG) positioned
+     with d3.pointer() coordinates.
+     pointer-events:none is the load-bearing rule here: it's what lets
+     the cursor pass straight through the tooltip to whatever country
+     is now underneath it, so the box never "traps" hover on itself
+     while someone's mouse is crossing toward a neighboring country. */
+  .globe-tooltip{
+    position:absolute;
+    top:0; left:0;
+    z-index:5;
+    min-width:150px;
+    padding:10px 12px;
+    border-radius:10px;
+    background:rgba(10,18,32,0.92);
+    border:1px solid rgba(127,168,224,0.28);
+    box-shadow:0 8px 24px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.03) inset;
+    backdrop-filter:blur(6px);
+    pointer-events:none;
+    opacity:0;
+    transition:opacity .12s ease;
+    font-family:'Inter',sans-serif;
+  }
+  .globe-tooltip-name{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.03em;
+    color:#F4F7FB;
+    margin-bottom:7px;
+    white-space:nowrap;
+  }
+  .globe-tooltip-row{
+    display:flex;
+    align-items:baseline;
+    gap:6px;
+    font-size:11.5px;
+    line-height:1.5;
+    white-space:nowrap;
+  }
+  .globe-tooltip-row + .globe-tooltip-row{margin-top:3px;}
+  .globe-tooltip-swatch{
+    width:7px; height:7px;
+    border-radius:2px;
+    flex-shrink:0;
+  }
+  .globe-tooltip-swatch.data-etti{background:#7FA8E0;}
+  .globe-tooltip-swatch.data-gtbi{background:#B98BD8;}
+  .globe-tooltip-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;
+    letter-spacing:0.06em;
+    color:#8B98AC;
+    text-transform:uppercase;
+    width:32px;
+    flex-shrink:0;
+  }
+  .globe-tooltip-score{color:#F4F7FB; font-weight:600;}
+  .globe-tooltip-year{color:#8B98AC; font-size:10px;}
+  .globe-tooltip-pending{color:#6B7686; font-style:italic;}
 
   @media (max-width: 900px){
     .home-globe-grid{grid-template-columns:1fr; align-items:stretch;}
