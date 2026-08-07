@@ -6,7 +6,7 @@ import '../styles/Control.css';
 
 const OBSERVATORY_KIND_OPTIONS = [
   { value: 'GTBI', label: 'GTBI', description: 'Global Trauma Burden Index workbook (.xlsx)' },
-  { value: 'ETTI', label: 'ETTI', description: 'Election Trauma & Trust Index workbook (.xlsx)' },
+  { value: 'ETTI', label: 'ETTI', description: 'Election Trauma Temperature Index workbook (.xlsx)' },
 ];
 
 const PROFILE_KIND_OPTIONS = [

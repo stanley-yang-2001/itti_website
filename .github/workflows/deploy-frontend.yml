@@ -1,0 +1,90 @@
+name: Deploy frontend
+
+# Builds the Vite production bundle on GitHub's own runners and syncs the
+# result straight to a DigitalOcean Spaces bucket (S3-compatible, fronted
+# by DO's CDN). This exists so `npm run build` - which needs enough RAM to
+# hold the whole module graph in memory at once - never has to run on the
+# app's own basic-xxs backend instance or count against App Platform's
+# static-site build minutes. See README's Deployment section for the
+# one-time Spaces + app.yaml setup this depends on.
+
+on:
+  push:
+    branches: ["database"]
+    paths:
+      - "client/**"
+      - ".github/workflows/deploy-frontend.yml"
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-frontend
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    name: Build and sync dist/ to DO Spaces
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        env:
+          # Vite reads the repo-root .env for this (see client/vite.config.js);
+          # GitHub Actions has no filesystem access to your local .env, so it
+          # has to come from a repo secret instead.
+          VITE_GOOGLE_CLIENT_ID_SOURCE: ${{ secrets.GOOGLE_CLIENT_ID }}
+        run: |
+          echo "GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID_SOURCE}" >> ../.env
+          npm run build
+
+      - name: Configure DO Spaces credentials
+        run: |
+          mkdir -p ~/.aws
+          cat > ~/.aws/credentials <<EOF
+          [default]
+          aws_access_key_id = ${{ secrets.DO_SPACES_KEY }}
+          aws_secret_access_key = ${{ secrets.DO_SPACES_SECRET }}
+          EOF
+
+      - name: Sync dist/ to Spaces
+        run: |
+          aws s3 sync dist/ "s3://${{ secrets.DO_SPACES_BUCKET }}" \
+            --endpoint-url "https://${{ secrets.DO_SPACES_REGION }}.digitaloceanspaces.com" \
+            --acl public-read \
+            --delete \
+            --cache-control "public,max-age=31536000,immutable" \
+            --exclude "index.html"
+
+      - name: Upload index.html with no-cache
+        # index.html references the hashed asset filenames above, so it
+        # must never be served stale from cache the way the hashed assets
+        # safely can be - otherwise a deploy could serve an old index.html
+        # pointing at JS/CSS files that no longer exist in the bucket.
+        run: |
+          aws s3 cp dist/index.html "s3://${{ secrets.DO_SPACES_BUCKET }}/index.html" \
+            --endpoint-url "https://${{ secrets.DO_SPACES_REGION }}.digitaloceanspaces.com" \
+            --acl public-read \
+            --cache-control "public,max-age=0,must-revalidate"
+
+      - name: Purge CDN cache
+        env:
+          DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DO_API_TOKEN }}
+        run: |
+          curl -s -X DELETE \
+            -H "Authorization: Bearer ${DIGITALOCEAN_ACCESS_TOKEN}" \
+            "https://api.digitalocean.com/v2/cdn/endpoints/${{ secrets.DO_CDN_ENDPOINT_ID }}/cache" \
+            -H "Content-Type: application/json" \
+            -d '{"files": ["*"]}'

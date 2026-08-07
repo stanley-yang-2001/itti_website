@@ -1,48 +1,50 @@
-Fix session-caching account leak; fix app-breaking stale filename reference
+Move frontend build off backend, fix profile settings 404, fix ETTI
+naming, add URL fragment identifiers, rewrite README
 
-Someone with no credentials could end up "logged into" another
-person's account from a different machine. Root cause: nothing in
-this API ever set Cache-Control, so a shared cache sitting in front of
-it (CDN, corporate/ISP proxy, or even the visitor's own browser cache)
-was free to store and replay a cached /api/auth/me response - which
-from the frontend's point of view is indistinguishable from actually
-being logged in, even though the victim's browser never sent the
-original session cookie at all.
+Low-memory build (Option A - GitHub Actions):
+- Add .github/workflows/deploy-frontend.yml: builds the Vite bundle on
+  GitHub's free runners and syncs dist/ straight to a DigitalOcean
+  Spaces bucket fronted by their CDN, purging the CDN cache after each
+  deploy
+- app.yaml: remove the static_sites block entirely - App Platform no
+  longer builds the frontend at all
+- docs/DEPLOYMENT.md: document the one-time Spaces/CDN/secrets setup
+  this depends on, and update the deploy-steps section to match
 
-- server/app.py
-    - set_security_headers() now sets Cache-Control: no-store and
-      Vary: Cookie on every response, not just auth ones - this app
-      mixes public and personalized endpoints under one origin, and a
-      blanket no-store is safer than trying to allow-list which
-      routes are "safe" to cache.
-    - session.pop("user_id", None) -> session.clear() in auth_me's
-      stale-session cleanup, auth_logout, and delete_account - purely
-      defense-in-depth (pop already correctly invalidated the cookie
-      in testing), guards against any future session key being missed
-      on logout.
-    - Added an explicit PERMANENT_SESSION_LIFETIME of 7 days - was
-      silently defaulting to Flask's 31-day default, which is a long
-      window for any leaked/cached cookie to stay valid.
-- client/src/context/AuthContext.jsx
-    - The /api/auth/me fetch on mount now passes cache: 'no-store' -
-      explicit defense-in-depth on top of the server header, directly
-      on the request that turns a cached response into "someone else
-      is in my account."
+Fix Settings username 404:
+- server/app.py: add the missing POST /api/auth/update-profile route.
+  AuthContext.jsx's updateAccount() called this endpoint already, but
+  it had never actually been implemented server-side, so every rename
+  attempt hit Flask's default 404. Supports independent name and
+  current_password/new_password updates, matching what SettingsPanel
+  already sends
 
-Also fixes an unrelated but currently app-breaking regression found
-while verifying the above: the prior commit renamed
-data_scripts/country_profiles.extract.py -> country_profiles_extract.py
-but didn't update the two hardcoded path references to it. Since
-app.py imports country_profiles_upload unconditionally at startup,
-this currently crashes the entire app on boot (FileNotFoundError).
-- server/country_profiles_upload.py
-- server/data_scripts/merge_remainder_profiles.py
-    Both updated to the renamed filename; a stale comment describing
-    the old dotted filename was also cleaned up.
+Fix ETTI naming inconsistency:
+- Corrected two wrong expansions found site-wide: 'Election Trauma &
+  Trust Index' (ControlPanel.jsx, PublishGlobeData.jsx) and 'Election
+  Trauma and Tension Index' (certifications.js x2, PrivacyPolicy.jsx)
+  -> 'Election Trauma Temperature Index' throughout
 
-Verified: reproduced and fixed the boot crash; single alembic head;
-backend imports clean (63 routes); client build clean; confirmed
-Cache-Control: no-store + Vary: Cookie present on both an
-authenticated and a public response; confirmed /api/auth/me still
-401s with no cookie and after logout; confirmed the country-profiles
-route (blocked by the rename bug) responds correctly.
+URL fragment identifiers for every page:
+- New client/src/hooks/useHashScroll.js: shared hook that scrolls to
+  the element matching the current URL hash, retrying across a few
+  frames for sections whose content loads asynchronously
+- Wired into Home, Fellowship, Certifications, CountryProfiles,
+  Contact (added per-contact-card ids); backfilled About.jsx's
+  hash-on-load effect, which Docs/PrivacyPolicy already had but About
+  was missing
+- Observatory.jsx: #international/#nigeria now select the matching
+  main tab on load, and clicking a tab updates the hash
+- Profile.jsx: #profile/#favorites/#publications/#settings now select
+  the matching sidebar tab on load, and clicking a tab updates the hash
+
+README rewrite:
+- Full rewrite reflecting the site as it actually is today (was still
+  describing the original placeholder-pages version). Introduces ITTI,
+  defines GTBI/ETTI/Observatory/NTO vocabulary, and links every page
+  plus every hash-addressable section within it, including Fellowship's
+  Leadership section and Country Profiles' ?code= deep-link (a query
+  param, not a hash, since it also drives which row expands).
+  Deliberately excludes implementation-level detail (role-promotion
+  mechanics, decorators, CLI scripts) per docs/ACCESS_LEVELS.md - only
+  user-facing concepts are described

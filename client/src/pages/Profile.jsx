@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import ReportCard from '../components/ReportCard.jsx';
 import ReportUploadForm from './ReportUploadForm.jsx';
@@ -100,7 +100,27 @@ export default function Profile() {
   const isAdmin = user?.role === 'admin';
   const tabs = isAdmin ? [...TABS, CONTROL_TAB] : TABS;
 
-  const [activeTab, setActiveTab] = useState('profile');
+  const { hash } = useLocation();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState(() => {
+    // /profile#favorites lands directly on that tab instead of always
+    // defaulting to Profile - useful for a direct link from the README,
+    // an email, etc. Falls back to 'profile' for an empty/unrecognized
+    // hash rather than silently landing on nothing.
+    const key = hash?.slice(1);
+    return tabs.some((t) => t.key === key) ? key : 'profile';
+  });
+
+  // Also react to the hash changing while already on the page (e.g. the
+  // user clicks a #favorites link elsewhere in the app without a full
+  // reload) - the lazy useState above only runs once, on mount.
+  useEffect(() => {
+    const key = hash?.slice(1);
+    if (key && tabs.some((t) => t.key === key)) {
+      setActiveTab(key);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hash]);
 
   const [charts, setCharts] = useState(null); // null = loading
   const [chartsError, setChartsError] = useState(null);
@@ -171,7 +191,7 @@ export default function Profile() {
               key={tab.key}
               type="button"
               className={`profile-sidebar-link${activeTab === tab.key ? ' active' : ''}`}
-              onClick={() => setActiveTab(tab.key)}
+              onClick={() => { setActiveTab(tab.key); navigate(`#${tab.key}`, { replace: true }); }}
               aria-current={activeTab === tab.key ? 'page' : undefined}
             >
               {tab.label}

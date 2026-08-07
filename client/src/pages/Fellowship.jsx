@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FELLOW_LEVELS, WHO_SHOULD_APPLY, EXECUTIVE_VALUE, FELLOWS_GAIN, LEADERSHIP } from '../data/fellowship.js';
 import Reveal from '../components/Reveal.jsx';
+import useHashScroll from '../hooks/useHashScroll.js';
 import '../styles/Fellowship.css';
 
 const LEVEL_LOOKUP = Object.fromEntries(FELLOW_LEVELS.map((l) => [l.code, l]));
@@ -17,6 +18,11 @@ function initials(name) {
 
 function FellowCard({ fellow }) {
   const level = LEVEL_LOOKUP[fellow.level];
+  
+  const bioParagraphs = (fellow.bio || '')
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
   return (
     <article className="fellow-card">
       <div className="fellow-card-photo">
@@ -26,11 +32,15 @@ function FellowCard({ fellow }) {
           <span className="fellow-card-initials">{initials(fellow.name)}</span>
         )}
       </div>
+      
       <h3 className="fellow-card-name">{fellow.name}</h3>
       {level && (
         <span className={`fellow-card-level level-${level.code.toLowerCase()}`}>{level.code}™ — {level.name}</span>
       )}
-      <p className="fellow-card-bio">{fellow.bio}</p>
+
+      {bioParagraphs.map((paragraph, i) => (
+        <p key={i} className="fellow-card-bio">{paragraph}</p>
+      ))}
     </article>
   );
 }
@@ -92,6 +102,7 @@ function LeaderCard({ leader }) {
 }
 
 export default function Fellowship() {
+  useHashScroll();
   const [levelFilter, setLevelFilter] = useState('all');
   // The roster used to be the permanently-empty FELLOWS array in
   // data/fellowship.js; it's now admin-managed (Profile > Control >

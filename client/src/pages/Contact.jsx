@@ -1,5 +1,6 @@
 import React from 'react';
 import Reveal from '../components/Reveal.jsx';
+import useHashScroll from '../hooks/useHashScroll.js';
 import '../styles/Contact.css';
 
 const CONTACTS = [
@@ -36,6 +37,7 @@ const CONTACTS = [
 ];
 
 export default function Contact() {
+  useHashScroll();
   return (
     <div className="contact-page">
       <Reveal delay={0}>
@@ -52,7 +54,7 @@ export default function Contact() {
       <div className="contact-grid">
         {CONTACTS.map((c, i) => (
           <Reveal key={c.email} delay={80 + i * 80}>
-            <div className="contact-card">
+            <div className="contact-card" id={c.label.toLowerCase()}>
               <h2 className="contact-card-label display">{c.label}</h2>
               <a className="contact-card-email mono" href={`mailto:${c.email}`}>
                 {c.email}

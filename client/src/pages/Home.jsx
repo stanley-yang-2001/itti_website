@@ -5,6 +5,7 @@ import Globe from '../components/Globe.jsx';
 import Reveal from '../components/Reveal.jsx';
 import SearchBar from '../components/SearchBar.jsx';
 import SidePanel from '../components/SidePanel.jsx';
+import useHashScroll from '../hooks/useHashScroll.js';
 import { fetchWorldData, fetchCountry, fetchAllCountries } from '../api.js';
 import { computeCountryDataStatus, computeCountryQuickStats } from '../utils/countryDataStatus.js';
 
@@ -37,6 +38,7 @@ const MISSION_MESSAGE =
   'those insights into trauma-informed governance and policy reform.';
 
 export default function Home() {
+  useHashScroll();
   const [worldData, setWorldData] = useState(null);
   const [features, setFeatures] = useState([]);
   const [country, setCountry] = useState(null); // { name, iso }
@@ -87,7 +89,7 @@ export default function Home() {
       <main>
         {/* Part 1: welcome */}
         <Reveal delay={0}>
-          <section className="home-welcome">
+          <section className="home-welcome" id="welcome">
             <p className="home-welcome-eyebrow">WELCOME</p>
             <h1 className="home-welcome-title display">
               Welcome <br />to the <br />International Truth &amp; Trauma Institute
@@ -98,7 +100,7 @@ export default function Home() {
 
         {/* Part 2: globe (left) + message and country panel (right) */}
         <Reveal delay={120}>
-          <section className="home-globe">
+          <section className="home-globe" id="globe">
             <div className="home-globe-grid">
               <div className="home-globe-left">
                 <SearchBar features={features} onSelectFeature={handleSelectFeature} />
@@ -136,7 +138,7 @@ export default function Home() {
         </Reveal>
       </main>
 
-      <section className="home-explore">
+      <section className="home-explore" id="explore">
         <Reveal delay={0}>
           <div className="home-explore-intro">
             <p className="home-explore-eyebrow mono">EXPLORE</p>
@@ -157,7 +159,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="home-connect">
+      <section className="home-connect" id="connect">
         <Reveal delay={0}>
           <div className="home-connect-intro">
             <p className="home-explore-eyebrow mono">CONNECT</p>

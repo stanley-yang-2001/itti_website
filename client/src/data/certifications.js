@@ -202,7 +202,7 @@ export const CERTIFICATIONS = [
     credential: 'CEOPTA™ — Certified Election Observation & Political Trauma Analyst',
     finalRequirement: 'ETTI coding examination and country election-trauma assessment',
     overview: [
-      'Prepares participants to examine election environments through established observation principles and ITTI\u2019s proprietary Election Trauma and Tension Index (ETTI).',
+      'Prepares participants to examine election environments through established observation principles and ITTI\u2019s proprietary Election Trauma Temperature Index (ETTI).',
       'Goes beyond conventional election observation by examining how electoral processes expose individuals, communities, institutions, and nations to political trauma.',
       'Participants study election violence, threat and intimidation, political repression, disinformation, displacement, psychological distress, and post-election recovery.'
     ],
@@ -214,7 +214,7 @@ export const CERTIFICATIONS = [
     curriculum: [
       { week: 1, title: 'Election Observation, Ethics, and Democratic Standards', bullets: ['The phases of an election cycle', 'Impartiality and political independence', 'Electoral institutions and voter participation', 'Observer documentation and reporting'] },
       { week: 2, title: 'Political Trauma and Election-Related Harm', bullets: ['Election violence and threat/intimidation', 'Political repression and communal tension', 'Disinformation and inflammatory narratives', 'Post-election instability and recovery'] },
-      { week: 3, title: 'Applying the Election Trauma and Tension Index', bullets: ['EVS — Election Violence Severity', 'TIE — Threat and Intimidation Exposure', 'PDL — Psychological Distress Load', 'ITS — Institutional Strain'] },
+      { week: 3, title: 'Applying the Election Trauma Temperature Index', bullets: ['EVS — Election Violence Severity', 'TIE — Threat and Intimidation Exposure', 'PDL — Psychological Distress Load', 'ITS — Institutional Strain'] },
       { week: 4, title: 'ETTI Election-Trauma Assessment', bullets: ['Country and election context', 'Domain-level findings and ETTI scoring', 'Early-warning considerations', 'Policy or institutional recommendations'] }
     ],
     outcomes: [

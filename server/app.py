@@ -670,6 +670,53 @@ def auth_me():
     return jsonify(user.to_public_dict())
 
 
+@app.post("/api/auth/update-profile")
+@login_required
+def update_profile():
+    """
+    Body: { "name"?: str, "current_password"?: str, "new_password"?: str }
+    Each field is independent - send just "name" to rename, or both
+    password fields together to change password. Sending a password
+    field without the other is a 400. Google-only accounts (no
+    password_hash yet) can set an initial password by sending just
+    "new_password" with no "current_password".
+    """
+    user = get_current_user()
+    body = request.get_json(silent=True) or {}
+
+    updates = {}
+
+    if "name" in body:
+        name = (body.get("name") or "").strip()
+        if not name:
+            abort(400, description="Name cannot be empty")
+        if len(name) > 100:
+            abort(400, description="Name is too long")
+        updates["name"] = name
+
+    current_password = body.get("current_password")
+    new_password = body.get("new_password")
+    if current_password is not None or new_password is not None:
+        if not new_password:
+            abort(400, description="new_password is required to change your password")
+        if len(new_password) < 8:
+            abort(400, description="Password must be at least 8 characters")
+        if user.password_hash:
+            # Existing password on file - must confirm it first.
+            if not current_password or not check_password_hash(user.password_hash, current_password):
+                abort(401, description="Current password is incorrect")
+        # else: Google-only account with no password yet - setting an
+        # initial password doesn't require confirming a nonexistent one.
+        updates["password_hash"] = generate_password_hash(new_password)
+
+    if not updates:
+        abort(400, description="Nothing to update")
+
+    updated = update_user(user.id, **updates)
+    logger.info("user_id=%s updated profile fields=%s", user.id, list(updates.keys()))
+    return jsonify(updated.to_public_dict())
+
+
 @app.post("/api/auth/logout")
 def auth_logout():
     session.clear()

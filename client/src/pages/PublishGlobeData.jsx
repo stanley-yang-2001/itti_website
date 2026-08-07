@@ -5,7 +5,7 @@ import '../styles/PublishGlobeData.css';
 
 const KIND_OPTIONS = [
   { value: 'GTBI', label: 'GTBI', description: 'Global Trauma Burden Index workbook' },
-  { value: 'ETTI', label: 'ETTI', description: 'Election Trauma & Trust Index workbook' },
+  { value: 'ETTI', label: 'ETTI', description: 'Election Trauma Temperature Index workbook' },
 ];
 
 /**

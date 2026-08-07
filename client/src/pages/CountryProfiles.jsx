@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Reveal from '../components/Reveal.jsx';
 import CountryFlag from '../components/CountryFlag.jsx';
 import UnavailableMessage from '../components/UnavailableMessage.jsx';
+import useHashScroll from '../hooks/useHashScroll.js';
 import { isBadRequest } from "../utils/apiError";
 import "../styles/CountryProfiles.css";
 
@@ -29,6 +30,7 @@ const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
  * live dashboard figures exist for it elsewhere.
  */
 export default function CountryProfiles() {
+  useHashScroll();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [countries, setCountries] = useState(null); // null = loading

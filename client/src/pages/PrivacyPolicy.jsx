@@ -285,7 +285,7 @@ export default function PrivacyPolicy() {
               <h3 className="about-subsection-title display">Proprietary Methodologies</h3>
               <p>The following are proprietary intellectual property of ITTI:</p>
               <ul className="about-bullet-list">
-                <li>Election Trauma and Tension Index (ETTI™)</li>
+                <li>Election Trauma Temperature Index (ETTI™)</li>
                 <li>Global Trauma Burden Indicator (GTBI™)</li>
                 <li>National Truth &amp; Trauma Commission (NTTC™)</li>
                 <li>International Trauma Observatory</li>

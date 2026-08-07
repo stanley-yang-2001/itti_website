@@ -1,0 +1,31 @@
+function FellowCard({ fellow }) {
+  const level = LEVEL_LOOKUP[fellow.level];
+  // fellow.bio is stored as a single string with blank lines between
+  // paragraphs (see server/seed_new_fellows.py) - a lone <p> collapses
+  // those newlines like any other whitespace, so every paragraph ran
+  // together as one block. Split on blank lines and render each as its
+  // own <p> instead.
+  const bioParagraphs = (fellow.bio || '')
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
+
+  return (
+    <article className="fellow-card">
+      <div className="fellow-card-photo">
+        {fellow.photo ? (
+          <img src={fellow.photo} alt={fellow.name} loading="lazy" />
+        ) : (
+          <span className="fellow-card-initials">{initials(fellow.name)}</span>
+        )}
+      </div>
+      <h3 className="fellow-card-name">{fellow.name}</h3>
+      {level && (
+        <span className={`fellow-card-level level-${level.code.toLowerCase()}`}>{level.code}™ — {level.name}</span>
+      )}
+      {bioParagraphs.map((paragraph, i) => (
+        <p key={i} className="fellow-card-bio">{paragraph}</p>
+      ))}
+    </article>
+  );
+}

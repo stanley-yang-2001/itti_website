@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Reveal from '../components/Reveal.jsx';
 import '../styles/About.css';
 
@@ -180,6 +180,7 @@ export default function About() {
   const [openFramework, setOpenFramework] = useState('GTBI');
   const [openGroup, setOpenGroup] = useState(CONSUMER_GROUPS[0].title);
   const sectionRefs = useRef({});
+  const { hash } = useLocation();
 
   useEffect(() => {
     const scroller = getScroller();
@@ -263,6 +264,14 @@ export default function About() {
     const top = el.getBoundingClientRect().top + scroller.scrollTop - navbarHeight - 16;
     scroller.scrollTo({ top, behavior: 'smooth' });
   }
+
+  // Lets an external or bookmarked link like /about#who-we-serve land
+  // directly on that section instead of just the top of the page.
+  useEffect(() => {
+    if (!hash) return;
+    scrollToSection(hash.slice(1));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hash]);
 
   return (
     <div className="about-page">

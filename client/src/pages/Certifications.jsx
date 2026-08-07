@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { CATEGORIES, CERTIFICATIONS, COMPARISON_ROWS } from '../data/certifications.js';
 import Reveal from '../components/Reveal.jsx';
 import CertificationEnrollModal from './CertificationEnroll.jsx';
+import useHashScroll from '../hooks/useHashScroll.js';
 import '../styles/Certifications.css';
 
 const BADGE_CLASS = {
@@ -15,6 +16,7 @@ function tuitionValue(str) {
 }
 
 export default function Certifications() {
+  useHashScroll();
   const [activeCategory, setActiveCategory] = useState('all');
   const [query, setQuery] = useState('');
   const [expanded, setExpanded] = useState(null);
@@ -69,7 +71,7 @@ export default function Certifications() {
   return (
     <div className="certs-page">
       <Reveal delay={0}>
-        <section className="certs-hero">
+        <section className="certs-hero" id="overview">
           <p className="certs-hero-eyebrow mono">ITTI Professional Certifications</p>
           <h1 className="certs-hero-title display">Understand Trauma. Transform Systems. Help the World Heal.</h1>
           <p className="certs-hero-sub">
