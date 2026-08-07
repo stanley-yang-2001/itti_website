@@ -39,7 +39,7 @@ import io
 import os
 import re
 import tempfile
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import stripe
 from dotenv import load_dotenv
@@ -188,6 +188,10 @@ app.secret_key = FLASK_SECRET_KEY
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_SECURE"] = IS_PRODUCTION
 app.config["SESSION_COOKIE_HTTPONLY"] = True
+# Flask's own default here is 31 days if left unset - long enough that any
+# leaked/cached session cookie (see the Cache-Control note above) stays
+# exploitable for a month. A week is still generous for "stay logged in."
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=7)
 
 # Hard cap on request body size (defends against giant uploads before
 # they ever reach our own MAX_UPLOAD_BYTES check below).
@@ -219,11 +223,31 @@ limiter = Limiter(get_remote_address, app=app, storage_uri="memory://", default_
 @app.after_request
 def set_security_headers(response):
     """Baseline hardening headers. This is a JSON API (not serving HTML
-    pages), so CSP is locked down hard by default."""
+    pages), so CSP is locked down hard by default.
+
+    Cache-Control: no-store is set on every response, not just the
+    obviously session-dependent ones (/api/auth/me, /api/profile,
+    etc.) - this API sits behind whatever proxy/CDN layer the hosting
+    platform puts in front of it, and jsonify() alone sets no caching
+    header at all. Without an explicit no-store, a shared cache that
+    doesn't itself vary on the session cookie (many don't, by
+    default) can serve one person's cached JSON body - which for an
+    endpoint like /api/auth/me *is* "being logged into their
+    account" from the frontend's point of view - to a completely
+    different visitor who never presented that cookie at all. Vary:
+    Cookie is defense-in-depth on top of that for any cache that
+    ignores no-store but does respect Vary. The few truly public,
+    identical-for-everyone payloads (world topology, aggregate globe
+    data) are already cached at the application layer in this
+    process's memory (see load_json_cached() below), so nothing here
+    loses real caching benefit - it just stops relying on an
+    HTTP-level cache to do it safely for personalized responses."""
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'"
+    response.headers["Cache-Control"] = "no-store"
+    response.headers["Vary"] = "Cookie"
     if request.is_secure:
         response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains"
     return response
@@ -641,14 +665,14 @@ def auth_me():
     """Returns the logged-in user, or 401 if no session."""
     user = get_current_user()
     if user is None:
-        session.pop("user_id", None)
+        session.clear()
         abort(404, description="User not found")
     return jsonify(user.to_public_dict())
 
 
 @app.post("/api/auth/logout")
 def auth_logout():
-    session.pop("user_id", None)
+    session.clear()
     return jsonify({"status": "logged out"})
 
 
@@ -664,7 +688,7 @@ def delete_account():
     user = get_current_user()
     delete_user(user.id)
     create_user_event(user_id=user.id, document_id=None, action=CRUDAction.DELETE)
-    session.pop("user_id", None)
+    session.clear()
     return jsonify({"status": "account deleted"})
 
 

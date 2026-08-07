@@ -49,7 +49,7 @@ from docx import Document
 import importlib.util
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
-_EXTRACT_SCRIPT_PATH = os.path.join(_HERE, "country_profiles.extract.py")
+_EXTRACT_SCRIPT_PATH = os.path.join(_HERE, "country_profiles_extract.py")
 _spec = importlib.util.spec_from_file_location("country_profiles_extract", _EXTRACT_SCRIPT_PATH)
 cpe = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(cpe)

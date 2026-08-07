@@ -58,13 +58,11 @@ import shutil
 
 DATA_SCRIPTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data_scripts")
 
-# country_profiles.extract.py's filename has a literal dot in its base
-# name (not just the .py extension), so it can't be reached with a
-# normal `import country_profiles.extract` statement - Python would
-# look for a "country_profiles" package instead. Load it directly from
-# its file path so its parsing functions can be reused here rather
-# than duplicated.
-_EXTRACT_SCRIPT_PATH = os.path.join(DATA_SCRIPTS_DIR, "country_profiles.extract.py")
+# Loaded directly from its file path (rather than a normal `import
+# country_profiles_extract`) so its parsing functions can be reused
+# here without duplicating them, while keeping this module reloadable
+# independent of Python's own module cache.
+_EXTRACT_SCRIPT_PATH = os.path.join(DATA_SCRIPTS_DIR, "country_profiles_extract.py")
 _spec = importlib.util.spec_from_file_location("country_profiles_extract", _EXTRACT_SCRIPT_PATH)
 country_profiles_extract = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(country_profiles_extract)
