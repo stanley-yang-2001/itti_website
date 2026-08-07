@@ -11,6 +11,10 @@ const FOOTER_LINKS = [
   { to: '/privacy', label: 'Privacy Policy' }
 ];
 
+const SOCIAL_LINKS = [
+  { href: 'https://www.facebook.com/profile.php?id=61592894404554', label: 'Facebook' }
+];
+
 export default function Footer() {
   return (
     <footer className="site-footer">
@@ -25,6 +29,17 @@ export default function Footer() {
             <Link key={link.to} to={link.to} className="site-footer-link">
               {link.label}
             </Link>
+          ))}
+          {SOCIAL_LINKS.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="site-footer-link"
+            >
+              {link.label}
+            </a>
           ))}
         </nav>
       </div>

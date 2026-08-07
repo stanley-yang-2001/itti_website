@@ -1,43 +1,72 @@
-Add admin version-history restore + Fellows management to the Control panel
+Merge remainder country-profile doc (85 new entries), fix About mobile
+clipping and search contrast, add country-profile deep link, restore
+Leadership section, add Facebook link, update Blessing/Saeed/Stanley
+bios
 
-Version history / restore (Observatory data + Country profiles):
-- globe_data.py: add list_uploads() and restore_upload(kind, filename),
-  reusing the existing validate/archive/rotate/merge pipeline against an
-  archived file instead of a fresh one.
-- country_profiles_upload.py: same pair (list_uploads(), restore_docx())
-  for the two country-profile source docx files.
-- app.py: 4 new admin-only routes - GET/POST /api/globe-data/uploads,
-  /restore and GET/POST /api/country-profiles/uploads, /restore.
-- ControlPanel.jsx: each upload section now has a "restore a previous
-  version" dropdown (RestoreSection) populated from the new history
-  endpoints, remounted after every upload/restore so it stays current.
-- Control.css: styles for the dropdown/restore row.
-
-Fellows management (new feature):
-- models/fellow.py: new Fellow model (name, level, bio, photo_path)
-  and CRUD, with FELLOW_LEVEL_CODES matching the site's AFITTI/FITTI/
-  SFITTI/DFITTI tiers.
-- migrations/versions/fcca6582f99d_add_fellows_table.py: creates the
-  fellows table. Needs `alembic upgrade head` run against the real
-  database before this feature can go live.
-- image_processing.py: normalize_photo() - converts any uploaded image
-  (format, aspect ratio, EXIF orientation, transparency) into a
-  consistent 600x600 center-cropped JPEG before it's stored, so every
-  fellow's photo renders identically regardless of what was uploaded.
-- app.py: GET /api/fellows (public roster), GET /api/fellows/<id>/photo
-  (public), POST/PUT/DELETE /api/fellows[/<id>] (admin only). Requires
-  Pillow (added to requirements.txt).
-- Fellowship.jsx: now fetches the roster from GET /api/fellows instead
-  of the permanently-empty static FELLOWS array in data/fellowship.js
-  (that file now only documents the shape /api/fellows returns).
-- FellowsControl.jsx (new) + ControlPanel.jsx: admin UI to add a new
-  fellow or edit an existing one's name/level/bio/photo, including
-  explicit photo removal and delete-from-roster.
-
-Verified end-to-end against a freshly-migrated test database: role
-gating (403 for non-admin), upload -> restore round trips with actual
-file rotation into old/ confirmed on disk, fellow create/update/delete
-with real image normalization (RGBA/odd-aspect-ratio input -> 600x600
-JPEG), and a combined smoke test hitting every endpoint touched this
-session in one process. All touched .py files py_compile clean; all
-touched .jsx files esbuild clean.
+- Merged the uploaded "remainder" docx (85 entries: 34 sovereign/
+  partially-recognized states + Republic of the Congo + 50 territories/
+  dependencies) into the canonical country-profile survey source,
+  taking coverage from 164 -> 249 of 249 total countries in
+  country_data.json (everything except Kosovo, which has no ISO
+  numeric code to key it by - a pre-existing, expected gap, not new).
+  - New: server/data_scripts/merge_remainder_profiles.py - merges a
+    remainder docx into the existing canonical survey file (refuses to
+    merge on any name collision), then re-runs the normal extract step.
+    Reusable for any future gap-filling doc, not just this one.
+  - country_profiles.extract.py: added a NAME_ALIASES entry for
+    "Congo (Republic of the Congo)" (the remainder doc's heading text)
+    -> "Republic of the Congo" (country_data.json's name for code 178),
+    the one name in the new 85 that didn't resolve automatically.
+  - Fixed a pre-existing bug encountered while regenerating: the
+    dashboard source docx had a stray " (1)" in its filename (an
+    accidental duplicate-download artifact), which doesn't match the
+    exact filename the extract script looks for - renamed back to the
+    canonical name. Unrelated to this doc merge, but the regenerate
+    step doesn't run without it.
+  - Regenerated server/data/country_profiles.json (249 entries, up
+    from 164) and the canonical
+    country_profile_section_of_our_international_observatory_website.docx
+    (previous version backed up under country_profiles_source/old/,
+    same rotation pattern the admin upload flow already uses).
+- About.css: fix section content getting hidden behind the sticky
+  mobile "on this page" index bar. Its scroll-margin-top only
+  accounted for the main navbar's height, not the second sticky pill
+  bar stacked below it, so jumping to a section on mobile landed with
+  the heading/intro hidden behind the bar. Checked every other page's
+  CSS for the same sticky-sub-nav-on-mobile pattern - Profile.css's
+  sidebar already avoids it correctly (goes position:static on
+  mobile); no other page has this issue.
+- App.css: fix globe search input text blending into its own
+  background (near-black text left over from the old dark theme, on
+  an input background that stayed dark under the new light theme).
+- SidePanel.jsx / App.css: add a second link next to "Check out our
+  observatory" that deep-links to that country's Country Profiles
+  entry.
+- CountryProfiles.jsx: read a new `?code=` query param, auto-expand
+  and scroll to that country's row on load, to support the link above.
+- Fellowship.jsx: origin's own rewrite for the new database-backed
+  Fellows system (admin Control panel, /api/fellows) had dropped the
+  Leadership section entirely. Restored it as its own static section
+  (data still lives in fellowship.js's LEADERSHIP export) next to the
+  new dynamic, API-fetched Fellows grid - leadership roles don't fit
+  the AFITTI/FITTI/SFITTI/DFITTI levels the Fellows table is built
+  around, so there's no home for them in the new admin system.
+- seed_new_fellows.py (new, in server/): the old FELLOWS array in
+  fellowship.js (Blessing, Hannah, Stanley) is dead code now -
+  Fellowship.jsx fetches live from /api/fellows instead, which starts
+  empty. This script inserts those three as real `fellows` table rows,
+  the same way the admin upload API would. Run once from server/:
+  `python seed_new_fellows.py`. Idempotent (skips names that already
+  exist).
+- Footer.jsx: add a Facebook link.
+- Moved client/public/fellows/ -> client/public/images/fellows/
+  (deployment rebuild/dist cleanup steps intentionally left to you).
+- Bio updates (fellowship.js; Blessing/Stanley mirrored into
+  seed_new_fellows.py where duplicated):
+  - Blessing Ojisor: credit her as First-Class-Honors best-graduating
+    student in addition to first female SUG president, University of
+    Calabar's 49th year.
+  - Dr. Saeed Siddique: now credits Harvard-Medical-affiliated
+    hospitals alongside the VA Boston Healthcare System.
+  - Stanley Yang: added a third paragraph conveying ambition and
+    openness to new opportunities/challenges ahead.

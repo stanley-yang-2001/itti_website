@@ -10,6 +10,17 @@
     },
     "dashboard_note": null
   },
+  "248": {
+    "name": "Åland Islands",
+    "overview": {
+      "paragraphs": [
+        "The Åland Islands have no significant documented history of internal war, genocide, or mass atrocity, having achieved a peacefully negotiated autonomous status under Finnish sovereignty following a League of Nations-mediated resolution of Swedish-Finnish territorial disputes in 1921.",
+        "This completes all 85 gap-list entries (34 sovereign/partially-recognized states plus the Republic of the Congo special case, and 51 territories/dependencies) in alphabetical order as structured in your gap-analysis document. Combined with your existing 164-entry dataset, this closes the full 249-entry Country Profiles page. Let me know if you'd like this exported as a document formatted for direct handoff to your country_profiles.extract.py merge script, or if you'd like the Republic of the Congo (code 178) and Democratic Republic of the Congo (code 180) display-name collision flagged for a separate data-fix ticket."
+      ],
+      "reference": "Benjet, C., et al. (2016). The epidemiology of traumatic event exposure worldwide. Psychological Medicine, 46(2), 327–343. https://pmc.ncbi.nlm.nih.gov/articles/PMC4869975/"
+    },
+    "dashboard_note": null
+  },
   "008": {
     "name": "Albania",
     "overview": {
@@ -32,6 +43,16 @@
     },
     "dashboard_note": null
   },
+  "016": {
+    "name": "American Samoa",
+    "overview": {
+      "paragraphs": [
+        "American Samoa has no significant documented history of internal war, genocide, or mass atrocity, having experienced U.S. territorial administration since 1900 with relatively limited direct conflict exposure."
+      ],
+      "reference": "Benjet, C., et al. (2016). The epidemiology of traumatic event exposure worldwide. Psychological Medicine, 46(2), 327–343. https://pmc.ncbi.nlm.nih.gov/articles/PMC4869975/"
+    },
+    "dashboard_note": null
+  },
   "020": {
     "name": "Andorra",
     "overview": {
@@ -50,6 +71,26 @@
         "Modern Angola continues to contend with the physical and psychiatric legacy of landmine injuries, disrupted family structures from wartime displacement, and resource-conflict dynamics tied to oil and diamond wealth, illustrating a direct line from colonial extraction to Cold War-era civil war to contemporary inequality."
       ],
       "reference": "Pocket Project. (2021). Colonialism and collective trauma: Europe and Africa. https://pocketproject.org/colonialism-collective-trauma-europe-africa/"
+    },
+    "dashboard_note": null
+  },
+  "660": {
+    "name": "Anguilla",
+    "overview": {
+      "paragraphs": [
+        "Anguilla's historical trauma is rooted in transatlantic slavery under British colonial rule, with contemporary trauma exposure shaped primarily by recurring hurricane vulnerability rather than internal armed conflict."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
+    },
+    "dashboard_note": null
+  },
+  "010": {
+    "name": "Antarctica",
+    "overview": {
+      "paragraphs": [
+        "Antarctica has no permanent population and no documented history of war, genocide, or human mass atrocity, governed instead by international scientific and territorial cooperation frameworks under the Antarctic Treaty System."
+      ],
+      "reference": "Benjet, C., et al. (2016). The epidemiology of traumatic event exposure worldwide. Psychological Medicine, 46(2), 327–343. https://pmc.ncbi.nlm.nih.gov/articles/PMC4869975/"
     },
     "dashboard_note": null
   },
@@ -86,6 +127,16 @@
     },
     "dashboard_note": null
   },
+  "533": {
+    "name": "Aruba",
+    "overview": {
+      "paragraphs": [
+        "Aruba's historical trauma stems from Dutch colonial rule and involvement in regional slavery-linked trade economies, with contemporary trauma exposure shaped by climate and disaster vulnerability rather than sustained internal conflict."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
+    },
+    "dashboard_note": null
+  },
   "036": {
     "name": "Australia",
     "overview": {
@@ -119,6 +170,28 @@
     },
     "dashboard_note": null
   },
+  "044": {
+    "name": "Bahamas",
+    "overview": {
+      "paragraphs": [
+        "The Bahamas' historical trauma is rooted in centuries of British colonial rule built on enslaved African labor in a plantation and maritime economy, though the islands have experienced comparatively limited large-scale mass atrocity relative to continental neighbors.",
+        "Contemporary trauma manifests primarily through severe and recurring hurricane exposure, most devastatingly Hurricane Dorian in 2019, which displaced tens of thousands and caused catastrophic loss of life and infrastructure, reflecting a shift toward climate-driven disaster as the dominant modern trauma vector."
+      ],
+      "reference": "Benjet, C., Bromet, E., Karam, E. G., Kessler, R. C., McLaughlin, K. A., Ruscio, A. M., Shahly, V., Stein, D. J., Petukhova, M., Hill, E., Alonso, J., Atwoli, L., Bunting, B., Bruffaerts, R., de Girolamo, G., Florescu, S., Gureje, O., Huang, Y., ... Koenen, K. C. (2016). The epidemiology of traumatic event exposure worldwide. Psychological Medicine, 46(2), 327–343. https://pmc.ncbi.nlm.nih.gov/articles/PMC4869975/"
+    },
+    "dashboard_note": null
+  },
+  "048": {
+    "name": "Bahrain",
+    "overview": {
+      "paragraphs": [
+        "Bahrain's collective trauma centers on the 2011 Arab Spring uprising, when predominantly Shi'ite protesters demanding constitutional reform were met with violent suppression, including intervention by Saudi-led Gulf Cooperation Council forces, mass arrests, and continued martial law (Karolak, 2013; Barany, 2013).",
+        "This unresolved sectarian fracture has deep historical roots reaching back to communal violence in the 1950s, and contemporary Bahrain continues to experience simmering Sunni-Shi'ite tension and periodic unrest, illustrating how a \"successfully repressed\" revolution can generate chronic, unresolved collective trauma rather than closure (Karolak, 2013)."
+      ],
+      "reference": "Karolak, M. (2013). Arab Spring and the escalation of the sectarian divide in Bahrain. Communication, Culture & Critique. https://cco.regener-online.de/2013_1/pdf/karolak.pdf"
+    },
+    "dashboard_note": null
+  },
   "050": {
     "name": "Bangladesh",
     "overview": {
@@ -127,6 +200,17 @@
         "Modern Bangladesh continues to navigate the psychiatric aftermath of 1971 through ongoing war crimes tribunals and contested historical memory, while contemporary climate vulnerability, as one of the world's most disaster-exposed nations, layers new ecological trauma atop unresolved wartime wounds."
       ],
       "reference": "Kirsch, J., et al. (2025). Collective trauma in the forced migration context: A scoping review. Transcultural Psychiatry. https://journals.sagepub.com/doi/10.1177/13634615251341853"
+    },
+    "dashboard_note": null
+  },
+  "052": {
+    "name": "Barbados",
+    "overview": {
+      "paragraphs": [
+        "Barbados' historical trauma is rooted in the transatlantic slave trade, having served as one of the earliest and most economically significant British sugar-plantation colonies, with enslaved labor structuring the island's foundational economy.",
+        "Contemporary Barbados has experienced relative post-independence political stability since 1966, with its trauma engagement centering more on climate vulnerability and historical reparations advocacy than on acute internal conflict."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma: Implications for public health practice and research. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
     },
     "dashboard_note": null
   },
@@ -152,6 +236,49 @@
     },
     "dashboard_note": null
   },
+  "084": {
+    "name": "Belize",
+    "overview": {
+      "paragraphs": [
+        "Belize's historical trauma includes British colonial exploitation through logging and plantation economies dependent on enslaved and later indentured labor, alongside territorial disputes with Guatemala that have persisted since independence in 1981.",
+        "Contemporary Belize has experienced comparatively low levels of internal mass-casualty conflict, though rising gang violence in urban centers reflects an emerging contemporary trauma vector layered atop this colonial economic legacy."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
+    },
+    "dashboard_note": null
+  },
+  "204": {
+    "name": "Benin",
+    "overview": {
+      "paragraphs": [
+        "Benin's historical trauma is deeply tied to the transatlantic slave trade, having served as a central hub of the \"Slave Coast\" from which millions of West Africans were forcibly deported, a legacy the country actively confronts through the Ouidah slave route memorial sites.",
+        "Contemporary Benin has maintained relative post-independence political stability compared to many West African neighbors, though recent years have seen spillover jihadist violence from the broader Sahel crisis along its northern border."
+      ],
+      "reference": "Musisi, S., & Kinyanda, E. (2020). Long-term impact of war, civil war, and persecution in chronic conflict settings. PMC. https://pmc.ncbi.nlm.nih.gov/articles/PMC7051938/"
+    },
+    "dashboard_note": null
+  },
+  "060": {
+    "name": "Bermuda",
+    "overview": {
+      "paragraphs": [
+        "Bermuda's historical trauma is rooted in early transatlantic slavery under British colonial administration beginning in the 17th century, though the territory has experienced no significant war or mass atrocity in the modern era."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
+    },
+    "dashboard_note": null
+  },
+  "064": {
+    "name": "Bhutan",
+    "overview": {
+      "paragraphs": [
+        "Bhutan has no significant documented history of war, genocide, or mass atrocity, though its trauma profile includes the 1990s expulsion of over 100,000 ethnic Lhotshampa residents, a substantial portion of the population, in a citizenship and cultural-assimilation dispute that created a protracted refugee crisis.",
+        "This forced expulsion continues to generate unresolved statelessness and displacement trauma for Lhotshampa refugees and their descendants, most of whom were resettled in third countries rather than repatriated."
+      ],
+      "reference": "Kirsch, J., et al. (2025). Collective trauma in the forced migration context: A scoping review. Transcultural Psychiatry. https://journals.sagepub.com/doi/10.1177/13634615251341853"
+    },
+    "dashboard_note": null
+  },
   "068": {
     "name": "Bolivia",
     "overview": {
@@ -163,6 +290,16 @@
     },
     "dashboard_note": null
   },
+  "535": {
+    "name": "Bonaire, Sint Eustatius and Saba",
+    "overview": {
+      "paragraphs": [
+        "These Dutch Caribbean special municipalities share a historical trauma rooted in transatlantic slavery and Dutch colonial plantation economies, with Sint Eustatius notably serving as a major 18th-century slave-trading hub."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
+    },
+    "dashboard_note": null
+  },
   "070": {
     "name": "Bosnia and Herzegovina",
     "overview": {
@@ -171,6 +308,27 @@
         "Thirty years on, Bosnia's trauma persists through ethnically segregated education systems and genocide denial among segments of the Bosnian Serb population, with cultural memory practices functioning simultaneously as sites of healing and ongoing flashpoints for renewed ethnic tension (Fajic, 2024)."
       ],
       "reference": "International Residual Mechanism for Criminal Tribunals. (n.d.). Srebrenica: Timeline of genocide. https://www.irmct.org/specials/srebrenica/timeline/en/"
+    },
+    "dashboard_note": null
+  },
+  "072": {
+    "name": "Botswana",
+    "overview": {
+      "paragraphs": [
+        "Botswana has experienced comparatively minimal mass atrocity or armed conflict, maintaining one of Africa's most consistent records of political stability since independence in 1966.",
+        "Its trauma profile is shaped less by conflict and more by the severe public-health burden of the HIV/AIDS epidemic beginning in the 1990s, which at its peak produced some of the world's highest infection rates and generated widespread grief, orphanhood, and community-level psychiatric strain."
+      ],
+      "reference": "Benjet, C., et al. (2016). The epidemiology of traumatic event exposure worldwide. Psychological Medicine, 46(2), 327–343. https://pmc.ncbi.nlm.nih.gov/articles/PMC4869975/"
+    },
+    "dashboard_note": null
+  },
+  "074": {
+    "name": "Bouvet Island",
+    "overview": {
+      "paragraphs": [
+        "Bouvet Island is an uninhabited Norwegian dependency with no permanent population and no documented history of human conflict, trauma, or atrocity."
+      ],
+      "reference": "Benjet, C., et al. (2016). The epidemiology of traumatic event exposure worldwide. Psychological Medicine, 46(2), 327–343. https://pmc.ncbi.nlm.nih.gov/articles/PMC4869975/"
     },
     "dashboard_note": null
   },
@@ -191,6 +349,48 @@
       "references": []
     }
   },
+  "086": {
+    "name": "British Indian Ocean Territory",
+    "overview": {
+      "paragraphs": [
+        "The British Indian Ocean Territory's central historical trauma is the forced 1965–1973 depopulation of the Chagossian people from their homeland to make way for the U.S. military base on Diego Garcia, a documented act of colonial-era forced displacement whose descendants continue to seek repatriation and redress today."
+      ],
+      "reference": "Sehmi, A. (2024). Legacies of colonial violence in contemporary transitional justice. International Journal of Transitional Justice, 18(1), 32–54. https://academic.oup.com/ijtj/article/18/1/32/7624695"
+    },
+    "dashboard_note": null
+  },
+  "096": {
+    "name": "Brunei Darussalam",
+    "overview": {
+      "paragraphs": [
+        "Brunei has no significant documented history of internal war, genocide, or mass atrocity, having experienced Japanese occupation during World War II followed by relative post-independence political stability under its monarchy."
+      ],
+      "reference": "Benjet, C., et al. (2016). The epidemiology of traumatic event exposure worldwide. Psychological Medicine, 46(2), 327–343. https://pmc.ncbi.nlm.nih.gov/articles/PMC4869975/"
+    },
+    "dashboard_note": null
+  },
+  "100": {
+    "name": "Bulgaria",
+    "overview": {
+      "paragraphs": [
+        "Bulgaria's central 20th-century trauma includes decades of communist rule under Todor Zhivkov, marked by political repression, forced assimilation campaigns against its ethnic Turkish minority, and Cold War-era isolation.",
+        "Contemporary Bulgaria continues to process this legacy through post-1989 democratic transition challenges and persistent minority-rights tensions tied to the earlier assimilation campaigns, reflecting a moderate but sustained historical-to-modern trauma linkage."
+      ],
+      "reference": "Rzeszutek, M., Oniszczenko, W., & Firląg-Burkacka, E. (2020). Long-term psychological consequences of World War II. Frontiers in Psychology, 11, 210. https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2020.00210/full"
+    },
+    "dashboard_note": null
+  },
+  "854": {
+    "name": "Burkina Faso",
+    "overview": {
+      "paragraphs": [
+        "Burkina Faso's trauma load centers on escalating jihadist insurgency violence since 2015, spilling over from the broader Sahel crisis, which has displaced over two million people and produced repeated military coups, including two in 2022 alone.",
+        "This ongoing insecurity reflects a rapidly compounding contemporary trauma burden, with historical ethnic and resource-based marginalization intersecting with jihadist recruitment to fuel a still-escalating humanitarian crisis."
+      ],
+      "reference": "Musisi, S., & Kinyanda, E. (2020). Long-term impact of war, civil war, and persecution in chronic conflict settings. PMC. https://pmc.ncbi.nlm.nih.gov/articles/PMC7051938/"
+    },
+    "dashboard_note": null
+  },
   "108": {
     "name": "Burundi",
     "overview": {
@@ -202,6 +402,17 @@
     },
     "dashboard_note": null
   },
+  "132": {
+    "name": "Cabo Verde",
+    "overview": {
+      "paragraphs": [
+        "Cabo Verde's historical trauma is rooted in its role as a major transatlantic slave-trading depot under Portuguese colonial rule, alongside recurring devastating droughts and famines throughout the 18th to 20th centuries that killed substantial portions of the population. Regarding collective trauma link to natural disaster, volcanoes has posed existential threat in Fogo Island. That Cape Verde Island has experience recent disastrous volcanic eruptions that led to extensive property damage and displaced over 1,000 residents.",
+        "Contemporary Cabo Verde has maintained strong post-independence democratic stability since 1975, with its trauma engagement centering on historical memory of both the slave trade and famine rather than ongoing conflict."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
+    },
+    "dashboard_note": null
+  },
   "116": {
     "name": "Cambodia",
     "overview": {
@@ -210,6 +421,60 @@
         "Modern Cambodia continues to experience intergenerational psychiatric aftermath, with survivors and descendants showing elevated rates of PTSD and complex trauma symptoms, while the near-total loss of professional classes during the genocide continues to constrain institutional capacity and mental health infrastructure today."
       ],
       "reference": "Micale, M. S., & Straumann, L. (Eds.). (2015). History, trauma, and Asia: Recovering, remembering, and reconstructing. Berghahn Books. https://www.berghahnbooks.com/downloads/intros/MicaleTraumatic_intro.pdf"
+    },
+    "dashboard_note": null
+  },
+  "120": {
+    "name": "Cameroon",
+    "overview": {
+      "paragraphs": [
+        "Cameroon's collective trauma centers on the Anglophone Crisis, a secessionist conflict that erupted in 2016 over perceived marginalization of the country's English-speaking regions, which has killed at least 4,000 civilians and displaced over 700,000 people through both government and separatist violence (Human Rights Watch, 2021; Bang, 2022).",
+        "This conflict compounds with a separate, ongoing Boko Haram insurgency in the Far North region, meaning Cameroon simultaneously manages two distinct, overlapping armed conflicts rooted in colonial-era linguistic partition and regional jihadist spillover, a dual trauma burden rare even among conflict-affected states (Bang, 2022)."
+      ],
+      "reference": "Bang, H. N., & Balgah, R. A. (2022). The ramification of Cameroon's Anglophone crisis: Conceptual analysis of a looming complex humanitarian disaster. PMC. https://pmc.ncbi.nlm.nih.gov/articles/PMC8784587/"
+    },
+    "dashboard_note": null
+  },
+  "124": {
+    "name": "Canada",
+    "overview": {
+      "paragraphs": [
+        "Canada's foundational collective trauma is the colonial residential school system, which forcibly removed generations of Indigenous children from their families between the 1870s and 1990s, employing systematic cultural destruction and documented physical and sexual abuse.",
+        "This historical trauma continues to manifest in stark contemporary disparities in Indigenous health, incarceration, and mortality, with the 2021 discovery of unmarked graves at former residential school sites reactivating national reckoning and demonstrating direct intergenerational transmission of this colonial-era harm (McCallum, 2021)."
+      ],
+      "reference": "McCallum, D. (2021). Law, justice, and Indigenous intergenerational trauma: A critical analysis. International Journal for Crime, Justice and Social Democracy, 10(2), 194–208. https://www.crimejusticejournal.com/article/download/2121/1184/9876"
+    },
+    "dashboard_note": null
+  },
+  "136": {
+    "name": "Cayman Islands",
+    "overview": {
+      "paragraphs": [
+        "The Cayman Islands' historical trauma is rooted in British colonial-era slavery, though the territory has experienced no significant war or mass atrocity, with contemporary vulnerability shaped primarily by hurricane exposure."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
+    },
+    "dashboard_note": null
+  },
+  "140": {
+    "name": "Central African Republic",
+    "overview": {
+      "paragraphs": [
+        "The Central African Republic's collective trauma centers on the civil war that erupted in 2013 between Séléka rebel coalitions and Christian anti-Balaka militias, producing sectarian killings, mass displacement exceeding 1.2 million people, and one of the world's most severe ongoing humanitarian crises (Council on Foreign Relations, 2026).",
+        "Randomized controlled trials of trauma-focused interventions in this setting have documented significant reductions in mental health symptoms among conflict survivors, though the scarcity of mental health resources continues to leave the vast majority of the trauma-affected population without adequate care over a decade into the crisis (Froming et al., 2025)."
+      ],
+      "reference": "Froming, W. J., et al. (2025). RCT of post-conflict trauma interventions in the Central African Republic. Global Mental Health. https://www.cambridge.org/core/journals/global-mental-health/article/rct-of-postconflict-trauma-interventions-in-the-central-african-republic/2883C0B09C324B1DD40F832BA12AC325"
+    },
+    "dashboard_note": null
+  },
+  "148": {
+    "name": "Chad",
+    "overview": {
+      "paragraphs": [
+        "Chad's trauma load includes decades of internal rebellion and civil conflict since independence in 1960, compounded by chronic instability along its borders with Libya, Sudan, and the Central African Republic, and more recently by Boko Haram spillover violence and mass refugee inflows.",
+        "Contemporary Chad continues to absorb significant refugee populations fleeing neighboring conflicts while managing its own internal insurgent threats, reflecting a compounding regional trauma burden layered atop chronic domestic political instability."
+      ],
+      "reference": "Musisi, S., & Kinyanda, E. (2020). Long-term impact of war, civil war, and persecution in chronic conflict settings. PMC. https://pmc.ncbi.nlm.nih.gov/articles/PMC7051938/"
     },
     "dashboard_note": null
   },
@@ -235,6 +500,26 @@
     },
     "dashboard_note": null
   },
+  "162": {
+    "name": "Christmas Island",
+    "overview": {
+      "paragraphs": [
+        "Christmas Island has no significant documented history of war, genocide, or mass atrocity among its small population, though it has drawn scrutiny in recent decades for its role hosting Australian offshore immigration detention facilities, a documented site of trauma for detained asylum seekers."
+      ],
+      "reference": "Kizilhan, J. (2026). Collective trauma in refugee mental health treatment. ESMED. https://esmed.org/collective-trauma-in-refugee-mental-health-treatment/"
+    },
+    "dashboard_note": null
+  },
+  "166": {
+    "name": "Cocos (Keeling) Islands",
+    "overview": {
+      "paragraphs": [
+        "The Cocos (Keeling) Islands have no significant documented history of internal war, genocide, or mass atrocity, reflecting their small population and limited historical conflict exposure under Australian administration."
+      ],
+      "reference": "Benjet, C., et al. (2016). The epidemiology of traumatic event exposure worldwide. Psychological Medicine, 46(2), 327–343. https://pmc.ncbi.nlm.nih.gov/articles/PMC4869975/"
+    },
+    "dashboard_note": null
+  },
   "170": {
     "name": "Colombia",
     "overview": {
@@ -243,6 +528,114 @@
         "Despite the 2016 peace accord with FARC, contemporary Colombia continues to experience violence from splinter armed groups and unresolved land restitution disputes, showing how historical conflict-driven displacement trauma persists even after formal peace agreements."
       ],
       "reference": "Kirsch, J., et al. (2025). Collective trauma in the forced migration context: A scoping review. Transcultural Psychiatry. https://journals.sagepub.com/doi/10.1177/13634615251341853"
+    },
+    "dashboard_note": null
+  },
+  "174": {
+    "name": "Comoros",
+    "overview": {
+      "paragraphs": [
+        "Comoros has experienced chronic post-independence political instability, including more than 20 attempted or successful coups since 1975, one of the highest coup rates of any nation, alongside separatist tensions on the island of Anjouan.",
+        "This pattern reflects a moderate, institutionally-embedded trauma burden rooted in sustained governance fragility rather than acute mass-casualty conflict, with recurring political upheaval itself functioning as a chronic stressor on national stability."
+      ],
+      "reference": "Sehmi, A. (2024). Legacies of colonial violence in contemporary transitional justice. International Journal of Transitional Justice, 18(1), 32–54. https://academic.oup.com/ijtj/article/18/1/32/7624695"
+    },
+    "dashboard_note": null
+  },
+  "178": {
+    "name": "Congo (Republic of the Congo)",
+    "overview": {
+      "paragraphs": [
+        "The Republic of the Congo's collective trauma centers on its 1997–1999 civil war, fought between forces loyal to Denis Sassou Nguesso and those of former president Pascal Lissouba, which killed thousands and displaced significant portions of the population in and around Brazzaville, compounding decades of one-party authoritarian rule following independence from France in 1960.",
+        "Contemporary Congo-Brazzaville continues to experience the aftermath through consolidated, long-tenured authoritarian governance and periodic election-related unrest, with oil-wealth inequality continuing to fuel social grievance rooted in this unresolved civil war-era political fracture."
+      ],
+      "reference": "Musisi, S., & Kinyanda, E. (2020). Long-term impact of war, civil war, and persecution in chronic conflict settings. PMC. https://pmc.ncbi.nlm.nih.gov/articles/PMC7051938/"
+    },
+    "dashboard_note": null
+  },
+  "184": {
+    "name": "Cook Islands",
+    "overview": {
+      "paragraphs": [
+        "The Cook Islands have no significant documented history of internal war, genocide, or mass atrocity, with contemporary vulnerability shaped primarily by climate and cyclone exposure rather than conflict."
+      ],
+      "reference": "Benjet, C., et al. (2016). The epidemiology of traumatic event exposure worldwide. Psychological Medicine, 46(2), 327–343. https://pmc.ncbi.nlm.nih.gov/articles/PMC4869975/"
+    },
+    "dashboard_note": null
+  },
+  "188": {
+    "name": "Costa Rica",
+    "overview": {
+      "paragraphs": [
+        "Costa Rica has experienced comparatively minimal mass atrocity or armed conflict, having abolished its military in 1949 following a brief civil war, and has since maintained one of Latin America's most stable democratic records.",
+        "This unusual demilitarized stability reflects a low comparative trauma burden relative to Central American neighbors, though contemporary rising drug-trafficking-related violence represents an emerging, still-moderate trauma vector."
+      ],
+      "reference": "Kirsch, J., et al. (2025). Collective trauma in the forced migration context: A scoping review. Transcultural Psychiatry. https://journals.sagepub.com/doi/10.1177/13634615251341853"
+    },
+    "dashboard_note": null
+  },
+  "384": {
+    "name": "Côte d'Ivoire",
+    "overview": {
+      "paragraphs": [
+        "Côte d'Ivoire's collective trauma centers on two civil wars (2002–2007 and 2010–2011), the latter triggered by a disputed presidential election that produced ethnically-charged violence killing an estimated 3,000 people and displacing hundreds of thousands.",
+        "Contemporary Côte d'Ivoire continues to navigate unresolved ethnic and regional tensions between its north and south that fueled both conflicts, with periodic election-related unrest reflecting how contested post-colonial national identity remains an active driver of collective trauma."
+      ],
+      "reference": "Musisi, S., & Kinyanda, E. (2020). Long-term impact of war, civil war, and persecution in chronic conflict settings. PMC. https://pmc.ncbi.nlm.nih.gov/articles/PMC7051938/"
+    },
+    "dashboard_note": null
+  },
+  "191": {
+    "name": "Croatia",
+    "overview": {
+      "paragraphs": [
+        "Croatia's collective trauma is rooted in the 1991–1995 Croatian War of Independence during the breakup of Yugoslavia, which involved ethnic cleansing, mass displacement, and significant civilian casualties, particularly during the Siege of Vukovar and subsequent Serb-Croat ethnic violence.",
+        "Contemporary Croatia continues to navigate contested historical memory regarding wartime conduct on both sides, with unresolved questions over displaced Serb minority populations reflecting how Yugoslav-era ethnic conflict trauma persists three decades after the war's end."
+      ],
+      "reference": "Hartley, R. J. (2012). Atrocity and trauma in a post-conflict landscape. University of Nebraska Anthropology Faculty Publications. https://digitalcommons.unl.edu/cgi/viewcontent.cgi?article=1058&context=anthropologyfacpub"
+    },
+    "dashboard_note": null
+  },
+  "192": {
+    "name": "Cuba",
+    "overview": {
+      "paragraphs": [
+        "Cuba's central modern trauma includes the upheaval of the 1959 revolution and subsequent decades of one-party authoritarian rule, marked by political imprisonment, mass emigration waves (notably the 1980 Mariel boatlift and 1994 \"Balsero\" crisis), and prolonged economic hardship under the U.S. embargo.",
+        "Contemporary Cuba continues to experience the compounding aftermath of chronic economic crisis and political repression, with large-scale 2021 protests and subsequent crackdowns reflecting persistent, unresolved tension between the revolutionary state and its citizens."
+      ],
+      "reference": "Mohatt, N. V., Thompson, A. B., Thai, N. D., & Tebes, J. K. (2014). Historical trauma as public narrative. Social Science & Medicine, 106, 128–136. https://pmc.ncbi.nlm.nih.gov/articles/PMC4001826/"
+    },
+    "dashboard_note": null
+  },
+  "531": {
+    "name": "Curaçao",
+    "overview": {
+      "paragraphs": [
+        "Curaçao's historical trauma is rooted in its role as a major Dutch transatlantic slave-trading depot, one of the largest in the Caribbean, with enslaved labor structuring the island's colonial economy for over two centuries."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
+    },
+    "dashboard_note": null
+  },
+  "196": {
+    "name": "Cyprus",
+    "overview": {
+      "paragraphs": [
+        "Cyprus's foundational collective trauma is the 1974 Turkish invasion and subsequent partition of the island, following nearly two decades of intermittent Greek-Turkish Cypriot intercommunal violence, which displaced 170,000 Greek Cypriots and 50,000 Turkish Cypriots and left the island divided to this day (Loizos, 2025).",
+        "Research demonstrates that this trauma persists across both communities more than five decades later, with documented emotional and cognitive changes specifically linked to the 1963 and 1974 wars, and scholars framing \"1974\" as an unresolved cultural trauma actively transmitted through generational memory, oral history, and continued political division (Volkan et al., 2022; Agathangelou, 2002)."
+      ],
+      "reference": "Volkan, E., et al. (2022). Undivided trauma in a divided Cyprus: Modified emotional Stroop task findings. Psychological Trauma: Theory, Research, Practice, and Policy, 14(6), 989–997. https://pubmed.ncbi.nlm.nih.gov/31750688/"
+    },
+    "dashboard_note": null
+  },
+  "203": {
+    "name": "Czechia",
+    "overview": {
+      "paragraphs": [
+        "Czechia's central 20th-century trauma includes Nazi occupation and Holocaust deportations during World War II, followed by the Soviet-crushed 1968 Prague Spring reform movement and over two decades of subsequent communist repression.",
+        "Contemporary Czechia has processed much of this trauma through the peaceful 1989 Velvet Revolution and subsequent democratic consolidation, though historical memory of Soviet-era repression continues to inform contemporary security anxiety regarding regional authoritarianism."
+      ],
+      "reference": "Rzeszutek, M., Oniszczenko, W., & Firląg-Burkacka, E. (2020). Long-term psychological consequences of World War II. Frontiers in Psychology, 11, 210. https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2020.00210/full"
     },
     "dashboard_note": null
   },
@@ -262,6 +655,49 @@
       ],
       "references": []
     }
+  },
+  "208": {
+    "name": "Denmark",
+    "overview": {
+      "paragraphs": [
+        "Denmark experienced Nazi occupation during World War II but has no significant documented mass atrocity beyond this period, reflecting a comparatively low trauma burden among Western European nations alongside a notable historical record of resistance-era Jewish protection."
+      ],
+      "reference": "Rzeszutek, M., Oniszczenko, W., & Firląg-Burkacka, E. (2020). Long-term psychological consequences of World War II. Frontiers in Psychology, 11, 210. https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2020.00210/full"
+    },
+    "dashboard_note": null
+  },
+  "262": {
+    "name": "Djibouti",
+    "overview": {
+      "paragraphs": [
+        "Djibouti has experienced comparatively limited large-scale mass atrocity, though its trauma profile includes a 1990s civil war between the government and Afar rebel groups, alongside chronic strain from hosting significant refugee populations fleeing conflict in neighboring Somalia, Ethiopia, and Eritrea.",
+        "This regional conflict spillover, combined with recurring drought and food insecurity in the Horn of Africa, reflects a moderate, compounding humanitarian trauma burden for both host and displaced populations."
+      ],
+      "reference": "Kizilhan, J. (2026). Collective trauma in refugee mental health treatment. ESMED. https://esmed.org/collective-trauma-in-refugee-mental-health-treatment/"
+    },
+    "dashboard_note": null
+  },
+  "212": {
+    "name": "Dominica",
+    "overview": {
+      "paragraphs": [
+        "Dominica's historical trauma is rooted in violent colonial displacement of its Indigenous Kalinago (Carib) population and subsequent transatlantic slavery under French and British rule.",
+        "Contemporary Dominica has experienced relative political stability since independence in 1978, with its most significant modern trauma being catastrophic hurricane destruction, particularly Hurricane Maria in 2017, which devastated nearly the entire island's infrastructure."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
+    },
+    "dashboard_note": null
+  },
+  "214": {
+    "name": "Dominican Republic",
+    "overview": {
+      "paragraphs": [
+        "The Dominican Republic's collective trauma includes the brutal Trujillo dictatorship (1930–1961), marked by mass political killings and the 1937 Parsley Massacre, in which thousands of Haitians and Haitian-Dominicans were slaughtered along the border in an act of state-sponsored ethnic violence.",
+        "Contemporary Dominican Republic continues to experience the aftermath through unresolved anti-Haitian discrimination and controversial 2013 citizenship-stripping policies affecting Dominicans of Haitian descent, illustrating a direct continuity between 1930s-era genocidal violence and present-day statelessness policy."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
+    },
+    "dashboard_note": null
   },
   "218": {
     "name": "Ecuador",
@@ -296,6 +732,50 @@
     },
     "dashboard_note": null
   },
+  "226": {
+    "name": "Equatorial Guinea",
+    "overview": {
+      "paragraphs": [
+        "Equatorial Guinea's trauma load centers on the brutal dictatorship of Francisco Macías Nguema (1968–1979), marked by mass killings, forced labor, and the exile of roughly a third of the population, followed by continued authoritarian rule under his successor.",
+        "Contemporary Equatorial Guinea remains under one of Africa's longest-tenured authoritarian governments, with oil-wealth inequality and suppressed political dissent reflecting an unresolved continuation of this founding dictatorship-era repression."
+      ],
+      "reference": "Sehmi, A. (2024). Legacies of colonial violence in contemporary transitional justice. International Journal of Transitional Justice, 18(1), 32–54. https://academic.oup.com/ijtj/article/18/1/32/7624695"
+    },
+    "dashboard_note": null
+  },
+  "232": {
+    "name": "Eritrea",
+    "overview": {
+      "paragraphs": [
+        "Eritrea's foundational collective trauma is its 30-year War of Independence from Ethiopia (1961–1991), one of Africa's longest liberation struggles, which caused tens of thousands of deaths, widespread disability, mass displacement, and a devastating famine that crippled agricultural productivity (Eritrea Begins Its War for Independence, 2021; Eritrean War of Independence, n.d.).",
+        "This historical liberation trauma has directly shaped Eritrea's subsequent trajectory, as the same wartime mobilization structures gave rise to one of the world's most militarized and authoritarian postwar states, with indefinite national conscription and the 1998–2000 border war with Ethiopia representing an unbroken continuation of this founding conflict's militarized legacy."
+      ],
+      "reference": "EBSCO Research Starters. (2021). Eritrea begins its war for independence. https://www.ebsco.com/research-starters/history/eritrea-begins-its-war-independence"
+    },
+    "dashboard_note": null
+  },
+  "233": {
+    "name": "Estonia",
+    "overview": {
+      "paragraphs": [
+        "Estonia's trauma load includes Soviet-era mass deportations to Siberia during the 1940s, alongside Nazi occupation and near-total destruction of its Jewish population during the Holocaust, followed by decades of forced Soviet incorporation until 1991.",
+        "Contemporary Estonia continues to navigate this dual occupation trauma through contested historical memory politics between ethnic Estonian and Russian-speaking populations, a divide intensified by heightened regional anxiety following Russia's invasion of Ukraine."
+      ],
+      "reference": "Rzeszutek, M., Oniszczenko, W., & Firląg-Burkacka, E. (2020). Long-term psychological consequences of World War II. Frontiers in Psychology, 11, 210. https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2020.00210/full"
+    },
+    "dashboard_note": null
+  },
+  "748": {
+    "name": "Eswatini",
+    "overview": {
+      "paragraphs": [
+        "Eswatini has experienced comparatively limited large-scale mass atrocity, maintaining one of the world's last absolute monarchies, though its trauma profile includes severe HIV/AIDS epidemic impact beginning in the 1990s and periodic pro-democracy protest crackdowns, most notably in 2021.",
+        "This combination of epidemic-scale public health trauma and suppressed political dissent reflects a moderate, institutionally-embedded trauma burden distinct from acute war-driven mass casualty."
+      ],
+      "reference": "Benjet, C., et al. (2016). The epidemiology of traumatic event exposure worldwide. Psychological Medicine, 46(2), 327–343. https://pmc.ncbi.nlm.nih.gov/articles/PMC4869975/"
+    },
+    "dashboard_note": null
+  },
   "231": {
     "name": "Ethiopia",
     "overview": {
@@ -304,6 +784,37 @@
         "The 2020–2022 Tigray War represents a modern eruption of these historical fault lines, with credible reports of genocide-level atrocities and famine conditions echoing the 1980s crisis, demonstrating how unresolved ethnic federalism tensions continue generating contemporary humanitarian catastrophe."
       ],
       "reference": "Der Sarkissian, A., Sarkisian, T., Balian, H., et al. (2021). Transgenerational trauma and mental health needs among Armenian genocide descendants. PMC. https://pmc.ncbi.nlm.nih.gov/articles/PMC8508035/"
+    },
+    "dashboard_note": null
+  },
+  "238": {
+    "name": "Falkland Islands (Malvinas)",
+    "overview": {
+      "paragraphs": [
+        "The Falkland Islands' defining modern trauma is the 1982 Falklands War between the United Kingdom and Argentina, a brief but intense conflict that killed nearly 900 combatants and left contested sovereignty claims that remain a significant source of Argentine national grievance and periodic diplomatic tension."
+      ],
+      "reference": "Hartley, R. J. (2012). Atrocity and trauma in a post-conflict landscape. University of Nebraska Anthropology Faculty Publications. https://digitalcommons.unl.edu/cgi/viewcontent.cgi?article=1058&context=anthropologyfacpub"
+    },
+    "dashboard_note": null
+  },
+  "234": {
+    "name": "Faroe Islands",
+    "overview": {
+      "paragraphs": [
+        "The Faroe Islands have no significant documented history of internal war, genocide, or mass atrocity, having experienced British occupation during World War II but otherwise maintaining a low historical conflict burden under Danish administration."
+      ],
+      "reference": "Rzeszutek, M., Oniszczenko, W., & Firląg-Burkacka, E. (2020). Long-term psychological consequences of World War II. Frontiers in Psychology, 11, 210. https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2020.00210/full"
+    },
+    "dashboard_note": null
+  },
+  "242": {
+    "name": "Fiji",
+    "overview": {
+      "paragraphs": [
+        "Fiji's collective trauma includes a history of colonial-era indentured labor migration from India, which created lasting ethnic tension between Indigenous Fijians and Indo-Fijians, culminating in a series of military coups in 1987, 2000, and 2006 rooted in this ethnic power-sharing conflict.",
+        "Contemporary Fiji continues to navigate the aftermath of this coup-cycle instability, with periodic ethnic tension and its resulting mass emigration of Indo-Fijians reflecting how colonial-era demographic engineering continues to generate political trauma generations later."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
     },
     "dashboard_note": null
   },
@@ -326,6 +837,36 @@
         "Contemporary France continues to negotiate this dual legacy through ongoing debates over colonial-era reparations, immigrant integration tied to former colonies, and periodic reckoning with Vichy collaboration, showing sustained political relevance of historical perpetrator-side trauma."
       ],
       "reference": "Pocket Project. (2021). Colonialism and collective trauma: Europe and Africa. https://pocketproject.org/colonialism-collective-trauma-europe-africa/"
+    },
+    "dashboard_note": null
+  },
+  "254": {
+    "name": "French Guiana",
+    "overview": {
+      "paragraphs": [
+        "French Guiana's historical trauma includes its use as a French penal colony, most notoriously Devil's Island, where political prisoners and convicts endured brutal conditions from the 1850s through the 1950s, alongside earlier plantation-era slavery."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
+    },
+    "dashboard_note": null
+  },
+  "258": {
+    "name": "French Polynesia",
+    "overview": {
+      "paragraphs": [
+        "French Polynesia's central modern trauma is French nuclear weapons testing conducted at Moruroa and Fangataufa atolls between 1966 and 1996, which exposed local populations to radiation and produced elevated cancer rates, a legacy of environmental and health trauma still under legal and compensation dispute today."
+      ],
+      "reference": "Benjet, C., et al. (2016). The epidemiology of traumatic event exposure worldwide. Psychological Medicine, 46(2), 327–343. https://pmc.ncbi.nlm.nih.gov/articles/PMC4869975/"
+    },
+    "dashboard_note": null
+  },
+  "260": {
+    "name": "French Southern Territories",
+    "overview": {
+      "paragraphs": [
+        "The French Southern Territories are largely uninhabited scientific research stations with no permanent civilian population and no documented history of human conflict or mass atrocity."
+      ],
+      "reference": "Benjet, C., et al. (2016). The epidemiology of traumatic event exposure worldwide. Psychological Medicine, 46(2), 327–343. https://pmc.ncbi.nlm.nih.gov/articles/PMC4869975/"
     },
     "dashboard_note": null
   },
@@ -389,6 +930,16 @@
       "references": []
     }
   },
+  "292": {
+    "name": "Gibraltar",
+    "overview": {
+      "paragraphs": [
+        "Gibraltar's historical trauma includes repeated sieges throughout the 18th century and evacuation of its civilian population during World War II, though it has experienced no significant mass atrocity, with contemporary tension centering on unresolved sovereignty disputes with Spain."
+      ],
+      "reference": "Rzeszutek, M., Oniszczenko, W., & Firląg-Burkacka, E. (2020). Long-term psychological consequences of World War II. Frontiers in Psychology, 11, 210. https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2020.00210/full"
+    },
+    "dashboard_note": null
+  },
   "300": {
     "name": "Greece",
     "overview": {
@@ -397,6 +948,17 @@
         "This layered 20th-century trauma resurfaces periodically through Greece's ongoing economic and migration crises, with scholars noting that unresolved historical political fractures continue to shape contemporary polarization and institutional distrust."
       ],
       "reference": "Rzeszutek, M., Oniszczenko, W., & Firląg-Burkacka, E. (2020). Long-term psychological consequences of World War II. Frontiers in Psychology, 11, 210. https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2020.00210/full"
+    },
+    "dashboard_note": null
+  },
+  "304": {
+    "name": "Greenland",
+    "overview": {
+      "paragraphs": [
+        "Greenland's collective trauma centers on Danish colonial-era policies toward the Indigenous Inuit population, including forced relocations, a covert 1950s-60s \"Danization\" assimilation program, and documented coercive birth-control campaigns targeting Inuit women without consent throughout the 1960s-70s.",
+        "This colonial legacy continues to generate contemporary reckoning, with Greenland's government and Inuit survivors pursuing formal apologies and compensation from Denmark in recent years, illustrating direct intergenerational transmission of state-sponsored reproductive and cultural harm."
+      ],
+      "reference": "McCallum, D. (2021). Law, justice, and Indigenous intergenerational trauma. International Journal for Crime, Justice and Social Democracy, 10(2), 194–208. https://www.crimejusticejournal.com/article/download/2121/1184/9876"
     },
     "dashboard_note": null
   },
@@ -411,6 +973,27 @@
     },
     "dashboard_note": null
   },
+  "312": {
+    "name": "Guadeloupe",
+    "overview": {
+      "paragraphs": [
+        "Guadeloupe's historical trauma is rooted in French colonial plantation slavery, with a particularly traumatic legacy tied to the brief 1794-1802 re-enslavement following Revolutionary-era abolition, later reversed under Napoleon."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
+    },
+    "dashboard_note": null
+  },
+  "316": {
+    "name": "Guam",
+    "overview": {
+      "paragraphs": [
+        "Guam's defining historical trauma is the brutal Japanese occupation from 1941 to 1944 during World War II, during which the Indigenous Chamorro population endured forced labor, massacres, and a forced march, a period Chamorros commemorate annually as \"Liberation Day.\"",
+        "Contemporary Guam continues to navigate the legacy of subsequent heavy U.S. militarization of the island, with ongoing land-use disputes reflecting unresolved tension between Chamorro self-determination and continued military strategic importance."
+      ],
+      "reference": "Micale, M. S., & Straumann, L. (Eds.). (2015). History, trauma, and Asia: Recovering, remembering, and reconstructing. Berghahn Books. https://www.berghahnbooks.com/downloads/intros/MicaleTraumatic_intro.pdf"
+    },
+    "dashboard_note": null
+  },
   "320": {
     "name": "Guatemala",
     "overview": {
@@ -419,6 +1002,16 @@
         "Modern Guatemala continues to grapple with this genocidal legacy through unresolved judicial accountability, weak institutional trust, and the dismantling of alternative political projects following the peace accords, illustrating how impunity for historical genocide constrains contemporary democratic development."
       ],
       "reference": "Valdevit, D. (2020). The role of the United States in the Guatemalan genocide. The Undergraduate History Journal, 14, 41–48. https://surface.syr.edu/cgi/viewcontent.cgi?article=1006&context=chronos"
+    },
+    "dashboard_note": null
+  },
+  "831": {
+    "name": "Guernsey",
+    "overview": {
+      "paragraphs": [
+        "Guernsey's central historical trauma is Nazi German occupation from 1940 to 1945, the only part of the British Isles to be occupied during World War II, involving forced labor camp construction and civilian deportations."
+      ],
+      "reference": "Rzeszutek, M., Oniszczenko, W., & Firląg-Burkacka, E. (2020). Long-term psychological consequences of World War II. Frontiers in Psychology, 11, 210. https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2020.00210/full"
     },
     "dashboard_note": null
   },
@@ -466,6 +1059,16 @@
     },
     "dashboard_note": null
   },
+  "334": {
+    "name": "Heard Island and McDonald Islands",
+    "overview": {
+      "paragraphs": [
+        "Heard Island and McDonald Islands are uninhabited Australian external territories with no permanent population and no documented history of human conflict or mass atrocity."
+      ],
+      "reference": "Benjet, C., et al. (2016). The epidemiology of traumatic event exposure worldwide. Psychological Medicine, 46(2), 327–343. https://pmc.ncbi.nlm.nih.gov/articles/PMC4869975/"
+    },
+    "dashboard_note": null
+  },
   "340": {
     "name": "Honduras",
     "overview": {
@@ -474,6 +1077,17 @@
         "This contemporary violence reflects a continuation of historical patterns of weak state institutions and externally influenced security policy, with mass emigration northward serving as both a symptom and consequence of unresolved structural trauma."
       ],
       "reference": "Moon, C. (2020). Denial and stigmatization in Mexico's \"war on drugs.\" PMC. https://pmc.ncbi.nlm.nih.gov/articles/PMC7613008/"
+    },
+    "dashboard_note": null
+  },
+  "344": {
+    "name": "Hong Kong",
+    "overview": {
+      "paragraphs": [
+        "Hong Kong's historical trauma includes brutal Japanese occupation during World War II, marked by mass killings and severe famine, followed by decades under British colonial rule and the more recent 2019-2020 pro-democracy protests, which were met with mass arrests and a sweeping national security law that fundamentally altered the territory's civil liberties landscape.",
+        "This recent political trauma represents a rapid, compressed rupture in collective identity and freedom of expression, with many residents experiencing significant emigration-driven displacement in its aftermath, reflecting an acute and still-unfolding modern trauma vector layered atop the territory's wartime occupation history."
+      ],
+      "reference": "Micale, M. S., & Straumann, L. (Eds.). (2015). History, trauma, and Asia: Recovering, remembering, and reconstructing. Berghahn Books. https://www.berghahnbooks.com/downloads/intros/MicaleTraumatic_intro.pdf"
     },
     "dashboard_note": null
   },
@@ -571,6 +1185,16 @@
     },
     "dashboard_note": null
   },
+  "833": {
+    "name": "Isle of Man",
+    "overview": {
+      "paragraphs": [
+        "The Isle of Man's historical trauma includes its use as an internment camp site for enemy aliens during both World Wars, though the territory has experienced no significant internal mass atrocity."
+      ],
+      "reference": "Rzeszutek, M., Oniszczenko, W., & Firląg-Burkacka, E. (2020). Long-term psychological consequences of World War II. Frontiers in Psychology, 11, 210. https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2020.00210/full"
+    },
+    "dashboard_note": null
+  },
   "376": {
     "name": "Israel",
     "overview": {
@@ -616,6 +1240,16 @@
       "paragraphs": [
         "Japan's central 20th-century trauma is the atomic bombings of Hiroshima and Nagasaki in 1945, which killed over 200,000 people and left survivors, known as hibakusha, with lasting physical and psychological effects, alongside the devastation of wartime firebombing campaigns.",
         "Modern Japan continues to process this trauma through hibakusha advocacy and nuclear disarmament activism, while the 2011 Fukushima nuclear disaster reactivated historical anxiety around nuclear catastrophe, demonstrating a direct psychological linkage between wartime atomic trauma and contemporary nuclear risk perception."
+      ],
+      "reference": "Rzeszutek, M., Oniszczenko, W., & Firląg-Burkacka, E. (2020). Long-term psychological consequences of World War II. Frontiers in Psychology, 11, 210. https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2020.00210/full"
+    },
+    "dashboard_note": null
+  },
+  "832": {
+    "name": "Jersey",
+    "overview": {
+      "paragraphs": [
+        "Jersey's central historical trauma is Nazi German occupation from 1940 to 1945, involving forced labor, deportations, and documented collaboration controversies that continue to inform historical memory debates on the island."
       ],
       "reference": "Rzeszutek, M., Oniszczenko, W., & Firląg-Burkacka, E. (2020). Long-term psychological consequences of World War II. Frontiers in Psychology, 11, 210. https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2020.00210/full"
     },
@@ -790,6 +1424,16 @@
     },
     "dashboard_note": null
   },
+  "446": {
+    "name": "Macao",
+    "overview": {
+      "paragraphs": [
+        "Macao's historical trauma is comparatively limited, having maintained relative neutrality during Japanese wartime expansion in Asia as a Portuguese colonial enclave, with its most significant modern transition being the 1999 handover to China."
+      ],
+      "reference": "Micale, M. S., & Straumann, L. (Eds.). (2015). History, trauma, and Asia: Recovering, remembering, and reconstructing. Berghahn Books. https://www.berghahnbooks.com/downloads/intros/MicaleTraumatic_intro.pdf"
+    },
+    "dashboard_note": null
+  },
   "450": {
     "name": "Madagascar",
     "overview": {
@@ -865,6 +1509,16 @@
     },
     "dashboard_note": null
   },
+  "474": {
+    "name": "Martinique",
+    "overview": {
+      "paragraphs": [
+        "Martinique's historical trauma is rooted in French colonial plantation slavery, compounded by the catastrophic 1902 eruption of Mount Pelée, which killed an estimated 30,000 people in the city of Saint-Pierre, one of the deadliest volcanic disasters in recorded history."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
+    },
+    "dashboard_note": null
+  },
   "478": {
     "name": "Mauritania",
     "overview": {
@@ -882,6 +1536,16 @@
       "paragraphs": [
         "Mauritius's historical trauma centers on its colonial-era plantation economy built on enslaved and later indentured labor, though it has experienced relative post-independence political stability compared to many former colonies.",
         "This comparatively lower contemporary conflict trauma reflects successful postcolonial institutional development, though descendants of plantation-era laborers continue to navigate socioeconomic disparities tied to this historical labor system."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
+    },
+    "dashboard_note": null
+  },
+  "175": {
+    "name": "Mayotte",
+    "overview": {
+      "paragraphs": [
+        "Mayotte's historical trauma is rooted in its colonial-era slave trade connections and subsequent French administrative rule, with contemporary trauma shaped by significant socioeconomic disparity relative to mainland France and irregular migration pressures from neighboring Comoros."
       ],
       "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
     },
@@ -955,6 +1619,16 @@
         "Contemporary Montenegro continues to navigate identity questions tied to its 2006 independence from Serbia, reflecting residual, lower-intensity trauma from the broader Yugoslav dissolution period rather than direct mass atrocity on its own soil."
       ],
       "reference": "Hartley, R. J. (2012). Atrocity and trauma in a post-conflict landscape. University of Nebraska Anthropology Faculty Publications. https://digitalcommons.unl.edu/cgi/viewcontent.cgi?article=1058&context=anthropologyfacpub"
+    },
+    "dashboard_note": null
+  },
+  "500": {
+    "name": "Montserrat",
+    "overview": {
+      "paragraphs": [
+        "Montserrat's historical trauma is rooted in British colonial plantation slavery, compounded catastrophically by the Soufrière Hills volcanic eruptions beginning in 1995, which destroyed the capital city of Plymouth and forced the permanent evacuation of two-thirds of the island's population."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
     },
     "dashboard_note": null
   },
@@ -1034,6 +1708,16 @@
     },
     "dashboard_note": null
   },
+  "540": {
+    "name": "New Caledonia",
+    "overview": {
+      "paragraphs": [
+        "New Caledonia's collective trauma centers on colonial-era displacement of the Indigenous Kanak population and the violent 1980s independence conflict known as \"the Events,\" which killed dozens and produced the 1988 Matignon Accords, with unresolved independence tensions reigniting into deadly riots as recently as 2024."
+      ],
+      "reference": "Sehmi, A. (2024). Legacies of colonial violence in contemporary transitional justice. International Journal of Transitional Justice, 18(1), 32–54. https://academic.oup.com/ijtj/article/18/1/32/7624695"
+    },
+    "dashboard_note": null
+  },
   "554": {
     "name": "New Zealand",
     "overview": {
@@ -1084,6 +1768,26 @@
       "references": []
     }
   },
+  "570": {
+    "name": "Niue",
+    "overview": {
+      "paragraphs": [
+        "Niue has no significant documented history of internal war, genocide, or mass atrocity, with contemporary vulnerability shaped primarily by cyclone exposure and a severe demographic decline through emigration."
+      ],
+      "reference": "Benjet, C., et al. (2016). The epidemiology of traumatic event exposure worldwide. Psychological Medicine, 46(2), 327–343. https://pmc.ncbi.nlm.nih.gov/articles/PMC4869975/"
+    },
+    "dashboard_note": null
+  },
+  "574": {
+    "name": "Norfolk Island",
+    "overview": {
+      "paragraphs": [
+        "Norfolk Island's historical trauma includes its use as a notoriously brutal British penal colony in the early-to-mid 19th century, known for extreme punitive practices before its later resettlement by Pitcairn Islanders descended from the Bounty mutineers."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
+    },
+    "dashboard_note": null
+  },
   "408": {
     "name": "North Korea",
     "overview": {
@@ -1103,6 +1807,16 @@
         "This shorter, contained conflict reflects a moderate trauma burden relative to neighboring Balkan states, with ethnic Macedonian-Albanian power-sharing arrangements established afterward continuing to shape contemporary political stability."
       ],
       "reference": "Hartley, R. J. (2012). Atrocity and trauma in a post-conflict landscape. University of Nebraska Anthropology Faculty Publications. https://digitalcommons.unl.edu/cgi/viewcontent.cgi?article=1058&context=anthropologyfacpub"
+    },
+    "dashboard_note": null
+  },
+  "580": {
+    "name": "Northern Mariana Islands",
+    "overview": {
+      "paragraphs": [
+        "The Northern Mariana Islands experienced intense combat during World War II, including the devastating 1944 Battle of Saipan, which resulted in mass civilian casualties, including a documented wave of civilian suicides driven by wartime propaganda and terror."
+      ],
+      "reference": "Micale, M. S., & Straumann, L. (Eds.). (2015). History, trauma, and Asia: Recovering, remembering, and reconstructing. Berghahn Books. https://www.berghahnbooks.com/downloads/intros/MicaleTraumatic_intro.pdf"
     },
     "dashboard_note": null
   },
@@ -1216,6 +1930,16 @@
     },
     "dashboard_note": null
   },
+  "612": {
+    "name": "Pitcairn",
+    "overview": {
+      "paragraphs": [
+        "Pitcairn has no significant documented history of war, genocide, or mass atrocity given its extremely small population, though the territory has drawn scrutiny for a documented 2004 sexual abuse scandal involving multiple island men, reflecting a distinct, internally-generated community trauma."
+      ],
+      "reference": "Benjet, C., et al. (2016). The epidemiology of traumatic event exposure worldwide. Psychological Medicine, 46(2), 327–343. https://pmc.ncbi.nlm.nih.gov/articles/PMC4869975/"
+    },
+    "dashboard_note": null
+  },
   "616": {
     "name": "Poland",
     "overview": {
@@ -1238,6 +1962,17 @@
     },
     "dashboard_note": null
   },
+  "630": {
+    "name": "Puerto Rico",
+    "overview": {
+      "paragraphs": [
+        "Puerto Rico's collective trauma includes a complex colonial history under Spanish and later U.S. territorial rule, including documented coercive sterilization campaigns and pharmaceutical testing on Puerto Rican women in the mid-20th century, compounded by Hurricane Maria in 2017, which killed an estimated 3,000 people and caused the longest blackout in U.S. history.",
+        "The catastrophic and prolonged federal response failure following Hurricane Maria intersected directly with longstanding colonial-status grievances, producing a compounding disaster-and-governance trauma that continues to shape Puerto Rican political identity and ongoing statehood/independence debates."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
+    },
+    "dashboard_note": null
+  },
   "634": {
     "name": "Qatar",
     "overview": {
@@ -1245,6 +1980,16 @@
         "Qatar has no significant documented history of internal war, genocide, or mass atrocity, reflecting its rapid post-oil economic development and comparative regional political stability."
       ],
       "reference": "Benjet, C., et al. (2016). The epidemiology of traumatic event exposure worldwide. Psychological Medicine, 46(2), 327–343. https://pmc.ncbi.nlm.nih.gov/articles/PMC4869975/"
+    },
+    "dashboard_note": null
+  },
+  "638": {
+    "name": "Réunion",
+    "overview": {
+      "paragraphs": [
+        "Réunion's historical trauma is rooted in French colonial plantation slavery, with contemporary socioeconomic disparity relative to mainland France reflecting a continuing structural legacy of this colonial economic system."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
     },
     "dashboard_note": null
   },
@@ -1281,6 +2026,26 @@
     },
     "dashboard_note": null
   },
+  "652": {
+    "name": "Saint Barthélemy",
+    "overview": {
+      "paragraphs": [
+        "Saint Barthélemy's historical trauma is rooted in colonial-era slavery under French and briefly Swedish rule, with contemporary vulnerability shaped primarily by severe hurricane exposure, including catastrophic damage from Hurricane Irma in 2017."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
+    },
+    "dashboard_note": null
+  },
+  "654": {
+    "name": "Saint Helena, Ascension and Tristan da Cunha",
+    "overview": {
+      "paragraphs": [
+        "Saint Helena's most notable historical role was as the site of Napoleon Bonaparte's final exile and death, alongside its use during the Anglo-Boer War as an internment site for thousands of Boer prisoners of war between 1900 and 1902."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
+    },
+    "dashboard_note": null
+  },
   "659": {
     "name": "Saint Kitts and Nevis",
     "overview": {
@@ -1300,6 +2065,26 @@
         "Contemporary trauma is shaped primarily by climate-related disaster vulnerability rather than sustained internal conflict, consistent with broader Eastern Caribbean trauma patterns."
       ],
       "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
+    },
+    "dashboard_note": null
+  },
+  "663": {
+    "name": "Saint Martin (French part)",
+    "overview": {
+      "paragraphs": [
+        "Saint Martin's historical trauma is rooted in colonial-era slavery under French rule, with contemporary vulnerability shaped by severe hurricane exposure, including catastrophic destruction from Hurricane Irma in 2017."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
+    },
+    "dashboard_note": null
+  },
+  "666": {
+    "name": "Saint Pierre and Miquelon",
+    "overview": {
+      "paragraphs": [
+        "Saint Pierre and Miquelon has no significant documented history of internal war, genocide, or mass atrocity, having maintained a small fishing-economy population under French administration with minimal historical conflict exposure."
+      ],
+      "reference": "Benjet, C., et al. (2016). The epidemiology of traumatic event exposure worldwide. Psychological Medicine, 46(2), 327–343. https://pmc.ncbi.nlm.nih.gov/articles/PMC4869975/"
     },
     "dashboard_note": null
   },
@@ -1410,6 +2195,16 @@
     },
     "dashboard_note": null
   },
+  "534": {
+    "name": "Sint Maarten (Dutch part)",
+    "overview": {
+      "paragraphs": [
+        "Sint Maarten's historical trauma is rooted in Dutch colonial-era slavery, with contemporary vulnerability shaped by catastrophic hurricane exposure, particularly Hurricane Irma in 2017, which devastated the island's infrastructure and tourism-dependent economy."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
+    },
+    "dashboard_note": null
+  },
   "703": {
     "name": "Slovakia",
     "overview": {
@@ -1470,6 +2265,16 @@
       ],
       "references": []
     }
+  },
+  "239": {
+    "name": "South Georgia and the South Sandwich Islands",
+    "overview": {
+      "paragraphs": [
+        "South Georgia and the South Sandwich Islands have no permanent civilian population, though the territory served as a staging ground during the 1982 Falklands War, when Argentine forces briefly occupied the islands before British recapture."
+      ],
+      "reference": "Hartley, R. J. (2012). Atrocity and trauma in a post-conflict landscape. University of Nebraska Anthropology Faculty Publications. https://digitalcommons.unl.edu/cgi/viewcontent.cgi?article=1058&context=anthropologyfacpub"
+    },
+    "dashboard_note": null
   },
   "410": {
     "name": "South Korea",
@@ -1540,6 +2345,16 @@
         "Contemporary Suriname continues to navigate accountability for this dictatorship-era violence, with Bouterse's eventual conviction decades later reflecting a delayed but significant transitional justice milestone."
       ],
       "reference": "Sehmi, A. (2024). Legacies of colonial violence in contemporary transitional justice. International Journal of Transitional Justice, 18(1), 32–54. https://academic.oup.com/ijtj/article/18/1/32/7624695"
+    },
+    "dashboard_note": null
+  },
+  "744": {
+    "name": "Svalbard and Jan Mayen",
+    "overview": {
+      "paragraphs": [
+        "Svalbard and Jan Mayen have no significant documented history of internal war, genocide, or mass atrocity, having experienced German occupation of associated weather and mining installations during World War II with minimal civilian population impact."
+      ],
+      "reference": "Rzeszutek, M., Oniszczenko, W., & Firląg-Burkacka, E. (2020). Long-term psychological consequences of World War II. Frontiers in Psychology, 11, 210. https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2020.00210/full"
     },
     "dashboard_note": null
   },
@@ -1646,6 +2461,16 @@
     },
     "dashboard_note": null
   },
+  "772": {
+    "name": "Tokelau",
+    "overview": {
+      "paragraphs": [
+        "Tokelau has no significant documented history of internal war, genocide, or mass atrocity, with contemporary vulnerability shaped primarily by extreme climate change threats to its low-lying atolls."
+      ],
+      "reference": "Benjet, C., et al. (2016). The epidemiology of traumatic event exposure worldwide. Psychological Medicine, 46(2), 327–343. https://pmc.ncbi.nlm.nih.gov/articles/PMC4869975/"
+    },
+    "dashboard_note": null
+  },
   "776": {
     "name": "Tonga",
     "overview": {
@@ -1703,6 +2528,16 @@
         "This sustained, low-visibility authoritarian repression reflects a moderate but chronically under-documented trauma burden given the country's severe restrictions on independent journalism and research access."
       ],
       "reference": "Musisi, S., & Kinyanda, E. (2020). Long-term impact of war, civil war, and persecution in chronic conflict settings. PMC. https://pmc.ncbi.nlm.nih.gov/articles/PMC7051938/"
+    },
+    "dashboard_note": null
+  },
+  "796": {
+    "name": "Turks and Caicos Islands",
+    "overview": {
+      "paragraphs": [
+        "The Turks and Caicos Islands' historical trauma is rooted in British colonial plantation slavery and salt-industry forced labor, with contemporary vulnerability shaped by recurring hurricane exposure."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
     },
     "dashboard_note": null
   },
@@ -1776,6 +2611,16 @@
       "references": []
     }
   },
+  "581": {
+    "name": "United States Minor Outlying Islands",
+    "overview": {
+      "paragraphs": [
+        "These scattered, largely uninhabited U.S. territories have no documented history of internal war, genocide, or mass atrocity, though several (including Wake Island) saw brief but intense combat during World War II's Pacific theater."
+      ],
+      "reference": "Benjet, C., et al. (2016). The epidemiology of traumatic event exposure worldwide. Psychological Medicine, 46(2), 327–343. https://pmc.ncbi.nlm.nih.gov/articles/PMC4869975/"
+    },
+    "dashboard_note": null
+  },
   "858": {
     "name": "Uruguay",
     "overview": {
@@ -1837,6 +2682,47 @@
         "This historical chemical warfare trauma represents one of the clearest direct linkages between historical conflict and modern-day harm, with Agent Orange-related health effects continuing to manifest across generations of affected Vietnamese families more than five decades after the war's end."
       ],
       "reference": "Micale, M. S., & Straumann, L. (Eds.). (2015). History, trauma, and Asia: Recovering, remembering, and reconstructing. Berghahn Books. https://www.berghahnbooks.com/downloads/intros/MicaleTraumatic_intro.pdf"
+    },
+    "dashboard_note": null
+  },
+  "092": {
+    "name": "Virgin Islands, British",
+    "overview": {
+      "paragraphs": [
+        "The British Virgin Islands' historical trauma is rooted in colonial-era plantation slavery, with contemporary vulnerability shaped by severe and recurring hurricane exposure, including catastrophic damage from Hurricane Irma in 2017."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
+    },
+    "dashboard_note": null
+  },
+  "850": {
+    "name": "Virgin Islands, U.S.",
+    "overview": {
+      "paragraphs": [
+        "The U.S. Virgin Islands' historical trauma is rooted in Danish and later U.S. colonial plantation slavery, including the historically significant 1848 emancipation uprising, with contemporary vulnerability shaped by recurring hurricane exposure."
+      ],
+      "reference": "Sotero, M. (2006). A conceptual model of historical trauma. Journal of Health Disparities Research and Practice, 1(1), 93–108. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1350062"
+    },
+    "dashboard_note": null
+  },
+  "876": {
+    "name": "Wallis and Futuna",
+    "overview": {
+      "paragraphs": [
+        "Wallis and Futuna has no significant documented history of internal war, genocide, or mass atrocity, reflecting its status as a small French overseas collectivity with limited recorded conflict history."
+      ],
+      "reference": "Benjet, C., et al. (2016). The epidemiology of traumatic event exposure worldwide. Psychological Medicine, 46(2), 327–343. https://pmc.ncbi.nlm.nih.gov/articles/PMC4869975/"
+    },
+    "dashboard_note": null
+  },
+  "732": {
+    "name": "Western Sahara",
+    "overview": {
+      "paragraphs": [
+        "Western Sahara's collective trauma centers on the 1975 invasion by Morocco and Mauritania following Spanish colonial withdrawal, which displaced over half the Sahrawi population and triggered a 16-year war (1975–1991) between Morocco and the Polisario Front that remains formally unresolved (Sahrawi Refugees and Western Sahara, 2025; Western Sahara conflict, n.d.).",
+        "Nearly 170,000 Sahrawi refugees continue to live in Algerian-administered camps five decades later, with documented enforced disappearances of over 500 Sahrawis still unaccounted for, and researchers describing an entire generation that has \"never known life outside the camps,\" representing one of the world's most protracted and neglected displacement traumas (Harvard Human Rights Program, 2025; ICRC Casebook, n.d.)."
+      ],
+      "reference": "Harvard Law School Human Rights Program. (2025). Fifty years in exile: Human rights and the forgotten crisis in Western Sahara. https://hrp.law.harvard.edu/fifty-years-in-exile-human-rights-and-the-forgotten-crisis-in-western-sahara/"
     },
     "dashboard_note": null
   },

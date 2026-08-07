@@ -256,13 +256,21 @@ export default function SidePanel({ country, record, onClose }) {
         </div>
       </div>
 
-      <Link className="panel-observatory-link" to="/observatory">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <circle cx="12" cy="12" r="3" />
-          <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" />
-        </svg>
-        <span>Check out our observatory for more information</span>
-      </Link>
+      <div className="panel-links">
+        <Link className="panel-observatory-link" to="/observatory">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" />
+          </svg>
+          <span>Check out our observatory for more information</span>
+        </Link>
+        <Link className="panel-observatory-link" to={`/country-profiles?code=${encodeURIComponent(iso)}`}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+          <span>View {name}'s full country profile</span>
+        </Link>
+      </div>
     </aside>
   );
 }

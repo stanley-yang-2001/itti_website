@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Reveal from '../components/Reveal.jsx';
 import CountryFlag from '../components/CountryFlag.jsx';
 import UnavailableMessage from '../components/UnavailableMessage.jsx';
@@ -30,6 +30,7 @@ const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
  */
 export default function CountryProfiles() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [countries, setCountries] = useState(null); // null = loading
   const [loadError, setLoadError] = useState(null);
   const [expandedCode, setExpandedCode] = useState(null);
@@ -73,6 +74,25 @@ export default function CountryProfiles() {
       cancelled = true;
     };
   }, [navigate]);
+
+  // Deep-link support: the globe's side panel links here with ?code=XX for
+  // the country just clicked. Once countries are loaded, auto-expand that
+  // country's row and scroll it into view - same idea as jumpToLetter, just
+  // targeting a specific row instead of a whole letter section.
+  useEffect(() => {
+    if (!countries) return;
+    const code = searchParams.get("code");
+    if (!code) return;
+    const match = countries.find((c) => c.code.toLowerCase() === code.toLowerCase());
+    if (!match) return;
+    setExpandedCode(match.code);
+    // Wait a tick for the row (and its now-expanded dropdown) to render
+    // before scrolling, so the scroll lands on the right final position.
+    requestAnimationFrame(() => {
+      document.getElementById(`country-profile-${match.code}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [countries]);
 
   const groups = useMemo(() => {
     if (!countries) return [];
@@ -142,7 +162,7 @@ export default function CountryProfiles() {
                 <h2 className="country-letter-section-heading mono">{group.letter}</h2>
                 <ul className="country-profiles-list">
                   {group.countries.map((c) => (
-                    <li key={c.code} className="country-profile-item">
+                    <li key={c.code} id={`country-profile-${c.code}`} className="country-profile-item">
                       <button
                         type="button"
                         className="country-profile-row"

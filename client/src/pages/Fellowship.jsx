@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FELLOW_LEVELS, WHO_SHOULD_APPLY, EXECUTIVE_VALUE, FELLOWS_GAIN } from '../data/fellowship.js';
+import { FELLOW_LEVELS, WHO_SHOULD_APPLY, EXECUTIVE_VALUE, FELLOWS_GAIN, LEADERSHIP } from '../data/fellowship.js';
 import Reveal from '../components/Reveal.jsx';
 import '../styles/Fellowship.css';
 
@@ -31,6 +31,62 @@ function FellowCard({ fellow }) {
         <span className={`fellow-card-level level-${level.code.toLowerCase()}`}>{level.code}™ — {level.name}</span>
       )}
       <p className="fellow-card-bio">{fellow.bio}</p>
+    </article>
+  );
+}
+
+// ---------- Leadership (Chancellor, Directors, Board) ----------
+// Unlike Fellows (database-backed, admin-managed via Control panel),
+// leadership stays static data from fellowship.js - these roles sit
+// outside the AFITTI/FITTI/SFITTI/DFITTI fellow levels the Fellows
+// table/admin UI is built around, so there's no natural home for them
+// there.
+function BioBlock({ block, i }) {
+  switch (block.type) {
+    case 'h4':
+      return <h4 key={i} className="leader-bio-heading">{block.text}</h4>;
+    case 'quote':
+      return <blockquote key={i} className="leader-bio-quote">{block.text}</blockquote>;
+    case 'book':
+      return (
+        <div key={i} className="leader-bio-book">
+          <p className="leader-bio-book-title">{block.title}</p>
+          <p className="leader-bio-book-text">{block.text}</p>
+        </div>
+      );
+    case 'p':
+    default:
+      return <p key={i} className="leader-bio-p">{block.text}</p>;
+  }
+}
+
+function LeaderCard({ leader }) {
+  const [expanded, setExpanded] = useState(false);
+  const preview = leader.bio.filter((b) => b.type === 'p').slice(0, 2);
+
+  return (
+    <article className="leader-card">
+      <div className="leader-card-photo">
+        {leader.photo ? (
+          <img src={leader.photo} alt={leader.name} loading="lazy" />
+        ) : (
+          <span className="fellow-card-initials">{initials(leader.name)}</span>
+        )}
+      </div>
+      <div className="leader-card-body">
+        <h3 className="leader-card-name">{leader.name}</h3>
+        <p className="leader-card-title">{leader.title}</p>
+        <div className="leader-bio">
+          {(expanded ? leader.bio : preview).map((block, i) => (
+            <BioBlock key={i} block={block} i={i} />
+          ))}
+        </div>
+        {leader.bio.length > preview.length && (
+          <button className="leader-bio-toggle" onClick={() => setExpanded((v) => !v)}>
+            {expanded ? 'Show less' : 'Read full bio'}
+          </button>
+        )}
+      </div>
     </article>
   );
 }
@@ -144,7 +200,20 @@ export default function Fellowship() {
       </section>
       </Reveal>
 
-      {/* ---------- Section 2: Our Fellows ---------- */}
+      {/* ---------- Section 2: Leadership ---------- */}
+      <Reveal delay={135}>
+      <section id="leadership" className="fellows-section">
+        <p className="fellows-section-eyebrow mono">Institute Leadership</p>
+        <h2 className="fellows-section-title display">Leadership</h2>
+        <div className="leadership-grid">
+          {LEADERSHIP.map((leader) => (
+            <LeaderCard key={leader.id} leader={leader} />
+          ))}
+        </div>
+      </section>
+      </Reveal>
+
+      {/* ---------- Section 3: Our Fellows ---------- */}
       <Reveal delay={180}>
       <section id="our-fellows" className="fellows-section">
         <p className="fellows-section-eyebrow mono">The Roster</p>
