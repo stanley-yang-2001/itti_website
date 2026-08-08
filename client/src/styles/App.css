@@ -1306,6 +1306,9 @@
     border-radius:10px;
     box-shadow:0 12px 40px rgba(0,0,0,0.3);
   }
+  .app-modal--wide{
+    max-width:720px;
+  }
   .app-modal-header{
     display:flex;
     align-items:flex-start;

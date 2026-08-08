@@ -1,5 +1,6 @@
 import React from 'react';
 import Reveal from '../components/Reveal.jsx';
+import SEO from '../components/SEO.jsx';
 import useHashScroll from '../hooks/useHashScroll.js';
 import '../styles/Contact.css';
 
@@ -40,6 +41,11 @@ export default function Contact() {
   useHashScroll();
   return (
     <div className="contact-page">
+      <SEO
+        path="/contact"
+        title="Contact"
+        description="Get in touch with the International Truth & Trauma Institute — questions about our research, certifications, fellowship program, or partnerships."
+      />
       <Reveal delay={0}>
         <div className="contact-intro">
           <p className="contact-eyebrow mono">CONTACT</p>

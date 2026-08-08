@@ -1,44 +1,102 @@
-Add 10-section navigation, author/date panel, and inline PDF/DOCX
-reader to Reports
+SEO/pre-rendering, Privacy Policy shared-component refactor, admin CLI
+user-management script
 
-Backend:
-- models/report.py: new Report.category column (REPORT_CATEGORIES
-  constant, one of the 10 fixed sections), included in to_public_dict().
-- validation.py / app.py: category is now required and validated on
-  POST /api/reports, same pattern as title/description.
-- migrations: 6ff385893016_add_category_to_reports.py was already
-  correct and untouched. Added 8ec7a9f38009_add_index_on_reports_category.py
-  to close a pre-existing gap - the model declared index=True on
-  category but no migration ever created it, so a database that only
-  ever ran through `alembic upgrade head` was missing the index.
-- globe_data.py / country_profiles_upload.py: added restore_upload()
-  and list_uploads()/restore_docx() respectively - the admin Control
-  panel's restore routes in app.py already called these, but the
-  functions didn't exist yet on this branch (would have thrown
-  AttributeError). Also cleaned up stale docstring references to
-  country_profiles.extract.py, the dotted filename this branch had
-  already renamed to country_profiles_extract.py in a separate fix.
+This picks up two things that had stalled: the SEO/pre-rendering work
+(all of it had to be redone in this pass - none of it was ever pushed,
+so it wasn't actually present on this branch to build on), and a
+teammate's in-progress branch (uploaded as a zip) who has since stopped
+work on it - evaluated file by file rather than merged wholesale, since
+much of it turned out to be stale (built off an older snapshot, before
+the Access Level admin panel, the session-cache security fix, the
+navbar scroll-hysteresis fix, and the footer's Facebook link had
+already shipped in better form on this branch).
 
-Frontend:
-- ReportCard.jsx: now shows the author's name and both dates -
-  Updated is the visually prominent one, Published is secondary.
-- ReportViewerModal.jsx (new): inline PDF (<iframe>) / DOCX (mammoth,
-  lazy-loaded) reader instead of forcing a download.
-- ReportUploadForm.jsx: added the Section <select>.
-- constants/reportCategories.js (new): single source of truth for the
-  10 category labels, mirroring REPORT_CATEGORIES in models/report.py.
-- Reports.jsx / Reports.css: merged the section-nav/pager/reader-modal
-  feature with this branch's own ?highlight=<id> deep-link scroll
-  feature - a highlighted report can be in any section, so
-  activeCategory now jumps to wherever it actually lives before the
-  scroll-into-view runs.
-- package.json/package-lock.json: added mammoth.
+Adopted from the teammate's branch:
+- New client/src/components/PrivacyPolicyContent.jsx and
+  PrivacyPolicyModal.jsx - the shared-component refactor that resolves
+  a conflict flagged earlier: PrivacyPolicy.jsx is now a thin wrapper
+  around shared content, reusable in a modal.
+- PrivacyPolicy.jsx rewritten to use them (replaces the earlier
+  standalone sidebar-nav implementation - a deliberate tradeoff,
+  reuse over that page's own navigation chrome).
+- SignUp.jsx: real consent checkbox ("I have read and agree to the
+  Privacy Policy") gating account creation, viewable via
+  PrivacyPolicyModal without leaving the sign-up flow. Previously this
+  was just a link to the /privacy page with no actual gating.
+- Modal.jsx: added a `wide` prop (720px vs 520px max-width) that
+  PrivacyPolicyModal needs, plus the matching app-modal--wide CSS.
+- New server/manage_users.py, an interactive CLI for listing accounts
+  and changing roles - already referenced in promote_user.py's
+  docstring as if it existed, but never actually added. Fixed a real
+  bug before adding it: it was written against an older get_all_users()
+  signature that returned a plain list; the current one is paginated
+  and returns (users, total). As shipped it would have crashed - now
+  requests the max page size explicitly and warns if even that isn't
+  enough, rather than silently truncating the list.
 
-Rebased onto database @ ecb9c9f (Scope cascading reveal to the home
-page only; add globe hover tooltip). Verified: single alembic head
-with no schema drift beyond pre-existing SQLite reflection noise; full
-py_compile pass; a 10-point end-to-end smoke test covering category
-validation/creation together with the Fellows/Control-panel/restore-
-history/update-profile features already on this branch, all in one
-process; npm install + vite build clean; no conflict markers anywhere
-in the tree.
+Explicitly NOT adopted from the teammate's branch, with reasons:
+- ManageUsersPanel.jsx - functionally identical to the already-shipped
+  AccessLevelPanel.jsx (same role-management feature); adding it would
+  create a confusing duplicate admin UI. It also isn't wired into
+  Settings.jsx anywhere in their own zip - dead code even at the
+  source.
+- NavBar.jsx, api.js, AuthContext.jsx, Footer.jsx - all older than
+  what's already on this branch (the AuthContext.jsx one specifically
+  predates the session-cache security fix - reverting it would
+  reintroduce that bug).
+- A certifications.js text edit - changed "Election Trauma Temperature
+  Index" to "Election Trauma and Tension Index", breaking the naming
+  consistency used everywhere else (globe data, docs, observatory
+  references).
+- Migrations - all already present on this branch, byte-identical.
+
+SEO/pre-rendering (redone in full this pass):
+- New client/src/components/SEO.jsx - reusable title/description/
+  canonical/Open Graph/Twitter Card component on react-helmet-async.
+  SITE_URL confirmed as ittiglobal.org.
+- All 22 routed pages get their <SEO> tag: 11 public content pages
+  with unique, content-specific tags (Home, About, Observatory,
+  Reports, Country Profiles, Fellowship, Certifications, Contact,
+  Docs, Donate, Privacy Policy); 11 account/utility pages with
+  noindex, nofollow (Login, SignUp, ForgotPassword, ResetPassword,
+  Unavailable, Publish, Settings, Profile, PublishGlobeData,
+  DonateThankYou, CertificationEnrollThankYou). PublishGlobeData,
+  ResetPassword, and Settings each have two early-return branches -
+  both get the tag, not just one.
+- Reports.jsx: promoted its main heading from <h2> to <h1> - the only
+  page with zero <h1> tags. Confirmed no other <h1> exists on the page
+  first, both times this got redone.
+- New public/robots.txt and public/sitemap.xml.
+- EducationalOrganization JSON-LD structured data in index.html, which
+  otherwise keeps only the singleton-safe <title>/theme-color/icons -
+  description/OG/Twitter tags live exclusively in <SEO>, since
+  react-helmet-async appends rather than replaces tags it didn't
+  create; a static description here too would produce two
+  <meta name="description"> tags per page, and Google uses the first
+  duplicate it finds - silently defeating every per-page description.
+- New client/scripts/prerender.mjs, wired in as package.json's
+  "postbuild" script. For each of the 11 static indexable routes,
+  serves the built dist/ locally, loads the route in a real headless
+  browser so React/Helmet render exactly as for a live visitor, and
+  saves the fully-rendered HTML to dist/<route>/index.html - the part
+  that actually helps non-JS crawlers/unfurl bots, since <SEO> tags
+  alone only apply once React has mounted.
+- package.json: added react-helmet-async and playwright.
+- main.jsx: wrapped the app in HelmetProvider.
+
+Also fixed, found while testing the full build for this pass (both
+pre-existing, unrelated to any of the above):
+- package.json was missing a `mammoth` dependency that
+  ReportViewerModal.jsx (from the recent Reports redesign/PDF-DOCX
+  viewer) actually imports - `vite build` failed outright without it.
+
+Verified end to end: `npm install && npm run build` (full pipeline,
+including postbuild) produces all 11 correct dist/<route>/index.html
+files - spot-checked several for exactly one <meta name="description">
+tag, correct unique <title>, and real page-specific content (including
+the new PrivacyPolicyContent-based /privacy page, and Reports' <h1>).
+
+Still open, not addressed in this pass: the DigitalOcean Spaces/CDN
+routing question from a previous round (whether the custom domain
+correctly serves nested dist/<route>/index.html files, or falls back
+to the generic SPA shell for everything) - still needs an answer.

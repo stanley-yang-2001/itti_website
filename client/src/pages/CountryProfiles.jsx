@@ -4,6 +4,7 @@ import Reveal from '../components/Reveal.jsx';
 import CountryFlag from '../components/CountryFlag.jsx';
 import UnavailableMessage from '../components/UnavailableMessage.jsx';
 import useHashScroll from '../hooks/useHashScroll.js';
+import SEO from '../components/SEO.jsx';
 import { isBadRequest } from "../utils/apiError";
 import "../styles/CountryProfiles.css";
 
@@ -121,6 +122,11 @@ export default function CountryProfiles() {
 
   return (
     <div className="country-profiles-page">
+      <SEO
+        path="/country-profiles"
+        title="Country Profiles"
+        description="Browse GTBI and ETTI country profiles tracked by the International Truth & Trauma Institute — trauma burden and election trauma indicators for every country we cover."
+      />
       <Reveal delay={0}>
         <div className="country-profiles-intro">
           <h1 className="country-profiles-heading display">Collective Trauma Profile By Country</h1>

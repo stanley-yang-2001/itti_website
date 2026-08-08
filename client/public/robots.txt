@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Disallow: /login
+Disallow: /signup
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /profile
+Disallow: /settings
+Disallow: /publish
+Disallow: /unavailable
+Disallow: /donate/thank-you
+Disallow: /certifications/enroll/thank-you
+
+Sitemap: https://ittiglobal.org/sitemap.xml

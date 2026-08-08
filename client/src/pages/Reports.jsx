@@ -7,6 +7,7 @@ import ReportUploadForm from './ReportUploadForm.jsx';
 import { fetchFavoriteReportIds, favoriteReport, unfavoriteReport } from '../api.js';
 import { REPORT_CATEGORIES } from '../constants/reportCategories.js';
 import Reveal from '../components/Reveal.jsx';
+import SEO from '../components/SEO.jsx';
 import { isBadRequest } from '../utils/apiError';
 import '../styles/Reports.css';
 
@@ -149,11 +150,16 @@ export default function Reports() {
 
   return (
     <div className="reports-page">
+      <SEO
+        path="/reports"
+        title="Reports"
+        description="Published research reports and field bulletins from the International Truth & Trauma Institute, covering collective trauma documentation and trauma-informed governance."
+      />
       <div className="reports-content">
         <Reveal delay={0}>
           <div className="reports-header">
             <div>
-              <h2 className="display">Reports</h2>
+              <h1 className="display">Reports</h1>
               <p>Published research reports and field bulletins.</p>
             </div>
             {canUpload && !showUploadForm && (

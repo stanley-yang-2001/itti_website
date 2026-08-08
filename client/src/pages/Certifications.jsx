@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { CATEGORIES, CERTIFICATIONS, COMPARISON_ROWS } from '../data/certifications.js';
 import Reveal from '../components/Reveal.jsx';
+import SEO from '../components/SEO.jsx';
 import CertificationEnrollModal from './CertificationEnroll.jsx';
 import useHashScroll from '../hooks/useHashScroll.js';
 import '../styles/Certifications.css';
@@ -70,6 +71,11 @@ export default function Certifications() {
 
   return (
     <div className="certs-page">
+      <SEO
+        path="/certifications"
+        title="Certifications"
+        description="Earn a globally focused ITTI professional certification in trauma-informed care, systems, and governance — four-week programs combining instruction, applied tools, and a real-world final project."
+      />
       <Reveal delay={0}>
         <section className="certs-hero" id="overview">
           <p className="certs-hero-eyebrow mono">ITTI Professional Certifications</p>

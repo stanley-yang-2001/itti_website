@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import "../styles/Observatory.css";
+import SEO from "../components/SEO.jsx";
 import { fetchAllCountries, fetchSavedObservatoryChart } from "../api.js";
 import { getCountriesWithData } from "../utils/ObservatoryData";
 import DataExplorerPanel from "../components/observatory/DataExplorerPanel.jsx";
@@ -162,6 +163,11 @@ export default function Observatory() {
 
   return (
     <div className="obs-page">
+      <SEO
+        path="/observatory"
+        title="Observatory"
+        description="Explore GTBI and ETTI dashboards and build your own charts with ITTI's data query tool, tracking collective trauma indicators across countries."
+      />
       <div className="obs-header">
         <h1 className="display">Observatory</h1>
         <p className="obs-subheading">GTBI and ETTI dashboards, and a data query tool for building your own charts.</p>

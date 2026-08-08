@@ -6,6 +6,7 @@ import ReportUploadForm from './ReportUploadForm.jsx';
 import Reveal from '../components/Reveal.jsx';
 import SettingsPanel from '../components/SettingsPanel.jsx';
 import ControlPanel from '../components/ControlPanel.jsx';
+import SEO from '../components/SEO.jsx';
 import {
   fetchSavedObservatoryCharts, deleteSavedObservatoryChart,
   fetchFavoriteReports, unfavoriteReport,
@@ -183,6 +184,7 @@ export default function Profile() {
 
   return (
     <div className="profile-page">
+      <SEO path="/profile" title="Profile" noindex />
       <div className="profile-layout">
         {/* ---------- Vertical nav ---------- */}
         <nav className="profile-sidebar" aria-label="Profile sections">

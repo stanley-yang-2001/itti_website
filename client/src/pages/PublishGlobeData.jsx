@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import Reveal from '../components/Reveal.jsx';
+import SEO from '../components/SEO.jsx';
 import '../styles/PublishGlobeData.css';
 
 const KIND_OPTIONS = [
@@ -29,6 +30,11 @@ export default function PublishGlobeData() {
   if (!isAuthenticated || !isPublisher) {
     return (
       <div className="globe-upload-page">
+      <SEO
+        path="/publish/globe-data"
+        title="Update Globe Data"
+        noindex
+      />
         <div className="globe-upload-denied">
           <h1>You don't have access to this page</h1>
           <p>
@@ -90,6 +96,11 @@ export default function PublishGlobeData() {
 
   return (
     <div className="globe-upload-page">
+      <SEO
+        path="/publish/globe-data"
+        title="Update Globe Data"
+        noindex
+      />
       <h2 className="display">Update Globe Data</h2>
       <p>Upload a GTBI or ETTI workbook to update the figures shown on the globe.</p>
 

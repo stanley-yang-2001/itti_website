@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import Reveal from '../components/Reveal.jsx';
+import SEO from '../components/SEO.jsx';
 import "../styles/Login.css";
 
 /**
@@ -33,6 +34,12 @@ export default function ForgotPassword() {
 
   return (
     <div className="login-page">
+      <SEO
+        path="/forgot-password"
+        title="Forgot Password"
+        description="Reset your International Truth & Trauma Institute account password."
+        noindex
+      />
       <Reveal delay={0}>
       <div className="login-card">
         <h1>Reset your password</h1>

@@ -9,6 +9,7 @@ import {
   NTO_MAP_AUTHOR, NTO_MAP_PUBLISHED_DATE, NTO_MAP_CAPTION, NTO_MAP_REFERENCES, NTO_MAP_FORMATTING_NOTES,
   USER_GUIDE_INTRO, USER_GUIDE_STEPS,
 } from '../data/observatoryReferences.js';
+import SEO from '../components/SEO.jsx';
 import '../styles/About.css';
 import '../styles/Docs.css';
 
@@ -88,6 +89,11 @@ export default function Docs() {
 
   return (
     <div className="about-page">
+      <SEO
+        path="/docs"
+        title="Documentation & References"
+        description="Data sources, methodology, and how to interpret the ITTI Observatory's ETTI and GTBI figures."
+      />
       <Reveal delay={0}>
       <section className="about-hero">
         <p className="about-hero-eyebrow mono">ITTI Observatory</p>

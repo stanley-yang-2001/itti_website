@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FELLOW_LEVELS, WHO_SHOULD_APPLY, EXECUTIVE_VALUE, FELLOWS_GAIN, LEADERSHIP } from '../data/fellowship.js';
 import Reveal from '../components/Reveal.jsx';
 import useHashScroll from '../hooks/useHashScroll.js';
+import SEO from '../components/SEO.jsx';
 import '../styles/Fellowship.css';
 
 const LEVEL_LOOKUP = Object.fromEntries(FELLOW_LEVELS.map((l) => [l.code, l]));
@@ -132,6 +133,11 @@ export default function Fellowship() {
 
   return (
     <div className="fellows-page">
+      <SEO
+        path="/fellows"
+        title="Fellowship"
+        description="The FITTI™ Fellowship builds a global leadership corps for trauma-informed nations — an invitation-only program developing expertise in collective trauma, institutional healing, and national recovery."
+      />
       <Reveal delay={0}>
       <section className="fellows-hero">
         <p className="fellows-hero-eyebrow mono">FITTI™ Fellowship Program</p>

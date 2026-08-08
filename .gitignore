@@ -27,3 +27,6 @@ commit_msg.txt
 
 # doc
 client/public/country-profiles/
+
+# test report
+server/report_uploads/

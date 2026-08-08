@@ -5,6 +5,7 @@ import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-
 import { useAuth } from '../context/AuthContext.jsx';
 import { checkEmail, checkName, checkDonationAmount } from '../utils/formValidation.js';
 import Reveal from '../components/Reveal.jsx';
+import SEO from '../components/SEO.jsx';
 import '../styles/Donate.css';
 
 const FALLBACK_PRESETS_CENTS = [2500, 5000, 10000, 25000]; // used only if /api/donations/config can't be reached
@@ -183,6 +184,11 @@ export default function Donate() {
 
   return (
     <div className="donate-page">
+      <SEO
+        path="/donate"
+        title="Donate"
+        description="Support the International Truth & Trauma Institute's work documenting and responding to election- and conflict-related trauma around the world. Donations are processed securely through Stripe."
+      />
       <Reveal delay={0}>
         <div className="donate-hero">
           <p className="donate-hero-eyebrow mono">Support ITTI</p>

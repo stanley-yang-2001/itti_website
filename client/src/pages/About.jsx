@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Reveal from '../components/Reveal.jsx';
+import SEO from '../components/SEO.jsx';
 import '../styles/About.css';
 
 const OFH_URL = 'https://ofhusa.org';
@@ -275,6 +276,11 @@ export default function About() {
 
   return (
     <div className="about-page">
+      <SEO
+        path="/about"
+        title="About"
+        description="Learn about the International Truth & Trauma Institute's mission, governance, analytic frameworks, and why documenting collective trauma matters for lasting peace and institutional reform."
+      />
       <Reveal delay={0}>
         <section className="about-hero">
           <img src="/itti-logo.png" alt="ITTI seal" className="about-hero-seal" />

@@ -6,6 +6,7 @@ import Reveal from '../components/Reveal.jsx';
 import SearchBar from '../components/SearchBar.jsx';
 import SidePanel from '../components/SidePanel.jsx';
 import useHashScroll from '../hooks/useHashScroll.js';
+import SEO from '../components/SEO.jsx';
 import { fetchWorldData, fetchCountry, fetchAllCountries } from '../api.js';
 import { computeCountryDataStatus, computeCountryQuickStats } from '../utils/countryDataStatus.js';
 
@@ -86,6 +87,11 @@ export default function Home() {
 
   return (
     <>
+      <SEO
+        path="/"
+        title="Global Trauma Research & Trauma-Informed Governance"
+        description="The International Truth & Trauma Institute documents collective trauma, builds country-level Trauma Observatories and standardized indices like GTBI and ETTI, and turns those insights into trauma-informed governance and policy reform."
+      />
       <main>
         {/* Part 1: welcome */}
         <Reveal delay={0}>

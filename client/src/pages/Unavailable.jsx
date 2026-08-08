@@ -1,5 +1,6 @@
 import { Link, useSearchParams } from "react-router-dom";
 import UnavailableMessage from "../components/UnavailableMessage.jsx";
+import SEO from '../components/SEO.jsx';
 import "../styles/Unavailable.css";
 
 /**
@@ -23,6 +24,11 @@ export default function Unavailable() {
 
   return (
     <div className="unavailable-page">
+      <SEO
+        path="/unavailable"
+        title="Unavailable"
+        noindex
+      />
       <UnavailableMessage />
       <Link to={backTo} className="unavailable-back-link">
         {backLabel}
