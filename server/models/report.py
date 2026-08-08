@@ -39,6 +39,26 @@ REVIEW_STATUS_PUBLISHED = "published"
 
 REQUIRED_APPROVALS = 3
 
+# The 10 fixed sections the public Reports page is organized into. Order
+# here is the display/navigation order (not alphabetical) - it's also
+# the order the Reports page falls back to when a section has no
+# reports yet, so reviewers/uploaders see them in a stable sequence.
+# Stored on Report.category as plain text (not a DB enum) so adding an
+# 11th section later is a constant change here, not a migration.
+REPORT_CATEGORIES = [
+    "National Trauma Assessment",
+    "Truth & Reconciliation Proposal",
+    "Conflict Mapping Report",
+    "Policy White Paper",
+    "Trauma Observatory Dashboard",
+    "Institutional Reform Blueprint",
+    "Research Publication",
+    "Documentary/Media Project",
+    "School Mental Health Model",
+    "Refugee Intervention Framework",
+]
+DEFAULT_REPORT_CATEGORY = REPORT_CATEGORIES[0]
+
 
 class Report(Base):
     __tablename__ = "reports"
@@ -69,6 +89,13 @@ class Report(Base):
     # Bumped on every resubmission. Reviews are scoped to the version
     # they were cast against - see report_review.py's approval count.
     version = Column(Integer, nullable=False, default=1)
+
+    # One of REPORT_CATEGORIES - which of the 10 fixed sections this
+    # report belongs to on the public Reports page. Not a resubmission
+    # field: unlike title/description, the category isn't something a
+    # reviewer sends back for revision, so resubmit_report() doesn't
+    # touch it.
+    category = Column(String, nullable=False, default=DEFAULT_REPORT_CATEGORY, index=True)
 
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
@@ -105,6 +132,7 @@ class Report(Base):
             "author": get_author_name(self.uploaded_by),
             "review_status": self.review_status,
             "version": self.version,
+            "category": self.category,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }
@@ -131,13 +159,14 @@ def get_author_name(user_id):
 # ---------- CRUD ----------
 
 def create_report(uploaded_by, title, description, file_path, file_type,
-                   original_filename, file_size_bytes=None,
+                   original_filename, category=DEFAULT_REPORT_CATEGORY, file_size_bytes=None,
                    image_path=None, image_mime_type=None):
     """
     Create and persist a brand-new report (version=1, status=visible,
     review_status=pending_review) - it lands on the Peer Review page,
-    not the public Reports page, until it clears review. Returns the
-    created Report.
+    not the public Reports page, until it clears review. `category`
+    must be one of REPORT_CATEGORIES - callers (app.py) validate this
+    before calling in, so it's trusted here. Returns the created Report.
     """
     session = Session()
     try:
@@ -154,6 +183,7 @@ def create_report(uploaded_by, title, description, file_path, file_type,
             status=STATUS_VISIBLE,
             review_status=REVIEW_STATUS_PENDING,
             version=1,
+            category=category,
         )
         session.add(report)
         session.commit()

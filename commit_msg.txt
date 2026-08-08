@@ -1,42 +1,44 @@
-Scope cascading reveal to the home page only; add globe hover tooltip
+Add 10-section navigation, author/date panel, and inline PDF/DOCX
+reader to Reports
 
-client/src/components/Reveal.jsx
-    Route-aware via useLocation(): off the home page ("/"), renders its
-    child immediately, fully visible, with no IntersectionObserver and
-    no transition. On home, behaves exactly as before (fade/slide in on
-    scroll, staggered via the `delay` prop). Scoped centrally here
-    rather than touching every one of the ~24 pages that use <Reveal>.
+Backend:
+- models/report.py: new Report.category column (REPORT_CATEGORIES
+  constant, one of the 10 fixed sections), included in to_public_dict().
+- validation.py / app.py: category is now required and validated on
+  POST /api/reports, same pattern as title/description.
+- migrations: 6ff385893016_add_category_to_reports.py was already
+  correct and untouched. Added 8ec7a9f38009_add_index_on_reports_category.py
+  to close a pre-existing gap - the model declared index=True on
+  category but no migration ever created it, so a database that only
+  ever ran through `alembic upgrade head` was missing the index.
+- globe_data.py / country_profiles_upload.py: added restore_upload()
+  and list_uploads()/restore_docx() respectively - the admin Control
+  panel's restore routes in app.py already called these, but the
+  functions didn't exist yet on this branch (would have thrown
+  AttributeError). Also cleaned up stale docstring references to
+  country_profiles.extract.py, the dotted filename this branch had
+  already renamed to country_profiles_extract.py in a separate fix.
 
-client/src/components/Globe.jsx
-    Wires up the countryQuickStats prop Home.jsx was already computing
-    and passing down "for the hover tooltip" but that Globe never
-    actually consumed. Hovering a country now shows its name, most
-    recent ETTI score (year), and most recent GTBI score (year) - or
-    "Data pending" per index when that country has no real (non-
-    placeholder) data for it, matching the existing Data Pending
-    convention used elsewhere.
+Frontend:
+- ReportCard.jsx: now shows the author's name and both dates -
+  Updated is the visually prominent one, Published is secondary.
+- ReportViewerModal.jsx (new): inline PDF (<iframe>) / DOCX (mammoth,
+  lazy-loaded) reader instead of forcing a download.
+- ReportUploadForm.jsx: added the Section <select>.
+- constants/reportCategories.js (new): single source of truth for the
+  10 category labels, mirroring REPORT_CATEGORIES in models/report.py.
+- Reports.jsx / Reports.css: merged the section-nav/pager/reader-modal
+  feature with this branch's own ?highlight=<id> deep-link scroll
+  feature - a highlighted report can be in any section, so
+  activeCategory now jumps to wherever it actually lives before the
+  scroll-into-view runs.
+- package.json/package-lock.json: added mammoth.
 
-    Implemented as a single plain HTML div (not an SVG element),
-    repositioned via d3.pointer() on mouseenter/mousemove/mouseleave,
-    rather than per-country DOM nodes - one shared tooltip is simpler
-    to reason about and avoids the constant creation/teardown of ~200
-    tooltip elements as the globe rotates and re-renders paths.
-    pointer-events:none (see App.css) is the key piece: without it the
-    tooltip box would itself intercept hover once the cursor drifted
-    over it, blocking the transition to whatever country is next
-    underneath the mouse.
-
-client/src/styles/App.css
-    - #globe-container gets position:relative, anchoring the tooltip's
-      position:absolute coordinates to the globe box instead of the
-      page.
-    - New .globe-tooltip* rules: styled to match the globe's own dark
-      ocean/space canvas (not the site's light page theme, since
-      that's the surface it actually floats over), with swatch colors
-      matching the existing ETTI/GTBI legend for visual consistency.
-      Anchor position flips toward whichever side/corner has room so
-      it never runs off the edge of the globe box near the rim.
-
-Verified: full client build clean; confirmed both the tooltip's CSS
-classes and its hover-handler logic (and Reveal's unchanged scroll-
-reveal logic) are present in the compiled bundle.
+Rebased onto database @ ecb9c9f (Scope cascading reveal to the home
+page only; add globe hover tooltip). Verified: single alembic head
+with no schema drift beyond pre-existing SQLite reflection noise; full
+py_compile pass; a 10-point end-to-end smoke test covering category
+validation/creation together with the Fellows/Control-panel/restore-
+history/update-profile features already on this branch, all in one
+process; npm install + vite build clean; no conflict markers anywhere
+in the tree.

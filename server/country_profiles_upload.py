@@ -6,7 +6,7 @@ Backs the admin Control panel's country-profile docx upload flow (POST
 globe_data.py's GTBI/ETTI workbook upload, built to the same
 validate -> archive -> rotate -> regenerate pattern for consistency.
 
-The two source docx files data_scripts/country_profiles.extract.py
+The two source docx files data_scripts/country_profiles_extract.py
 builds server/data/country_profiles.json from (see that script's own
 module docstring for their exact format) each get an upload "kind":
   - "survey":    the full per-country trauma history + APA reference
@@ -17,7 +17,7 @@ module docstring for their exact format) each get an upload "kind":
 
   1. validate_docx(kind, path) - parses the uploaded file with the same
      parse_survey_docx()/parse_dashboard_docx() logic
-     country_profiles.extract.py itself uses; raises DocxValidationError
+     country_profiles_extract.py itself uses; raises DocxValidationError
      with a human-readable reason if it doesn't parse as at least one
      country entry.
   2. archive_docx(kind, path, original_filename) - copies the raw
@@ -28,10 +28,10 @@ module docstring for their exact format) each get an upload "kind":
      data_scripts/country_profiles_source/ moves into that same
      folder's old/ subfolder, timestamped, before the new upload takes
      its place - mirrors globe_data.rotate_source_file(), so a later
-     manual run of country_profiles.extract.py picks up the same files
+     manual run of country_profiles_extract.py picks up the same files
      this endpoint just installed. Only the ONE file matching this
      kind moves; the other source doc is left untouched.
-  4. regenerate_profiles() - re-runs country_profiles.extract.py's own
+  4. regenerate_profiles() - re-runs country_profiles_extract.py's own
      build_profiles() against whatever's now canonical in
      country_profiles_source/ (both files together - the extractor
      always reads both, so a survey-only or dashboard-only upload
@@ -44,7 +44,7 @@ module docstring for their exact format) each get an upload "kind":
 Unlike globe_data.py's apply_workbook_to_country_data(), which merges
 one section into an existing file in place, this always does a full
 rebuild of country_profiles.json - that's what
-country_profiles.extract.py itself does, and the file's whole shape
+country_profiles_extract.py itself does, and the file's whole shape
 (which countries appear at all, whose dashboard_note is attached) can
 change from either source doc, so a partial merge isn't meaningful
 here.
@@ -73,7 +73,7 @@ COUNTRY_PROFILES_PATH = os.path.join(BASE_DIR, "data", "country_profiles.json")
 SOURCE_DIR = country_profiles_extract.DEFAULT_SOURCE_DIR
 
 # kind -> canonical filename in SOURCE_DIR (same constants
-# country_profiles.extract.py's own CLI defaults to).
+# country_profiles_extract.py's own CLI defaults to).
 VALID_KINDS = {
     "survey": country_profiles_extract.DEFAULT_SURVEY_DOCX,
     "dashboard": country_profiles_extract.DEFAULT_DASHBOARD_DOCX,
@@ -94,7 +94,7 @@ def _storage_dir():
 def validate_docx(kind, path):
     """
     Attempts to parse the uploaded docx the same way
-    country_profiles.extract.py itself does. Returns the parsed
+    country_profiles_extract.py itself does. Returns the parsed
     {country_name: {...}} dict on success. Raises DocxValidationError
     with a human-readable reason on failure. Nothing on disk changes
     here - this only reads the temp upload.
@@ -113,7 +113,7 @@ def validate_docx(kind, path):
     if not parsed:
         raise DocxValidationError(
             f"No usable country sections were found in this {kind} document. Each country name "
-            f"needs to be its own fully-bold heading paragraph - see country_profiles.extract.py's "
+            f"needs to be its own fully-bold heading paragraph - see country_profiles_extract.py's "
             f"module docstring for the exact expected format."
         )
 
@@ -152,7 +152,7 @@ def rotate_source_docx(kind, tmp_path, original_filename):
     regenerate_profiles() always needs both present. `original_filename`
     is accepted for symmetry with rotate_source_file() but unused: the
     installed file always takes this kind's fixed canonical name, since
-    country_profiles.extract.py looks for that exact filename rather
+    country_profiles_extract.py looks for that exact filename rather
     than whatever the upload was originally called.
     Returns the new source file's path.
     """
@@ -176,7 +176,7 @@ def rotate_source_docx(kind, tmp_path, original_filename):
 
 def regenerate_profiles():
     """
-    Re-runs country_profiles.extract.py's own build_profiles() against
+    Re-runs country_profiles_extract.py's own build_profiles() against
     whatever's now canonical in country_profiles_source/ (using
     country_data.json for country-name -> ISO numeric code resolution)
     and writes server/data/country_profiles.json. Raises
@@ -211,3 +211,94 @@ def regenerate_profiles():
         "with_dashboard_note_count": sum(1 for v in profiles.values() if v["dashboard_note"]),
         "skipped": skipped,
     }
+
+
+def list_uploads():
+    """
+    Returns every archived docx in data_scripts/country_profiles_storage/,
+    newest first: [{"kind": "survey"|"dashboard", "filename": "...",
+    "original_filename": "...", "uploaded_at": "<ISO 8601, parsed from
+    the archive timestamp prefix>"}, ...]. Used by the admin Control
+    panel's "restore a previous version" dropdown. Filenames are
+    archived as "<UTC timestamp>_<kind>_<original name>" by
+    archive_docx(), so both the timestamp and kind are parsed back out
+    of the name rather than relying on filesystem mtime or a database
+    row.
+    """
+    storage_dir = _storage_dir()
+    uploads = []
+    for filename in os.listdir(storage_dir):
+        full_path = os.path.join(storage_dir, filename)
+        if not os.path.isfile(full_path):
+            continue
+        timestamp_str, _, rest = filename.partition("_")
+        kind, _, original_name = rest.partition("_")
+        if kind not in VALID_KINDS:
+            kind = None  # filename doesn't match the expected prefix - still list it
+        uploaded_at = None
+        try:
+            uploaded_at = datetime.datetime.strptime(timestamp_str, "%Y%m%dT%H%M%SZ").isoformat() + "Z"
+        except ValueError:
+            pass
+        uploads.append({
+            "kind": kind,
+            "filename": filename,
+            "original_filename": original_name or filename,
+            "uploaded_at": uploaded_at,
+        })
+
+    uploads.sort(key=lambda u: u["uploaded_at"] or "", reverse=True)
+    return uploads
+
+
+def restore_docx(kind, filename):
+    """
+    Re-applies an archived docx from
+    data_scripts/country_profiles_storage/ as the new canonical file
+    for `kind`, exactly as if it had just been re-uploaded through
+    POST /api/country-profiles/upload:
+      1. Re-validates it still parses as at least one country entry
+         (archived files are kept forever, but re-checking here catches
+         the unlikely case of a since-corrupted archive file rather
+         than trusting it blindly).
+      2. Archives it AGAIN with a fresh timestamp - so the restore
+         itself becomes the newest entry in list_uploads(), and the
+         audit trail reflects "this version was made canonical again
+         at time T" rather than looking untouched since its original
+         upload.
+      3. Rotates it into country_profiles_source/ under this kind's
+         canonical filename (whatever was canonical before this
+         restore moves into old/, same as any other upload).
+      4. Regenerates country_profiles.json.
+    Raises FileNotFoundError if `filename` isn't in storage, or if
+    regenerate_profiles() can't run yet (the other kind has never been
+    uploaded at all). Returns regenerate_profiles()'s result dict.
+    """
+    if kind not in VALID_KINDS:
+        raise ValueError(f"Unknown kind '{kind}', expected one of {sorted(VALID_KINDS)}")
+
+    storage_dir = _storage_dir()
+    # filename must already be one of this exact directory's own entries -
+    # os.path.basename below additionally guards against a filename
+    # containing path separators being used to escape storage_dir.
+    archived_path = os.path.join(storage_dir, os.path.basename(filename))
+    if not os.path.isfile(archived_path):
+        raise FileNotFoundError(f"No archived {kind} document named '{filename}'")
+
+    validate_docx(kind, archived_path)
+
+    original_name = VALID_KINDS[kind]  # rotate_source_docx ignores this anyway; kept for archive_docx's audit trail
+
+    # rotate_source_docx() moves tmp_path itself into place, so restore
+    # needs its own copy to hand off rather than moving the archived
+    # file out of storage/ (which archive_docx below is about to write
+    # a fresh copy of anyway, but the original archived copy should
+    # stay put regardless).
+    tmp_dir = os.path.join(DATA_SCRIPTS_DIR, "_uploads_tmp")
+    os.makedirs(tmp_dir, exist_ok=True)
+    tmp_path = os.path.join(tmp_dir, f"restore_{os.path.basename(filename)}")
+    shutil.copy2(archived_path, tmp_path)
+
+    archive_docx(kind, tmp_path, original_name)
+    rotate_source_docx(kind, tmp_path, original_name)
+    return regenerate_profiles()

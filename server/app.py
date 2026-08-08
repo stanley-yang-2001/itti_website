@@ -1565,6 +1565,8 @@ def upload_report():
     Multipart form fields:
       - "title": string, required
       - "description": string, required
+      - "category": one of REPORT_CATEGORIES (the 10 fixed report
+        sections), required
       - "file": the report itself, .pdf/.doc/.docx, required
       - "image": an optional cover image (.png/.jpg/.jpeg/.webp)
 
@@ -1575,10 +1577,12 @@ def upload_report():
 
     title = (request.form.get("title") or "").strip()
     description = (request.form.get("description") or "").strip()
+    category = (request.form.get("category") or "").strip()
 
     error = validation.validate_all([
         ("report_title", title),
         ("report_description", description),
+        ("report_category", category),
     ])
     if error:
         abort(400, description=error)
@@ -1594,6 +1598,7 @@ def upload_report():
         uploaded_by=user.id,
         title=title,
         description=description,
+        category=category,
         file_path=file_path,
         file_type=file_type,
         original_filename=original_filename,

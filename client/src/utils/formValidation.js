@@ -31,6 +31,8 @@
  * That's the whole extension surface.
  */
 
+import { REPORT_CATEGORIES } from '../constants/reportCategories.js';
+
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
 // Letters (any language via \p{L}), digits, spaces, and a conservative
@@ -106,6 +108,12 @@ export function checkReportDescription(value) {
   return null;
 }
 
+export function checkReportCategory(value) {
+  if (value == null || !value.trim()) return 'Section is required.';
+  if (!REPORT_CATEGORIES.includes(value)) return 'Not a recognized report section.';
+  return null;
+}
+
 /** value is a dollar amount (number), e.g. from a preset or parsed custom-amount input. */
 export function checkDonationAmount(value) {
   if (value == null || Number.isNaN(value)) return 'Choose an amount or enter a custom one.';
@@ -123,6 +131,7 @@ const CHECKS = {
   searchQuery: checkSearchQuery,
   reportTitle: checkReportTitle,
   reportDescription: checkReportDescription,
+  reportCategory: checkReportCategory,
   donationAmount: checkDonationAmount,
 };
 
