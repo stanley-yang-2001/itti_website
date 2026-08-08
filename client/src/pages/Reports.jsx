@@ -210,29 +210,31 @@ export default function Reports() {
             </div>
 
             <Reveal delay={90} key={activeCategory}>
-              <h3 className="reports-section-heading">{activeCategory}</h3>
-              {activeReports.length === 0 ? (
-                <p className="reports-status">No reports have been published in this section yet.</p>
-              ) : (
-                <div className="reports-grid">
-                  {activeReports.map((report) => (
-                    <div
-                      key={report.id}
-                      id={`report-${report.id}`}
-                      className={String(report.id) === highlightId ? 'reports-card-highlight' : undefined}
-                    >
-                      <ReportCard
-                        report={report}
-                        canManage={canUpload && (user?.role === 'admin' || user?.id === report.uploaded_by)}
-                        onDelete={handleDelete}
-                        isFavorited={favoriteIds.has(report.id)}
-                        onToggleFavorite={isAuthenticated ? handleToggleFavorite : undefined}
-                        onRead={setReadingReport}
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
+              <div>
+                <h3 className="reports-section-heading">{activeCategory}</h3>
+                {activeReports.length === 0 ? (
+                  <p className="reports-status">No reports have been published in this section yet.</p>
+                ) : (
+                  <div className="reports-grid">
+                    {activeReports.map((report) => (
+                      <div
+                        key={report.id}
+                        id={`report-${report.id}`}
+                        className={String(report.id) === highlightId ? 'reports-card-highlight' : undefined}
+                      >
+                        <ReportCard
+                          report={report}
+                          canManage={canUpload && (user?.role === 'admin' || user?.id === report.uploaded_by)}
+                          onDelete={handleDelete}
+                          isFavorited={favoriteIds.has(report.id)}
+                          onToggleFavorite={isAuthenticated ? handleToggleFavorite : undefined}
+                          onRead={setReadingReport}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </Reveal>
           </>
         )}
