@@ -66,7 +66,9 @@ jobs:
             --acl public-read \
             --delete \
             --cache-control "public,max-age=31536000,immutable" \
-            --exclude "index.html"
+            --exclude "index.html" \
+            --exclude "robots.txt" \
+            --exclude "sitemap.xml"
 
       - name: Upload index.html with no-cache
         # index.html references the hashed asset filenames above, so it
@@ -75,6 +77,26 @@ jobs:
         # pointing at JS/CSS files that no longer exist in the bucket.
         run: |
           aws s3 cp dist/index.html "s3://${{ secrets.DO_SPACES_BUCKET }}/index.html" \
+            --endpoint-url "https://${{ secrets.DO_SPACES_REGION }}.digitaloceanspaces.com" \
+            --acl public-read \
+            --cache-control "public,max-age=0,must-revalidate"
+
+      - name: Upload robots.txt and sitemap.xml with no-cache
+        # Same reasoning as index.html above: unlike the hashed JS/CSS
+        # assets, these two keep the same URL forever but their content
+        # is meant to change over time (new routes added to the sitemap,
+        # new disallowed paths in robots.txt). The main sync step's
+        # immutable/1-year cache-control is correct for content-hashed
+        # filenames and wrong for these - a search engine crawler that
+        # fetched either of these once would have no HTTP-level reason
+        # to check again for a year, and the CDN purge step below only
+        # clears DigitalOcean's own cache, not a crawler's.
+        run: |
+          aws s3 cp dist/robots.txt "s3://${{ secrets.DO_SPACES_BUCKET }}/robots.txt" \
+            --endpoint-url "https://${{ secrets.DO_SPACES_REGION }}.digitaloceanspaces.com" \
+            --acl public-read \
+            --cache-control "public,max-age=0,must-revalidate"
+          aws s3 cp dist/sitemap.xml "s3://${{ secrets.DO_SPACES_BUCKET }}/sitemap.xml" \
             --endpoint-url "https://${{ secrets.DO_SPACES_REGION }}.digitaloceanspaces.com" \
             --acl public-read \
             --cache-control "public,max-age=0,must-revalidate"
