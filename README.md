@@ -45,7 +45,7 @@ GTBI/ETTI profile at a glance, and links into the rest of the site.
 - [`#welcome`](<BASE_URL>/#welcome) — introduction
 - [`#globe`](<BASE_URL>/#globe) — the interactive globe and country panel
 - [`#explore`](<BASE_URL>/#explore) — shortcuts to other sections
-- [`#connect`](<BASE_URL>/#connect) — ITTI's YouTube channel and Outlets for Hope
+- [`#connect`](<BASE_URL>/#connect) — ITTI's YouTube channel, Facebook page, and Outlets for Hope
 
 ### [About](<BASE_URL>/about)
 ITTI's mission, its relationship to Outlets for Hope, its research

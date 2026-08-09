@@ -15,22 +15,60 @@ const EXPLORE_CARDS = [
   {
     to: '/observatory',
     label: 'Observatory',
-    description: 'Our data mission, the indicators we track, and the dashboards behind them.'
+    description: 'Documented trauma exposure across countries and regions, tracked through GTBI and ETTI.',
+    icon: (
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+        <circle cx="24" cy="24" r="17" />
+        <ellipse cx="24" cy="24" rx="17" ry="7" />
+        <ellipse cx="24" cy="24" rx="17" ry="12.5" />
+        <line x1="7" y1="24" x2="41" y2="24" />
+        <line x1="24" y1="7" x2="24" y2="41" />
+      </svg>
+    )
   },
   {
     to: '/reports',
     label: 'Reports',
-    description: 'Published briefs, PDFs, and other work coming out of the institute.'
+    description: 'Published briefs, PDFs, and other work coming out of the institute.',
+    icon: (
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+        <path d="M13 6h16l7 7v29a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" />
+        <path d="M29 6v7h7" />
+        <line x1="16" y1="22" x2="32" y2="22" />
+        <line x1="16" y1="28" x2="32" y2="28" />
+        <line x1="16" y1="34" x2="26" y2="34" />
+      </svg>
+    )
   },
   {
     to: '/about',
     label: 'About',
-    description: 'Our mission, leadership, and how the organization is governed.'
+    description: 'Our mission, leadership, and how the organization is governed.',
+    icon: (
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+        <circle cx="24" cy="24" r="17" />
+        <line x1="16" y1="18" x2="16" y2="30" />
+        <line x1="24" y1="18" x2="24" y2="30" />
+        <line x1="32" y1="18" x2="32" y2="30" />
+        <line x1="13" y1="32" x2="35" y2="32" />
+      </svg>
+    )
   },
   {
     to: '/fellows',
     label: 'Fellowship',
-    description: 'Meet the people doing the work \u2014 and find out how to join them.'
+    description: 'A global fellowship developing leadership for trauma-informed governance and institutional recovery.',
+    icon: (
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+        <path d="M24 10v28" />
+        <path d="M24 14c-3 2-8 2-10 6 2 3 7 3 10 1" />
+        <path d="M24 20c-3 2-8 2-10 6 2 3 7 3 10 1" />
+        <path d="M24 26c-3 2-8 2-10 6 2 3 7 3 10 1" />
+        <path d="M24 14c3 2 8 2 10 6-2 3-7 3-10 1" />
+        <path d="M24 20c3 2 8 2 10 6-2 3-7 3-10 1" />
+        <path d="M24 26c3 2 8 2 10 6-2 3-7 3-10 1" />
+      </svg>
+    )
   }
 ];
 
@@ -120,6 +158,13 @@ export default function Home() {
         {/* Part 1: welcome */}
         <Reveal delay={0}>
           <section className="home-welcome" id="welcome">
+            <svg className="home-welcome-watermark" viewBox="0 0 400 400" fill="none" stroke="currentColor" aria-hidden="true">
+              <circle cx="200" cy="200" r="160" strokeWidth="1" />
+              <ellipse cx="200" cy="200" rx="160" ry="62" strokeWidth="1" />
+              <ellipse cx="200" cy="200" rx="160" ry="112" strokeWidth="1" />
+              <line x1="40" y1="200" x2="360" y2="200" strokeWidth="1" />
+              <line x1="200" y1="40" x2="200" y2="360" strokeWidth="1" />
+            </svg>
             <p className="home-welcome-eyebrow">WELCOME</p>
             <h1 className="home-welcome-title display">
               Welcome <br />to the <br />International Truth &amp; Trauma Institute
@@ -191,6 +236,7 @@ export default function Home() {
           {EXPLORE_CARDS.map((card, i) => (
             <Reveal key={card.to} delay={i * 90}>
               <Link to={card.to} className="home-explore-card">
+                <span className="home-explore-card-icon" aria-hidden="true">{card.icon}</span>
                 <span className="home-explore-card-label display">{card.label}</span>
                 <p className="home-explore-card-desc">{card.description}</p>
                 <span className="home-explore-card-arrow" aria-hidden="true">&rarr;</span>
@@ -246,6 +292,27 @@ export default function Home() {
               <span className="home-explore-card-label display">Outlets for Hope, Inc.</span>
               <p className="home-explore-card-desc">
                 ITTI is a global research division of Outlets for Hope, Inc. Visit the parent organization's site.
+              </p>
+              <span className="home-explore-card-arrow" aria-hidden="true">&rarr;</span>
+            </a>
+          </Reveal>
+
+          <Reveal delay={230}>
+            <a
+              className="home-connect-card"
+              href="https://www.facebook.com/profile.php?id=61592894404554"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span className="home-connect-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <rect x="3" y="3" width="18" height="18" rx="4" />
+                  <path d="M14 8.5h-1.5c-1 0-1.5.5-1.5 1.5v2h3l-.4 3h-2.6v6.5" strokeLinejoin="round" />
+                </svg>
+              </span>
+              <span className="home-explore-card-label display">ITTI on Facebook</span>
+              <p className="home-explore-card-desc">
+                Follow the Institute's page for updates, events, and announcements.
               </p>
               <span className="home-explore-card-arrow" aria-hidden="true">&rarr;</span>
             </a>

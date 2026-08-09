@@ -1,49 +1,43 @@
-Fix production deploy failure: install Playwright's browser for
-prerendering; robots.txt/sitemap.xml cache-control
+Restore Publish nav-link removal and homepage icons, fix watermark bug,
+move Facebook link to homepage Connect section
 
-.github/workflows/deploy-frontend.yml
-    - Added "Install Playwright's Chromium" step (npx playwright
-      install --with-deps chromium) right after npm ci, before the
-      build. scripts/prerender.mjs launches a real headless Chromium
-      during npm run build's postbuild hook, and Playwright's browser
-      binaries are a separate download from the npm package - without
-      this step, that hook fails with "Executable doesn't exist ..."
-      and npm run build exits non-zero, failing this entire job.
-      Confirmed the failure directly: a fresh checkout's build exits 1
-      without this step. The prior comment in prerender.mjs referenced
-      installing this via app.yaml's build_command, which doesn't
-      exist - stale from before the frontend build moved to this
-      workflow.
-    - robots.txt and sitemap.xml now get the same no-cache treatment
-      index.html already had: excluded from the main sync's 1-year
-      immutable cache-control and uploaded separately with
-      no-cache/must-revalidate. Unlike hashed JS/CSS assets, these two
-      keep the same URL forever but their content is meant to change
-      (new sitemap entries, new disallowed routes) - the CDN purge
-      step doesn't help here since it only clears DigitalOcean's own
-      cache, not a crawler's.
+Note: a prior commit on this branch reverted the Publish-link removal
+and homepage icon/watermark work (Home.jsx, App.css, NavBar.jsx reverted
+to their pre-existing state, likely from a stale local copy being
+committed over them) - this restores that work and adds today's fixes
+on top.
 
-client/scripts/prerender.mjs
-    Updated the PRERENDER_CHROMIUM_PATH comment to point at the actual
-    install step above instead of the no-longer-existent app.yaml
-    build_command.
-
-.gitignore
-    Reapplied: server/uploads/, server/report_uploads/,
-    server/fellow_uploads/ ignored (merging with your own narrower
-    server/report_uploads/-only addition).
-
-Untracked (kept on disk): server/app.db, commit_msg.txt, and the
-uploaded content under server/uploads|report_uploads|fellow_uploads -
-these keep reappearing each pull because past untracking fixes were
-only ever handed over as files, never pushed, so your own commits keep
-modifying their still-tracked local copies. Deleted outright: `hold`
-and the empty, unused `Procfile`.
-
-Verified: single alembic head; backend imports cleanly (64 routes);
-production boot correctly refuses without STORAGE_BACKEND=s3 and
-succeeds with it configured; RATELIMIT_STORAGE_URI warning fires
-correctly; workflow YAML valid with steps in the correct order;
-confirmed (and fixed) the exact build failure locally, though full
-end-to-end CI verification wasn't possible in this sandbox due to
-network restrictions on Playwright's download CDN.
+- NavBar.jsx: remove the 'Publish' link and its isPublisher check -
+  it pointed at the older standalone /publish page, made redundant by
+  the newer Profile > Publications report-upload workflow
+- Home.jsx: add line-art icons to the four Explore cards, drawn from
+  ITTI's own seal (globe/graticule, laurel branch) rather than generic
+  icon-library substitutes - a pediment/column glyph for About
+  (governance/institutional structure), a laurel branch for Fellowship
+  (echoing the seal's wreath) rather than a generic 'people' icon
+- Home.jsx: add a faint background watermark (the same globe/graticule
+  motif) behind the Welcome hero
+- Home.jsx: revise two card descriptions that had drifted toward
+  casual marketing language, to match the site's own established
+  register (e.g. Fellowship's 'invitation-only global fellowship
+  developing leaders for trauma-informed nations')
+- App.css: icon styling kept deliberately restrained - opacity change
+  on hover only, no lift/bounce motion, consistent with this being a
+  nonprofit research institute rather than a consumer product
+- App.css: fix the Welcome hero's watermark rendering as a large,
+  out-of-place globe icon above the message instead of a faint
+  centered backdrop. '.home-welcome > *{position:relative}' had the
+  same specificity as, and came after, the watermark's own
+  'position:absolute', silently overriding it and knocking the SVG
+  into normal document flow at full size. Excluded the watermark from
+  that rule with :not(.home-welcome-watermark).
+- Home.jsx: add a third Connect-section card for ITTI's Facebook page,
+  matching the existing YouTube/Outlets for Hope card style. Widened
+  .home-connect-grid's max-width (800px -> 1080px) so three cards sit
+  comfortably in one row on desktop.
+- Footer.jsx: remove the now-redundant Facebook link from
+  SOCIAL_LINKS (and the constant itself, now unused) - it lives on
+  the homepage instead, consistent with how YouTube/OFH aren't
+  duplicated in the footer either.
+- README.md: note Facebook alongside YouTube/OFH in the #connect
+  section description.

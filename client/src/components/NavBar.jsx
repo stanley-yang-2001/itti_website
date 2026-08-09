@@ -40,7 +40,7 @@ function getScroller() {
 export default function NavBar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isCompact, setIsCompact] = useState(false);
-  const { user, isAuthenticated, isPublisher, logout } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const navRef = useRef(null);
 
@@ -108,7 +108,7 @@ export default function NavBar() {
     navigate('/');
   }
 
-  const links = isPublisher ? [...NAV_LINKS, { to: '/publish', label: 'Publish' }] : NAV_LINKS;
+  const links = NAV_LINKS;
 
   return (
     <nav className={`navbar${isCompact ? ' navbar-compact' : ''}`} ref={navRef}>
