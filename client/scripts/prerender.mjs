@@ -110,8 +110,11 @@ async function main() {
   // PRERENDER_CHROMIUM_PATH lets this run in sandboxed/offline
   // environments that can't reach Playwright's own browser download
   // CDN, by pointing at an already-installed Chromium binary instead.
-  // Not needed in normal CI/production - `npx playwright install
-  // chromium` (see the build_command in app.yaml) covers that case.
+  // Not needed in normal CI/production - the "Install Playwright's
+  // Chromium" step in .github/workflows/deploy-frontend.yml (which
+  // actually builds and deploys the frontend now - see that workflow's
+  // header comment) runs `npx playwright install --with-deps chromium`
+  // before this script ever executes.
   const launchOptions = {};
   if (process.env.PRERENDER_CHROMIUM_PATH) {
     launchOptions.executablePath = process.env.PRERENDER_CHROMIUM_PATH;

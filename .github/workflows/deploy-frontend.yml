@@ -40,6 +40,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install Playwright's Chromium (for prerendering)
+        # scripts/prerender.mjs (run via npm run build's postbuild hook)
+        # launches a real headless Chromium to render each route to
+        # static HTML. Playwright ships as an npm package but its actual
+        # browser binaries are a separate download - without this step,
+        # the postbuild hook fails with "Executable doesn't exist ..."
+        # and `npm run build` exits non-zero, failing this entire job.
+        run: npx playwright install --with-deps chromium
+
       - name: Build
         env:
           # Vite reads the repo-root .env for this (see client/vite.config.js);

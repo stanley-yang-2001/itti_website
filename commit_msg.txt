@@ -1,102 +1,49 @@
-SEO/pre-rendering, Privacy Policy shared-component refactor, admin CLI
-user-management script
+Fix production deploy failure: install Playwright's browser for
+prerendering; robots.txt/sitemap.xml cache-control
 
-This picks up two things that had stalled: the SEO/pre-rendering work
-(all of it had to be redone in this pass - none of it was ever pushed,
-so it wasn't actually present on this branch to build on), and a
-teammate's in-progress branch (uploaded as a zip) who has since stopped
-work on it - evaluated file by file rather than merged wholesale, since
-much of it turned out to be stale (built off an older snapshot, before
-the Access Level admin panel, the session-cache security fix, the
-navbar scroll-hysteresis fix, and the footer's Facebook link had
-already shipped in better form on this branch).
+.github/workflows/deploy-frontend.yml
+    - Added "Install Playwright's Chromium" step (npx playwright
+      install --with-deps chromium) right after npm ci, before the
+      build. scripts/prerender.mjs launches a real headless Chromium
+      during npm run build's postbuild hook, and Playwright's browser
+      binaries are a separate download from the npm package - without
+      this step, that hook fails with "Executable doesn't exist ..."
+      and npm run build exits non-zero, failing this entire job.
+      Confirmed the failure directly: a fresh checkout's build exits 1
+      without this step. The prior comment in prerender.mjs referenced
+      installing this via app.yaml's build_command, which doesn't
+      exist - stale from before the frontend build moved to this
+      workflow.
+    - robots.txt and sitemap.xml now get the same no-cache treatment
+      index.html already had: excluded from the main sync's 1-year
+      immutable cache-control and uploaded separately with
+      no-cache/must-revalidate. Unlike hashed JS/CSS assets, these two
+      keep the same URL forever but their content is meant to change
+      (new sitemap entries, new disallowed routes) - the CDN purge
+      step doesn't help here since it only clears DigitalOcean's own
+      cache, not a crawler's.
 
-Adopted from the teammate's branch:
-- New client/src/components/PrivacyPolicyContent.jsx and
-  PrivacyPolicyModal.jsx - the shared-component refactor that resolves
-  a conflict flagged earlier: PrivacyPolicy.jsx is now a thin wrapper
-  around shared content, reusable in a modal.
-- PrivacyPolicy.jsx rewritten to use them (replaces the earlier
-  standalone sidebar-nav implementation - a deliberate tradeoff,
-  reuse over that page's own navigation chrome).
-- SignUp.jsx: real consent checkbox ("I have read and agree to the
-  Privacy Policy") gating account creation, viewable via
-  PrivacyPolicyModal without leaving the sign-up flow. Previously this
-  was just a link to the /privacy page with no actual gating.
-- Modal.jsx: added a `wide` prop (720px vs 520px max-width) that
-  PrivacyPolicyModal needs, plus the matching app-modal--wide CSS.
-- New server/manage_users.py, an interactive CLI for listing accounts
-  and changing roles - already referenced in promote_user.py's
-  docstring as if it existed, but never actually added. Fixed a real
-  bug before adding it: it was written against an older get_all_users()
-  signature that returned a plain list; the current one is paginated
-  and returns (users, total). As shipped it would have crashed - now
-  requests the max page size explicitly and warns if even that isn't
-  enough, rather than silently truncating the list.
+client/scripts/prerender.mjs
+    Updated the PRERENDER_CHROMIUM_PATH comment to point at the actual
+    install step above instead of the no-longer-existent app.yaml
+    build_command.
 
-Explicitly NOT adopted from the teammate's branch, with reasons:
-- ManageUsersPanel.jsx - functionally identical to the already-shipped
-  AccessLevelPanel.jsx (same role-management feature); adding it would
-  create a confusing duplicate admin UI. It also isn't wired into
-  Settings.jsx anywhere in their own zip - dead code even at the
-  source.
-- NavBar.jsx, api.js, AuthContext.jsx, Footer.jsx - all older than
-  what's already on this branch (the AuthContext.jsx one specifically
-  predates the session-cache security fix - reverting it would
-  reintroduce that bug).
-- A certifications.js text edit - changed "Election Trauma Temperature
-  Index" to "Election Trauma and Tension Index", breaking the naming
-  consistency used everywhere else (globe data, docs, observatory
-  references).
-- Migrations - all already present on this branch, byte-identical.
+.gitignore
+    Reapplied: server/uploads/, server/report_uploads/,
+    server/fellow_uploads/ ignored (merging with your own narrower
+    server/report_uploads/-only addition).
 
-SEO/pre-rendering (redone in full this pass):
-- New client/src/components/SEO.jsx - reusable title/description/
-  canonical/Open Graph/Twitter Card component on react-helmet-async.
-  SITE_URL confirmed as ittiglobal.org.
-- All 22 routed pages get their <SEO> tag: 11 public content pages
-  with unique, content-specific tags (Home, About, Observatory,
-  Reports, Country Profiles, Fellowship, Certifications, Contact,
-  Docs, Donate, Privacy Policy); 11 account/utility pages with
-  noindex, nofollow (Login, SignUp, ForgotPassword, ResetPassword,
-  Unavailable, Publish, Settings, Profile, PublishGlobeData,
-  DonateThankYou, CertificationEnrollThankYou). PublishGlobeData,
-  ResetPassword, and Settings each have two early-return branches -
-  both get the tag, not just one.
-- Reports.jsx: promoted its main heading from <h2> to <h1> - the only
-  page with zero <h1> tags. Confirmed no other <h1> exists on the page
-  first, both times this got redone.
-- New public/robots.txt and public/sitemap.xml.
-- EducationalOrganization JSON-LD structured data in index.html, which
-  otherwise keeps only the singleton-safe <title>/theme-color/icons -
-  description/OG/Twitter tags live exclusively in <SEO>, since
-  react-helmet-async appends rather than replaces tags it didn't
-  create; a static description here too would produce two
-  <meta name="description"> tags per page, and Google uses the first
-  duplicate it finds - silently defeating every per-page description.
-- New client/scripts/prerender.mjs, wired in as package.json's
-  "postbuild" script. For each of the 11 static indexable routes,
-  serves the built dist/ locally, loads the route in a real headless
-  browser so React/Helmet render exactly as for a live visitor, and
-  saves the fully-rendered HTML to dist/<route>/index.html - the part
-  that actually helps non-JS crawlers/unfurl bots, since <SEO> tags
-  alone only apply once React has mounted.
-- package.json: added react-helmet-async and playwright.
-- main.jsx: wrapped the app in HelmetProvider.
+Untracked (kept on disk): server/app.db, commit_msg.txt, and the
+uploaded content under server/uploads|report_uploads|fellow_uploads -
+these keep reappearing each pull because past untracking fixes were
+only ever handed over as files, never pushed, so your own commits keep
+modifying their still-tracked local copies. Deleted outright: `hold`
+and the empty, unused `Procfile`.
 
-Also fixed, found while testing the full build for this pass (both
-pre-existing, unrelated to any of the above):
-- package.json was missing a `mammoth` dependency that
-  ReportViewerModal.jsx (from the recent Reports redesign/PDF-DOCX
-  viewer) actually imports - `vite build` failed outright without it.
-
-Verified end to end: `npm install && npm run build` (full pipeline,
-including postbuild) produces all 11 correct dist/<route>/index.html
-files - spot-checked several for exactly one <meta name="description">
-tag, correct unique <title>, and real page-specific content (including
-the new PrivacyPolicyContent-based /privacy page, and Reports' <h1>).
-
-Still open, not addressed in this pass: the DigitalOcean Spaces/CDN
-routing question from a previous round (whether the custom domain
-correctly serves nested dist/<route>/index.html files, or falls back
-to the generic SPA shell for everything) - still needs an answer.
+Verified: single alembic head; backend imports cleanly (64 routes);
+production boot correctly refuses without STORAGE_BACKEND=s3 and
+succeeds with it configured; RATELIMIT_STORAGE_URI warning fires
+correctly; workflow YAML valid with steps in the correct order;
+confirmed (and fixed) the exact build failure locally, though full
+end-to-end CI verification wasn't possible in this sandbox due to
+network restrictions on Playwright's download CDN.
