@@ -315,6 +315,47 @@
     flex-direction:column;
   }
 
+  /* Shown in place of the globe itself when its data fails to load or
+     is still loading - previously this box just stayed empty forever
+     on failure, with nothing telling the person anything had gone
+     wrong. Both sit on the same dark globe background (.home-globe-left
+     above), so they read as "this box's content" rather than an error
+     banner bolted on top of it. */
+  .home-globe-error, .home-globe-loading{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    text-align:center;
+    padding:24px;
+  }
+  .home-globe-loading{
+    color:var(--text-low);
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+  }
+  .home-globe-retry-btn{
+    padding:9px 20px;
+    border-radius:999px;
+    border:1px solid rgba(127,168,224,0.4);
+    background:transparent;
+    color:#F4F7FB;
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:500;
+    cursor:pointer;
+    transition:background .15s ease, border-color .15s ease;
+  }
+  .home-globe-retry-btn:hover{
+    background:rgba(127,168,224,0.12);
+    border-color:rgba(127,168,224,0.7);
+  }
+
   #globe-container{
     width:100%; height:100%;
     display:flex; align-items:center; justify-content:center;

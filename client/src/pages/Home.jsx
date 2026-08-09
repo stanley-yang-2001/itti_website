@@ -5,6 +5,7 @@ import Globe from '../components/Globe.jsx';
 import Reveal from '../components/Reveal.jsx';
 import SearchBar from '../components/SearchBar.jsx';
 import SidePanel from '../components/SidePanel.jsx';
+import UnavailableMessage from '../components/UnavailableMessage.jsx';
 import useHashScroll from '../hooks/useHashScroll.js';
 import SEO from '../components/SEO.jsx';
 import { fetchWorldData, fetchCountry, fetchAllCountries } from '../api.js';
@@ -41,6 +42,7 @@ const MISSION_MESSAGE =
 export default function Home() {
   useHashScroll();
   const [worldData, setWorldData] = useState(null);
+  const [worldDataError, setWorldDataError] = useState(false);
   const [features, setFeatures] = useState([]);
   const [country, setCountry] = useState(null); // { name, iso }
   const [metrics, setMetrics] = useState(null);
@@ -48,12 +50,29 @@ export default function Home() {
   const [countryQuickStats, setCountryQuickStats] = useState({}); // iso -> { name, etti, gtbi } for the hover tooltip
   const globeRef = useRef(null);
 
+  // Bumped on every retry click to re-trigger the effect below; the
+  // value itself is never read, it just needs to change.
+  const [retryCount, setRetryCount] = useState(0);
+
+  function loadWorldData() {
+    setWorldDataError(false);
+    fetchWorldData()
+      .then((world) => {
+        setWorldData(world);
+        const parsed = topojson.feature(world, world.objects.countries);
+        setFeatures(parsed.features);
+      })
+      .catch(() => {
+        // Previously had no .catch() at all - a failed/slow request left
+        // worldData permanently null with no feedback, so the globe's
+        // spot on the page just stayed blank forever with nothing to
+        // tell the person anything had gone wrong or way to retry.
+        setWorldDataError(true);
+      });
+  }
+
   useEffect(() => {
-    fetchWorldData().then((world) => {
-      setWorldData(world);
-      const parsed = topojson.feature(world, world.objects.countries);
-      setFeatures(parsed.features);
-    });
+    loadWorldData();
     fetchAllCountries()
       .then((countries) => {
         setCountryStatus(computeCountryDataStatus(countries));
@@ -63,7 +82,12 @@ export default function Home() {
         setCountryStatus({}); // globe still renders fine with default colors
         setCountryQuickStats({}); // hover tooltip just won't show ETTI/GTBI lines
       });
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [retryCount]);
+
+  function retryWorldData() {
+    setRetryCount((n) => n + 1);
+  }
 
   function openCountry(name, iso) {
     setCountry({ name, iso });
@@ -118,6 +142,17 @@ export default function Home() {
                     countryStatus={countryStatus}
                     countryQuickStats={countryQuickStats}
                   />
+                )}
+                {!worldData && worldDataError && (
+                  <div className="home-globe-error">
+                    <UnavailableMessage variant="inline" />
+                    <button type="button" className="home-globe-retry-btn" onClick={retryWorldData}>
+                      Try again
+                    </button>
+                  </div>
+                )}
+                {!worldData && !worldDataError && (
+                  <div className="home-globe-loading" aria-live="polite">Loading the globe…</div>
                 )}
                 <div className="globe-legend">
                   <span className="globe-legend-item">

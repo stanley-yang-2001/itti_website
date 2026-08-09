@@ -105,7 +105,7 @@ class Report(Base):
     def __repr__(self):
         return f"<Report id={self.id} title={self.title!r} review_status={self.review_status} v{self.version}>"
 
-    def to_public_dict(self):
+    def to_public_dict(self, author_name=None):
         """
         Fields safe to send to the client for the Reports / Peer Review
         pages. "author" is the uploader's display name (never their raw
@@ -118,6 +118,12 @@ class Report(Base):
         sqlalchemy.orm.exc.DetachedInstanceError. get_author_name()
         below opens its own short-lived session instead, so this method
         is always safe to call regardless of session state.
+
+        author_name: pass this in to skip the get_author_name() lookup
+        entirely - see reports_to_public_dicts() below, which batches
+        that lookup once for a whole list instead of once per report.
+        Leave it unset for a single report; the per-call query is
+        harmless at that point.
         """
         return {
             "id": self.id,
@@ -129,7 +135,7 @@ class Report(Base):
             "original_filename": self.original_filename,
             "has_image": self.image_path is not None,
             "uploaded_by": self.uploaded_by,
-            "author": get_author_name(self.uploaded_by),
+            "author": author_name if author_name is not None else get_author_name(self.uploaded_by),
             "review_status": self.review_status,
             "version": self.version,
             "category": self.category,
@@ -154,6 +160,36 @@ def get_author_name(user_id):
         return user.name if user and user.name else "Unknown"
     finally:
         session.close()
+
+
+def reports_to_public_dicts(reports):
+    """
+    Same output as [r.to_public_dict() for r in reports], but resolves
+    every report's author name with one batched query instead of one
+    query per report. to_public_dict() opening a fresh session per call
+    is deliberate (see its docstring) and fine for a single report or a
+    handful, but every list-returning route (GET /api/reports and
+    friends) was paying for N extra round-trip queries just to render
+    author names for a page of N reports. Use this wherever a *list* of
+    reports gets serialized; to_public_dict() directly is still right
+    for a single report.
+    """
+    from .user import User  # local import: avoids a user.py <-> report.py circular import at module load time
+
+    user_ids = {r.uploaded_by for r in reports if r.uploaded_by is not None}
+    names_by_id = {}
+    if user_ids:
+        session = Session()
+        try:
+            rows = session.query(User.id, User.name).filter(User.id.in_(user_ids)).all()
+            names_by_id = {row.id: row.name for row in rows}
+        finally:
+            session.close()
+
+    return [
+        r.to_public_dict(author_name=names_by_id.get(r.uploaded_by, "Unknown") if r.uploaded_by is not None else "Unknown")
+        for r in reports
+    ]
 
 
 # ---------- CRUD ----------

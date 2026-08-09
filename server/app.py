@@ -71,7 +71,7 @@ from models.document import (
 from models.report import (
     create_report, get_report, get_published_reports, get_pending_reports,
     get_changes_requested_reports, get_reports_by_uploader,
-    delete_report, hard_delete_report, resubmit_report,
+    delete_report, hard_delete_report, resubmit_report, reports_to_public_dicts,
 )
 from models.report_review import record_review, get_reviews_for_report, ReviewError
 from models.favorite_report import (
@@ -172,6 +172,15 @@ if IS_PRODUCTION:
         missing.append("STRIPE_SECRET_KEY")
     if not STRIPE_WEBHOOK_SECRET:
         missing.append("STRIPE_WEBHOOK_SECRET")
+    # storage.py defaults to STORAGE_BACKEND=local, which writes to this
+    # container's own disk - fine for local dev, but most hosts
+    # (including the one app.yaml targets here) hand you a fresh
+    # container on every redeploy, silently discarding anything written
+    # to local disk. Every uploaded report/photo would be one deploy
+    # away from disappearing without this check, with no error at
+    # upload time to warn anyone it happened.
+    if os.environ.get("STORAGE_BACKEND", "local").lower() != "s3":
+        missing.append("STORAGE_BACKEND=s3 (currently unset/local - uploads would not survive a redeploy)")
     if missing:
         raise RuntimeError(
             f"FLASK_ENV=production but these required env vars are unset/using dev "
@@ -217,7 +226,28 @@ CORS(app, supports_credentials=True, origins=[CLIENT_ORIGIN])
 #     not a precise limiter. If this app ever adds a Redis instance for
 #     other reasons, switching storage_uri to "redis://..." fixes both
 #     points at once (flask-limiter supports it out of the box).
-limiter = Limiter(get_remote_address, app=app, storage_uri="memory://", default_limits=[])
+#
+#   - The sharper problem: --workers 2 in the Dockerfile means two
+#     separate processes, each with its own copy of this dict. Limits
+#     aren't shared between them, so e.g. "10 per minute" on login is
+#     really closer to "up to 20 per minute" in practice depending on
+#     which worker a given request lands on - the configured numbers
+#     read stricter than what's actually enforced. RATELIMIT_STORAGE_URI
+#     lets this be pointed at a real shared store (e.g. redis://...)
+#     without a code change once one exists; until then, this warns
+#     loudly at startup in production rather than silently under-
+#     enforcing brute-force protection with no visible sign anything is
+#     off.
+RATELIMIT_STORAGE_URI = os.environ.get("RATELIMIT_STORAGE_URI", "memory://")
+if IS_PRODUCTION and RATELIMIT_STORAGE_URI == "memory://":
+    logger.warning(
+        "RATELIMIT_STORAGE_URI is unset (defaulting to in-process memory://) while "
+        "FLASK_ENV=production. Rate limits are per-worker, not global, with the "
+        "Dockerfile's --workers 2 - actual enforcement is looser than the configured "
+        "limits suggest. Set RATELIMIT_STORAGE_URI to a shared store (e.g. redis://...) "
+        "to close this gap."
+    )
+limiter = Limiter(get_remote_address, app=app, storage_uri=RATELIMIT_STORAGE_URI, default_limits=[])
 
 
 @app.after_request
@@ -1444,7 +1474,7 @@ def list_reports():
     """
     limit, offset = parse_pagination_args()
     reports, total = get_published_reports(limit=limit, offset=offset)
-    return paginated_json_response([r.to_public_dict() for r in reports], total, limit, offset)
+    return paginated_json_response(reports_to_public_dicts(reports), total, limit, offset)
 
 
 @app.get("/api/reports/pending")
@@ -1453,7 +1483,7 @@ def list_pending_reports_route():
     """Reports awaiting review, oldest first. Peer Review page - publisher/admin only."""
     limit, offset = parse_pagination_args()
     reports, total = get_pending_reports(limit=limit, offset=offset)
-    return paginated_json_response([r.to_public_dict() for r in reports], total, limit, offset)
+    return paginated_json_response(reports_to_public_dicts(reports), total, limit, offset)
 
 
 @app.get("/api/reports/changes-requested")
@@ -1467,7 +1497,7 @@ def list_changes_requested_reports_route():
     """
     limit, offset = parse_pagination_args()
     reports, total = get_changes_requested_reports(limit=limit, offset=offset)
-    return paginated_json_response([r.to_public_dict() for r in reports], total, limit, offset)
+    return paginated_json_response(reports_to_public_dicts(reports), total, limit, offset)
 
 
 @app.get("/api/reports/<int:report_id>")
@@ -1565,8 +1595,6 @@ def upload_report():
     Multipart form fields:
       - "title": string, required
       - "description": string, required
-      - "category": one of REPORT_CATEGORIES (the 10 fixed report
-        sections), required
       - "file": the report itself, .pdf/.doc/.docx, required
       - "image": an optional cover image (.png/.jpg/.jpeg/.webp)
 
@@ -1577,12 +1605,10 @@ def upload_report():
 
     title = (request.form.get("title") or "").strip()
     description = (request.form.get("description") or "").strip()
-    category = (request.form.get("category") or "").strip()
 
     error = validation.validate_all([
         ("report_title", title),
         ("report_description", description),
-        ("report_category", category),
     ])
     if error:
         abort(400, description=error)
@@ -1598,7 +1624,6 @@ def upload_report():
         uploaded_by=user.id,
         title=title,
         description=description,
-        category=category,
         file_path=file_path,
         file_type=file_type,
         original_filename=original_filename,
@@ -1781,7 +1806,7 @@ def list_my_reports():
     """
     user = get_current_user()
     reports = get_reports_by_uploader(user.id)
-    return jsonify([r.to_public_dict() for r in reports])
+    return jsonify(reports_to_public_dicts(reports))
 
 
 @app.get("/api/reports/favorites")
@@ -1790,7 +1815,7 @@ def list_favorite_reports():
     """The logged-in user's favorited reports, most-recently-favorited first."""
     user = get_current_user()
     reports = get_favorite_reports_by_user(user.id)
-    return jsonify([r.to_public_dict() for r in reports])
+    return jsonify(reports_to_public_dicts(reports))
 
 
 @app.get("/api/reports/favorites/ids")
