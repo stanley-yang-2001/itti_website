@@ -1,43 +1,85 @@
-Restore Publish nav-link removal and homepage icons, fix watermark bug,
-move Facebook link to homepage Connect section
+Add peer review notifications, admin-approve bypass, report
+resubmission; modernize Reports/Peer Review styling; fix resubmit
+access bug; security audit and image-upload content-validation fix
 
-Note: a prior commit on this branch reverted the Publish-link removal
-and homepage icon/watermark work (Home.jsx, App.css, NavBar.jsx reverted
-to their pre-existing state, likely from a stale local copy being
-committed over them) - this restores that work and adds today's fixes
-on top.
+New:
+- server/models/notification.py: Notification model + CRUD, backing
+  the Profile page's Notifications tab
+- server/migrations/versions/635cd82587f6_add_notifications_table.py
+- client/src/pages/PeerReview.jsx + styles/PeerReview.css: the
+  publisher/admin queue for pending and changes-requested reports
+- client/src/pages/ResubmitReportForm.jsx: lets an uploader resubmit
+  after changes_requested, bumping the version and returning it to
+  pending_review
 
-- NavBar.jsx: remove the 'Publish' link and its isPublisher check -
-  it pointed at the older standalone /publish page, made redundant by
-  the newer Profile > Publications report-upload workflow
-- Home.jsx: add line-art icons to the four Explore cards, drawn from
-  ITTI's own seal (globe/graticule, laurel branch) rather than generic
-  icon-library substitutes - a pediment/column glyph for About
-  (governance/institutional structure), a laurel branch for Fellowship
-  (echoing the seal's wreath) rather than a generic 'people' icon
-- Home.jsx: add a faint background watermark (the same globe/graticule
-  motif) behind the Welcome hero
-- Home.jsx: revise two card descriptions that had drifted toward
-  casual marketing language, to match the site's own established
-  register (e.g. Fellowship's 'invitation-only global fellowship
-  developing leaders for trauma-informed nations')
-- App.css: icon styling kept deliberately restrained - opacity change
-  on hover only, no lift/bounce motion, consistent with this being a
-  nonprofit research institute rather than a consumer product
-- App.css: fix the Welcome hero's watermark rendering as a large,
-  out-of-place globe icon above the message instead of a faint
-  centered backdrop. '.home-welcome > *{position:relative}' had the
-  same specificity as, and came after, the watermark's own
-  'position:absolute', silently overriding it and knocking the SVG
-  into normal document flow at full size. Excluded the watermark from
-  that rule with :not(.home-welcome-watermark).
-- Home.jsx: add a third Connect-section card for ITTI's Facebook page,
-  matching the existing YouTube/Outlets for Hope card style. Widened
-  .home-connect-grid's max-width (800px -> 1080px) so three cards sit
-  comfortably in one row on desktop.
-- Footer.jsx: remove the now-redundant Facebook link from
-  SOCIAL_LINKS (and the constant itself, now unused) - it lives on
-  the homepage instead, consistent with how YouTube/OFH aren't
-  duplicated in the footer either.
-- README.md: note Facebook alongside YouTube/OFH in the #connect
-  section description.
+Modified:
+- server/models/report_review.py: record_review() gains an is_admin
+  parameter - an admin's single approve now publishes immediately,
+  bypassing the distinct-approval count, mirroring how an admin
+  reject was already decisive on its own. Both outcomes now create a
+  Notification for the report's uploader. REQUIRED_APPROVALS itself
+  is untouched (stays at 3, from server/models/report.py).
+- server/app.py: thread is_admin=(user.role == 'admin') through to
+  record_review() from the review route; add the four notification
+  routes (list, unread-count, mark-read, mark-all-read).
+- client/src/App.jsx: add the /peer-review route (publisher/admin,
+  admin satisfies the check the same way it does everywhere else).
+- client/src/pages/Profile.jsx: add the Notifications tab (with an
+  unread-count sidebar badge), a Peer Review link and resubmit flow
+  in Publications - grafted onto the current tab/hash-routing
+  structure, SEO tag, and Control tab, all of which predate this
+  work and were kept as-is.
+
+Styling modernization:
+- client/src/styles/App.css: define the .btn/.btn-primary/
+  .btn-secondary utility classes for the first time - they were
+  referenced across Profile.jsx, Reports.jsx, PeerReview.jsx,
+  ReportUploadForm.jsx, and elsewhere, but never actually defined
+  anywhere, so every action button had been rendering unstyled. Also
+  define --space-2..8 and --radius-sm/md/lg/pill custom properties in
+  :root, referenced throughout Profile.css/Control.css but likewise
+  never defined.
+- client/src/styles/Reports.css: bring the report grid, cards,
+  category tabs/pager, upload form, and inline viewer modal in line
+  with the site's established modern card language (soft 14-16px
+  radii, subtle tinted fills, larger type scale, consistent hover
+  lift) already used on Certifications/About/Docs. Fixed a stale
+  '.reports-header h2' selector that never matched anything, since
+  the heading is an <h1>.
+- client/src/styles/PeerReview.css: same treatment for the review
+  queue cards, comment threads, and approve/reject controls.
+- client/src/pages/ReportUploadForm.jsx/ResubmitReportForm.jsx:
+  submit/cancel buttons now use the shared .btn utility classes.
+
+Bug fixes found during verification:
+- app.py: POST /api/reports/<id>/resubmit was gated behind
+  @roles_required('publisher', 'admin'), but roles aren't permanent -
+  an admin can demote a publisher back to basic via manage_users.py
+  without touching their existing reports. A publisher demoted while
+  a report sat in changes_requested would be permanently unable to
+  resubmit it. Switched to @login_required, relying on the route's
+  own identity check (report.uploaded_by == user.id). Verified: a
+  demoted uploader can now resubmit (200); a stranger still gets 404.
+- notification.py: fixed a stale docstring reference to '2nd distinct
+  approval', left over from before REQUIRED_APPROVALS was corrected
+  from 2 to 3.
+
+Security audit and fix:
+- Audited CORS/session cookie config, CSRF exposure, SQL injection
+  surface, password reset token generation, rate limiting coverage,
+  login/signup/forgot-password email-enumeration resistance, session
+  fixation on login, auth decorator coverage across every mutating
+  and sensitive GET route, and Stripe webhook signature verification -
+  all already solid.
+- app.py: report cover images were validated by extension only, with
+  the browser-supplied (attacker-controlled) Content-Type stored and
+  served back verbatim. The local storage backend's own
+  X-Content-Type-Options: nosniff covered this, but the S3 backend -
+  required in production - serves files via a redirect straight to a
+  presigned URL, entirely outside this app's response headers, so
+  nosniff never applied there. Now verifies every uploaded cover
+  image is genuinely decodable via Pillow (already a dependency, used
+  the same way for fellow photos) before saving, rejecting non-image
+  content regardless of its extension or declared Content-Type.
+  Verified: a genuine PNG still uploads; a script tag renamed to .png
+  is rejected with a 400.

@@ -1,19 +1,27 @@
 import React, { useState } from 'react';
-import { checkReportTitle, checkReportDescription, checkReportCategory } from '../utils/formValidation.js';
-import { REPORT_CATEGORIES, DEFAULT_REPORT_CATEGORY } from '../constants/reportCategories.js';
+import { checkReportTitle, checkReportDescription } from '../utils/formValidation.js';
 
 /**
- * Publisher/admin-only upload form for the Reports page. The actual
- * enforcement is server-side (@roles_required("publisher", "admin") on
- * POST /api/reports) - this component is only ever rendered after
- * Reports.jsx has already checked the user's role, but doesn't re-check
- * here itself, since its parent is the single source of truth for
- * whether to show it at all.
+ * Shown inline under a report in Profile > Publications once it's
+ * review_status === "changes_requested" - the uploader's own only way
+ * to act on reviewer feedback. Reuses the same field styling as
+ * ReportUploadForm (report-upload-*) since it's the same kind of form,
+ * just pre-filled and with one extra field.
+ *
+ * Title/description are pre-filled from the current report and
+ * optional to change - the server (resubmit_report in
+ * models/report.py) only updates whatever's actually sent, leaving
+ * the rest as-is. resubmission_note is the uploader's own message
+ * back to reviewers (e.g. "Added the citations you asked for") -
+ * shown alongside their review comment history, not required. A file
+ * is always required, even if unchanged, since POST
+ * /api/reports/<id>/resubmit always bumps the version and a version
+ * with no new file wouldn't make sense.
  */
-export default function ReportUploadForm({ onUploaded, onCancel }) {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState(DEFAULT_REPORT_CATEGORY);
+export default function ResubmitReportForm({ report, onResubmitted, onCancel }) {
+  const [title, setTitle] = useState(report.title);
+  const [description, setDescription] = useState(report.description);
+  const [resubmissionNote, setResubmissionNote] = useState('');
   const [file, setFile] = useState(null);
   const [image, setImage] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
@@ -26,9 +34,7 @@ export default function ReportUploadForm({ onUploaded, onCancel }) {
     if (titleError) errors.title = titleError;
     const descriptionError = checkReportDescription(description);
     if (descriptionError) errors.description = descriptionError;
-    const categoryError = checkReportCategory(category);
-    if (categoryError) errors.category = categoryError;
-    if (!file) errors.file = 'A PDF or Word document is required.';
+    if (!file) errors.file = 'A PDF or Word document is required, even if unchanged from before.';
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   }
@@ -42,21 +48,21 @@ export default function ReportUploadForm({ onUploaded, onCancel }) {
     const formData = new FormData();
     formData.append('title', title.trim());
     formData.append('description', description.trim());
-    formData.append('category', category);
+    if (resubmissionNote.trim()) formData.append('resubmission_note', resubmissionNote.trim());
     formData.append('file', file);
     if (image) formData.append('image', image);
 
     try {
-      const res = await fetch('/api/reports', {
+      const res = await fetch(`/api/reports/${report.id}/resubmit`, {
         method: 'POST',
         credentials: 'include',
         body: formData,
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        throw new Error(data.description || data.error || 'Upload failed.');
+        throw new Error(data.description || data.error || 'Resubmission failed.');
       }
-      onUploaded(data);
+      onResubmitted(data);
     } catch (err) {
       setStatus({ type: 'error', message: err.message });
     } finally {
@@ -68,48 +74,36 @@ export default function ReportUploadForm({ onUploaded, onCancel }) {
     <form onSubmit={handleSubmit} className="report-upload-form">
       <label className="report-upload-field">
         <span>Title</span>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Report title"
-        />
+        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
         {fieldErrors.title && <span className="report-upload-field-error">{fieldErrors.title}</span>}
       </label>
 
       <label className="report-upload-field">
         <span>Description</span>
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="A short summary of this report"
-          rows={4}
-        />
+        <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={4} />
         {fieldErrors.description && (
           <span className="report-upload-field-error">{fieldErrors.description}</span>
         )}
       </label>
 
       <label className="report-upload-field">
-        <span>Section</span>
-        <select value={category} onChange={(e) => setCategory(e.target.value)}>
-          {REPORT_CATEGORIES.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
-        {fieldErrors.category && <span className="report-upload-field-error">{fieldErrors.category}</span>}
+        <span>Note to reviewers (optional)</span>
+        <textarea
+          value={resubmissionNote}
+          onChange={(e) => setResubmissionNote(e.target.value)}
+          placeholder="What changed since the last version?"
+          rows={2}
+        />
       </label>
 
       <label className="report-upload-field">
-        <span>Report file (PDF or Word document)</span>
+        <span>Updated report file (PDF or Word document)</span>
         <input type="file" accept=".pdf,.doc,.docx" onChange={(e) => setFile(e.target.files[0] || null)} />
         {fieldErrors.file && <span className="report-upload-field-error">{fieldErrors.file}</span>}
       </label>
 
       <label className="report-upload-field">
-        <span>Cover image (optional)</span>
+        <span>Cover image (optional — leave blank to keep the current one)</span>
         <input type="file" accept=".png,.jpg,.jpeg,.webp" onChange={(e) => setImage(e.target.files[0] || null)} />
       </label>
 
@@ -117,7 +111,7 @@ export default function ReportUploadForm({ onUploaded, onCancel }) {
 
       <div className="report-upload-actions">
         <button type="submit" className="btn btn-primary" disabled={submitting}>
-          {submitting ? 'Uploading…' : 'Upload report'}
+          {submitting ? 'Resubmitting…' : 'Resubmit for review'}
         </button>
         <button type="button" className="btn btn-secondary" onClick={onCancel} disabled={submitting}>
           Cancel

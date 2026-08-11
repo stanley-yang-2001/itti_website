@@ -42,6 +42,7 @@ import tempfile
 from datetime import datetime, timedelta
 
 import stripe
+from PIL import Image
 from dotenv import load_dotenv
 from flask import Flask, jsonify, abort, request, session, send_file
 from flask_cors import CORS
@@ -74,6 +75,9 @@ from models.report import (
     delete_report, hard_delete_report, resubmit_report, reports_to_public_dicts,
 )
 from models.report_review import record_review, get_reviews_for_report, ReviewError
+from models.notification import (
+    get_notifications_for_user, get_unread_count, mark_notification_read, mark_all_read,
+)
 from models.favorite_report import (
     add_favorite_report, remove_favorite_report, get_favorite_report_ids, get_favorite_reports_by_user,
 )
@@ -1581,6 +1585,28 @@ def _save_report_upload(user_id, file, image):
             report_storage.delete(file_path)
             abort(400, description=f"Cover image exceeds the {MAX_REPORT_IMAGE_BYTES // (1024 * 1024)}MB limit")
 
+        # Verify the upload is genuinely a readable image, not just a
+        # file with an allowed extension - an attacker can freely set
+        # the extension and the browser-reported Content-Type
+        # (image.mimetype below) to anything they like, and the latter
+        # is what image_mime_type ends up serving back verbatim in
+        # get_report_image's response headers. For the local storage
+        # backend that's caught by this app's own X-Content-Type-Options:
+        # nosniff (set in after_request), but the S3 backend - required
+        # in production, see the startup check above - serves the file
+        # via a redirect straight to a presigned S3 URL, entirely
+        # outside this app's own response headers, so nosniff never
+        # applies there. Confirming Pillow can actually decode it here
+        # closes that gap regardless of storage backend, by rejecting
+        # non-image content (e.g. HTML/SVG-with-script renamed to
+        # .png) before it's ever stored or served at all.
+        try:
+            Image.open(image.stream).verify()
+        except Exception:
+            report_storage.delete(file_path)
+            abort(400, description="Cover image could not be read as a valid image file")
+        image.stream.seek(0)
+
         image_path, _ = report_storage.save(user_id, image.filename, image)
         image_mime_type = image.mimetype
 
@@ -1638,7 +1664,7 @@ def upload_report():
 
 
 @app.post("/api/reports/<int:report_id>/resubmit")
-@roles_required("publisher", "admin")
+@login_required
 @limiter.limit("20 per hour")
 def resubmit_report_route(report_id):
     """
@@ -1652,7 +1678,15 @@ def resubmit_report_route(report_id):
       - "image": an optional new cover image
 
     Only usable by the report's own uploader, and only while it's in
-    changes_requested. Bumps version and resets to pending_review.
+    changes_requested. Deliberately gated on identity (report.uploaded_by
+    == user.id, checked below) rather than @roles_required("publisher",
+    "admin") - a report can only ever have been uploaded by a publisher
+    or admin in the first place (see upload_report's own decorator),
+    but role isn't permanent: an admin can demote a publisher back to
+    basic (see manage_users.py) without touching their existing
+    reports, and someone in that position still needs to be able to
+    resubmit a report already stuck in changes_requested. Bumps
+    version and resets to pending_review.
     """
     user = get_current_user()
     report = get_report(report_id)
@@ -1713,9 +1747,11 @@ def review_report_route(report_id):
     Body: { "decision": "approve" | "reject", "comment": "..." }
     comment is required when decision is "reject", optional otherwise.
     All the actual rules (can't review your own report, report must be
-    pending_review, 3rd approval auto-publishes) are enforced in
+    pending_review, REQUIRED_APPROVALS-th approval publishes, an
+    admin's approve publishes on its own) are enforced in
     models/report_review.record_review() - this route just translates
-    its ReviewError into a 400.
+    its ReviewError into a 400 and tells it whether this reviewer is
+    an admin.
     """
     user = get_current_user()
     body = request.get_json(silent=True) or {}
@@ -1728,7 +1764,7 @@ def review_report_route(report_id):
             abort(400, description=error)
 
     try:
-        updated_report = record_review(report_id, user.id, decision, comment)
+        updated_report = record_review(report_id, user.id, decision, comment, is_admin=(user.role == "admin"))
     except ReviewError as e:
         abort(400, description=str(e))
 
@@ -1737,6 +1773,54 @@ def review_report_route(report_id):
                 report_id, user.id, decision, updated_report.review_status)
 
     return jsonify(updated_report.to_public_dict())
+
+
+# ---------------------------------------------------------------------------
+# Notifications (Profile page's Notifications tab). Currently only
+# produced by models.report_review.record_review() - see its own
+# docstring - but every route here is generic over `type`.
+# ---------------------------------------------------------------------------
+
+@app.get("/api/notifications")
+@login_required
+def list_notifications():
+    """
+    A page of the logged-in user's own notifications, newest first.
+    Bounded by pagination.DEFAULT_PAGE_SIZE unless ?limit=&offset= are
+    passed - see list_reports() earlier in this file for why.
+    """
+    user = get_current_user()
+    limit, offset = parse_pagination_args()
+    notifications, total = get_notifications_for_user(user.id, limit=limit, offset=offset)
+    return paginated_json_response([n.to_public_dict() for n in notifications], total, limit, offset)
+
+
+@app.get("/api/notifications/unread-count")
+@login_required
+def notifications_unread_count():
+    """Just the count, for a badge - cheaper than fetching the full list to find out."""
+    user = get_current_user()
+    return jsonify({"unread_count": get_unread_count(user.id)})
+
+
+@app.post("/api/notifications/<int:notification_id>/read")
+@login_required
+def mark_notification_read_route(notification_id):
+    """Marks one notification read. Scoped to the logged-in user - mark_notification_read() 404s on anyone else's id."""
+    user = get_current_user()
+    notification = mark_notification_read(notification_id, user.id)
+    if notification is None:
+        abort(404, description="Notification not found")
+    return jsonify(notification.to_public_dict())
+
+
+@app.post("/api/notifications/read-all")
+@login_required
+def mark_all_notifications_read_route():
+    """Marks every unread notification for the logged-in user read - e.g. an "Mark all as read" button."""
+    user = get_current_user()
+    updated = mark_all_read(user.id)
+    return jsonify({"updated": updated})
 
 
 @app.get("/api/reports/<int:report_id>/reviews")

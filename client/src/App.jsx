@@ -26,6 +26,7 @@ import CertificationEnrollThankYou from './pages/CertificationEnrollThankYou.jsx
 import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
 import Profile from './pages/Profile.jsx';
 import Settings from './pages/Settings.jsx';
+import PeerReview from './pages/PeerReview.jsx';
 
 /**
  * Gives routed page content a gentle fade-in on navigation instead of
@@ -88,6 +89,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/peer-review"
+          element={
+            <ProtectedRoute requireRole="publisher">
+              <PeerReview />
             </ProtectedRoute>
           }
         />

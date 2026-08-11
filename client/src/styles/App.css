@@ -25,6 +25,24 @@
     --text-hi:#111827;
     --text-mid:#4B5768;
     --text-low:#6B7686;
+
+    /* Spacing/radius scale - referenced throughout Profile.css/Control.css
+       already but never previously defined here, so those rules were
+       silently falling back to var()'s invalid-at-computed-value
+       behavior (0/none) rather than actually spacing or rounding
+       anything. Values chosen to match what was already hardcoded
+       elsewhere (10px card radii, 6px button radii, 16-24px gaps). */
+    --space-2:8px;
+    --space-3:12px;
+    --space-4:16px;
+    --space-5:20px;
+    --space-6:24px;
+    --space-7:32px;
+    --space-8:40px;
+    --radius-sm:6px;
+    --radius-md:10px;
+    --radius-lg:16px;
+    --radius-pill:999px;
   }
   *{box-sizing:border-box;}
   html,body{
@@ -47,6 +65,48 @@
   }
   .display{font-family:'Times New Roman', Times, serif;}
   .mono{font-family:'JetBrains Mono',monospace;}
+
+  /* ---------- Shared button utility classes ---------- */
+  /* Used across Profile, Reports, PeerReview, etc. for actions like
+     "Upload Report", "Peer Review", "Mark all as read" - defined here
+     once so every page's action buttons look and behave identically,
+     rather than each page inventing its own button style. */
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    padding:9px 18px;
+    border-radius:8px;
+    border:1px solid transparent;
+    font-size:13.5px;
+    font-weight:600;
+    font-family:'Inter',sans-serif;
+    cursor:pointer;
+    text-decoration:none;
+    white-space:nowrap;
+    transition:background .15s ease, border-color .15s ease, color .15s ease, opacity .15s ease;
+  }
+  .btn:disabled{
+    opacity:0.5;
+    cursor:not-allowed;
+  }
+  .btn-primary{
+    background:var(--cyan);
+    color:#fff;
+  }
+  .btn-primary:hover:not(:disabled){
+    background:#0C625A;
+  }
+  .btn-secondary{
+    background:rgba(21,27,38,0.03);
+    border-color:var(--line);
+    color:var(--text-mid);
+  }
+  .btn-secondary:hover:not(:disabled){
+    border-color:var(--cyan);
+    color:var(--text-hi);
+  }
 
   /* ---------- Page transition ---------- */
   /* Wraps whatever <Routes> renders (see App.jsx). Has to behave as a
