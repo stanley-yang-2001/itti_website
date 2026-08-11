@@ -35,23 +35,25 @@ is admin-only.
 """
 import logging
 import json
+import io
 import os
 import re
 import tempfile
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import stripe
+from PIL import Image
 from dotenv import load_dotenv
 from flask import Flask, jsonify, abort, request, session, send_file
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from werkzeug.datastructures import FileStorage
 from werkzeug.exceptions import HTTPException
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
-from google.auth import exceptions as google_auth_exceptions
 
 import globe_data
 import country_profiles_upload
@@ -70,9 +72,12 @@ from models.document import (
 from models.report import (
     create_report, get_report, get_published_reports, get_pending_reports,
     get_changes_requested_reports, get_reports_by_uploader,
-    delete_report, hard_delete_report, resubmit_report,
+    delete_report, hard_delete_report, resubmit_report, reports_to_public_dicts,
 )
 from models.report_review import record_review, get_reviews_for_report, ReviewError
+from models.notification import (
+    get_notifications_for_user, get_unread_count, mark_notification_read, mark_all_read,
+)
 from models.favorite_report import (
     add_favorite_report, remove_favorite_report, get_favorite_report_ids, get_favorite_reports_by_user,
 )
@@ -92,7 +97,12 @@ from models.enrollment import (
     finalize_succeeded_enrollment, mark_enrollment_failed, record_refund,
     STATUS_SUCCEEDED as ENROLLMENT_STATUS_SUCCEEDED,
 )
+from models.fellow import (
+    FELLOW_LEVEL_CODES, create_fellow, get_fellow, get_all_fellows,
+    update_fellow, delete_fellow,
+)
 from storage import get_storage
+import image_processing
 from email_backend import (
     get_email_backend, send_password_reset_email, send_donation_confirmation_email,
     send_enrollment_confirmation_email,
@@ -166,6 +176,15 @@ if IS_PRODUCTION:
         missing.append("STRIPE_SECRET_KEY")
     if not STRIPE_WEBHOOK_SECRET:
         missing.append("STRIPE_WEBHOOK_SECRET")
+    # storage.py defaults to STORAGE_BACKEND=local, which writes to this
+    # container's own disk - fine for local dev, but most hosts
+    # (including the one app.yaml targets here) hand you a fresh
+    # container on every redeploy, silently discarding anything written
+    # to local disk. Every uploaded report/photo would be one deploy
+    # away from disappearing without this check, with no error at
+    # upload time to warn anyone it happened.
+    if os.environ.get("STORAGE_BACKEND", "local").lower() != "s3":
+        missing.append("STORAGE_BACKEND=s3 (currently unset/local - uploads would not survive a redeploy)")
     if missing:
         raise RuntimeError(
             f"FLASK_ENV=production but these required env vars are unset/using dev "
@@ -182,6 +201,10 @@ app.secret_key = FLASK_SECRET_KEY
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_SECURE"] = IS_PRODUCTION
 app.config["SESSION_COOKIE_HTTPONLY"] = True
+# Flask's own default here is 31 days if left unset - long enough that any
+# leaked/cached session cookie (see the Cache-Control note above) stays
+# exploitable for a month. A week is still generous for "stay logged in."
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=7)
 
 # Hard cap on request body size (defends against giant uploads before
 # they ever reach our own MAX_UPLOAD_BYTES check below).
@@ -207,17 +230,58 @@ CORS(app, supports_credentials=True, origins=[CLIENT_ORIGIN])
 #     not a precise limiter. If this app ever adds a Redis instance for
 #     other reasons, switching storage_uri to "redis://..." fixes both
 #     points at once (flask-limiter supports it out of the box).
-limiter = Limiter(get_remote_address, app=app, storage_uri="memory://", default_limits=[])
+#
+#   - The sharper problem: --workers 2 in the Dockerfile means two
+#     separate processes, each with its own copy of this dict. Limits
+#     aren't shared between them, so e.g. "10 per minute" on login is
+#     really closer to "up to 20 per minute" in practice depending on
+#     which worker a given request lands on - the configured numbers
+#     read stricter than what's actually enforced. RATELIMIT_STORAGE_URI
+#     lets this be pointed at a real shared store (e.g. redis://...)
+#     without a code change once one exists; until then, this warns
+#     loudly at startup in production rather than silently under-
+#     enforcing brute-force protection with no visible sign anything is
+#     off.
+RATELIMIT_STORAGE_URI = os.environ.get("RATELIMIT_STORAGE_URI", "memory://")
+if IS_PRODUCTION and RATELIMIT_STORAGE_URI == "memory://":
+    logger.warning(
+        "RATELIMIT_STORAGE_URI is unset (defaulting to in-process memory://) while "
+        "FLASK_ENV=production. Rate limits are per-worker, not global, with the "
+        "Dockerfile's --workers 2 - actual enforcement is looser than the configured "
+        "limits suggest. Set RATELIMIT_STORAGE_URI to a shared store (e.g. redis://...) "
+        "to close this gap."
+    )
+limiter = Limiter(get_remote_address, app=app, storage_uri=RATELIMIT_STORAGE_URI, default_limits=[])
 
 
 @app.after_request
 def set_security_headers(response):
     """Baseline hardening headers. This is a JSON API (not serving HTML
-    pages), so CSP is locked down hard by default."""
+    pages), so CSP is locked down hard by default.
+
+    Cache-Control: no-store is set on every response, not just the
+    obviously session-dependent ones (/api/auth/me, /api/profile,
+    etc.) - this API sits behind whatever proxy/CDN layer the hosting
+    platform puts in front of it, and jsonify() alone sets no caching
+    header at all. Without an explicit no-store, a shared cache that
+    doesn't itself vary on the session cookie (many don't, by
+    default) can serve one person's cached JSON body - which for an
+    endpoint like /api/auth/me *is* "being logged into their
+    account" from the frontend's point of view - to a completely
+    different visitor who never presented that cookie at all. Vary:
+    Cookie is defense-in-depth on top of that for any cache that
+    ignores no-store but does respect Vary. The few truly public,
+    identical-for-everyone payloads (world topology, aggregate globe
+    data) are already cached at the application layer in this
+    process's memory (see load_json_cached() below), so nothing here
+    loses real caching benefit - it just stops relying on an
+    HTTP-level cache to do it safely for personalized responses."""
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'"
+    response.headers["Cache-Control"] = "no-store"
+    response.headers["Vary"] = "Cookie"
     if request.is_secure:
         response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains"
     return response
@@ -284,10 +348,19 @@ if DATABASE_URL.startswith("sqlite"):
 storage = get_storage(UPLOAD_DIR)
 REPORTS_UPLOAD_DIR = os.path.join(BASE_DIR, "report_uploads")
 report_storage = get_storage(REPORTS_UPLOAD_DIR, s3_prefix="reports")
+FELLOWS_UPLOAD_DIR = os.path.join(BASE_DIR, "fellow_uploads")
+fellow_storage = get_storage(FELLOWS_UPLOAD_DIR, s3_prefix="fellows")
 email_backend = get_email_backend()
 
 MAX_UPLOAD_BYTES = 20 * 1024 * 1024  # 20 MB per file
 ALLOWED_UPLOAD_EXTENSIONS = {".pdf", ".doc", ".docx", ".ppt", ".pptx", ".xls", ".xlsx", ".csv", ".txt", ".png", ".jpg", ".jpeg"}
+
+# Fellow photos: source format doesn't actually matter beyond "Pillow
+# can open it" - image_processing.normalize_photo() re-encodes
+# everything to JPEG regardless, so this is a broad allow-list of
+# common formats rather than a strict content check.
+ALLOWED_FELLOW_PHOTO_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp"}
+MAX_FELLOW_PHOTO_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MB per file, pre-normalization
 
 # Reports only accept a PDF or Word doc as the report itself, and a
 # real image (if provided at all) as the cover picture - narrower than
@@ -411,33 +484,14 @@ def auth_google():
         abort(400, description="Missing 'credential' in request body")
 
     if not GOOGLE_CLIENT_ID:
-        logger.error("GOOGLE_CLIENT_ID is not configured on the server; rejecting Google sign-in attempt")
         abort(500, description="Server is missing GOOGLE_CLIENT_ID configuration")
 
     try:
         claims = id_token.verify_oauth2_token(
             credential, google_requests.Request(), GOOGLE_CLIENT_ID
         )
-    except ValueError as exc:
-        # The common, expected failure: malformed token, expired token,
-        # or an audience ("aud" claim) that doesn't match GOOGLE_CLIENT_ID -
-        # e.g. the frontend and backend are configured with different
-        # client IDs. Logged at info level since this is routine
-        # (a stale tab, a misconfigured env var, or someone poking the API)
-        # rather than a server-side bug.
-        logger.info("google credential verification failed: %s", exc)
+    except ValueError:
         abort(401, description="Invalid Google credential")
-    except google_auth_exceptions.GoogleAuthError as exc:
-        # Covers everything ValueError doesn't: wrong issuer, and - more
-        # commonly in production - a transport/network failure reaching
-        # Google's certs endpoint (accounts.google.com /
-        # www.googleapis.com), which would otherwise fall through to the
-        # generic 500 handler with no indication of *why*. Logged at
-        # warning level and surfaced as a distinct, honest error message
-        # rather than a bare 500, since this is often an infra/egress
-        # issue rather than anything wrong with the credential itself.
-        logger.warning("google auth transport/issuer error: %s", exc)
-        abort(503, description="Couldn't reach Google to verify sign-in. Please try again in a moment.")
 
     google_sub = claims["sub"]
     # Normalize the same way /api/auth/signup and /api/auth/login do. Google
@@ -645,14 +699,61 @@ def auth_me():
     """Returns the logged-in user, or 401 if no session."""
     user = get_current_user()
     if user is None:
-        session.pop("user_id", None)
+        session.clear()
         abort(404, description="User not found")
     return jsonify(user.to_public_dict())
 
 
+@app.post("/api/auth/update-profile")
+@login_required
+def update_profile():
+    """
+    Body: { "name"?: str, "current_password"?: str, "new_password"?: str }
+    Each field is independent - send just "name" to rename, or both
+    password fields together to change password. Sending a password
+    field without the other is a 400. Google-only accounts (no
+    password_hash yet) can set an initial password by sending just
+    "new_password" with no "current_password".
+    """
+    user = get_current_user()
+    body = request.get_json(silent=True) or {}
+
+    updates = {}
+
+    if "name" in body:
+        name = (body.get("name") or "").strip()
+        if not name:
+            abort(400, description="Name cannot be empty")
+        if len(name) > 100:
+            abort(400, description="Name is too long")
+        updates["name"] = name
+
+    current_password = body.get("current_password")
+    new_password = body.get("new_password")
+    if current_password is not None or new_password is not None:
+        if not new_password:
+            abort(400, description="new_password is required to change your password")
+        if len(new_password) < 8:
+            abort(400, description="Password must be at least 8 characters")
+        if user.password_hash:
+            # Existing password on file - must confirm it first.
+            if not current_password or not check_password_hash(user.password_hash, current_password):
+                abort(401, description="Current password is incorrect")
+        # else: Google-only account with no password yet - setting an
+        # initial password doesn't require confirming a nonexistent one.
+        updates["password_hash"] = generate_password_hash(new_password)
+
+    if not updates:
+        abort(400, description="Nothing to update")
+
+    updated = update_user(user.id, **updates)
+    logger.info("user_id=%s updated profile fields=%s", user.id, list(updates.keys()))
+    return jsonify(updated.to_public_dict())
+
+
 @app.post("/api/auth/logout")
 def auth_logout():
-    session.pop("user_id", None)
+    session.clear()
     return jsonify({"status": "logged out"})
 
 
@@ -668,7 +769,7 @@ def delete_account():
     user = get_current_user()
     delete_user(user.id)
     create_user_event(user_id=user.id, document_id=None, action=CRUDAction.DELETE)
-    session.pop("user_id", None)
+    session.clear()
     return jsonify({"status": "account deleted"})
 
 
@@ -686,9 +787,11 @@ def list_all_users():
     """A page of visible (non-deleted) user accounts, for the admin
     role-management panel. Bounded by pagination.DEFAULT_PAGE_SIZE
     unless ?limit=&offset= are passed - see list_reports() above for
-    why."""
+    why. ?search= filters to users whose name or email contains it
+    (case-insensitive) - powers the Access Level panel's search bar."""
     limit, offset = parse_pagination_args()
-    users, total = get_all_users(limit=limit, offset=offset)
+    search = (request.args.get("search") or "").strip() or None
+    users, total = get_all_users(limit=limit, offset=offset, search=search)
     return paginated_json_response([u.to_public_dict() for u in users], total, limit, offset)
 
 
@@ -945,6 +1048,287 @@ def upload_country_profile_docx():
 
 
 # ---------------------------------------------------------------------------
+# Version history + restore, for both upload types above. Admin-only -
+# unlike the uploads themselves (globe-data uploads are also open to
+# publishers via /publish/globe-data), picking an old version back into
+# place from the Control panel's dropdown is an admin-only action.
+# ---------------------------------------------------------------------------
+
+@app.get("/api/globe-data/uploads")
+@roles_required("admin")
+def list_globe_data_uploads():
+    """
+    Every archived GTBI/ETTI workbook upload, newest first - powers the
+    Control panel's "restore a previous version" dropdown. Optional
+    ?kind=GTBI|ETTI filters to one kind (the dropdown only ever shows
+    one kind at a time, matching whichever upload section it's under).
+    """
+    kind = (request.args.get("kind") or "").strip().upper()
+    uploads = globe_data.list_uploads()
+    if kind:
+        if kind not in globe_data.VALID_KINDS:
+            abort(400, description=f"'kind' must be one of {', '.join(globe_data.VALID_KINDS)}")
+        uploads = [u for u in uploads if u["kind"] == kind]
+    return jsonify(uploads)
+
+
+@app.post("/api/globe-data/restore")
+@roles_required("admin")
+@limiter.limit("20 per hour")
+def restore_globe_data():
+    """
+    Body: { "kind": "ETTI"|"GTBI", "filename": "<one of the filenames
+    GET /api/globe-data/uploads just listed for this kind>" }
+
+    Re-applies that archived workbook as the current canonical version
+    - same validate/archive/rotate/merge pipeline as a fresh upload
+    (globe_data.restore_upload()), just sourced from the archive
+    instead of a new file on the wire.
+    """
+    body = request.get_json(silent=True) or {}
+    kind = (body.get("kind") or "").strip().upper()
+    filename = body.get("filename")
+    if kind not in globe_data.VALID_KINDS:
+        abort(400, description=f"'kind' must be one of {', '.join(globe_data.VALID_KINDS)}")
+    if not filename:
+        abort(400, description="'filename' is required")
+
+    try:
+        result = globe_data.restore_upload(kind, filename)
+    except FileNotFoundError as e:
+        abort(404, description=str(e))
+    except globe_data.WorkbookValidationError as e:
+        abort(400, description=str(e))
+
+    _invalidate_json_cache(COUNTRY_DATA_PATH)
+
+    user = get_current_user()
+    create_user_event(user_id=user.id, document_id=None, action=CRUDAction.UPDATE)
+    logger.info(
+        "globe data restore kind=%s user_id=%s filename=%s countries_updated=%d",
+        kind, user.id, filename, len(result["updated_codes"]),
+    )
+
+    return jsonify({
+        "kind": kind,
+        "countries_updated": result["updated_codes"],
+        "unresolved_country_names": result["unresolved_country_names"],
+        "total_countries_in_file": result["total_countries_in_file"],
+    })
+
+
+@app.get("/api/country-profiles/uploads")
+@roles_required("admin")
+def list_country_profile_uploads():
+    """
+    Every archived country-profile docx upload, newest first - powers
+    the Control panel's "restore a previous version" dropdown. Optional
+    ?kind=survey|dashboard filters to one kind.
+    """
+    kind = (request.args.get("kind") or "").strip().lower()
+    uploads = country_profiles_upload.list_uploads()
+    if kind:
+        if kind not in country_profiles_upload.VALID_KINDS:
+            abort(400, description=f"'kind' must be one of {', '.join(sorted(country_profiles_upload.VALID_KINDS))}")
+        uploads = [u for u in uploads if u["kind"] == kind]
+    return jsonify(uploads)
+
+
+@app.post("/api/country-profiles/restore")
+@roles_required("admin")
+@limiter.limit("20 per hour")
+def restore_country_profile_docx():
+    """
+    Body: { "kind": "survey"|"dashboard", "filename": "<one of the
+    filenames GET /api/country-profiles/uploads just listed for this
+    kind>" }
+
+    Re-applies that archived document as the current canonical version
+    - same validate/archive/rotate/regenerate pipeline as a fresh
+    upload (country_profiles_upload.restore_docx()), just sourced from
+    the archive instead of a new file on the wire.
+    """
+    body = request.get_json(silent=True) or {}
+    kind = (body.get("kind") or "").strip().lower()
+    filename = body.get("filename")
+    if kind not in country_profiles_upload.VALID_KINDS:
+        abort(400, description=f"'kind' must be one of {', '.join(sorted(country_profiles_upload.VALID_KINDS))}")
+    if not filename:
+        abort(400, description="'filename' is required")
+
+    try:
+        result = country_profiles_upload.restore_docx(kind, filename)
+    except FileNotFoundError as e:
+        abort(404, description=str(e))
+    except country_profiles_upload.DocxValidationError as e:
+        abort(400, description=str(e))
+
+    _invalidate_json_cache(COUNTRY_PROFILES_PATH)
+
+    user = get_current_user()
+    create_user_event(user_id=user.id, document_id=None, action=CRUDAction.UPDATE)
+    logger.info(
+        "country profile docx restore kind=%s user_id=%s filename=%s profile_count=%d",
+        kind, user.id, filename, result["profile_count"],
+    )
+
+    return jsonify({
+        "kind": kind,
+        "profile_count": result["profile_count"],
+        "with_dashboard_note_count": result["with_dashboard_note_count"],
+        "skipped": result["skipped"],
+    })
+
+
+# ---------------------------------------------------------------------------
+# Fellows (the Fellowship page's roster). Reads are public; writes are
+# admin only, via the Control panel's "Fellows" section.
+# ---------------------------------------------------------------------------
+
+def _save_fellow_photo(upload):
+    """
+    Shared by create/update below: validates the upload's extension and
+    size, normalizes it through image_processing.normalize_photo() (see
+    that module for what "normalize" means - always a fixed-size JPEG
+    regardless of the source format), and saves the *normalized* bytes
+    via fellow_storage. Returns the storage path. Raises a Werkzeug
+    HTTPException (via abort()) on any validation failure, so callers
+    can just call this and trust they get a valid path back.
+    """
+    original_filename = secure_filename(upload.filename or "")
+    ext = os.path.splitext(original_filename)[1].lower()
+    if ext not in ALLOWED_FELLOW_PHOTO_EXTENSIONS:
+        abort(400, description=f"Photo must be one of {', '.join(sorted(ALLOWED_FELLOW_PHOTO_EXTENSIONS))}")
+
+    upload.stream.seek(0, os.SEEK_END)
+    size = upload.stream.tell()
+    upload.stream.seek(0)
+    if size > MAX_FELLOW_PHOTO_UPLOAD_BYTES:
+        abort(400, description=f"Photo exceeds the {MAX_FELLOW_PHOTO_UPLOAD_BYTES // (1024 * 1024)}MB limit")
+
+    try:
+        normalized_bytes, mimetype = image_processing.normalize_photo(upload.stream)
+    except image_processing.UnsupportedImageError as e:
+        abort(400, description=str(e))
+
+    # normalize_photo() always produces a JPEG, so the file handed to
+    # storage is wrapped fresh here rather than reusing `upload` (which
+    # is still whatever format/bytes was originally uploaded).
+    normalized_file = FileStorage(
+        stream=io.BytesIO(normalized_bytes), filename="photo.jpg", content_type=mimetype,
+    )
+    photo_path, _size_bytes = fellow_storage.save("fellows", normalized_file.filename, normalized_file)
+    return photo_path
+
+
+@app.get("/api/fellows")
+def list_fellows():
+    """Public roster for the Fellowship page - replaces the old hardcoded FELLOWS array in fellowship.js."""
+    fellows = get_all_fellows()
+    return jsonify([f.to_public_dict() for f in fellows])
+
+
+@app.get("/api/fellows/<int:fellow_id>/photo")
+def get_fellow_photo(fellow_id):
+    """Serves a fellow's normalized photo. All fellow photos are JPEGs - see image_processing.py."""
+    fellow = get_fellow(fellow_id)
+    if fellow is None or not fellow.photo_path:
+        abort(404, description="No photo for this fellow")
+    return fellow_storage.get_file_response(fellow.photo_path, download_name=f"{fellow.id}.jpg", mimetype="image/jpeg")
+
+
+@app.post("/api/fellows")
+@roles_required("admin")
+def create_fellow_route():
+    """
+    Body: multipart/form-data with name, level (one of
+    models.fellow.FELLOW_LEVEL_CODES), bio, and an optional photo file.
+    """
+    name = (request.form.get("name") or "").strip()
+    level = (request.form.get("level") or "").strip().upper()
+    bio = request.form.get("bio") or ""
+
+    if not name:
+        abort(400, description="'name' is required")
+    if level not in FELLOW_LEVEL_CODES:
+        abort(400, description=f"'level' must be one of {', '.join(FELLOW_LEVEL_CODES)}")
+
+    photo_path = None
+    photo = request.files.get("photo")
+    if photo is not None and photo.filename:
+        photo_path = _save_fellow_photo(photo)
+
+    fellow = create_fellow(name=name, level=level, bio=bio, photo_path=photo_path)
+
+    user = get_current_user()
+    create_user_event(user_id=user.id, document_id=None, action=CRUDAction.CREATE)
+    logger.info("fellow created id=%s name=%r level=%s user_id=%s", fellow.id, fellow.name, fellow.level, user.id)
+
+    return jsonify(fellow.to_public_dict()), 201
+
+
+@app.put("/api/fellows/<int:fellow_id>")
+@roles_required("admin")
+def update_fellow_route(fellow_id):
+    """
+    Body: multipart/form-data. name/level/bio are optional - omit a
+    field to leave it unchanged. A new photo file replaces the current
+    one; remove_photo=true (with no photo file) clears it back to no
+    photo instead.
+    """
+    if get_fellow(fellow_id) is None:
+        abort(404, description=f"No fellow with id {fellow_id}")
+
+    name = request.form.get("name")
+    if name is not None:
+        name = name.strip()
+        if not name:
+            abort(400, description="'name' cannot be blank")
+
+    level = request.form.get("level")
+    if level is not None:
+        level = level.strip().upper()
+        if level not in FELLOW_LEVEL_CODES:
+            abort(400, description=f"'level' must be one of {', '.join(FELLOW_LEVEL_CODES)}")
+
+    bio = request.form.get("bio")  # None = unchanged; "" is a valid intentional value
+
+    photo_path = None  # None = unchanged, unless remove_photo below overrides it
+    photo = request.files.get("photo")
+    if photo is not None and photo.filename:
+        photo_path = _save_fellow_photo(photo)
+    elif (request.form.get("remove_photo") or "").strip().lower() in ("1", "true", "yes"):
+        photo_path = False  # see update_fellow()'s docstring for this sentinel
+
+    fellow = update_fellow(fellow_id, name=name, level=level, bio=bio, photo_path=photo_path)
+
+    user = get_current_user()
+    create_user_event(user_id=user.id, document_id=None, action=CRUDAction.UPDATE)
+    logger.info("fellow updated id=%s user_id=%s", fellow.id, user.id)
+
+    return jsonify(fellow.to_public_dict())
+
+
+@app.delete("/api/fellows/<int:fellow_id>")
+@roles_required("admin")
+def delete_fellow_route(fellow_id):
+    fellow = get_fellow(fellow_id)
+    if fellow is None:
+        abort(404, description=f"No fellow with id {fellow_id}")
+
+    if fellow.photo_path:
+        fellow_storage.delete(fellow.photo_path)
+
+    deleted = delete_fellow(fellow_id)
+
+    user = get_current_user()
+    create_user_event(user_id=user.id, document_id=None, action=CRUDAction.DELETE)
+    logger.info("fellow deleted id=%s user_id=%s", fellow_id, user.id)
+
+    return jsonify({"deleted": deleted})
+
+
+# ---------------------------------------------------------------------------
 # Documents (upload / list / delete), with CRUD events logged for each action
 # ---------------------------------------------------------------------------
 
@@ -1094,7 +1478,7 @@ def list_reports():
     """
     limit, offset = parse_pagination_args()
     reports, total = get_published_reports(limit=limit, offset=offset)
-    return paginated_json_response([r.to_public_dict() for r in reports], total, limit, offset)
+    return paginated_json_response(reports_to_public_dicts(reports), total, limit, offset)
 
 
 @app.get("/api/reports/pending")
@@ -1103,7 +1487,7 @@ def list_pending_reports_route():
     """Reports awaiting review, oldest first. Peer Review page - publisher/admin only."""
     limit, offset = parse_pagination_args()
     reports, total = get_pending_reports(limit=limit, offset=offset)
-    return paginated_json_response([r.to_public_dict() for r in reports], total, limit, offset)
+    return paginated_json_response(reports_to_public_dicts(reports), total, limit, offset)
 
 
 @app.get("/api/reports/changes-requested")
@@ -1117,7 +1501,7 @@ def list_changes_requested_reports_route():
     """
     limit, offset = parse_pagination_args()
     reports, total = get_changes_requested_reports(limit=limit, offset=offset)
-    return paginated_json_response([r.to_public_dict() for r in reports], total, limit, offset)
+    return paginated_json_response(reports_to_public_dicts(reports), total, limit, offset)
 
 
 @app.get("/api/reports/<int:report_id>")
@@ -1201,6 +1585,28 @@ def _save_report_upload(user_id, file, image):
             report_storage.delete(file_path)
             abort(400, description=f"Cover image exceeds the {MAX_REPORT_IMAGE_BYTES // (1024 * 1024)}MB limit")
 
+        # Verify the upload is genuinely a readable image, not just a
+        # file with an allowed extension - an attacker can freely set
+        # the extension and the browser-reported Content-Type
+        # (image.mimetype below) to anything they like, and the latter
+        # is what image_mime_type ends up serving back verbatim in
+        # get_report_image's response headers. For the local storage
+        # backend that's caught by this app's own X-Content-Type-Options:
+        # nosniff (set in after_request), but the S3 backend - required
+        # in production, see the startup check above - serves the file
+        # via a redirect straight to a presigned S3 URL, entirely
+        # outside this app's own response headers, so nosniff never
+        # applies there. Confirming Pillow can actually decode it here
+        # closes that gap regardless of storage backend, by rejecting
+        # non-image content (e.g. HTML/SVG-with-script renamed to
+        # .png) before it's ever stored or served at all.
+        try:
+            Image.open(image.stream).verify()
+        except Exception:
+            report_storage.delete(file_path)
+            abort(400, description="Cover image could not be read as a valid image file")
+        image.stream.seek(0)
+
         image_path, _ = report_storage.save(user_id, image.filename, image)
         image_mime_type = image.mimetype
 
@@ -1258,7 +1664,7 @@ def upload_report():
 
 
 @app.post("/api/reports/<int:report_id>/resubmit")
-@roles_required("publisher", "admin")
+@login_required
 @limiter.limit("20 per hour")
 def resubmit_report_route(report_id):
     """
@@ -1272,7 +1678,15 @@ def resubmit_report_route(report_id):
       - "image": an optional new cover image
 
     Only usable by the report's own uploader, and only while it's in
-    changes_requested. Bumps version and resets to pending_review.
+    changes_requested. Deliberately gated on identity (report.uploaded_by
+    == user.id, checked below) rather than @roles_required("publisher",
+    "admin") - a report can only ever have been uploaded by a publisher
+    or admin in the first place (see upload_report's own decorator),
+    but role isn't permanent: an admin can demote a publisher back to
+    basic (see manage_users.py) without touching their existing
+    reports, and someone in that position still needs to be able to
+    resubmit a report already stuck in changes_requested. Bumps
+    version and resets to pending_review.
     """
     user = get_current_user()
     report = get_report(report_id)
@@ -1333,9 +1747,11 @@ def review_report_route(report_id):
     Body: { "decision": "approve" | "reject", "comment": "..." }
     comment is required when decision is "reject", optional otherwise.
     All the actual rules (can't review your own report, report must be
-    pending_review, 3rd approval auto-publishes) are enforced in
+    pending_review, REQUIRED_APPROVALS-th approval publishes, an
+    admin's approve publishes on its own) are enforced in
     models/report_review.record_review() - this route just translates
-    its ReviewError into a 400.
+    its ReviewError into a 400 and tells it whether this reviewer is
+    an admin.
     """
     user = get_current_user()
     body = request.get_json(silent=True) or {}
@@ -1348,7 +1764,7 @@ def review_report_route(report_id):
             abort(400, description=error)
 
     try:
-        updated_report = record_review(report_id, user.id, decision, comment)
+        updated_report = record_review(report_id, user.id, decision, comment, is_admin=(user.role == "admin"))
     except ReviewError as e:
         abort(400, description=str(e))
 
@@ -1357,6 +1773,54 @@ def review_report_route(report_id):
                 report_id, user.id, decision, updated_report.review_status)
 
     return jsonify(updated_report.to_public_dict())
+
+
+# ---------------------------------------------------------------------------
+# Notifications (Profile page's Notifications tab). Currently only
+# produced by models.report_review.record_review() - see its own
+# docstring - but every route here is generic over `type`.
+# ---------------------------------------------------------------------------
+
+@app.get("/api/notifications")
+@login_required
+def list_notifications():
+    """
+    A page of the logged-in user's own notifications, newest first.
+    Bounded by pagination.DEFAULT_PAGE_SIZE unless ?limit=&offset= are
+    passed - see list_reports() earlier in this file for why.
+    """
+    user = get_current_user()
+    limit, offset = parse_pagination_args()
+    notifications, total = get_notifications_for_user(user.id, limit=limit, offset=offset)
+    return paginated_json_response([n.to_public_dict() for n in notifications], total, limit, offset)
+
+
+@app.get("/api/notifications/unread-count")
+@login_required
+def notifications_unread_count():
+    """Just the count, for a badge - cheaper than fetching the full list to find out."""
+    user = get_current_user()
+    return jsonify({"unread_count": get_unread_count(user.id)})
+
+
+@app.post("/api/notifications/<int:notification_id>/read")
+@login_required
+def mark_notification_read_route(notification_id):
+    """Marks one notification read. Scoped to the logged-in user - mark_notification_read() 404s on anyone else's id."""
+    user = get_current_user()
+    notification = mark_notification_read(notification_id, user.id)
+    if notification is None:
+        abort(404, description="Notification not found")
+    return jsonify(notification.to_public_dict())
+
+
+@app.post("/api/notifications/read-all")
+@login_required
+def mark_all_notifications_read_route():
+    """Marks every unread notification for the logged-in user read - e.g. an "Mark all as read" button."""
+    user = get_current_user()
+    updated = mark_all_read(user.id)
+    return jsonify({"updated": updated})
 
 
 @app.get("/api/reports/<int:report_id>/reviews")
@@ -1426,7 +1890,7 @@ def list_my_reports():
     """
     user = get_current_user()
     reports = get_reports_by_uploader(user.id)
-    return jsonify([r.to_public_dict() for r in reports])
+    return jsonify(reports_to_public_dicts(reports))
 
 
 @app.get("/api/reports/favorites")
@@ -1435,7 +1899,7 @@ def list_favorite_reports():
     """The logged-in user's favorited reports, most-recently-favorited first."""
     user = get_current_user()
     reports = get_favorite_reports_by_user(user.id)
-    return jsonify([r.to_public_dict() for r in reports])
+    return jsonify(reports_to_public_dicts(reports))
 
 
 @app.get("/api/reports/favorites/ids")
@@ -1534,16 +1998,6 @@ def list_observatory_charts():
     user = get_current_user()
     charts = get_saved_charts_by_user(user.id)
     return jsonify([c.to_dict() for c in charts])
-
-
-@app.get("/api/observatory/saved-charts/<int:chart_id>")
-@login_required
-def get_observatory_chart(chart_id):
-    user = get_current_user()
-    chart = get_saved_chart(chart_id)
-    if chart is None or chart.user_id != user.id:
-        abort(404, description="Saved chart not found")
-    return jsonify(chart.to_dict())
 
 
 @app.delete("/api/observatory/saved-charts/<int:chart_id>")

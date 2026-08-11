@@ -8,14 +8,23 @@ from scratch, since the file/description actually changed.
 
 record_review() is the single entry point that enforces every rule in
 one place:
-  - the uploader cannot review their own report
+  - the uploader cannot review their own report, admin included -
+    self-review isn't a "faster path", it's just not allowed
   - a reviewer cannot submit twice for the same version (they can
     change their mind by calling record_review() again, which updates
     their existing row rather than creating a duplicate)
   - a reject requires a comment; sets review_status to
-    changes_requested immediately
-  - an approve recount happens after every approval; the 3rd distinct
-    approval at the current version auto-publishes the report
+    changes_requested immediately, regardless of who cast it
+  - an approve recount happens after every non-admin approval; the
+    REQUIRED_APPROVALS-th distinct approval at the current version
+    auto-publishes the report
+  - an admin's approve is decisive on its own - is_admin=True publishes
+    immediately without needing a second approval, mirroring how an
+    admin reject is already decisive on its own (any single reject
+    already sends a report back, admin or not)
+  - either outcome (published or changes_requested) notifies the
+    report's uploader via models.notification, so they don't have to
+    keep re-checking their own Publications list
 """
 
 from datetime import datetime
@@ -27,6 +36,7 @@ from .report import (
     Report, REQUIRED_APPROVALS, get_author_name,
     REVIEW_STATUS_PUBLISHED, REVIEW_STATUS_CHANGES_REQUESTED, REVIEW_STATUS_PENDING,
 )
+from .notification import create_notification, TYPE_REPORT_PUBLISHED, TYPE_REPORT_CHANGES_REQUESTED
 
 DECISION_APPROVE = "approve"
 DECISION_REJECT = "reject"
@@ -65,13 +75,22 @@ class ReviewError(ValueError):
     """Raised for any rule violation in record_review() - message is always safe to show the reviewer."""
 
 
-def record_review(report_id, reviewer_id, decision, comment=None):
+def record_review(report_id, reviewer_id, decision, comment=None, is_admin=False):
     """
     Records a reviewer's decision on a report's CURRENT version, then
     applies the resulting workflow transition:
-      - reject (comment required) -> review_status = changes_requested
-      - approve -> if this is now the 3rd distinct approval at the
-        current version, review_status = published
+      - reject (comment required) -> review_status = changes_requested,
+        whoever cast it - a single reject always sends a report back
+      - approve, is_admin=True -> review_status = published
+        immediately, bypassing the distinct-approval count entirely
+      - approve, is_admin=False -> if this is now the
+        REQUIRED_APPROVALS-th distinct approval at the current
+        version, review_status = published
+
+    Either outcome creates a Notification for the report's uploader
+    (models.notification) - this is the only place that happens, so
+    every path to published/changes_requested notifies them, whether
+    it took one admin decision or REQUIRED_APPROVALS publisher ones.
 
     Raises ReviewError (safe, user-facing message) on any rule
     violation. Returns the updated Report.
@@ -117,22 +136,41 @@ def record_review(report_id, reviewer_id, decision, comment=None):
             ))
         session.commit()
 
+        title = report.title
+        uploaded_by = report.uploaded_by
+
         if decision == DECISION_REJECT:
             report.review_status = REVIEW_STATUS_CHANGES_REQUESTED
             session.commit()
-        else:
-            approval_count = (
-                session.query(ReportReview)
-                .filter(
-                    ReportReview.report_id == report_id,
-                    ReportReview.version == report.version,
-                    ReportReview.decision == DECISION_APPROVE,
-                )
-                .count()
+            create_notification(
+                user_id=uploaded_by,
+                report_id=report_id,
+                type=TYPE_REPORT_CHANGES_REQUESTED,
+                message=f'"{title}" needs changes before it can be published. See the reviewer comment in Peer Review.',
             )
-            if approval_count >= REQUIRED_APPROVALS:
+        else:
+            publish_now = is_admin
+            if not publish_now:
+                approval_count = (
+                    session.query(ReportReview)
+                    .filter(
+                        ReportReview.report_id == report_id,
+                        ReportReview.version == report.version,
+                        ReportReview.decision == DECISION_APPROVE,
+                    )
+                    .count()
+                )
+                publish_now = approval_count >= REQUIRED_APPROVALS
+
+            if publish_now:
                 report.review_status = REVIEW_STATUS_PUBLISHED
                 session.commit()
+                create_notification(
+                    user_id=uploaded_by,
+                    report_id=report_id,
+                    type=TYPE_REPORT_PUBLISHED,
+                    message=f'"{title}" has been published.',
+                )
 
         session.refresh(report)
         return report

@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { checkPassword, checkPasswordsMatch } from "../utils/formValidation.js";
 import Reveal from '../components/Reveal.jsx';
+import SEO from '../components/SEO.jsx';
 import "../styles/Login.css";
 
 /**
@@ -59,6 +60,12 @@ export default function ResetPassword() {
   if (!token) {
     return (
       <div className="login-page">
+      <SEO
+        path="/reset-password"
+        title="Reset Password"
+        description="Choose a new password for your International Truth & Trauma Institute account."
+        noindex
+      />
         <Reveal delay={0}>
         <div className="login-card">
           <h1>Reset your password</h1>
@@ -77,6 +84,12 @@ export default function ResetPassword() {
 
   return (
     <div className="login-page">
+      <SEO
+        path="/reset-password"
+        title="Reset Password"
+        description="Choose a new password for your International Truth & Trauma Institute account."
+        noindex
+      />
       <Reveal delay={0}>
       <div className="login-card">
         <h1>Choose a new password</h1>

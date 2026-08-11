@@ -5,6 +5,9 @@ import Globe from '../components/Globe.jsx';
 import Reveal from '../components/Reveal.jsx';
 import SearchBar from '../components/SearchBar.jsx';
 import SidePanel from '../components/SidePanel.jsx';
+import UnavailableMessage from '../components/UnavailableMessage.jsx';
+import useHashScroll from '../hooks/useHashScroll.js';
+import SEO from '../components/SEO.jsx';
 import { fetchWorldData, fetchCountry, fetchAllCountries } from '../api.js';
 import { computeCountryDataStatus, computeCountryQuickStats } from '../utils/countryDataStatus.js';
 
@@ -12,22 +15,60 @@ const EXPLORE_CARDS = [
   {
     to: '/observatory',
     label: 'Observatory',
-    description: 'Our data mission, the indicators we track, and the dashboards behind them.'
+    description: 'Documented trauma exposure across countries and regions, tracked through GTBI and ETTI.',
+    icon: (
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+        <circle cx="24" cy="24" r="17" />
+        <ellipse cx="24" cy="24" rx="17" ry="7" />
+        <ellipse cx="24" cy="24" rx="17" ry="12.5" />
+        <line x1="7" y1="24" x2="41" y2="24" />
+        <line x1="24" y1="7" x2="24" y2="41" />
+      </svg>
+    )
   },
   {
     to: '/reports',
     label: 'Reports',
-    description: 'Published briefs, PDFs, and other work coming out of the institute.'
+    description: 'Published briefs, PDFs, and other work coming out of the institute.',
+    icon: (
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+        <path d="M13 6h16l7 7v29a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" />
+        <path d="M29 6v7h7" />
+        <line x1="16" y1="22" x2="32" y2="22" />
+        <line x1="16" y1="28" x2="32" y2="28" />
+        <line x1="16" y1="34" x2="26" y2="34" />
+      </svg>
+    )
   },
   {
     to: '/about',
     label: 'About',
-    description: 'Our mission, leadership, and how the organization is governed.'
+    description: 'Our mission, leadership, and how the organization is governed.',
+    icon: (
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+        <circle cx="24" cy="24" r="17" />
+        <line x1="16" y1="18" x2="16" y2="30" />
+        <line x1="24" y1="18" x2="24" y2="30" />
+        <line x1="32" y1="18" x2="32" y2="30" />
+        <line x1="13" y1="32" x2="35" y2="32" />
+      </svg>
+    )
   },
   {
     to: '/fellows',
     label: 'Fellowship',
-    description: 'Meet the people doing the work \u2014 and find out how to join them.'
+    description: 'A global fellowship developing leadership for trauma-informed governance and institutional recovery.',
+    icon: (
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+        <path d="M24 10v28" />
+        <path d="M24 14c-3 2-8 2-10 6 2 3 7 3 10 1" />
+        <path d="M24 20c-3 2-8 2-10 6 2 3 7 3 10 1" />
+        <path d="M24 26c-3 2-8 2-10 6 2 3 7 3 10 1" />
+        <path d="M24 14c3 2 8 2 10 6-2 3-7 3-10 1" />
+        <path d="M24 20c3 2 8 2 10 6-2 3-7 3-10 1" />
+        <path d="M24 26c3 2 8 2 10 6-2 3-7 3-10 1" />
+      </svg>
+    )
   }
 ];
 
@@ -37,7 +78,9 @@ const MISSION_MESSAGE =
   'those insights into trauma-informed governance and policy reform.';
 
 export default function Home() {
+  useHashScroll();
   const [worldData, setWorldData] = useState(null);
+  const [worldDataError, setWorldDataError] = useState(false);
   const [features, setFeatures] = useState([]);
   const [country, setCountry] = useState(null); // { name, iso }
   const [metrics, setMetrics] = useState(null);
@@ -45,12 +88,29 @@ export default function Home() {
   const [countryQuickStats, setCountryQuickStats] = useState({}); // iso -> { name, etti, gtbi } for the hover tooltip
   const globeRef = useRef(null);
 
+  // Bumped on every retry click to re-trigger the effect below; the
+  // value itself is never read, it just needs to change.
+  const [retryCount, setRetryCount] = useState(0);
+
+  function loadWorldData() {
+    setWorldDataError(false);
+    fetchWorldData()
+      .then((world) => {
+        setWorldData(world);
+        const parsed = topojson.feature(world, world.objects.countries);
+        setFeatures(parsed.features);
+      })
+      .catch(() => {
+        // Previously had no .catch() at all - a failed/slow request left
+        // worldData permanently null with no feedback, so the globe's
+        // spot on the page just stayed blank forever with nothing to
+        // tell the person anything had gone wrong or way to retry.
+        setWorldDataError(true);
+      });
+  }
+
   useEffect(() => {
-    fetchWorldData().then((world) => {
-      setWorldData(world);
-      const parsed = topojson.feature(world, world.objects.countries);
-      setFeatures(parsed.features);
-    });
+    loadWorldData();
     fetchAllCountries()
       .then((countries) => {
         setCountryStatus(computeCountryDataStatus(countries));
@@ -60,7 +120,12 @@ export default function Home() {
         setCountryStatus({}); // globe still renders fine with default colors
         setCountryQuickStats({}); // hover tooltip just won't show ETTI/GTBI lines
       });
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [retryCount]);
+
+  function retryWorldData() {
+    setRetryCount((n) => n + 1);
+  }
 
   function openCountry(name, iso) {
     setCountry({ name, iso });
@@ -84,10 +149,22 @@ export default function Home() {
 
   return (
     <>
+      <SEO
+        path="/"
+        title="Global Trauma Research & Trauma-Informed Governance"
+        description="The International Truth & Trauma Institute documents collective trauma, builds country-level Trauma Observatories and standardized indices like GTBI and ETTI, and turns those insights into trauma-informed governance and policy reform."
+      />
       <main>
         {/* Part 1: welcome */}
         <Reveal delay={0}>
-          <section className="home-welcome">
+          <section className="home-welcome" id="welcome">
+            <svg className="home-welcome-watermark" viewBox="0 0 400 400" fill="none" stroke="currentColor" aria-hidden="true">
+              <circle cx="200" cy="200" r="160" strokeWidth="1" />
+              <ellipse cx="200" cy="200" rx="160" ry="62" strokeWidth="1" />
+              <ellipse cx="200" cy="200" rx="160" ry="112" strokeWidth="1" />
+              <line x1="40" y1="200" x2="360" y2="200" strokeWidth="1" />
+              <line x1="200" y1="40" x2="200" y2="360" strokeWidth="1" />
+            </svg>
             <p className="home-welcome-eyebrow">WELCOME</p>
             <h1 className="home-welcome-title display">
               Welcome <br />to the <br />International Truth &amp; Trauma Institute
@@ -98,7 +175,7 @@ export default function Home() {
 
         {/* Part 2: globe (left) + message and country panel (right) */}
         <Reveal delay={120}>
-          <section className="home-globe">
+          <section className="home-globe" id="globe">
             <div className="home-globe-grid">
               <div className="home-globe-left">
                 <SearchBar features={features} onSelectFeature={handleSelectFeature} />
@@ -110,6 +187,17 @@ export default function Home() {
                     countryStatus={countryStatus}
                     countryQuickStats={countryQuickStats}
                   />
+                )}
+                {!worldData && worldDataError && (
+                  <div className="home-globe-error">
+                    <UnavailableMessage variant="inline" />
+                    <button type="button" className="home-globe-retry-btn" onClick={retryWorldData}>
+                      Try again
+                    </button>
+                  </div>
+                )}
+                {!worldData && !worldDataError && (
+                  <div className="home-globe-loading" aria-live="polite">Loading the globe…</div>
                 )}
                 <div className="globe-legend">
                   <span className="globe-legend-item">
@@ -136,7 +224,7 @@ export default function Home() {
         </Reveal>
       </main>
 
-      <section className="home-explore">
+      <section className="home-explore" id="explore">
         <Reveal delay={0}>
           <div className="home-explore-intro">
             <p className="home-explore-eyebrow mono">EXPLORE</p>
@@ -148,6 +236,7 @@ export default function Home() {
           {EXPLORE_CARDS.map((card, i) => (
             <Reveal key={card.to} delay={i * 90}>
               <Link to={card.to} className="home-explore-card">
+                <span className="home-explore-card-icon" aria-hidden="true">{card.icon}</span>
                 <span className="home-explore-card-label display">{card.label}</span>
                 <p className="home-explore-card-desc">{card.description}</p>
                 <span className="home-explore-card-arrow" aria-hidden="true">&rarr;</span>
@@ -157,7 +246,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="home-connect">
+      <section className="home-connect" id="connect">
         <Reveal delay={0}>
           <div className="home-connect-intro">
             <p className="home-explore-eyebrow mono">CONNECT</p>
@@ -203,6 +292,27 @@ export default function Home() {
               <span className="home-explore-card-label display">Outlets for Hope, Inc.</span>
               <p className="home-explore-card-desc">
                 ITTI is a global research division of Outlets for Hope, Inc. Visit the parent organization's site.
+              </p>
+              <span className="home-explore-card-arrow" aria-hidden="true">&rarr;</span>
+            </a>
+          </Reveal>
+
+          <Reveal delay={230}>
+            <a
+              className="home-connect-card"
+              href="https://www.facebook.com/profile.php?id=61592894404554"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span className="home-connect-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <rect x="3" y="3" width="18" height="18" rx="4" />
+                  <path d="M14 8.5h-1.5c-1 0-1.5.5-1.5 1.5v2h3l-.4 3h-2.6v6.5" strokeLinejoin="round" />
+                </svg>
+              </span>
+              <span className="home-explore-card-label display">ITTI on Facebook</span>
+              <p className="home-explore-card-desc">
+                Follow the Institute's page for updates, events, and announcements.
               </p>
               <span className="home-explore-card-arrow" aria-hidden="true">&rarr;</span>
             </a>

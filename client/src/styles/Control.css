@@ -104,3 +104,242 @@
   background: rgba(220, 90, 90, 0.1);
   border: 1px solid rgba(220, 90, 90, 0.3);
 }
+
+.control-restore {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--line);
+}
+.control-restore-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-mid);
+  margin-bottom: 10px;
+}
+.control-restore-status {
+  font-size: 13px;
+  color: var(--text-mid);
+  margin: 0;
+}
+.control-restore-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.control-restore-select {
+  flex: 1;
+  min-width: 220px;
+  background: var(--bg-body, transparent);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 13px;
+  color: var(--text-hi);
+}
+.control-btn--secondary {
+  background: transparent;
+  color: var(--text-hi);
+  border: 1px solid var(--line);
+}
+.control-btn--secondary:not(:disabled):hover {
+  border-color: var(--accent, #4285f4);
+}
+
+.control-btn--danger {
+  background: transparent;
+  color: #C0392B;
+  border: 1px solid rgba(192, 57, 43, 0.4);
+}
+.control-btn--danger:not(:disabled):hover {
+  background: rgba(192, 57, 43, 0.08);
+  border-color: #C0392B;
+}
+
+.control-fellow-picker {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.control-fellow-picker .control-kind-btn {
+  flex: 0 0 auto;
+  min-width: 160px;
+}
+.control-fellow-picker .control-restore-select {
+  flex: 1;
+  min-width: 220px;
+}
+
+.control-fellow-form {
+  gap: 16px;
+}
+.control-fellow-form input[type='text'],
+.control-fellow-form select,
+.control-fellow-form textarea {
+  background: var(--bg-body, transparent);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 13px;
+  color: var(--text-hi);
+  font-family: inherit;
+  resize: vertical;
+}
+.control-fellow-photo-note {
+  font-size: 12px;
+  color: var(--text-low, var(--text-mid));
+  font-weight: 400;
+}
+.control-fellow-remove-photo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-mid);
+}
+.control-fellow-actions {
+  display: flex;
+  gap: 10px;
+}
+/* ---------- Access Level panel ---------- */
+.access-level-search {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--bg-body, transparent);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--text-hi);
+  margin-bottom: 16px;
+}
+.access-level-search:focus {
+  outline: none;
+  border-color: var(--accent, #4285f4);
+}
+
+.access-level-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.access-level-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.access-level-table th,
+.access-level-table td {
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.access-level-table th:nth-child(2),
+.access-level-table td:nth-child(2) {
+  white-space: normal;
+  word-break: break-word;
+}
+.access-level-table th {
+  color: var(--text-mid);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.access-level-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.access-level-noname {
+  color: var(--text-low);
+}
+.access-level-empty {
+  color: var(--text-mid);
+  text-align: center !important;
+  padding: 20px 14px !important;
+}
+/* Dims the previous page's rows very slightly while a new search/page is
+   in flight, instead of flashing to an empty table between requests. */
+.access-level-row--stale {
+  opacity: 0.55;
+}
+
+.access-level-select {
+  background: var(--bg-panel);
+  color: var(--text-hi);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.access-level-select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.access-level-select.role-publisher {
+  color: var(--bg-deep);
+  background: var(--gold);
+  border-color: var(--gold);
+}
+.access-level-select.role-admin {
+  color: #fff;
+  background: var(--accent, #4285f4);
+  border-color: var(--accent, #4285f4);
+}
+
+.access-level-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+.access-level-page-info {
+  font-size: 12px;
+  color: var(--text-mid);
+  white-space: nowrap;
+}
+
+.access-level-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+.access-level-modal {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 24px;
+  max-width: 420px;
+  width: 100%;
+}
+.access-level-modal h4 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  color: var(--text-hi);
+}
+.access-level-modal p {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: var(--text-mid);
+  line-height: 1.5;
+}
+.access-level-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}

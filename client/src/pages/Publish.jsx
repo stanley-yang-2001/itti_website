@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Reveal from '../components/Reveal.jsx';
+import SEO from '../components/SEO.jsx';
 import '../styles/Publish.css';
 
 /**
@@ -57,6 +58,11 @@ export default function Publish() {
 
   return (
     <div className="publish-page">
+      <SEO
+        path="/publish"
+        title="Publish"
+        noindex
+      />
       <h2 className="display">Publish</h2>
       <p>Upload and manage documents. Only publishers can reach this page.</p>
 

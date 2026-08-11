@@ -22,8 +22,21 @@ function formatFileSize(bytes) {
  * isFavorited/onToggleFavorite: both optional. Omit them (e.g. when
  * rendering a logged-out visitor's card) and the star doesn't render at
  * all, rather than rendering a star that can't do anything.
+ *
+ * onRead: opens the inline PDF/DOCX viewer for this report (see
+ * ReportViewerModal, rendered by the parent Reports page). Always
+ * shown - unlike the star, reading a report needs no login.
+ *
+ * Dates: created_at and updated_at are both always shown (per the
+ * report-panel spec), but updated_at is the visually prominent one -
+ * it's the more useful signal ("is this still current"), while
+ * created_at is secondary context. When a report has never been
+ * revised since publication the two timestamps are identical; both
+ * still render rather than being collapsed into one, so the layout
+ * (and what a scanning reader can rely on being there) never shifts
+ * between reports.
  */
-export default function ReportCard({ report, canManage, onDelete, isFavorited, onToggleFavorite }) {
+export default function ReportCard({ report, canManage, onDelete, isFavorited, onToggleFavorite, onRead }) {
   return (
     <div className="report-card">
       {report.has_image && (
@@ -49,21 +62,35 @@ export default function ReportCard({ report, canManage, onDelete, isFavorited, o
             </button>
           )}
         </div>
+
+        <p className="report-card-author">By {report.author}</p>
+
         <p className="report-card-description">{report.description}</p>
+
+        <div className="report-card-dates">
+          <span className="report-card-date-updated">Updated {formatDate(report.updated_at)}</span>
+          <span className="report-card-date-created">Published {formatDate(report.created_at)}</span>
+        </div>
+
         <div className="report-card-meta">
           <span className="report-card-filetype">{report.file_type.toUpperCase()}</span>
           {report.file_size_bytes && <span>{formatFileSize(report.file_size_bytes)}</span>}
-          <span>{formatDate(report.created_at)}</span>
         </div>
+
         <div className="report-card-actions">
-          <a
-            className="report-card-download"
-            href={`/api/reports/${report.id}/file`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Download
-          </a>
+          <div className="report-card-actions-left">
+            <button type="button" className="report-card-read" onClick={() => onRead(report)}>
+              Read
+            </button>
+            <a
+              className="report-card-download"
+              href={`/api/reports/${report.id}/file`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Download
+            </a>
+          </div>
           {canManage && (
             <button
               type="button"

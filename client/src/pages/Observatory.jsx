@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import "../styles/Observatory.css";
+import SEO from "../components/SEO.jsx";
 import { fetchAllCountries, fetchSavedObservatoryChart } from "../api.js";
 import { getCountriesWithData } from "../utils/ObservatoryData";
 import DataExplorerPanel from "../components/observatory/DataExplorerPanel.jsx";
@@ -27,7 +28,8 @@ const INDICATOR_TABS = ["ETTI", "GTBI"];
 export default function Observatory() {
   const [countries, setCountries] = useState(null);
   const [loadError, setLoadError] = useState(null);
-  const [mainTab, setMainTab] = useState("international");
+  const { hash } = useLocation();
+  const [mainTab, setMainTab] = useState(() => (hash === "#nigeria" ? "nigeria" : "international"));
   const [indicatorTab, setIndicatorTab] = useState("ETTI");
   const [panels, setPanels] = useState([]);
   const nextPanelId = useRef(1);
@@ -161,6 +163,11 @@ export default function Observatory() {
 
   return (
     <div className="obs-page">
+      <SEO
+        path="/observatory"
+        title="Observatory"
+        description="Explore GTBI and ETTI dashboards and build your own charts with ITTI's data query tool, tracking collective trauma indicators across countries."
+      />
       <div className="obs-header">
         <h1 className="display">Observatory</h1>
         <p className="obs-subheading">GTBI and ETTI dashboards, and a data query tool for building your own charts.</p>
@@ -187,9 +194,13 @@ export default function Observatory() {
             key={tab.key}
             type="button"
             role="tab"
+            id={tab.key}
             aria-selected={mainTab === tab.key}
             className={`obs-main-tab${mainTab === tab.key ? " active" : ""}`}
-            onClick={() => setMainTab(tab.key)}
+            onClick={() => {
+              setMainTab(tab.key);
+              window.history.replaceState(null, "", `#${tab.key}`);
+            }}
           >
             {tab.label}
           </button>

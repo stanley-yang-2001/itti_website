@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { FELLOW_LEVELS, WHO_SHOULD_APPLY, EXECUTIVE_VALUE, FELLOWS_GAIN, FELLOWS, LEADERSHIP } from '../data/fellowship.js';
+import React, { useEffect, useState } from 'react';
+import { FELLOW_LEVELS, WHO_SHOULD_APPLY, EXECUTIVE_VALUE, FELLOWS_GAIN, LEADERSHIP } from '../data/fellowship.js';
 import Reveal from '../components/Reveal.jsx';
+import useHashScroll from '../hooks/useHashScroll.js';
+import SEO from '../components/SEO.jsx';
 import '../styles/Fellowship.css';
 
 const LEVEL_LOOKUP = Object.fromEntries(FELLOW_LEVELS.map((l) => [l.code, l]));
@@ -17,6 +19,11 @@ function initials(name) {
 
 function FellowCard({ fellow }) {
   const level = LEVEL_LOOKUP[fellow.level];
+  
+  const bioParagraphs = (fellow.bio || '')
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
   return (
     <article className="fellow-card">
       <div className="fellow-card-photo">
@@ -26,17 +33,25 @@ function FellowCard({ fellow }) {
           <span className="fellow-card-initials">{initials(fellow.name)}</span>
         )}
       </div>
+      
       <h3 className="fellow-card-name">{fellow.name}</h3>
       {level && (
         <span className={`fellow-card-level level-${level.code.toLowerCase()}`}>{level.code}™ — {level.name}</span>
       )}
-      {Array.isArray(fellow.bio)
-        ? fellow.bio.map((para, i) => <p key={i} className="fellow-card-bio">{para}</p>)
-        : <p className="fellow-card-bio">{fellow.bio}</p>}
+
+      {bioParagraphs.map((paragraph, i) => (
+        <p key={i} className="fellow-card-bio">{paragraph}</p>
+      ))}
     </article>
   );
 }
 
+// ---------- Leadership (Chancellor, Directors, Board) ----------
+// Unlike Fellows (database-backed, admin-managed via Control panel),
+// leadership stays static data from fellowship.js - these roles sit
+// outside the AFITTI/FITTI/SFITTI/DFITTI fellow levels the Fellows
+// table/admin UI is built around, so there's no natural home for them
+// there.
 function BioBlock({ block, i }) {
   switch (block.type) {
     case 'h4':
@@ -88,12 +103,41 @@ function LeaderCard({ leader }) {
 }
 
 export default function Fellowship() {
+  useHashScroll();
   const [levelFilter, setLevelFilter] = useState('all');
+  // The roster used to be the permanently-empty FELLOWS array in
+  // data/fellowship.js; it's now admin-managed (Profile > Control >
+  // Fellows) and served from the database. `fellows === null` is the
+  // brief loading window before the first response - kept distinct
+  // from an empty array so the "no fellows yet" empty state doesn't
+  // flash before real data arrives.
+  const [fellows, setFellows] = useState(null);
 
-  const visibleFellows = levelFilter === 'all' ? FELLOWS : FELLOWS.filter((f) => f.level === levelFilter);
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/fellows')
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled) setFellows(data);
+      })
+      .catch(() => {
+        if (!cancelled) setFellows([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const fellowCount = fellows?.length ?? 0;
+  const visibleFellows = !fellows ? [] : levelFilter === 'all' ? fellows : fellows.filter((f) => f.level === levelFilter);
 
   return (
     <div className="fellows-page">
+      <SEO
+        path="/fellows"
+        title="Fellowship"
+        description="The FITTI™ Fellowship builds a global leadership corps for trauma-informed nations — an invitation-only program developing expertise in collective trauma, institutional healing, and national recovery."
+      />
       <Reveal delay={0}>
       <section className="fellows-hero">
         <p className="fellows-hero-eyebrow mono">FITTI™ Fellowship Program</p>
@@ -192,10 +236,10 @@ export default function Fellowship() {
         <p className="fellows-section-eyebrow mono">The Roster</p>
         <h2 className="fellows-section-title display">Our Fellows</h2>
 
-        {FELLOWS.length > 0 && (
+        {fellowCount > 0 && (
           <div className="fellows-filter-pills">
             <button className={`fellows-pill${levelFilter === 'all' ? ' active' : ''}`} onClick={() => setLevelFilter('all')}>
-              All ({FELLOWS.length})
+              All ({fellowCount})
             </button>
             {FELLOW_LEVELS.map((level) => (
               <button
@@ -203,13 +247,13 @@ export default function Fellowship() {
                 className={`fellows-pill${levelFilter === level.code ? ' active' : ''}`}
                 onClick={() => setLevelFilter(level.code)}
               >
-                {level.code}™ ({FELLOWS.filter((f) => f.level === level.code).length})
+                {level.code}™ ({fellows.filter((f) => f.level === level.code).length})
               </button>
             ))}
           </div>
         )}
 
-        {FELLOWS.length === 0 ? (
+        {fellowCount === 0 ? (
           <div className="fellows-empty">
             <p className="fellows-empty-title">Fellows.</p>
             <p className="fellows-empty-sub">

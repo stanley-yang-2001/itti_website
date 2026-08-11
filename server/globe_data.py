@@ -226,6 +226,60 @@ def list_uploads():
     return uploads
 
 
+def restore_upload(kind, filename):
+    """
+    Re-applies an archived upload from data_scripts/{kind}_storage/ as
+    the new canonical file for `kind`, exactly as if it had just been
+    re-uploaded through POST /api/globe-data/upload:
+      1. Re-validates it extracts cleanly (workbooks are kept forever
+         in storage/, but re-checking here catches the unlikely case of
+         a since-corrupted archive file rather than trusting it blindly).
+      2. Archives it AGAIN with a fresh timestamp - so the restore
+         itself becomes the newest entry in list_uploads(), and the
+         audit trail reflects "this version was made canonical again
+         at time T" rather than looking untouched since its original
+         upload.
+      3. Rotates it into data_scripts/{kind_lower}_source/ (whatever
+         was canonical before this restore moves into old/, same as
+         any other upload).
+      4. Syncs the cached extraction and merges it into
+         server/data/country_data.json, same as apply_workbook_to_country_data
+         does for a fresh upload.
+    Raises FileNotFoundError if `filename` isn't in that kind's storage
+    folder. Returns the same shape apply_workbook_to_country_data() does.
+    """
+    if kind not in VALID_KINDS:
+        raise ValueError(f"Unknown kind '{kind}', expected one of {VALID_KINDS}")
+
+    storage_dir = _storage_dir(kind)
+    # filename must already be one of this exact directory's own entries -
+    # os.path.basename below additionally guards against a filename
+    # containing path separators being used to escape storage_dir.
+    archived_path = os.path.join(storage_dir, os.path.basename(filename))
+    if not os.path.isfile(archived_path):
+        raise FileNotFoundError(f"No archived {kind} upload named '{filename}'")
+
+    extracted = validate_workbook(kind, archived_path)
+
+    _, _, original_name = os.path.basename(filename).partition("_")
+    original_name = original_name or os.path.basename(filename)
+
+    # rotate_source_file() moves tmp_path itself into place, so restore
+    # needs its own copy to hand off rather than moving the archived
+    # file out of storage/ (which archive_workbook below is about to
+    # write a fresh copy of anyway, but the original archived copy
+    # should stay put regardless).
+    tmp_dir = os.path.join(DATA_SCRIPTS_DIR, "_uploads_tmp")
+    os.makedirs(tmp_dir, exist_ok=True)
+    tmp_path = os.path.join(tmp_dir, f"restore_{os.path.basename(filename)}")
+    shutil.copy2(archived_path, tmp_path)
+
+    archive_workbook(kind, tmp_path, original_name)
+    rotate_source_file(kind, tmp_path, original_name)
+    sync_cached_extraction(kind, extracted)
+    return apply_workbook_to_country_data(kind, extracted)
+
+
 def _load_country_data():
     if not os.path.exists(COUNTRY_DATA_PATH):
         return {}

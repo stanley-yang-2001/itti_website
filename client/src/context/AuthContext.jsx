@@ -24,8 +24,15 @@ export function AuthProvider({ children }) {
   // on load we just ask the server who that cookie belongs to. This is
   // what makes NavBar (and everything else) reflect login state without
   // each page having to fetch /me itself.
+  //
+  // cache: 'no-store' is explicit defense-in-depth on top of the
+  // server's own Cache-Control: no-store (see app.py) - without either
+  // one, a shared cache sitting in front of the API that doesn't itself
+  // vary on the session cookie could serve one visitor's cached
+  // /api/auth/me response to a completely different visitor, which from
+  // here looks identical to "being logged into someone else's account."
   useEffect(() => {
-    fetch('/api/auth/me', { credentials: 'include' })
+    fetch('/api/auth/me', { credentials: 'include', cache: 'no-store' })
       .then((res) => (res.ok ? res.json() : null))
       .then(setUser)
       .catch(() => setUser(null))

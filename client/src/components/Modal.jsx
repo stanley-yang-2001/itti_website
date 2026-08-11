@@ -16,8 +16,11 @@ import { createPortal } from 'react-dom';
  *
  * footer: optional ReactNode rendered in a bottom action bar (buttons use
  * the app-modal-btn / app-modal-btn--primary classes below).
+ *
+ * wide: use the wider max-width variant (720px instead of 520px) - used
+ * by PrivacyPolicyModal for its longer content.
  */
-export default function Modal({ title, onClose, footer, children }) {
+export default function Modal({ title, onClose, footer, children, wide }) {
   useEffect(() => {
     if (!onClose) return;
     function handleKeyDown(e) {
@@ -33,7 +36,7 @@ export default function Modal({ title, onClose, footer, children }) {
 
   return createPortal(
     <div className="app-modal-overlay" onMouseDown={handleOverlayClick}>
-      <div className="app-modal" role="dialog" aria-modal="true" aria-label={title}>
+      <div className={`app-modal${wide ? ' app-modal--wide' : ''}`} role="dialog" aria-modal="true" aria-label={title}>
         <div className="app-modal-header">
           <h3 className="app-modal-title">{title}</h3>
           {onClose && (

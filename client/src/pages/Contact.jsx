@@ -1,5 +1,7 @@
 import React from 'react';
 import Reveal from '../components/Reveal.jsx';
+import SEO from '../components/SEO.jsx';
+import useHashScroll from '../hooks/useHashScroll.js';
 import '../styles/Contact.css';
 
 const CONTACTS = [
@@ -36,8 +38,14 @@ const CONTACTS = [
 ];
 
 export default function Contact() {
+  useHashScroll();
   return (
     <div className="contact-page">
+      <SEO
+        path="/contact"
+        title="Contact"
+        description="Get in touch with the International Truth & Trauma Institute — questions about our research, certifications, fellowship program, or partnerships."
+      />
       <Reveal delay={0}>
         <div className="contact-intro">
           <p className="contact-eyebrow mono">CONTACT</p>
@@ -52,7 +60,7 @@ export default function Contact() {
       <div className="contact-grid">
         {CONTACTS.map((c, i) => (
           <Reveal key={c.email} delay={80 + i * 80}>
-            <div className="contact-card">
+            <div className="contact-card" id={c.label.toLowerCase()}>
               <h2 className="contact-card-label display">{c.label}</h2>
               <a className="contact-card-email mono" href={`mailto:${c.email}`}>
                 {c.email}

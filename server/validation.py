@@ -108,6 +108,17 @@ def check_report_description(value):
     return None
 
 
+def check_report_category(value):
+    """Rejects anything other than one of the 10 fixed report sections."""
+    from models.report import REPORT_CATEGORIES  # local import: avoids a validation<->models import cycle at module load
+
+    if value is None or not value.strip():
+        return "Section is required."
+    if value not in REPORT_CATEGORIES:
+        return "Not a recognized report section."
+    return None
+
+
 def check_resubmission_note(value):
     """Optional field - blank/omitted is fine, but length-capped if provided."""
     if value is None or not value.strip():
@@ -136,6 +147,7 @@ CHECKS = {
     "password": check_password,
     "report_title": check_report_title,
     "report_description": check_report_description,
+    "report_category": check_report_category,
     "resubmission_note": check_resubmission_note,
     "review_comment": check_review_comment,
     "donor_name": check_donor_name,

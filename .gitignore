@@ -2,7 +2,6 @@
 __pycache__/
 *.pyc
 server/app.db
-server/uploads/
 
 # Node
 node_modules/
@@ -28,3 +27,19 @@ commit_msg.txt
 
 # doc
 client/public/country-profiles/
+
+# test report
+server/report_uploads/
+
+# local test database
+server/app.db/
+
+# Uploaded content (local storage backend's on-disk save location - see
+# storage.py). Real, potentially large user-uploaded files don't belong
+# in git; a few had ended up committed here before this rule existed -
+# see `git log --all --full-history -- server/uploads` if that history
+# ever needs clearing out with a filter-repo pass. Covers the "test
+# report" case too (server/report_uploads/, previously listed alone).
+server/uploads/
+server/report_uploads/
+server/fellow_uploads/

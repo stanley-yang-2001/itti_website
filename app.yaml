@@ -50,20 +50,13 @@ services:
         type: SECRET
         value: <PLACEHOLDER, if using donations>
 
-static_sites:
-  - name: frontend
-    source_dir: /client
-    github:
-      repo: <your-github-username>/itti_website
-      branch: database
-      deploy_on_push: true
-    build_command: npm install && npm run build
-    output_dir: dist
-    routes:
-      - path: /
-    envs:
-      - key: GOOGLE_CLIENT_ID
-        value: <PLACEHOLDER - same value as backend's GOOGLE_CLIENT_ID>
+# Frontend is NOT built by App Platform. It's built on GitHub Actions
+# (.github/workflows/deploy-frontend.yml) and synced straight to a
+# DigitalOcean Spaces bucket fronted by DO's CDN - see
+# docs/DEPLOYMENT.md for one-time setup. This keeps `npm run build`
+# off both the backend's basic-xxs instance and App Platform's own
+# static-site build step.
+static_sites: []
 
 databases:
   - name: db

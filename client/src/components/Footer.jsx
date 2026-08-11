@@ -5,11 +5,14 @@ const YEAR = new Date().getFullYear();
 
 // Only routes that AREN'T already in NavBar's NAV_LINKS belong here — no
 // point repeating the same links in both places. Add future footer-only
-// items (legal pages, resources, social, etc.) to this list.
+// items (legal pages, resources, etc.) to this list.
 const FOOTER_LINKS = [
   { to: '/docs', label: 'Docs' },
   { to: '/privacy', label: 'Privacy Policy' }
 ];
+
+// Social links live in the homepage's Connect section (see Home.jsx) so
+// they're not repeated here too - same reasoning as FOOTER_LINKS above.
 
 export default function Footer() {
   return (

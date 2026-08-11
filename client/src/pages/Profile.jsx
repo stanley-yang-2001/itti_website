@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import ReportCard from '../components/ReportCard.jsx';
 import ReportUploadForm from './ReportUploadForm.jsx';
+import ResubmitReportForm from './ResubmitReportForm.jsx';
 import Reveal from '../components/Reveal.jsx';
 import SettingsPanel from '../components/SettingsPanel.jsx';
 import ControlPanel from '../components/ControlPanel.jsx';
+import SEO from '../components/SEO.jsx';
 import {
   fetchSavedObservatoryCharts, deleteSavedObservatoryChart,
   fetchFavoriteReports, unfavoriteReport,
@@ -55,6 +57,7 @@ const TABS = [
   { key: 'profile', label: 'Profile' },
   { key: 'favorites', label: 'Favorites' },
   { key: 'publications', label: 'Publications' },
+  { key: 'notifications', label: 'Notifications' },
   { key: 'settings', label: 'Settings' },
 ];
 // Admin-only, appended in the component below rather than listed here
@@ -100,7 +103,27 @@ export default function Profile() {
   const isAdmin = user?.role === 'admin';
   const tabs = isAdmin ? [...TABS, CONTROL_TAB] : TABS;
 
-  const [activeTab, setActiveTab] = useState('profile');
+  const { hash } = useLocation();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState(() => {
+    // /profile#favorites lands directly on that tab instead of always
+    // defaulting to Profile - useful for a direct link from the README,
+    // an email, etc. Falls back to 'profile' for an empty/unrecognized
+    // hash rather than silently landing on nothing.
+    const key = hash?.slice(1);
+    return tabs.some((t) => t.key === key) ? key : 'profile';
+  });
+
+  // Also react to the hash changing while already on the page (e.g. the
+  // user clicks a #favorites link elsewhere in the app without a full
+  // reload) - the lazy useState above only runs once, on mount.
+  useEffect(() => {
+    const key = hash?.slice(1);
+    if (key && tabs.some((t) => t.key === key)) {
+      setActiveTab(key);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hash]);
 
   const [charts, setCharts] = useState(null); // null = loading
   const [chartsError, setChartsError] = useState(null);
@@ -111,6 +134,11 @@ export default function Profile() {
   const [myReports, setMyReports] = useState(null);
   const [myReportsError, setMyReportsError] = useState(null);
   const [showUploadForm, setShowUploadForm] = useState(false);
+  const [resubmittingId, setResubmittingId] = useState(null);
+
+  const [notifications, setNotifications] = useState(null); // null = loading
+  const [notificationsError, setNotificationsError] = useState(null);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     fetchSavedObservatoryCharts()
@@ -136,6 +164,53 @@ export default function Profile() {
       .catch((err) => setMyReportsError(err.message));
   }
 
+  function loadNotifications() {
+    fetch('/api/notifications', { credentials: 'include' })
+      .then((res) => res.json())
+      .then(setNotifications)
+      .catch((err) => setNotificationsError(err.message));
+  }
+
+  function loadUnreadCount() {
+    fetch('/api/notifications/unread-count', { credentials: 'include' })
+      .then((res) => res.json())
+      .then((data) => setUnreadCount(data.unread_count))
+      .catch(() => {});
+  }
+
+  useEffect(() => {
+    loadNotifications();
+    loadUnreadCount();
+  }, []);
+
+  async function handleNotificationClick(notification) {
+    if (!notification.is_read) {
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notification.id ? { ...n, is_read: true } : n))
+      );
+      setUnreadCount((prev) => Math.max(0, prev - 1));
+      try {
+        await fetch(`/api/notifications/${notification.id}/read`, { method: 'POST', credentials: 'include' });
+      } catch {
+        // Non-critical - worst case it shows as unread again next load.
+      }
+    }
+    if (notification.report_id) {
+      navigate(`/peer-review?highlight=${notification.report_id}`);
+    }
+  }
+
+  async function handleMarkAllRead() {
+    setNotifications((prev) => prev?.map((n) => ({ ...n, is_read: true })) ?? prev); // optimistic
+    setUnreadCount(0);
+    try {
+      await fetch('/api/notifications/read-all', { method: 'POST', credentials: 'include' });
+    } catch {
+      loadNotifications();
+      loadUnreadCount();
+    }
+  }
+
   async function handleDeleteChart(chartId) {
     setCharts((prev) => prev.filter((c) => c.id !== chartId)); // optimistic
     try {
@@ -159,10 +234,16 @@ export default function Profile() {
     loadMyReports();
   }
 
+  function handleReportResubmitted() {
+    setResubmittingId(null);
+    loadMyReports();
+  }
+
   if (!user) return null;
 
   return (
     <div className="profile-page">
+      <SEO path="/profile" title="Profile" noindex />
       <div className="profile-layout">
         {/* ---------- Vertical nav ---------- */}
         <nav className="profile-sidebar" aria-label="Profile sections">
@@ -171,10 +252,13 @@ export default function Profile() {
               key={tab.key}
               type="button"
               className={`profile-sidebar-link${activeTab === tab.key ? ' active' : ''}`}
-              onClick={() => setActiveTab(tab.key)}
+              onClick={() => { setActiveTab(tab.key); navigate(`#${tab.key}`, { replace: true }); }}
               aria-current={activeTab === tab.key ? 'page' : undefined}
             >
               {tab.label}
+              {tab.key === 'notifications' && unreadCount > 0 && (
+                <span className="profile-sidebar-badge">{unreadCount}</span>
+              )}
             </button>
           ))}
         </nav>
@@ -256,10 +340,17 @@ export default function Profile() {
               <section className="profile-section">
                 <div className="profile-section-head">
                   <h2 className="profile-section-title display">Publications</h2>
-                  {canPublish && !showUploadForm && (
-                    <button type="button" className="btn btn-primary" onClick={() => setShowUploadForm(true)}>
-                      New Report
-                    </button>
+                  {canPublish && (
+                    <div className="profile-publications-actions">
+                      <Link to="/peer-review" className="btn btn-secondary">
+                        Peer Review
+                      </Link>
+                      {!showUploadForm && (
+                        <button type="button" className="btn btn-primary" onClick={() => setShowUploadForm(true)}>
+                          New Report
+                        </button>
+                      )}
+                    </div>
                   )}
                 </div>
 
@@ -288,19 +379,97 @@ export default function Profile() {
                       <div className="profile-publications-list">
                         {myReports.map((report) => {
                           const statusInfo = REVIEW_STATUS_LABEL[report.review_status] || { label: report.review_status, className: '' };
+                          const badge = (
+                            <span className={`profile-status-badge ${statusInfo.className}`}>{statusInfo.label}</span>
+                          );
+                          const needsChanges = report.review_status === 'changes_requested';
                           return (
-                            <div key={report.id} className="profile-publication-row">
-                              <div className="profile-publication-info">
-                                <span className="profile-publication-title">{report.title}</span>
-                                <span className="profile-publication-date">{formatDate(report.created_at)} · v{report.version}</span>
+                            <div key={report.id} className="profile-publication-item">
+                              <div className="profile-publication-row">
+                                <div className="profile-publication-info">
+                                  <span className="profile-publication-title">{report.title}</span>
+                                  <span className="profile-publication-date">{formatDate(report.created_at)} · v{report.version}</span>
+                                </div>
+                                <div className="profile-publication-row-right">
+                                  {needsChanges ? (
+                                    <Link to={`/peer-review?highlight=${report.id}`} className="profile-publication-status-link">
+                                      {badge}
+                                      <span className="profile-publication-status-link-text">See why &rarr;</span>
+                                    </Link>
+                                  ) : (
+                                    badge
+                                  )}
+                                  {needsChanges && resubmittingId !== report.id && (
+                                    <button
+                                      type="button"
+                                      className="btn btn-secondary profile-publication-resubmit-btn"
+                                      onClick={() => setResubmittingId(report.id)}
+                                    >
+                                      Resubmit
+                                    </button>
+                                  )}
+                                </div>
                               </div>
-                              <span className={`profile-status-badge ${statusInfo.className}`}>{statusInfo.label}</span>
+                              {needsChanges && resubmittingId === report.id && (
+                                <ResubmitReportForm
+                                  report={report}
+                                  onResubmitted={handleReportResubmitted}
+                                  onCancel={() => setResubmittingId(null)}
+                                />
+                              )}
                             </div>
                           );
                         })}
                       </div>
                     )}
                   </>
+                )}
+              </section>
+            </Reveal>
+          )}
+
+          {/* ---------- Notifications ---------- */}
+          {activeTab === 'notifications' && (
+            <Reveal delay={0}>
+              <section className="profile-section">
+                <div className="profile-section-head">
+                  <h2 className="profile-section-title display">Notifications</h2>
+                  {notifications !== null && unreadCount > 0 && (
+                    <button type="button" className="btn btn-secondary" onClick={handleMarkAllRead}>
+                      Mark all as read
+                    </button>
+                  )}
+                </div>
+
+                {notificationsError && <p className="profile-error">{notificationsError}</p>}
+                {!notificationsError && notifications === null && (
+                  <p className="profile-status">Loading notifications…</p>
+                )}
+                {!notificationsError && notifications !== null && notifications.length === 0 && (
+                  <p className="profile-status">You don't have any notifications yet.</p>
+                )}
+                {!notificationsError && notifications !== null && notifications.length > 0 && (
+                  <div className="profile-notifications-list">
+                    {notifications.map((notification) => {
+                      const clickable = notification.report_id != null;
+                      const Wrapper = clickable ? 'button' : 'div';
+                      return (
+                        <Wrapper
+                          key={notification.id}
+                          type={clickable ? 'button' : undefined}
+                          className={`profile-notification-row${notification.is_read ? '' : ' unread'}${clickable ? ' clickable' : ''}`}
+                          onClick={clickable ? () => handleNotificationClick(notification) : undefined}
+                        >
+                          {!notification.is_read && <span className="profile-notification-dot" aria-hidden="true" />}
+                          <div className="profile-notification-body">
+                            <p className="profile-notification-message">{notification.message}</p>
+                            <span className="profile-notification-date">{formatDate(notification.created_at)}</span>
+                          </div>
+                          {clickable && <span className="profile-notification-cta">See in Peer Review &rarr;</span>}
+                        </Wrapper>
+                      );
+                    })}
+                  </div>
                 )}
               </section>
             </Reveal>

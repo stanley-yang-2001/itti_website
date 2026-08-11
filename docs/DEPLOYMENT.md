@@ -61,14 +61,15 @@ Commit and push both to your `database` branch before continuing.
 DigitalOcean will:
 1. Build the backend Docker image (installs `requirements-prod.txt`, runs
    `alembic upgrade head`, starts `gunicorn`)
-2. Build the frontend (`npm install && npm run build`, serves the `dist/`
-   folder as static files)
-3. Provision the Postgres database and inject `DATABASE_URL` automatically
+2. Provision the Postgres database and inject `DATABASE_URL` automatically
    into the backend's environment (this is what `${db.DATABASE_URL}` in the
    spec resolves to — you never type the actual connection string yourself)
 
+The frontend is **not** built here — see "Building and deploying the
+frontend" below for how that works instead.
+
 This takes a few minutes the first time. Watch the build logs in the
-DigitalOcean dashboard; if either build fails, the logs will show exactly
+DigitalOcean dashboard; if the build fails, the logs will show exactly
 which step broke.
 
 ## Step 4 — Verify it's actually working
@@ -99,10 +100,78 @@ or the Reports page).
 ## Step 6 — Every future deploy
 
 Because `deploy_on_push: true` is set in the spec, pushing to `database`
-automatically triggers a new build and deploy for both services. No
-manual redeploy step needed. Database migrations run automatically too,
-since the Dockerfile's `CMD` runs `alembic upgrade head` before starting
+automatically triggers a new backend deploy. No manual redeploy step
+needed. Database migrations run automatically too, since the
+Dockerfile's `CMD` runs `alembic upgrade head` before starting
 `gunicorn` on every deploy.
+
+The frontend deploys separately — see below.
+
+---
+
+# Building and deploying the frontend
+
+The frontend is deliberately **not** built by App Platform's own
+static-site build step, and `npm run build` never runs on the backend's
+`basic-xxs` instance either — a production Vite build needs more memory
+than that instance size comfortably has to spare alongside a running
+Flask app. Instead, `client/` is built on GitHub's own runners
+(`.github/workflows/deploy-frontend.yml`) and the resulting `dist/`
+folder is synced straight to a DigitalOcean Spaces bucket fronted by
+DO's CDN, which serves it directly — no build step happens anywhere
+near the app's own compute at all.
+
+## One-time setup
+
+1. **Create a Spaces bucket**: DigitalOcean dashboard → **Spaces
+   Object Storage** → **Create a Spaces Bucket**. Pick a region (e.g.
+   `nyc3`) and a bucket name (e.g. `itti-frontend`). Enable the
+   **CDN** option when creating it, or add one afterward under the
+   bucket's **Settings** tab — note the CDN endpoint's ID from the URL
+   or the API (`doctl compute cdn list`), you'll need it below.
+2. **Set the bucket's file listing to restrict** (Settings → File
+   Listing → Restrict File Listing), and set **CORS** if you'll ever
+   fetch fonts/assets cross-origin from another domain — not needed if
+   the frontend is served from its own subdomain that matches
+   `CLIENT_ORIGIN`.
+3. **Generate Spaces access keys**: dashboard → **API** → **Spaces
+   Keys** → **Generate New Key**. This gives you a key/secret pair
+   (S3-compatible credentials — Spaces speaks the S3 API).
+4. **Generate a DigitalOcean API token** (separate from the Spaces
+   keys): dashboard → **API** → **Tokens** → **Generate New Token**,
+   with read/write scope. This is only used to trigger a CDN cache
+   purge after each deploy, so new deploys aren't served from a stale
+   CDN cache.
+5. **Add repo secrets** (GitHub repo → **Settings** → **Secrets and
+   variables** → **Actions**):
+   | Secret | Value |
+   |---|---|
+   | `DO_SPACES_KEY` | Spaces access key from step 3 |
+   | `DO_SPACES_SECRET` | Spaces secret key from step 3 |
+   | `DO_SPACES_BUCKET` | Your bucket name, e.g. `itti-frontend` |
+   | `DO_SPACES_REGION` | Your bucket's region, e.g. `nyc3` |
+   | `DO_API_TOKEN` | API token from step 4 |
+   | `DO_CDN_ENDPOINT_ID` | Your CDN endpoint's ID |
+   | `GOOGLE_CLIENT_ID` | Same Google OAuth client ID used elsewhere |
+6. **Point your domain (or a subdomain) at the CDN endpoint** the same
+   way you would for the app itself — DigitalOcean shows the CNAME
+   target on the bucket's CDN settings page.
+7. **Update `CLIENT_ORIGIN`** in the backend service's env vars (in
+   `app.yaml` or the dashboard) to whatever domain now serves the
+   frontend, since CORS is locked to that value.
+
+## Every future frontend deploy
+
+Push to `database` with changes under `client/` and
+`.github/workflows/deploy-frontend.yml` runs automatically: installs
+dependencies, runs `npm run build`, syncs `dist/` to the Spaces
+bucket, and purges the CDN cache so the new build is served
+immediately rather than after the CDN's normal cache expiry. You can
+also trigger it manually from the **Actions** tab (`workflow_dispatch`).
+
+Nothing about this requires touching the backend's `basic-xxs`
+instance, and nothing about it counts against App Platform's own build
+minutes — the whole build happens on GitHub's free runners.
 
 ---
 

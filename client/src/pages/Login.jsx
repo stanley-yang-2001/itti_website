@@ -4,6 +4,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../context/AuthContext.jsx";
 import { checkEmail } from "../utils/formValidation.js";
 import Reveal from '../components/Reveal.jsx';
+import SEO from '../components/SEO.jsx';
 import "../styles/Login.css";
 
 /**
@@ -70,6 +71,12 @@ export default function Login() {
 
   return (
     <div className="login-page">
+      <SEO
+        path="/login"
+        title="Log In"
+        description="Sign in to your International Truth & Trauma Institute account."
+        noindex
+      />
       <Reveal delay={0}>
       <div className="login-card">
         <h1>Sign in</h1>

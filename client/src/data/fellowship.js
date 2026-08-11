@@ -58,16 +58,16 @@ export const FELLOWS_GAIN = [
 //     name: 'Full Name',
 //     level: 'AFITTI' | 'FITTI' | 'SFITTI' | 'DFITTI',   // must match a FELLOW_LEVELS code
 //     bio: 'Short biography.',
-//     photo: '/fellows/<slug>.jpg'                         // optional; falls back to initials
+//     photo: '/images/fellows/<slug>.jpg'                         // optional; falls back to initials
 //   }
 export const FELLOWS = [
   {
     id: 'blessing-ojisor',
     name: 'Blessing Alims Ojisor',
     level: 'AFITTI',
-    photo: '/fellows/blessing-ojisor.jpg',
+    photo: '/images/fellows/blessing-ojisor.jpg',
     bio: [
-      "Blessing Alims Ojisor is an Associate Fellow with the International Truth & Trauma Institute, bringing a background in Peace Studies and Conflict Resolution to trauma informed governance and institutional reform. She made history and emerged as the first female President of the Student Union Government at the University of Calabar, Nigeria in its 49-year, a role that shaped her commitment to challenging entrenched systems.",
+      "Blessing Alims Ojisor is an Associate Fellow with the International Truth & Trauma Institute, bringing a background in Peace Studies and Conflict Resolution to trauma informed governance and institutional reform. She made history and emerged as a First-Class-Honors best-graduating student and the first female president of the Student Union Government at the University of Calabar, Nigeria in the institution's 49th year, a portfolio that demonstrates her commitment to challenging entrenched systems.",
       "Through years of community development work, most notably as founder of the Bagori Care Foundation, along with structural governance experience, she now advances ITTI's mission by turning research into strategic interventions for national healing, civic stabilization, and gender inclusive policy."
     ]
   },
@@ -75,7 +75,7 @@ export const FELLOWS = [
     id: 'hannah-toth',
     name: 'Hannah Toth',
     level: 'AFITTI',
-    photo: '/fellows/hannah-toth.jpg',
+    photo: '/images/fellows/hannah-toth.jpg',
     bio: [
       "Hannah Toth is an Associate Fellow with the International Truth & Trauma Institute, working within the Collective Psych Trauma Observatory under Dr. Luke Chike Igweobi. Her work focuses on building quantitative frameworks for measuring collective trauma and election-related violence, including contributions to the Global Trauma Burden Index and Election Trauma Temperature Index.",
       "As a clinical psychology student and Division I collegiate runner, she brings the same discipline she applies to training to her research: grounded in evidence, methodical, and committed to clear, accurate data. Her interests span clinical psychology, PTSD, trauma, and public health disparities, and she is currently working on manuscripts that position collective trauma frameworks within clinical psychology as she prepares to pursue a PhD in the field."
@@ -85,10 +85,11 @@ export const FELLOWS = [
     id: 'stanley-yang',
     name: 'Stanley Yang',
     level: 'AFITTI',
-    photo: '/fellows/stanley-yang.jpg',
+    photo: '/images/fellows/stanley-yang.jpg',
     bio: [
       "Stanley Yang is an Associate Fellow with the International Truth & Trauma Institute and a graduate of the University of Illinois Urbana-Champaign (UIUC). He has supported the Institute's research infrastructure by assisting in data collection for the Election Trauma Temperature Index (ETTI) Observatory, contributing to the quantitative foundation behind ITTI's trauma measurement frameworks.",
-      "Beyond his research contributions, Stanley built ITTI's website, bringing technical expertise to the Institute's public-facing platform and helping ensure its research, observatories, and programs are accessible to a global audience."
+      "Beyond his research contributions, Stanley built ITTI's website, bringing technical expertise to the Institute's public-facing platform and helping ensure its research, observatories, and programs are accessible to a global audience.",
+      "Driven and ambitious, Stanley is always looking ahead, eager to take on new opportunities and challenges that push him to grow and to expand the impact he can bring to ITTI's mission."
     ]
   }
 ];
@@ -106,7 +107,7 @@ export const LEADERSHIP = [
     id: 'luke-igweobi',
     name: 'Dr. Luke Chike Igweobi, DNP, MS, PMHNP-BC',
     title: 'Chancellor, International Truth & Trauma Institute (ITTI)',
-    photo: '/fellows/luke-igweobi.jpg',
+    photo: '/images/fellows/luke-igweobi.jpg',
     bio: [
       { type: 'p', text: 'Some clinicians treat trauma. Some scholars study war, conflict, or political violence. Few have attempted to build a unified scientific framework connecting psychiatry with the long-term psychological behavior of nations.' },
       { type: 'p', text: 'Dr. Luke Chike Igweobi is a board-certified Psychiatric Mental Health Nurse Practitioner (PMHNP-BC), collective trauma scholar, educator, author, and chancellor at the International Truth & Trauma Institute (ITTI). His work stands at the intersection of psychiatry, neuroscience, public health, international relations, peacebuilding, and post-conflict governance.' },
@@ -143,7 +144,7 @@ export const LEADERSHIP = [
     id: 'stephanie-saintil',
     name: 'Stephanie Saintil, RN, BSN',
     title: 'Chairperson, Board of Directors, International Truth & Trauma Institute (ITTI)',
-    photo: '/fellows/stephanie-saintil.jpg',
+    photo: '/images/fellows/stephanie-saintil.jpg',
     bio: [
       { type: 'p', text: 'Stephanie Saintil, RN, BSN, is an accomplished healthcare leader, registered nurse, and advocate for health equity whose career has been dedicated to strengthening healthcare quality, advancing inclusive leadership, and improving patient outcomes through systems-level innovation. As Chairperson of the Board of Directors of the International Truth & Trauma Institute (ITTI), she provides strategic governance and institutional oversight, helping guide the Institute\'s mission to advance research, education, policy, and international collaboration in collective trauma, truth-telling, and trauma-informed governance.' },
       { type: 'p', text: 'Throughout her professional career, Ms. Saintil has demonstrated a strong commitment to excellence in clinical practice, healthcare operations, regulatory compliance, and quality improvement. At Lemuel Shattuck Hospital, she has played an important leadership role in strengthening procedural standards, improving regulatory compliance, enhancing surgical safety initiatives, and fostering interdisciplinary collaboration across clinical teams. Her work reflects a deep understanding of patient-centered care, organizational accountability, and the importance of evidence-based systems capable of delivering safe, equitable, and high-quality healthcare.' },
@@ -160,10 +161,10 @@ export const LEADERSHIP = [
     id: 'saeed-siddique',
     name: 'Dr. Saeed A. Siddique, DNP, FNP-BC',
     title: 'Director, International Truth & Trauma Institute (ITTI)',
-    photo: '/fellows/saeed-siddique.jpg',
+    photo: '/images/fellows/saeed-siddique.jpg',
     bio: [
       { type: 'p', text: "Dr. Saeed A. Siddique, DNP, FNP-BC, is an accomplished Family Nurse Practitioner, clinician, humanitarian, and educator whose career has been dedicated to improving health outcomes among military veterans, migrant populations, and underserved communities. As a Director of the International Truth & Trauma Institute (ITTI), he brings extensive frontline experience in veteran healthcare, trauma-informed clinical practice, humanitarian service, and population health, supporting the Institute's mission to advance research, education, and policy on collective trauma, post-conflict recovery, migration, and human resilience." },
-      { type: 'p', text: "Throughout his professional career, Dr. Siddique has served within the VA Boston Healthcare System, where he has provided comprehensive primary and behavioral healthcare to United States military veterans living with the long-term consequences of military service. His clinical practice has included caring for veterans affected by Post-Traumatic Stress Disorder (PTSD), depression, anxiety, traumatic brain injury, chronic medical conditions, and the complex physical and psychological effects of combat exposure. Working within one of the nation's leading veterans' healthcare systems, he has collaborated with interdisciplinary teams to deliver holistic, patient-centered care that recognizes the close relationship between physical health, psychological well-being, and long-term recovery." },
+      { type: 'p', text: "Throughout his professional career, Dr. Siddique has served within Harvard-Medical-affiliated hospitals and within the VA Boston Healthcare System, where he has provided comprehensive primary and behavioral healthcare to United States military veterans living with the long-term consequences of military service. His clinical practice has included caring for veterans affected by Post-Traumatic Stress Disorder (PTSD), depression, anxiety, traumatic brain injury, chronic medical conditions, and the complex physical and psychological effects of combat exposure. Working within one of the nation's leading veterans' healthcare systems, he has collaborated with interdisciplinary teams to deliver holistic, patient-centered care that recognizes the close relationship between physical health, psychological well-being, and long-term recovery." },
       { type: 'p', text: 'Beyond his work with veterans, Dr. Siddique has devoted significant effort to improving healthcare access for vulnerable and displaced populations across multiple international settings. In New York City, he has worked extensively with migrant communities, helping address the complex healthcare needs of newly arrived individuals and families navigating displacement, resettlement, cultural transition, and barriers to healthcare access. His work has emphasized compassionate, culturally responsive care for populations often affected by migration-related trauma, socioeconomic hardship, and limited access to preventive health services.' },
       { type: 'p', text: 'His humanitarian commitment also extends to Northern Ghana, where he has worked with returning and stranded West African migrants, many of whom had experienced failed migration journeys, displacement, exploitation, family separation, and significant psychosocial distress. Supporting migrant populations during reintegration has given him firsthand insight into the lasting effects of forced migration, economic insecurity, and collective trauma on individuals, families, and communities, reinforcing his commitment to trauma-informed and culturally grounded models of care.' },
       { type: 'p', text: 'Dr. Siddique earned his Doctor of Nursing Practice (DNP) from the College of Health, Education and Social Transformation at New Mexico State University, where his doctoral education emphasized evidence-based practice, population health, healthcare quality improvement, systems leadership, and the translation of research into clinical practice. His advanced training has prepared him to lead quality improvement initiatives while promoting patient-centered models of care that improve health outcomes across diverse populations.' },

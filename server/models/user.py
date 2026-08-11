@@ -13,7 +13,7 @@ email/password) — see docs/ACCESS_LEVELS.md for the full design.
 
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, or_
 from sqlalchemy.orm import relationship
 
 from .database import Base, Session
@@ -154,15 +154,21 @@ def get_user_by_email(email, include_hidden=False):
         session.close()
 
 
-def get_all_users(include_hidden=False, limit=DEFAULT_PAGE_SIZE, offset=0):
+def get_all_users(include_hidden=False, limit=DEFAULT_PAGE_SIZE, offset=0, search=None):
     """
     Fetch a page of users, newest first. By default only status=1
     (visible) users are returned; pass include_hidden=True to also get
     status=0 (hidden) ones. limit is clamped to [1, MAX_PAGE_SIZE] here
     (not just at the route layer), so this can never return an
-    unbounded result even if a future caller forgets to page. Returns
-    (users, total) where total is the full matching count before
-    paging.
+    unbounded result even if a future caller forgets to page.
+
+    search, if given, filters to users whose name OR email contains it
+    (case-insensitive substring match) - powers the admin Control
+    panel's Access Level search bar. Applied before total is counted,
+    so pagination reflects the filtered set, not every user.
+
+    Returns (users, total) where total is the full matching count
+    before paging.
     """
     limit = clamp_limit(limit)
     offset = clamp_offset(offset)
@@ -171,6 +177,9 @@ def get_all_users(include_hidden=False, limit=DEFAULT_PAGE_SIZE, offset=0):
         query = session.query(User)
         if not include_hidden:
             query = query.filter(User.status == STATUS_VISIBLE)
+        if search:
+            like = f"%{search.strip()}%"
+            query = query.filter(or_(User.name.ilike(like), User.email.ilike(like)))
         total = query.count()
         users = query.order_by(User.id.desc()).offset(offset).limit(limit).all()
         return users, total

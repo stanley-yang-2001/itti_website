@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import Reveal from '../components/Reveal.jsx';
+import SEO from '../components/SEO.jsx';
 import '../styles/Donate.css';
 
 const RETRY_DELAY_MS = 3000;
@@ -62,6 +63,11 @@ export default function DonateThankYou() {
 
   return (
     <div className="donate-page">
+      <SEO
+        path="/donate/thank-you"
+        title="Thank You"
+        noindex
+      />
       <Reveal delay={0}>
       <div className="donate-thankyou-card">
         {status === 'missing-session' && (

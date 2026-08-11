@@ -333,6 +333,20 @@
   }
   .about-index-item.active{border-left-color:transparent; border-bottom-color:var(--cyan);}
   .about-bullet-list-grid{grid-template-columns:1fr;}
+
+  /* .about-index becomes a sticky pill bar on mobile (above), stacking
+     directly below the main navbar and staying pinned as the page
+     scrolls. .about-section's scroll-margin-top (used when jumping here
+     via an index link, or loading a #hash directly) only accounted for
+     the main navbar's height, not this second sticky bar sitting below
+     it - so jumping to a section landed with its heading and first
+     lines hidden behind the pill bar, making the section look like it
+     "only shows half" until the user manually scrolled up past it.
+     ~64px covers the bar's own padding + pill height, plus a little
+     breathing room. */
+  .about-section{
+    scroll-margin-top:calc(var(--navbar-height, 0px) + 64px + 16px);
+  }
 }
 
 @media (max-width: 560px){

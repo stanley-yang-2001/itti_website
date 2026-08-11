@@ -11,6 +11,29 @@ function isoGuess(feature) {
   return feature.id ? String(feature.id).padStart(3, '0') : '—';
 }
 
+function escapeHtml(str) {
+  return String(str ?? '').replace(/[&<>"']/g, (c) => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+  ));
+}
+
+// One index's line in the hover tooltip: "ETTI  62.4 (2022)" when real
+// data exists, or "ETTI  Data pending" when it doesn't - covers both
+// "no data at all" and "the record exists but only has placeholder
+// years" the same way computeCountryQuickStats() already does.
+function scoreLineHtml(label, swatchClass, entry) {
+  const value = entry
+    ? `<span class="globe-tooltip-score">${entry.score !== null ? entry.score.toFixed(1) : '—'}</span>` +
+      `<span class="globe-tooltip-year">(${entry.year})</span>`
+    : `<span class="globe-tooltip-pending">Data pending</span>`;
+  return (
+    `<div class="globe-tooltip-row">` +
+    `<span class="globe-tooltip-swatch ${swatchClass}"></span>` +
+    `<span class="globe-tooltip-label">${label}</span>${value}` +
+    `</div>`
+  );
+}
+
 // Maps a feature's data-coverage status to the CSS class that colors it
 // (see .land.data-etti / .data-gtbi / .data-both in App.css). Countries
 // with no ETTI/GTBI data get no extra class, so they keep the default
@@ -23,7 +46,7 @@ function dataClassFor(feature, countryStatus) {
   return '';
 }
 
-const Globe = forwardRef(function Globe({ worldData, onCountryClick, countryStatus }, ref) {
+const Globe = forwardRef(function Globe({ worldData, onCountryClick, countryStatus, countryQuickStats }, ref) {
   const containerRef = useRef(null);
   const d3State = useRef({}); // stash mutable d3 objects across renders
 
@@ -104,6 +127,60 @@ const Globe = forwardRef(function Globe({ worldData, onCountryClick, countryStat
         selectCountry(d, this);
       });
 
+    // Hover tooltip: a plain HTML div (not an SVG element) absolutely
+    // positioned over #globe-container, rather than e.g. an SVG
+    // <title> or a foreignObject - this way it can hold normal
+    // flex/CSS layout and doesn't have to fight the projection's own
+    // coordinate transforms.
+    //
+    // pointer-events:none (set in CSS) is what keeps it from blocking
+    // the hover it's supposed to be describing: without it, the
+    // tooltip box itself would intercept mouseenter/mousemove/mouseleave
+    // once the cursor drifted over the box rather than the country
+    // underneath, so moving toward a neighboring country could get
+    // "caught" on the tooltip instead of reaching that country's path.
+    const tooltip = d3
+      .select(container)
+      .append('div')
+      .attr('class', 'globe-tooltip')
+      .style('opacity', 0);
+
+    function tooltipHtml(feature) {
+      const stats = countryQuickStats?.[isoGuess(feature)];
+      const name = stats?.name || feature.properties.name;
+      return (
+        `<div class="globe-tooltip-name">${escapeHtml(name)}</div>` +
+        scoreLineHtml('ETTI', 'data-etti', stats?.etti) +
+        scoreLineHtml('GTBI', 'data-gtbi', stats?.gtbi)
+      );
+    }
+
+    // Positions the tooltip near the cursor but flips to whichever side
+    // of the point has more room, so it never runs off the edge of the
+    // globe box regardless of where on the sphere someone's hovering.
+    function positionTooltip(event) {
+      const [x, y] = d3.pointer(event, container);
+      const box = container.getBoundingClientRect();
+      const anchorLeft = x < box.width * 0.6;
+      const anchorTop = y < box.height * 0.65;
+      tooltip
+        .style('left', `${x}px`)
+        .style('top', `${y}px`)
+        .style('transform', `translate(${anchorLeft ? '18px' : 'calc(-100% - 18px)'}, ${anchorTop ? '-12px' : 'calc(-100% + 12px)'})`);
+    }
+
+    land
+      .on('mouseenter.tooltip', function (event, d) {
+        tooltip.html(tooltipHtml(d)).style('opacity', 1);
+        positionTooltip(event);
+      })
+      .on('mousemove.tooltip', function (event) {
+        positionTooltip(event);
+      })
+      .on('mouseleave.tooltip', function () {
+        tooltip.style('opacity', 0);
+      });
+
     function selectCountry(feature, node) {
       if (selectedNode) d3.select(selectedNode).classed('selected', false);
       if (node) {
@@ -163,7 +240,7 @@ const Globe = forwardRef(function Globe({ worldData, onCountryClick, countryStat
       container.innerHTML = '';
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [worldData, countryStatus]);
+  }, [worldData, countryStatus, countryQuickStats]);
 
   useImperativeHandle(ref, () => ({
     focusOnFeature(feature) {

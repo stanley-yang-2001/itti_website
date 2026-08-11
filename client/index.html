@@ -4,7 +4,64 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" href="/favicon.png">
-<title>ITTI</title>
+<link rel="apple-touch-icon" href="/itti-logo.png">
+<meta name="theme-color" content="#F7F9FC">
+
+<!--
+  Only genuinely static, singleton-safe tags live here. Description,
+  canonical, and Open Graph/Twitter tags are deliberately NOT included -
+  every routed page sets those itself via the <SEO> component
+  (client/src/components/SEO.jsx, react-helmet-async). Putting default
+  copies here too was tried and reverted: react-helmet-async APPENDS
+  its per-page tags rather than replacing pre-existing static ones (it
+  only manages tags it created itself), so every page ended up with two
+  <meta name="description"> tags - the generic one from this file, and
+  the correct per-page one from <SEO>. Google's stated behavior is to
+  use the FIRST duplicate it finds, which would have been this file's
+  generic one on every single page, silently defeating the per-page
+  descriptions entirely.
+
+  <title> is the one exception - kept here as a real fallback, since
+  Helmet manages document.title directly (a DOM singleton, not a
+  creatable/duplicable tag), so there's no duplication risk.
+
+  Practical effect of this tradeoff: a crawler or share-preview bot
+  that does NOT execute JavaScript (most social unfurl bots) sees only
+  this generic title and no description/image for any URL. Modern
+  Googlebot does execute JavaScript and will see each page's real
+  <SEO> tags. Fixing the non-JS case properly would mean pre-rendering
+  or server-rendering each route, which is a larger architectural
+  change than this pass covers.
+-->
+<title>International Truth & Trauma Institute</title>
+
+<!--
+  Organization structured data (schema.org, via JSON-LD) - helps search
+  engines understand what ITTI is as an entity (name, logo, contact
+  point) independent of any single page's content, which is what
+  powers things like a Google Knowledge Panel. Static here rather than
+  per-page since the organization itself doesn't change page to page,
+  and JSON-LD script tags aren't duplicated/conflicting the way meta
+  tags are - there's nothing here for Helmet to collide with.
+-->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "EducationalOrganization",
+  "name": "International Truth & Trauma Institute",
+  "alternateName": "ITTI",
+  "url": "https://ittiglobal.org",
+  "logo": "https://ittiglobal.org/itti-logo.png",
+  "description": "A global research, policy, and advisory institute documenting collective trauma, building country-level Trauma Observatories and standardized indices like GTBI and ETTI, and advancing trauma-informed governance.",
+  "sameAs": [],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "email": "support@ittiglobal.org",
+    "contactType": "customer support"
+  }
+}
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 </head>

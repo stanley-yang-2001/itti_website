@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { checkReportTitle, checkReportDescription } from '../utils/formValidation.js';
+import { checkReportTitle, checkReportDescription, checkReportCategory } from '../utils/formValidation.js';
+import { REPORT_CATEGORIES, DEFAULT_REPORT_CATEGORY } from '../constants/reportCategories.js';
 
 /**
  * Publisher/admin-only upload form for the Reports page. The actual
@@ -12,6 +13,7 @@ import { checkReportTitle, checkReportDescription } from '../utils/formValidatio
 export default function ReportUploadForm({ onUploaded, onCancel }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [category, setCategory] = useState(DEFAULT_REPORT_CATEGORY);
   const [file, setFile] = useState(null);
   const [image, setImage] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
@@ -24,6 +26,8 @@ export default function ReportUploadForm({ onUploaded, onCancel }) {
     if (titleError) errors.title = titleError;
     const descriptionError = checkReportDescription(description);
     if (descriptionError) errors.description = descriptionError;
+    const categoryError = checkReportCategory(category);
+    if (categoryError) errors.category = categoryError;
     if (!file) errors.file = 'A PDF or Word document is required.';
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
@@ -38,6 +42,7 @@ export default function ReportUploadForm({ onUploaded, onCancel }) {
     const formData = new FormData();
     formData.append('title', title.trim());
     formData.append('description', description.trim());
+    formData.append('category', category);
     formData.append('file', file);
     if (image) formData.append('image', image);
 
@@ -86,6 +91,18 @@ export default function ReportUploadForm({ onUploaded, onCancel }) {
       </label>
 
       <label className="report-upload-field">
+        <span>Section</span>
+        <select value={category} onChange={(e) => setCategory(e.target.value)}>
+          {REPORT_CATEGORIES.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
+        {fieldErrors.category && <span className="report-upload-field-error">{fieldErrors.category}</span>}
+      </label>
+
+      <label className="report-upload-field">
         <span>Report file (PDF or Word document)</span>
         <input type="file" accept=".pdf,.doc,.docx" onChange={(e) => setFile(e.target.files[0] || null)} />
         {fieldErrors.file && <span className="report-upload-field-error">{fieldErrors.file}</span>}
@@ -99,10 +116,10 @@ export default function ReportUploadForm({ onUploaded, onCancel }) {
       {status && <p className={`report-upload-status report-upload-status--${status.type}`}>{status.message}</p>}
 
       <div className="report-upload-actions">
-        <button type="submit" className="report-upload-submit" disabled={submitting}>
+        <button type="submit" className="btn btn-primary" disabled={submitting}>
           {submitting ? 'Uploading…' : 'Upload report'}
         </button>
-        <button type="button" className="report-upload-cancel" onClick={onCancel} disabled={submitting}>
+        <button type="button" className="btn btn-secondary" onClick={onCancel} disabled={submitting}>
           Cancel
         </button>
       </div>

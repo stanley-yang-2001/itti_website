@@ -1,0 +1,121 @@
+name: Deploy frontend
+
+# Builds the Vite production bundle on GitHub's own runners and syncs the
+# result straight to a DigitalOcean Spaces bucket (S3-compatible, fronted
+# by DO's CDN). This exists so `npm run build` - which needs enough RAM to
+# hold the whole module graph in memory at once - never has to run on the
+# app's own basic-xxs backend instance or count against App Platform's
+# static-site build minutes. See README's Deployment section for the
+# one-time Spaces + app.yaml setup this depends on.
+
+on:
+  push:
+    branches: ["database"]
+    paths:
+      - "client/**"
+      - ".github/workflows/deploy-frontend.yml"
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-frontend
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    name: Build and sync dist/ to DO Spaces
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright's Chromium (for prerendering)
+        # scripts/prerender.mjs (run via npm run build's postbuild hook)
+        # launches a real headless Chromium to render each route to
+        # static HTML. Playwright ships as an npm package but its actual
+        # browser binaries are a separate download - without this step,
+        # the postbuild hook fails with "Executable doesn't exist ..."
+        # and `npm run build` exits non-zero, failing this entire job.
+        run: npx playwright install --with-deps chromium
+
+      - name: Build
+        env:
+          # Vite reads the repo-root .env for this (see client/vite.config.js);
+          # GitHub Actions has no filesystem access to your local .env, so it
+          # has to come from a repo secret instead.
+          VITE_GOOGLE_CLIENT_ID_SOURCE: ${{ secrets.GOOGLE_CLIENT_ID }}
+        run: |
+          echo "GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID_SOURCE}" >> ../.env
+          npm run build
+
+      - name: Configure DO Spaces credentials
+        run: |
+          mkdir -p ~/.aws
+          cat > ~/.aws/credentials <<EOF
+          [default]
+          aws_access_key_id = ${{ secrets.DO_SPACES_KEY }}
+          aws_secret_access_key = ${{ secrets.DO_SPACES_SECRET }}
+          EOF
+
+      - name: Sync dist/ to Spaces
+        run: |
+          aws s3 sync dist/ "s3://${{ secrets.DO_SPACES_BUCKET }}" \
+            --endpoint-url "https://${{ secrets.DO_SPACES_REGION }}.digitaloceanspaces.com" \
+            --acl public-read \
+            --delete \
+            --cache-control "public,max-age=31536000,immutable" \
+            --exclude "index.html" \
+            --exclude "robots.txt" \
+            --exclude "sitemap.xml"
+
+      - name: Upload index.html with no-cache
+        # index.html references the hashed asset filenames above, so it
+        # must never be served stale from cache the way the hashed assets
+        # safely can be - otherwise a deploy could serve an old index.html
+        # pointing at JS/CSS files that no longer exist in the bucket.
+        run: |
+          aws s3 cp dist/index.html "s3://${{ secrets.DO_SPACES_BUCKET }}/index.html" \
+            --endpoint-url "https://${{ secrets.DO_SPACES_REGION }}.digitaloceanspaces.com" \
+            --acl public-read \
+            --cache-control "public,max-age=0,must-revalidate"
+
+      - name: Upload robots.txt and sitemap.xml with no-cache
+        # Same reasoning as index.html above: unlike the hashed JS/CSS
+        # assets, these two keep the same URL forever but their content
+        # is meant to change over time (new routes added to the sitemap,
+        # new disallowed paths in robots.txt). The main sync step's
+        # immutable/1-year cache-control is correct for content-hashed
+        # filenames and wrong for these - a search engine crawler that
+        # fetched either of these once would have no HTTP-level reason
+        # to check again for a year, and the CDN purge step below only
+        # clears DigitalOcean's own cache, not a crawler's.
+        run: |
+          aws s3 cp dist/robots.txt "s3://${{ secrets.DO_SPACES_BUCKET }}/robots.txt" \
+            --endpoint-url "https://${{ secrets.DO_SPACES_REGION }}.digitaloceanspaces.com" \
+            --acl public-read \
+            --cache-control "public,max-age=0,must-revalidate"
+          aws s3 cp dist/sitemap.xml "s3://${{ secrets.DO_SPACES_BUCKET }}/sitemap.xml" \
+            --endpoint-url "https://${{ secrets.DO_SPACES_REGION }}.digitaloceanspaces.com" \
+            --acl public-read \
+            --cache-control "public,max-age=0,must-revalidate"
+
+      - name: Purge CDN cache
+        env:
+          DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DO_API_TOKEN }}
+        run: |
+          curl -s -X DELETE \
+            -H "Authorization: Bearer ${DIGITALOCEAN_ACCESS_TOKEN}" \
+            "https://api.digitalocean.com/v2/cdn/endpoints/${{ secrets.DO_CDN_ENDPOINT_ID }}/cache" \
+            -H "Content-Type: application/json" \
+            -d '{"files": ["*"]}'

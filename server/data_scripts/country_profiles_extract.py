@@ -76,6 +76,7 @@ DASHBOARD_TRAILING_SECTION = "General reference"  # shared citation, not per-cou
 # ISO 3166-1 / pycountry official short names).
 NAME_ALIASES = {
     "Bolivia": "Bolivia, Plurinational State of",
+    "Congo (Republic of the Congo)": "Republic of the Congo",
     "Democratic Republic of the Congo": None,  # resolved by numeric code directly, see below
     "Laos": "Lao People's Democratic Republic",
     "Micronesia": "Micronesia, Federated States of",

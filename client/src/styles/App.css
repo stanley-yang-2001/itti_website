@@ -25,6 +25,24 @@
     --text-hi:#111827;
     --text-mid:#4B5768;
     --text-low:#6B7686;
+
+    /* Spacing/radius scale - referenced throughout Profile.css/Control.css
+       already but never previously defined here, so those rules were
+       silently falling back to var()'s invalid-at-computed-value
+       behavior (0/none) rather than actually spacing or rounding
+       anything. Values chosen to match what was already hardcoded
+       elsewhere (10px card radii, 6px button radii, 16-24px gaps). */
+    --space-2:8px;
+    --space-3:12px;
+    --space-4:16px;
+    --space-5:20px;
+    --space-6:24px;
+    --space-7:32px;
+    --space-8:40px;
+    --radius-sm:6px;
+    --radius-md:10px;
+    --radius-lg:16px;
+    --radius-pill:999px;
   }
   *{box-sizing:border-box;}
   html,body{
@@ -47,6 +65,48 @@
   }
   .display{font-family:'Times New Roman', Times, serif;}
   .mono{font-family:'JetBrains Mono',monospace;}
+
+  /* ---------- Shared button utility classes ---------- */
+  /* Used across Profile, Reports, PeerReview, etc. for actions like
+     "Upload Report", "Peer Review", "Mark all as read" - defined here
+     once so every page's action buttons look and behave identically,
+     rather than each page inventing its own button style. */
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    padding:9px 18px;
+    border-radius:8px;
+    border:1px solid transparent;
+    font-size:13.5px;
+    font-weight:600;
+    font-family:'Inter',sans-serif;
+    cursor:pointer;
+    text-decoration:none;
+    white-space:nowrap;
+    transition:background .15s ease, border-color .15s ease, color .15s ease, opacity .15s ease;
+  }
+  .btn:disabled{
+    opacity:0.5;
+    cursor:not-allowed;
+  }
+  .btn-primary{
+    background:var(--cyan);
+    color:#fff;
+  }
+  .btn-primary:hover:not(:disabled){
+    background:#0C625A;
+  }
+  .btn-secondary{
+    background:rgba(21,27,38,0.03);
+    border-color:var(--line);
+    color:var(--text-mid);
+  }
+  .btn-secondary:hover:not(:disabled){
+    border-color:var(--cyan);
+    color:var(--text-hi);
+  }
 
   /* ---------- Page transition ---------- */
   /* Wraps whatever <Routes> renders (see App.jsx). Has to behave as a
@@ -210,14 +270,14 @@
     border:1px solid var(--line);
     border-radius:8px;
     padding:9px 14px 9px 34px;
-    color:var(--text-hi);
+    color:#F5F7FA;
     font-family:'Inter',sans-serif;
     font-size:13px;
     outline:none;
     transition:border-color .15s ease;
   }
   #search:focus{border-color:var(--cyan);}
-  #search::placeholder{color:var(--text-low);}
+  #search::placeholder{color:rgba(245,247,250,0.55);}
   .searchwrap svg{
     position:absolute; left:11px; top:50%; transform:translateY(-50%);
     width:14px;height:14px; stroke:var(--text-low); pointer-events:none;
@@ -262,10 +322,28 @@
 
   /* ---------- Part 1: Welcome ---------- */
   .home-welcome{
+    position:relative;
     padding:72px 32px 48px;
     text-align:center;
     max-width:760px;
     margin:0 auto;
+    overflow:hidden;
+  }
+  .home-welcome-watermark{
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:640px;
+    height:640px;
+    transform:translate(-50%, -50%);
+    color:var(--land);
+    opacity:0.05;
+    pointer-events:none;
+    z-index:0;
+  }
+  .home-welcome > *:not(.home-welcome-watermark){
+    position:relative;
+    z-index:1;
   }
   .home-welcome-eyebrow{
     font-family:'JetBrains Mono',monospace;
@@ -315,9 +393,53 @@
     flex-direction:column;
   }
 
+  /* Shown in place of the globe itself when its data fails to load or
+     is still loading - previously this box just stayed empty forever
+     on failure, with nothing telling the person anything had gone
+     wrong. Both sit on the same dark globe background (.home-globe-left
+     above), so they read as "this box's content" rather than an error
+     banner bolted on top of it. */
+  .home-globe-error, .home-globe-loading{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    text-align:center;
+    padding:24px;
+  }
+  .home-globe-loading{
+    color:var(--text-low);
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+  }
+  .home-globe-retry-btn{
+    padding:9px 20px;
+    border-radius:999px;
+    border:1px solid rgba(127,168,224,0.4);
+    background:transparent;
+    color:#F4F7FB;
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:500;
+    cursor:pointer;
+    transition:background .15s ease, border-color .15s ease;
+  }
+  .home-globe-retry-btn:hover{
+    background:rgba(127,168,224,0.12);
+    border-color:rgba(127,168,224,0.7);
+  }
+
   #globe-container{
     width:100%; height:100%;
     display:flex; align-items:center; justify-content:center;
+    /* Anchors the hover tooltip's position:absolute (see .globe-tooltip
+       below and Globe.jsx) to this box instead of the page. */
+    position:relative;
   }
   #globe-container svg{
     width:100%; height:100%;
@@ -396,6 +518,68 @@
   .globe-legend-swatch.data-gtbi{background:#B98BD8;}
   .globe-legend-swatch.data-both{background:#6BC97A;}
 
+  /* ---------- Globe hover tooltip ---------- */
+  /* Floats over the globe's own dark ocean/space canvas rather than the
+     page's light theme, since that's the surface it actually sits on -
+     see Globe.jsx for why it's a plain DOM div (not SVG) positioned
+     with d3.pointer() coordinates.
+     pointer-events:none is the load-bearing rule here: it's what lets
+     the cursor pass straight through the tooltip to whatever country
+     is now underneath it, so the box never "traps" hover on itself
+     while someone's mouse is crossing toward a neighboring country. */
+  .globe-tooltip{
+    position:absolute;
+    top:0; left:0;
+    z-index:5;
+    min-width:150px;
+    padding:10px 12px;
+    border-radius:10px;
+    background:rgba(10,18,32,0.92);
+    border:1px solid rgba(127,168,224,0.28);
+    box-shadow:0 8px 24px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.03) inset;
+    backdrop-filter:blur(6px);
+    pointer-events:none;
+    opacity:0;
+    transition:opacity .12s ease;
+    font-family:'Inter',sans-serif;
+  }
+  .globe-tooltip-name{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.03em;
+    color:#F4F7FB;
+    margin-bottom:7px;
+    white-space:nowrap;
+  }
+  .globe-tooltip-row{
+    display:flex;
+    align-items:baseline;
+    gap:6px;
+    font-size:11.5px;
+    line-height:1.5;
+    white-space:nowrap;
+  }
+  .globe-tooltip-row + .globe-tooltip-row{margin-top:3px;}
+  .globe-tooltip-swatch{
+    width:7px; height:7px;
+    border-radius:2px;
+    flex-shrink:0;
+  }
+  .globe-tooltip-swatch.data-etti{background:#7FA8E0;}
+  .globe-tooltip-swatch.data-gtbi{background:#B98BD8;}
+  .globe-tooltip-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;
+    letter-spacing:0.06em;
+    color:#8B98AC;
+    text-transform:uppercase;
+    width:32px;
+    flex-shrink:0;
+  }
+  .globe-tooltip-score{color:#F4F7FB; font-weight:600;}
+  .globe-tooltip-year{color:#8B98AC; font-size:10px;}
+  .globe-tooltip-pending{color:#6B7686; font-style:italic;}
+
   @media (max-width: 900px){
     .home-globe-grid{grid-template-columns:1fr; align-items:stretch;}
     .home-globe-left{height:420px;}
@@ -403,6 +587,7 @@
   }
   @media (max-width: 640px){
     .home-welcome{padding:56px 20px 40px;}
+    .home-welcome-watermark{width:420px; height:420px;}
     .home-globe-left .searchwrap{width:88%;}
     .globe-legend{flex-wrap:wrap; justify-content:center; width:88%; gap:8px 12px; top:60px;}
     .hint{width:90%; flex-wrap:wrap; justify-content:center;}
@@ -688,11 +873,16 @@
   }
   .placeholder-note svg{flex-shrink:0; margin-top:2px; width:13px;height:13px; stroke:var(--text-low);}
 
+  .panel-links{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin:22px 26px 26px;
+  }
   .panel-observatory-link{
     display:flex;
     align-items:center;
     gap:10px;
-    margin:22px 26px 26px;
     padding:14px 16px;
     border:1px solid var(--line);
     border-radius:10px;
@@ -1045,6 +1235,20 @@
   .home-explore-card:active{
     transform:translateY(-2px) scale(0.97);
   }
+  .home-explore-card-icon{
+    width:40px;
+    height:40px;
+    color:var(--cyan);
+    opacity:0.8;
+    transition:opacity .18s ease;
+  }
+  .home-explore-card-icon svg{
+    width:100%;
+    height:100%;
+  }
+  .home-explore-card:hover .home-explore-card-icon{
+    opacity:1;
+  }
   .home-explore-card-label{
     font-size:19px;
     font-weight:600;
@@ -1087,9 +1291,9 @@
   }
   .home-connect-grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));
     gap:20px;
-    max-width:800px;
+    max-width:1080px;
     margin:0 auto;
   }
   .home-connect-card{
@@ -1235,6 +1439,9 @@
     border:1px solid var(--line);
     border-radius:10px;
     box-shadow:0 12px 40px rgba(0,0,0,0.3);
+  }
+  .app-modal--wide{
+    max-width:720px;
   }
   .app-modal-header{
     display:flex;

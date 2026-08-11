@@ -4,6 +4,8 @@ import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../context/AuthContext.jsx";
 import { checkEmail, checkPassword, checkPasswordsMatch, checkName } from "../utils/formValidation.js";
 import Reveal from '../components/Reveal.jsx';
+import PrivacyPolicyModal from '../components/PrivacyPolicyModal.jsx';
+import SEO from '../components/SEO.jsx';
 import "../styles/SignUp.css";
 
 /**
@@ -23,6 +25,8 @@ export default function Signup() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [formError, setFormError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
 
   function validate() {
     const errors = {};
@@ -38,6 +42,8 @@ export default function Signup() {
 
     const matchError = checkPasswordsMatch(password, confirmPassword);
     if (matchError) errors.confirmPassword = matchError;
+
+    if (!agreedToPrivacy) errors.agreedToPrivacy = 'You must agree to the Privacy Policy to create an account';
 
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
@@ -95,6 +101,12 @@ export default function Signup() {
 
   return (
     <div className="signup-page">
+      <SEO
+        path="/signup"
+        title="Sign Up"
+        description="Create an International Truth & Trauma Institute account."
+        noindex
+      />
       <Reveal delay={0}>
       <div className="signup-card">
         <h1>Create an account</h1>
@@ -154,9 +166,30 @@ export default function Signup() {
             )}
           </label>
 
-          <p className="signup-privacy-note">
-            By creating an account, you agree to our <Link to="/privacy">Privacy Policy</Link>.
-          </p>
+          <label className="signup-checkbox-field">
+            <input
+              type="checkbox"
+              checked={agreedToPrivacy}
+              onChange={(e) => setAgreedToPrivacy(e.target.checked)}
+            />
+            <span>
+              I have read and agree to the{' '}
+              <button
+                type="button"
+                className="signup-privacy-link"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowPrivacyModal(true);
+                }}
+              >
+                Privacy Policy
+              </button>
+              .
+            </span>
+          </label>
+          {fieldErrors.agreedToPrivacy && (
+            <span className="signup-field-error">{fieldErrors.agreedToPrivacy}</span>
+          )}
 
           <button type="submit" className="signup-submit-button" disabled={loading}>
             Create account
@@ -180,6 +213,8 @@ export default function Signup() {
         </p>
       </div>
       </Reveal>
+
+      {showPrivacyModal && <PrivacyPolicyModal onClose={() => setShowPrivacyModal(false)} />}
     </div>
   );
 }

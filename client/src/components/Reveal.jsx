@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, cloneElement } from 'react';
+import { useLocation } from 'react-router-dom';
 
 /** Combines the wrapped child's existing ref (if it has one) with our own,
  * so wrapping something in <Reveal> never breaks a ref it was already
@@ -27,12 +28,26 @@ function mergeRefs(...refs) {
  * Reveals once and stays revealed (doesn't re-hide on scroll away),
  * which is the usual expectation for this kind of effect and avoids
  * content flickering in and out while scrolling up and down.
+ *
+ * Scoped to the home page only ("/") - every <Reveal> elsewhere in the
+ * app (there are ~24 pages using it) renders its child immediately,
+ * fully visible, with no observer and no transition. Rather than
+ * stripping <Reveal> out of every one of those call sites, this one
+ * component just no-ops itself off the home page, so the cascading
+ * scroll-reveal effect is Home-only without touching the other pages.
  */
 export default function Reveal({ children, delay = 0 }) {
   const ownRef = useRef(null);
-  const [visible, setVisible] = useState(false);
+  const { pathname } = useLocation();
+  const isHome = pathname === '/';
+  const [visible, setVisible] = useState(!isHome);
 
   useEffect(() => {
+    if (!isHome) {
+      setVisible(true);
+      return undefined;
+    }
+
     const el = ownRef.current;
     if (!el) return undefined;
 
@@ -54,13 +69,13 @@ export default function Reveal({ children, delay = 0 }) {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [isHome]);
 
   const child = React.Children.only(children);
-  const mergedClassName = [child.props.className, 'reveal-on-scroll', visible ? 'is-visible' : '']
-    .filter(Boolean)
-    .join(' ');
-  const mergedStyle = { ...child.props.style, transitionDelay: `${delay}ms` };
+  const mergedClassName = isHome
+    ? [child.props.className, 'reveal-on-scroll', visible ? 'is-visible' : ''].filter(Boolean).join(' ')
+    : child.props.className;
+  const mergedStyle = isHome ? { ...child.props.style, transitionDelay: `${delay}ms` } : child.props.style;
 
   return cloneElement(child, {
     ref: mergeRefs(ownRef, child.ref),
