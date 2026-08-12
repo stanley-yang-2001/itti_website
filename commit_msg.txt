@@ -1,143 +1,67 @@
-Reduce server/CDN load (compression, HTTP caching, N+1 fix, code-
-splitting, image optimization) and fix Report panel image
-cropping/upload limits (description char counter, 2.5MB combined
-file+image limit)
+Add multiple expandable references to country profiles; carry over
+two pending email bug fixes
 
-Pulled and confirmed a clean fast-forward onto origin/database
-(503793f) before finalizing - the one new upstream commit (CI/
-Playwright fix, a country_profiles.json content update, source docx
-housekeeping) didn't touch any file below.
+Reconciled against several commits that landed upstream in the
+meantime (Peer Review notifications/admin-approve bypass, Reports/
+Peer Review styling, a security audit pass) - most of my prior
+in-progress work turned out to already be merged, so only genuinely
+new changes are included here.
 
-FILES CHANGED/ADDED
-====================
+server/app.py
+    Two still-unmerged fixes from earlier: forgot_password()'s email
+    send is now wrapped in try/except (an SMTP failure was returning
+    500 for registered emails vs 200 for unregistered ones, leaking
+    account existence and breaking the page for real users on any
+    Brevo hiccup); enrollment confirmation email now looks up the
+    recipient via get_user(enrollment.user_id) instead of the lazy
+    enrollment.user relationship, which raised DetachedInstanceError
+    on every single successful enrollment (reproduced live) since the
+    session that loaded it was already closed.
 
-server/
-├── app.py                        [M] Flask-Compress wiring, 4 cached
-│                                      public endpoints, combined
-│                                      report upload size check
-├── requirements.txt              [M] + Flask-Compress==1.24
-├── validation.py                 [M] report description limit
-│                                      2000 -> 200 chars
-└── models/
-    └── report_review.py          [M] batched reviewer-name lookup
-                                       (fixes N+1 query)
+server/data_scripts/country_profiles_extract.py
+    parse_survey_docx() now collects every consecutive "Reference:"
+    paragraph into a list (overview.references) instead of keeping
+    only the last one seen. Backward compatible by construction - the
+    247 countries with exactly one reference line just get a one-item
+    list. Docstring/schema comment updated to match.
 
-client/
-├── public/
-│   ├── itti-logo.png             [M] 412KB -> 46KB (optimized)
-│   ├── images/
-│   │   └── nigeria-stressor-severity-map.png
-│   │                             [M] 2.1MB -> 665KB (optimized)
-│   └── certifications/
-│       ├── cctnhs.jpg            [M] \
-│       ├── ceopta.jpg            [M]  \
-│       ├── cgpcrp.jpg            [M]   \
-│       ├── cgtba.jpg             [M]    \  all 11 resized +
-│       ├── cgtea.jpg             [M]    /  recompressed,
-│       ├── cticp.jpg             [M]   /   2.4MB -> 1.1MB total
-│       ├── ctisp.jpg             [M]  /
-│       ├── ctodaf.jpg            [M] /
-│       ├── cwmhrp.jpg            [M]
-│       ├── eftlit.jpg            [M]
-│       └── gtbsf.jpg             [M]
-└── src/
-    ├── App.jsx                   [M] React.lazy() code-splitting for
-    │                                  21 of 22 pages
-    ├── components/
-    │   └── RouteLoading.jsx      [A] new - Suspense fallback
-    ├── styles/
-    │   ├── App.css                [M] + .route-loading spinner CSS
-    │   └── Reports.css            [M] image object-fit cover->contain,
-    │                                   char-count/size-total CSS
-    ├── utils/
-    │   └── formValidation.js      [M] description limit 200,
-    │                                   + checkReportCombinedSize()
-    └── pages/
-        ├── ReportUploadForm.jsx   [M] char counter, size hints/total
-        └── ResubmitReportForm.jsx [M] same, for the resubmit flow
+server/data_scripts/merge_remainder_profiles.py
+    build_merged_docx() also read the old singular field and would
+    have broken the next time this migration script runs. Now writes
+    one "Reference:" paragraph per item in the list. Verified with an
+    actual parse -> rebuild -> re-parse round trip.
 
-[M] = modified, [A] = added. 18 files total (17 modified, 1 new).
+server/data_scripts/country_profiles_source/country_profile_section_of_our_international_observatory_website.docx
+    United States and Nigeria entries now carry their full reference
+    lists (25 and 8 respectively) instead of the single representative
+    citation used previously. Edited via direct XML manipulation
+    (unzip -> edit word/document.xml -> rezip) to exactly match the
+    existing bold-heading/plain-body run structure the parser expects;
+    validated paragraph-count delta (+31) matches precisely, and
+    visually confirmed via rendered PDF pages.
 
-====================
-CHANGE DETAILS
-====================
+server/data/country_profiles.json
+    Regenerated from the above via the actual extract pipeline (not
+    hand-edited) - 249 profiles, 15 with dashboard notes, Nigeria's
+    GTBI/ETTI dashboard_note left untouched (different subject matter
+    entirely - dashboard-score commentary, not general historical
+    trauma narrative, so it was never a target for this change).
 
-Server load reduction:
+client/src/pages/CountryProfiles.jsx / styles/CountryProfiles.css
+    Country overview now renders profile.overview.references (array)
+    behind a "Show references (N)" / "Hide references (N)" toggle at
+    the bottom of the paragraphs, only rendered when at least one
+    reference exists. Reuses the existing outer country-row's chevron
+    rotation (.country-profile-chevron) for visual consistency between
+    the two nested expand/collapse levels, and the already-present but
+    previously unused .country-overview-references CSS convention
+    (originally written for dashboard_note.references, never wired
+    up) rather than inventing new styling from scratch.
 
-- Flask-Compress: gzips every JSON response above 500 bytes for any
-  client that accepts it - no frontend change needed. Wired in before
-  set_security_headers is registered so compression runs as the true
-  last step (Flask runs after_request hooks in reverse registration
-  order), after headers/ETag are computed on the real response.
-- Real HTTP caching (public, ETag, conditional-GET via a new
-  cacheable_json_response() helper) on the four hottest, genuinely
-  public, non-personalized GET endpoints: /api/world-data,
-  /api/countries(/<code>), /api/country-profiles(/<code>). Required
-  changing Cache-Control: no-store from an unconditional overwrite to
-  a safe default via setdefault() - every other route, including
-  auth/notification endpoints, is unaffected and still gets no-store.
-- Fixed a real N+1 query bug: GET /api/reports/<id>/reviews was
-  opening a new DB session per review row to look up the reviewer's
-  name. reviews_to_public_dicts() batches that into one query.
-- React.lazy() code-splitting for 21 of 22 pages (Home stays eager).
-  Previously zero code-splitting existed anywhere - visiting the
-  homepage meant downloading the entire app regardless of which page
-  someone came for.
-- Image optimization: logo/map pngquant-compressed, certification
-  images resized to match their actual ~900px display width and
-  recompressed. All verified visually - no visible quality loss.
-- Reconciled twice against upstream while in flight (a homepage-icons/
-  Facebook-link commit, then a large peer-review-notifications/
-  report-resubmission feature touching the same files) - reapplied
-  each piece individually rather than force-merging, confirmed nothing
-  from either side was lost.
-
-Report panel image + upload limits:
-
-- Fixed image cropping: .report-card-image used object-fit: cover
-  with a fixed height, cropping any image whose aspect ratio didn't
-  match. Switched to object-fit: contain - every image now displays
-  in full, letterboxed rather than cut off. Verified visually with a
-  real portrait test image rendered through the actual CSS.
-- Added upload guidance (1200x630px, landscape) to both
-  ReportUploadForm.jsx and ResubmitReportForm.jsx - found and fixed
-  both, since the newer resubmit flow has its own separate cover-image
-  field with the same gap.
-- Description limited to 200 characters (was 2000) - server
-  (validation.py) and client (formValidation.js) both updated and
-  verified matching. Live "142/200" character counter next to the
-  Description label in both upload forms, turning red at the limit.
-- New 2.5MB combined limit for report file + cover image together,
-  enforced server-side in a restructured _save_report_upload() that
-  checks the combined total BEFORE writing anything to storage (previously
-  the file was saved, then the image checked, then deleted on
-  failure). A new report-specific MAX_REPORT_COMBINED_BYTES constant
-  was added rather than changing the existing MAX_UPLOAD_BYTES, which
-  is shared with an unrelated upload endpoint. Live "X.XX MB of a
-  2.5 MB combined limit" indicator on both forms, updating as either
-  file is selected, red when over, plus client-side validation so
-  users find out before submitting.
-
-====================
-VERIFICATION
-====================
-
-Backend: imports cleanly; a single test-client pass confirms gzip +
-caching + conditional-GET (304s) all work together, auth/notification
-endpoints correctly stay no-store/uncompressed, the batched reviews
-helper is reached, description length is enforced (200 accepted, 201
-rejected), and the combined-size check rejects an oversized (3.0MB)
-file+image combo with a clear message while an in-bounds combo
-correctly passes through to the next validation step.
-
-Frontend: fresh `npm install && npm run build` (full pipeline incl.
-postbuild prerender) completes cleanly after the final pull, all 11
-routes still prerender correctly with the optimized images present in
-dist/. Character counter and combined-size indicator visually verified
-via headless-browser screenshots in a layout faithfully matching the
-real form.
-
-Total measured resource reduction (see prior round's detailed
-breakdown): ~86% smaller on the 4 compressed+cached API endpoints,
-~48% smaller JS bundle for a homepage visit, ~64% smaller across the
-three optimized image assets (3.19MB saved).
+Verified: single alembic head; backend imports cleanly (68 routes);
+full client build clean; confirmed the new toggle code is present in
+the compiled bundle; live-tested via the actual running server that
+/api/country-profiles serves 25 references for United States and 8
+for Nigeria; spot-checked several untouched countries to confirm the
+schema migration (reference -> references) applied uniformly across
+all 249 profiles.
