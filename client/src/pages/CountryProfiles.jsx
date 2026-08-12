@@ -220,7 +220,7 @@ export default function CountryProfiles() {
 }
 
 /** Shown when a country row expands. Only renders the narrative profile's
- *  own overview paragraphs + reference (from country_profile_section_of_
+ *  own overview paragraphs + references (from country_profile_section_of_
  *  our_international_observatory_website.docx via /api/country-profiles) -
  *  no GTBI/ETTI dashboard stats, key events, or the second doc's
  *  "dashboard note", none of which come from that source document. A
@@ -228,6 +228,12 @@ export default function CountryProfiles() {
  *  is true in the parent, so profile.overview is always present here. */
 function CountryOverview({ country }) {
   const { profile } = country;
+  const references = profile?.overview?.references || [];
+  // Own toggle state per mounted row - resets closed on collapse/re-expand
+  // (this component unmounts with its parent row), which matches how the
+  // outer country row itself behaves rather than persisting open state
+  // across countries.
+  const [showReferences, setShowReferences] = useState(false);
 
   return (
     <div className="country-overview">
@@ -236,11 +242,33 @@ function CountryOverview({ country }) {
           {profile.overview.paragraphs.map((p, i) => (
             <p key={i} className="country-overview-paragraph">{p}</p>
           ))}
-          {profile.overview.reference && (
-            <p className="country-overview-reference">
-              <strong>Reference: </strong>
-              {profile.overview.reference}
-            </p>
+
+          {references.length > 0 && (
+            <div className="country-overview-references-panel">
+              <button
+                type="button"
+                className="country-overview-references-toggle"
+                onClick={() => setShowReferences((open) => !open)}
+                aria-expanded={showReferences}
+              >
+                <span
+                  className={
+                    "country-profile-chevron" + (showReferences ? " country-profile-chevron--open" : "")
+                  }
+                  aria-hidden="true"
+                >
+                  ›
+                </span>
+                {showReferences ? "Hide" : "Show"} reference{references.length === 1 ? "" : "s"} ({references.length})
+              </button>
+              {showReferences && (
+                <ol className="country-overview-references-list">
+                  {references.map((ref, i) => (
+                    <li key={i} className="country-overview-reference-item">{ref}</li>
+                  ))}
+                </ol>
+              )}
+            </div>
           )}
         </div>
       )}

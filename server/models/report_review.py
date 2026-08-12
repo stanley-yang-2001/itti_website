@@ -58,17 +58,52 @@ class ReportReview(Base):
 
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
-    def to_public_dict(self):
+    def to_public_dict(self, reviewer_name=None):
+        """
+        reviewer_name: pass this in to skip the get_author_name() lookup
+        entirely - see reviews_to_public_dicts() below, which batches
+        that lookup once for a whole list instead of once per review
+        (same pattern/reasoning as Report.to_public_dict() and
+        reports_to_public_dicts() in report.py). Leave it unset for a
+        single review; the per-call query is harmless at that point.
+        """
         return {
             "id": self.id,
             "report_id": self.report_id,
             "reviewer_id": self.reviewer_id,
-            "reviewer_name": get_author_name(self.reviewer_id),
+            "reviewer_name": reviewer_name if reviewer_name is not None else get_author_name(self.reviewer_id),
             "version": self.version,
             "decision": self.decision,
             "comment": self.comment,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
+
+
+def reviews_to_public_dicts(reviews):
+    """
+    Same output as [r.to_public_dict() for r in reviews], but resolves
+    every review's reviewer name with one batched query instead of one
+    query per review - a report accumulates one review row per version
+    it goes through, so GET /api/reports/<id>/reviews was paying for N
+    extra round-trip queries just to render reviewer names for a
+    report's review history.
+    """
+    from .user import User  # local import: avoids a user.py <-> report_review.py circular import at module load time
+
+    reviewer_ids = {r.reviewer_id for r in reviews if r.reviewer_id is not None}
+    names_by_id = {}
+    if reviewer_ids:
+        session = Session()
+        try:
+            rows = session.query(User.id, User.name).filter(User.id.in_(reviewer_ids)).all()
+            names_by_id = {row.id: row.name for row in rows}
+        finally:
+            session.close()
+
+    return [
+        r.to_public_dict(reviewer_name=names_by_id.get(r.reviewer_id, "Unknown") if r.reviewer_id is not None else "Unknown")
+        for r in reviews
+    ]
 
 
 class ReviewError(ValueError):

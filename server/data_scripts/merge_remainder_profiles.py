@@ -95,9 +95,10 @@ def build_merged_docx(entries, output_path):
         heading_p.add_run(name).bold = True
         for para_text in entry["paragraphs"]:
             doc.add_paragraph(para_text)
-        ref_p = doc.add_paragraph()
-        ref_p.add_run("Reference:").bold = True
-        ref_p.add_run(f" {entry['reference']}")
+        for reference in entry["references"]:
+            ref_p = doc.add_paragraph()
+            ref_p.add_run("Reference:").bold = True
+            ref_p.add_run(f" {reference}")
 
     doc.save(output_path)
 

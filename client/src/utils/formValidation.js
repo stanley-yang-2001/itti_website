@@ -47,7 +47,11 @@ export const MAX_NAME_LENGTH = 100;
 export const MIN_PASSWORD_LENGTH = 8;
 export const MAX_PASSWORD_LENGTH = 128;
 export const MAX_REPORT_TITLE_LENGTH = 200;
-export const MAX_REPORT_DESCRIPTION_LENGTH = 2000;
+export const MAX_REPORT_DESCRIPTION_LENGTH = 200;
+// Mirrors server/app.py's MAX_REPORT_COMBINED_BYTES - report file +
+// cover image together, checked client-side too so someone finds out
+// before waiting on an upload rather than after it fails server-side.
+export const MAX_REPORT_COMBINED_BYTES = 2.5 * 1024 * 1024;
 export const MIN_DONATION_DOLLARS = 1;
 export const MAX_DONATION_DOLLARS = 100000;
 
@@ -104,6 +108,17 @@ export function checkReportDescription(value) {
   if (value == null || !value.trim()) return 'Description is required.';
   if (value.length > MAX_REPORT_DESCRIPTION_LENGTH) {
     return `Description must be under ${MAX_REPORT_DESCRIPTION_LENGTH} characters.`;
+  }
+  return null;
+}
+
+/** file/image are File objects or null/undefined - only their .size is used. */
+export function checkReportCombinedSize(file, image) {
+  const combined = (file?.size || 0) + (image?.size || 0);
+  if (combined > MAX_REPORT_COMBINED_BYTES) {
+    const limitMb = (MAX_REPORT_COMBINED_BYTES / (1024 * 1024)).toFixed(1);
+    const actualMb = (combined / (1024 * 1024)).toFixed(1);
+    return `Report file and cover image together must be under ${limitMb}MB (currently ${actualMb}MB combined).`;
   }
   return null;
 }

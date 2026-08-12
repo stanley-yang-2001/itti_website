@@ -162,7 +162,17 @@
 .report-card-image {
   width: 100%;
   height: 170px;
-  object-fit: cover;
+  /* object-fit: cover cropped part of the image whenever its aspect
+     ratio didn't match this box's fairly wide, short shape - a tall
+     portrait upload would lose its top and bottom, a very wide one
+     its sides. contain always shows the whole image, letterboxed with
+     the background fill below instead of cropped. The upload form
+     recommends a landscape image sized to roughly match this box's
+     proportions (see ReportUploadForm.jsx) so well-sized uploads show
+     with little to no letterboxing, while anything else - portrait,
+     square, an unusual crop - still displays completely rather than
+     losing content. */
+  object-fit: contain;
   display: block;
   background: var(--bg-deep);
 }
@@ -359,6 +369,50 @@
 .report-upload-field-error {
   color: #C0392B;
   font-size: 12.5px;
+}
+
+.report-upload-field-hint {
+  color: var(--text-low);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.report-upload-field-hint strong {
+  color: var(--text-mid);
+  font-weight: 600;
+}
+
+.report-upload-field-label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.report-upload-char-count {
+  color: var(--text-low);
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  flex-shrink: 0;
+}
+.report-upload-char-count--limit {
+  color: #C0392B;
+  font-weight: 600;
+}
+
+.report-upload-size-total {
+  margin: -8px 0 0 0;
+  color: var(--text-low);
+  font-size: 12.5px;
+}
+.report-upload-size-total strong {
+  color: var(--text-mid);
+  font-weight: 600;
+}
+.report-upload-size-total--over {
+  color: #C0392B;
+}
+.report-upload-size-total--over strong {
+  color: #C0392B;
 }
 
 .report-upload-status {

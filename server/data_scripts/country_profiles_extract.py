@@ -10,7 +10,7 @@ ISO numeric country code country_data.json already uses:
         "name": "<country name>",
         "overview": {
           "paragraphs": ["...", "..."],
-          "reference": "<APA citation>"
+          "references": ["<APA citation>", ...]
         },
         "dashboard_note": {                 # null if this country has no
           "paragraphs": ["...", "..."],     # entry in the second source
@@ -26,7 +26,8 @@ Source documents (data_scripts/country_profiles_source/):
      "Country Trauma Profiles" - the full survey, one entry per country:
        **<Country>**
        <one or more paragraphs>
-       **Reference:** <single APA citation>
+       **Reference:** <APA citation>
+       **Reference:** <APA citation>            # optional, one or more
 
   2. country_profiles_clean_no_spreadsheet_citations.docx
      "One-Page Country Collective Trauma Profiles" - a smaller companion
@@ -112,12 +113,12 @@ def is_heading(paragraph):
 
 
 def parse_survey_docx(path):
-    """Source #1: **Country** / paragraph(s) / **Reference:** <citation>"""
+    """Source #1: **Country** / paragraph(s) / one or more **Reference:** <citation> lines"""
     doc = Document(path)
     countries = {}
     current = None
     paragraphs = []
-    reference = None
+    references = []
 
     for p in doc.paragraphs:
         text = p.text.strip()
@@ -127,10 +128,10 @@ def parse_survey_docx(path):
         heading = is_heading(p)
         if heading and heading != SURVEY_TITLE:
             if current:
-                countries[current] = {"paragraphs": paragraphs, "reference": reference}
+                countries[current] = {"paragraphs": paragraphs, "references": references}
             current = heading
             paragraphs = []
-            reference = None
+            references = []
             continue
 
         if current is None:
@@ -138,12 +139,17 @@ def parse_survey_docx(path):
 
         ref_match = re.match(r"^Reference:\s*(.+)$", text)
         if ref_match:
-            reference = ref_match.group(1).strip()
+            # A country can have more than one - each is its own
+            # "Reference:"-prefixed paragraph in the source doc, appended
+            # here in document order rather than overwriting a single
+            # value. Almost every country still has exactly one, so this
+            # produces a one-item list for those - same shape either way.
+            references.append(ref_match.group(1).strip())
         else:
             paragraphs.append(text)
 
     if current:
-        countries[current] = {"paragraphs": paragraphs, "reference": reference}
+        countries[current] = {"paragraphs": paragraphs, "references": references}
     return countries
 
 
@@ -215,7 +221,7 @@ def build_profiles(survey, dashboard, country_data):
             "name": name,
             "overview": {
                 "paragraphs": entry["paragraphs"],
-                "reference": entry["reference"],
+                "references": entry["references"],
             },
             "dashboard_note": (
                 {

@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { checkReportTitle, checkReportDescription, checkReportCategory } from '../utils/formValidation.js';
+import {
+  checkReportTitle, checkReportDescription, checkReportCategory, checkReportCombinedSize,
+  MAX_REPORT_DESCRIPTION_LENGTH, MAX_REPORT_COMBINED_BYTES,
+} from '../utils/formValidation.js';
 import { REPORT_CATEGORIES, DEFAULT_REPORT_CATEGORY } from '../constants/reportCategories.js';
 
 /**
@@ -19,6 +22,7 @@ export default function ReportUploadForm({ onUploaded, onCancel }) {
   const [fieldErrors, setFieldErrors] = useState({});
   const [status, setStatus] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const combinedBytes = (file?.size || 0) + (image?.size || 0);
 
   function validate() {
     const errors = {};
@@ -29,6 +33,8 @@ export default function ReportUploadForm({ onUploaded, onCancel }) {
     const categoryError = checkReportCategory(category);
     if (categoryError) errors.category = categoryError;
     if (!file) errors.file = 'A PDF or Word document is required.';
+    const combinedSizeError = checkReportCombinedSize(file, image);
+    if (combinedSizeError) errors.combinedSize = combinedSizeError;
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   }
@@ -78,12 +84,23 @@ export default function ReportUploadForm({ onUploaded, onCancel }) {
       </label>
 
       <label className="report-upload-field">
-        <span>Description</span>
+        <span className="report-upload-field-label-row">
+          <span>Description</span>
+          <span
+            className={
+              'report-upload-char-count' +
+              (description.length >= MAX_REPORT_DESCRIPTION_LENGTH ? ' report-upload-char-count--limit' : '')
+            }
+          >
+            {description.length}/{MAX_REPORT_DESCRIPTION_LENGTH}
+          </span>
+        </span>
         <textarea
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={(e) => setDescription(e.target.value.slice(0, MAX_REPORT_DESCRIPTION_LENGTH))}
           placeholder="A short summary of this report"
           rows={4}
+          maxLength={MAX_REPORT_DESCRIPTION_LENGTH}
         />
         {fieldErrors.description && (
           <span className="report-upload-field-error">{fieldErrors.description}</span>
@@ -105,13 +122,35 @@ export default function ReportUploadForm({ onUploaded, onCancel }) {
       <label className="report-upload-field">
         <span>Report file (PDF or Word document)</span>
         <input type="file" accept=".pdf,.doc,.docx" onChange={(e) => setFile(e.target.files[0] || null)} />
+        <span className="report-upload-field-hint">
+          Report file and cover image together must be under <strong>2.5 MB</strong> combined.
+        </span>
         {fieldErrors.file && <span className="report-upload-field-error">{fieldErrors.file}</span>}
       </label>
 
       <label className="report-upload-field">
         <span>Cover image (optional)</span>
         <input type="file" accept=".png,.jpg,.jpeg,.webp" onChange={(e) => setImage(e.target.files[0] || null)} />
+        <span className="report-upload-field-hint">
+          Displays in a wide, short frame on the reports list, so landscape images work best - a
+          <strong> 1200×630px</strong> image (or anything close to that ~2:1 width-to-height ratio) will fill the
+          space with no empty bars. Portrait or square images still display in full, just with some empty space on
+          the sides.
+        </span>
       </label>
+
+      <p
+        className={
+          'report-upload-size-total' +
+          (combinedBytes > MAX_REPORT_COMBINED_BYTES ? ' report-upload-size-total--over' : '')
+        }
+      >
+        Report file + cover image: <strong>{(combinedBytes / (1024 * 1024)).toFixed(2)} MB</strong> of a{' '}
+        <strong>{(MAX_REPORT_COMBINED_BYTES / (1024 * 1024)).toFixed(1)} MB</strong> combined limit
+      </p>
+      {fieldErrors.combinedSize && (
+        <span className="report-upload-field-error">{fieldErrors.combinedSize}</span>
+      )}
 
       {status && <p className={`report-upload-status report-upload-status--${status.type}`}>{status.message}</p>}
 

@@ -1,32 +1,44 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import NavBar from './components/NavBar.jsx';
 import Footer from './components/Footer.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
+import RouteLoading from './components/RouteLoading.jsx';
 import Home from './pages/Home.jsx';
-import About from './pages/About.jsx';
-import Observatory from './pages/Observatory.jsx';
-import Reports from './pages/Reports.jsx';
-import CountryProfiles from './pages/CountryProfiles.jsx';
-import Fellowship from './pages/Fellowship.jsx';
-import Certifications from './pages/Certifications.jsx';
-import Contact from './pages/Contact.jsx';
-import Login from './pages/Login.jsx';
-import Signup from './pages/SignUp.jsx';
-import ForgotPassword from './pages/ForgotPassword.jsx';
-import ResetPassword from './pages/ResetPassword.jsx';
-import Unavailable from './pages/Unavailable.jsx';
-import Publish from './pages/Publish.jsx';
-import PublishGlobeData from './pages/PublishGlobeData.jsx';
-import Docs from './pages/Docs.jsx';
-import Donate from './pages/Donate.jsx';
-import DonateThankYou from './pages/DonateThankYou.jsx';
-import CertificationEnrollThankYou from './pages/CertificationEnrollThankYou.jsx';
-import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
-import Profile from './pages/Profile.jsx';
-import Settings from './pages/Settings.jsx';
-import PeerReview from './pages/PeerReview.jsx';
+
+// Every other page is lazy-loaded (a separate JS chunk Vite only
+// fetches when someone actually navigates there) instead of bundled
+// into the one file every visitor downloads up front - this app had
+// zero code-splitting before, so loading the homepage meant paying for
+// the Observatory's data-explorer/d3/recharts code, the Stripe
+// checkout flow, the DOCX/PDF report viewer, every admin panel, etc.,
+// none of which the average visitor ever touches. Home stays eager
+// since it's what most visitors land on first and shouldn't show a
+// loading flash; everything else trades a brief one-time fetch (see
+// RouteLoading.jsx) for a smaller initial bundle for everyone.
+const About = lazy(() => import('./pages/About.jsx'));
+const Observatory = lazy(() => import('./pages/Observatory.jsx'));
+const Reports = lazy(() => import('./pages/Reports.jsx'));
+const CountryProfiles = lazy(() => import('./pages/CountryProfiles.jsx'));
+const Fellowship = lazy(() => import('./pages/Fellowship.jsx'));
+const Certifications = lazy(() => import('./pages/Certifications.jsx'));
+const Contact = lazy(() => import('./pages/Contact.jsx'));
+const Login = lazy(() => import('./pages/Login.jsx'));
+const Signup = lazy(() => import('./pages/SignUp.jsx'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword.jsx'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword.jsx'));
+const Unavailable = lazy(() => import('./pages/Unavailable.jsx'));
+const Publish = lazy(() => import('./pages/Publish.jsx'));
+const PublishGlobeData = lazy(() => import('./pages/PublishGlobeData.jsx'));
+const Docs = lazy(() => import('./pages/Docs.jsx'));
+const Donate = lazy(() => import('./pages/Donate.jsx'));
+const DonateThankYou = lazy(() => import('./pages/DonateThankYou.jsx'));
+const CertificationEnrollThankYou = lazy(() => import('./pages/CertificationEnrollThankYou.jsx'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy.jsx'));
+const Profile = lazy(() => import('./pages/Profile.jsx'));
+const Settings = lazy(() => import('./pages/Settings.jsx'));
+const PeerReview = lazy(() => import('./pages/PeerReview.jsx'));
 
 /**
  * Gives routed page content a gentle fade-in on navigation instead of
@@ -55,6 +67,7 @@ export default function App() {
       <ScrollToTop />
       <NavBar />
       <PageTransition>
+        <Suspense fallback={<RouteLoading />}>
         <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
@@ -116,6 +129,7 @@ export default function App() {
             POST /api/globe-data/upload). */}
         <Route path="/publish/globe-data" element={<PublishGlobeData />} />
       </Routes>
+      </Suspense>
       </PageTransition>
       <Footer />
     </div>

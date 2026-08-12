@@ -190,6 +190,52 @@
   line-height: 1.6;
   margin: 0 0 10px 0;
 }
+
+/* Expandable references panel - one per country, replaces the old
+   single "Reference:" line (a country can now cite more than one
+   source). Reuses the same chevron rotation as the outer country-row
+   expand/collapse (.country-profile-chevron) so both read as the same
+   "click to reveal more" affordance at different nesting levels. */
+.country-overview-references-panel{
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line);
+}
+.country-overview-references-toggle{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--cyan);
+  cursor: pointer;
+}
+.country-overview-references-toggle:hover{
+  text-decoration: underline;
+}
+.country-overview-references-toggle .country-profile-chevron{
+  font-size: 0.85rem;
+}
+.country-overview-references-list{
+  list-style: none;
+  margin: 10px 0 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.country-overview-reference-item{
+  font-size: 0.78rem;
+  color: var(--text-low);
+  line-height: 1.5;
+  padding-left: 14px;
+  border-left: 2px solid var(--line);
+}
+
 .country-overview-reference{
   font-size: 0.78rem;
   color: var(--text-low);

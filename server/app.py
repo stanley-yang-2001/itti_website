@@ -46,6 +46,7 @@ from PIL import Image
 from dotenv import load_dotenv
 from flask import Flask, jsonify, abort, request, session, send_file
 from flask_cors import CORS
+from flask_compress import Compress
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.datastructures import FileStorage
@@ -74,7 +75,7 @@ from models.report import (
     get_changes_requested_reports, get_reports_by_uploader,
     delete_report, hard_delete_report, resubmit_report, reports_to_public_dicts,
 )
-from models.report_review import record_review, get_reviews_for_report, ReviewError
+from models.report_review import record_review, get_reviews_for_report, reviews_to_public_dicts, ReviewError
 from models.notification import (
     get_notifications_for_user, get_unread_count, mark_notification_read, mark_all_read,
 )
@@ -253,6 +254,18 @@ if IS_PRODUCTION and RATELIMIT_STORAGE_URI == "memory://":
     )
 limiter = Limiter(get_remote_address, app=app, storage_uri=RATELIMIT_STORAGE_URI, default_limits=[])
 
+# Gzips responses (JSON compresses very well - typically 70-85% smaller)
+# above COMPRESS_MIN_SIZE, for any client whose Accept-Encoding allows it.
+# Registered before set_security_headers below deliberately: Flask runs
+# after_request hooks in *reverse* registration order, so registering
+# Compress's hook first means it actually runs LAST - the security/
+# cache headers and ETag below get computed against the real,
+# uncompressed response, and compression is applied as the final step
+# on top, not interleaved with any of that.
+app.config["COMPRESS_MIN_SIZE"] = 500  # bytes - skip compressing tiny responses, not worth the CPU
+app.config["COMPRESS_MIMETYPES"] = ["application/json", "text/html", "text/css", "application/javascript"]
+Compress(app)
+
 
 @app.after_request
 def set_security_headers(response):
@@ -280,7 +293,15 @@ def set_security_headers(response):
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'"
-    response.headers["Cache-Control"] = "no-store"
+    # setdefault, not a blanket overwrite: a handful of routes below
+    # (world topology, country data/profiles) explicitly set their own
+    # long-lived, public Cache-Control before returning, since they're
+    # identical for every visitor regardless of session and are hit on
+    # every single page load. Everything else still gets the no-store
+    # default this docstring describes - setdefault only fills in a
+    # value if the route didn't already set one, it never clobbers an
+    # explicit choice a route made.
+    response.headers.setdefault("Cache-Control", "no-store")
     response.headers["Vary"] = "Cookie"
     if request.is_secure:
         response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains"
@@ -368,7 +389,15 @@ MAX_FELLOW_PHOTO_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MB per file, pre-normaliz
 # file roles the Reports page actually renders.
 ALLOWED_REPORT_FILE_EXTENSIONS = {".pdf", ".doc", ".docx"}
 ALLOWED_REPORT_IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp"}
-MAX_REPORT_IMAGE_BYTES = 5 * 1024 * 1024  # 5 MB per cover image
+MAX_REPORT_IMAGE_BYTES = 5 * 1024 * 1024  # 5 MB per cover image, individually
+
+# The binding limit in practice for a report upload: report file +
+# cover image TOGETHER, checked before either is written to storage.
+# MAX_UPLOAD_BYTES/MAX_REPORT_IMAGE_BYTES above still apply as a
+# per-file backstop, but at 2.5MB combined this is always the tighter,
+# actually-enforced constraint for reports specifically - see
+# _save_report_upload().
+MAX_REPORT_COMBINED_BYTES = int(2.5 * 1024 * 1024)  # 2.5 MB, file + image together
 
 # GTBI/ETTI workbooks: same shape the data_scripts/{kind}_extract.py CLI
 # scripts already expect (a multi-sheet .xlsx workbook, not a flat CSV -
@@ -416,16 +445,46 @@ def _invalidate_json_cache(path):
     _json_cache.pop(path, None)
 
 
+def cacheable_json_response(data, max_age):
+    """jsonify() a payload that's identical for every visitor (no
+    session/auth involvement) with real HTTP caching, instead of the
+    no-store default set_security_headers() applies to everything else.
+
+    Adds an ETag and honors conditional GETs (If-None-Match) via
+    make_conditional() - a repeat request within max_age never reaches
+    this process at all (served from the browser/CDN cache), and one
+    past max_age but for unchanged data gets a tiny 304 with no body
+    rather than re-sending the full payload. public is safe here
+    specifically because these responses don't vary by cookie/session -
+    see the docstring on set_security_headers() for why everything else
+    stays no-store.
+
+    max_age is deliberately short (minutes, not hours/days) for data
+    that CAN change at runtime via an admin upload (country_data.json),
+    longer for data that's only ever regenerated offline and redeployed
+    (world topology, country_profiles.json) - see load_json_cached()'s
+    comment above. Either way it bounds how stale a cached response can
+    be, rather than caching indefinitely.
+    """
+    response = jsonify(data)
+    response.headers["Cache-Control"] = f"public, max-age={max_age}, stale-while-revalidate=60"
+    response.add_etag()
+    return response.make_conditional(request)
+
+
 @app.get("/api/world-data")
 def get_world_data():
-    """Raw TopoJSON topology used to draw the globe."""
-    return jsonify(load_json_cached(WORLD_DATA_PATH))
+    """Raw TopoJSON topology used to draw the globe. Never changes at
+    runtime (see load_json_cached()'s comment) - safe to cache longer."""
+    return cacheable_json_response(load_json_cached(WORLD_DATA_PATH), max_age=3600)
 
 
 @app.get("/api/countries")
 def get_countries():
-    """All country metric records, keyed by zero-padded ISO numeric code."""
-    return jsonify(load_json_cached(COUNTRY_DATA_PATH))
+    """All country metric records, keyed by zero-padded ISO numeric code.
+    Can change at runtime via POST /api/globe-data/upload - shorter
+    max_age so an admin's update propagates reasonably promptly."""
+    return cacheable_json_response(load_json_cached(COUNTRY_DATA_PATH), max_age=300)
 
 
 @app.get("/api/countries/<code>")
@@ -435,7 +494,7 @@ def get_country(code):
     record = data.get(code.zfill(3)) or data.get(code)
     if record is None:
         abort(404, description=f"No data for country code '{code}'")
-    return jsonify(record)
+    return cacheable_json_response(record, max_age=300)
 
 
 @app.get("/api/country-profiles")
@@ -448,8 +507,10 @@ def get_country_profiles():
     an entry here - see data_scripts/country_profiles_extract.py's
     docstring for which countries are covered and why a couple aren't
     (most notably Kosovo, which has no ISO 3166-1 numeric code at all).
+    Never changes at runtime (only ever regenerated offline and
+    redeployed, like world topology) - safe to cache longer.
     """
-    return jsonify(load_json_cached(COUNTRY_PROFILES_PATH))
+    return cacheable_json_response(load_json_cached(COUNTRY_PROFILES_PATH), max_age=3600)
 
 
 @app.get("/api/country-profiles/<code>")
@@ -459,7 +520,7 @@ def get_country_profile(code):
     record = data.get(code.zfill(3)) or data.get(code)
     if record is None:
         abort(404, description=f"No profile for country code '{code}'")
-    return jsonify(record)
+    return cacheable_json_response(record, max_age=3600)
 
 
 @app.get("/api/health")
@@ -1567,24 +1628,38 @@ def _save_report_upload(user_id, file, image):
     if size == 0:
         abort(400, description="File is empty")
 
-    file_path, file_size_bytes = report_storage.save(user_id, file.filename, file)
-    file_type = ext.lstrip(".")
-
-    image_path = None
-    image_mime_type = None
+    image_ext = None
+    image_size = 0
     if image is not None and image.filename != "":
         image_ext = os.path.splitext(image.filename)[1].lower()
         if image_ext not in ALLOWED_REPORT_IMAGE_EXTENSIONS:
-            report_storage.delete(file_path)
             abort(400, description="Cover image must be a PNG, JPG, or WEBP file")
 
         image.stream.seek(0, os.SEEK_END)
         image_size = image.stream.tell()
         image.stream.seek(0)
         if image_size > MAX_REPORT_IMAGE_BYTES:
-            report_storage.delete(file_path)
             abort(400, description=f"Cover image exceeds the {MAX_REPORT_IMAGE_BYTES // (1024 * 1024)}MB limit")
 
+    # Checked before either file is written to storage, not after - no
+    # point saving (and then immediately deleting) bytes for an upload
+    # that's already known to be too big.
+    if size + image_size > MAX_REPORT_COMBINED_BYTES:
+        combined_mb = MAX_REPORT_COMBINED_BYTES / (1024 * 1024)
+        abort(
+            400,
+            description=(
+                f"Report file and cover image together must be under {combined_mb:.1f}MB "
+                f"(currently {(size + image_size) / (1024 * 1024):.1f}MB combined)."
+            ),
+        )
+
+    file_path, file_size_bytes = report_storage.save(user_id, file.filename, file)
+    file_type = ext.lstrip(".")
+
+    image_path = None
+    image_mime_type = None
+    if image is not None and image.filename != "":
         # Verify the upload is genuinely a readable image, not just a
         # file with an allowed extension - an attacker can freely set
         # the extension and the browser-reported Content-Type
@@ -1831,7 +1906,7 @@ def list_report_reviews_route(report_id):
     if report is None:
         abort(404, description="Report not found")
     reviews = get_reviews_for_report(report_id)
-    return jsonify([r.to_public_dict() for r in reviews])
+    return jsonify(reviews_to_public_dicts(reviews))
 
 
 @app.delete("/api/reports/<int:report_id>")

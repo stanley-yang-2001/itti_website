@@ -17,4 +17,5 @@ alembic==1.13.3
 
 # Production hardening (all cross-platform, safe to install locally too)
 Flask-Limiter==3.8.0
+Flask-Compress==1.24
 sentry-sdk[flask]==2.14.0
