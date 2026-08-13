@@ -1,18 +1,17 @@
-Fix fellow/report images crashing with 500 in production
+Fix peer review access gate, report count wording, and add notification management
 
-Root cause: uploaded file paths (fellow photos, report files/images,
-documents) were stored as absolute, machine-specific paths baked in
-by whoever ran the upload locally - unusable on the deployed server,
-which crashed serving them with a raw FileNotFoundError instead of a
-handled 404.
-
-- storage.py: LocalStorage now stores/resolves paths relative to its
-  own base_dir instead of absolute ones, and get_file_response()
-  catches a missing file and returns a clean 404 instead of crashing
-- Add migrate_absolute_storage_paths.py: one-off, idempotent script
-  to repair existing bad rows (fellows/reports/documents) wherever
-  the underlying file can still be found
-- app.yaml + docs/DEPLOYMENT.md: document and configure
-  STORAGE_BACKEND=s3 (DigitalOcean Spaces) for production, since
-  local disk doesn't survive App Platform's per-deploy container
-  rebuilds
+- PeerReview: replace silent redirect with an explicit "You don't have
+  access to this page" gate for signed-out/non-publisher users,
+  mirroring the existing Publish a Report pattern
+- Reports: drop ", 0 reports so far" when the report count is zero
+- NavBar: show the user's profile picture (with initials fallback)
+  instead of their name, via a new shared Avatar component
+- NavBar: add a glowing dot on the avatar for unread notifications,
+  polling unread-count and dismissing on profile click (reappears if
+  a new notification arrives after dismissal)
+- Profile: add per-notification selection with "select all", plus
+  bulk "Mark as read" and "Delete" actions
+- Backend: add POST /api/notifications/read and
+  POST /api/notifications/delete for bulk, user-scoped notification
+  updates, backed by new mark_notifications_read() and
+  delete_notifications() model functions

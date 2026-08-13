@@ -135,3 +135,49 @@ def mark_all_read(user_id):
         return updated
     finally:
         session.close()
+
+
+def mark_notifications_read(notification_ids, user_id):
+    """
+    Marks a specific set of notifications read - scoped to user_id so a
+    user can only ever mark their own as read, mirroring
+    mark_notification_read() above but for a bulk selection (e.g. the
+    Notifications tab's "select some, then Mark as read" flow). Returns
+    the count updated - ids that don't exist or aren't this user's are
+    silently ignored rather than erroring, since the client's selection
+    could theoretically be stale (e.g. another tab already deleted one).
+    """
+    if not notification_ids:
+        return 0
+    session = Session()
+    try:
+        updated = (
+            session.query(Notification)
+            .filter(Notification.id.in_(notification_ids), Notification.user_id == user_id)
+            .update({"is_read": True}, synchronize_session=False)
+        )
+        session.commit()
+        return updated
+    finally:
+        session.close()
+
+
+def delete_notifications(notification_ids, user_id):
+    """
+    Deletes a specific set of notifications - scoped to user_id, same
+    reasoning as mark_notifications_read() above. Returns the count
+    deleted.
+    """
+    if not notification_ids:
+        return 0
+    session = Session()
+    try:
+        deleted = (
+            session.query(Notification)
+            .filter(Notification.id.in_(notification_ids), Notification.user_id == user_id)
+            .delete(synchronize_session=False)
+        )
+        session.commit()
+        return deleted
+    finally:
+        session.close()

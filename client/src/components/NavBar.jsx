@@ -1,6 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import Avatar from './Avatar.jsx';
+
+// How often to re-poll the unread notification count while signed in,
+// so the glowing dot can appear without the user having to reload or
+// navigate anywhere (e.g. a report they submitted gets approved while
+// they're browsing another page). Cheap: unread-count is just a
+// COUNT(*) query, not the full notification list.
+const UNREAD_POLL_MS = 30000;
 
 const NAV_LINKS = [
   { to: '/', label: 'Home', end: true },
@@ -43,6 +51,51 @@ export default function NavBar() {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const navRef = useRef(null);
+
+  // Drives the glowing dot on the user's avatar. `dotDismissed` tracks
+  // whether the user has already clicked into their profile for the
+  // current batch of unread notifications - it's reset (dot reappears)
+  // the moment polling sees the unread count go *up* again, i.e. a
+  // genuinely new notification arrived, rather than just re-fetching
+  // the same count that was already dismissed.
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [dotDismissed, setDotDismissed] = useState(false);
+  const lastSeenUnreadRef = useRef(0);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setUnreadCount(0);
+      setDotDismissed(false);
+      lastSeenUnreadRef.current = 0;
+      return;
+    }
+
+    let cancelled = false;
+
+    function poll() {
+      fetch('/api/notifications/unread-count', { credentials: 'include' })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (cancelled || !data) return;
+          const count = data.unread_count || 0;
+          setUnreadCount(count);
+          // A new notification arrived since we last saw a lower/equal
+          // count - surface the dot again even if it was dismissed.
+          if (count > lastSeenUnreadRef.current) setDotDismissed(false);
+          lastSeenUnreadRef.current = count;
+        })
+        .catch(() => {});
+    }
+
+    poll();
+    const interval = setInterval(poll, UNREAD_POLL_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [isAuthenticated]);
+
+  const showNotificationDot = isAuthenticated && unreadCount > 0 && !dotDismissed;
 
   // The navbar's height changes on mobile (menu open/closed) and when the
   // logo collapses/expands on scroll, and it's sticky - so anything else on
@@ -156,8 +209,16 @@ export default function NavBar() {
         <div className="navbar-auth">
           {isAuthenticated ? (
             <>
-              <Link to="/profile" className="navbar-user">
-                {user.name || user.email}
+              <Link
+                to="/profile"
+                className="navbar-user"
+                onClick={() => { setDotDismissed(true); setMenuOpen(false); }}
+                aria-label={showNotificationDot ? `${user.name || user.email} (new notifications)` : user.name || user.email}
+              >
+                <span className="navbar-avatar-wrap">
+                  <Avatar name={user.name} email={user.email} pictureUrl={user.picture_url} className="navbar-avatar" />
+                  {showNotificationDot && <span className="navbar-notification-dot" aria-hidden="true" />}
+                </span>
                 <span className={`role-badge role-${user.role}`}>{user.role}</span>
               </Link>
               <button className="navbar-auth-btn" onClick={handleLogout}>
