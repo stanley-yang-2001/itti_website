@@ -378,6 +378,7 @@
 .profile-status-badge.published{color:#1E8449; background:rgba(111,207,151,0.12);}
 .profile-status-badge.pending{color:var(--gold); background:rgba(173,122,30,0.12);}
 .profile-status-badge.changes{color:#C0453A; background:rgba(229,131,122,0.12);}
+.profile-status-badge.rejected{color:#C0392B; background:rgba(192,57,43,0.12);}
 
 .profile-publication-status-link{
   display:flex;

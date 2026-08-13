@@ -27,6 +27,7 @@ const REVIEW_STATUS_LABEL = {
   published: { label: 'Published', className: 'published' },
   pending_review: { label: 'Pending Review', className: 'pending' },
   changes_requested: { label: 'Changes Requested', className: 'changes' },
+  rejected: { label: 'Not Approved', className: 'rejected' },
 };
 
 const TABS = [
@@ -182,7 +183,7 @@ export default function Profile() {
       }
     }
     if (notification.report_id) {
-      navigate(`/peer-review?highlight=${notification.report_id}`);
+      navigate(`/peer-review/mine?highlight=${notification.report_id}`);
     }
   }
 
@@ -397,7 +398,7 @@ export default function Profile() {
                   <h2 className="profile-section-title display">Publications</h2>
                   {canPublish && (
                     <div className="profile-publications-actions">
-                      <Link to="/peer-review" className="btn btn-secondary">
+                      <Link to="/peer-review/mine" className="btn btn-secondary">
                         Peer Review
                       </Link>
                       {!showUploadForm && (
@@ -438,6 +439,7 @@ export default function Profile() {
                             <span className={`profile-status-badge ${statusInfo.className}`}>{statusInfo.label}</span>
                           );
                           const needsChanges = report.review_status === 'changes_requested';
+                          const isRejected = report.review_status === 'rejected';
                           return (
                             <div key={report.id} className="profile-publication-item">
                               <div className="profile-publication-row">
@@ -446,8 +448,8 @@ export default function Profile() {
                                   <span className="profile-publication-date">{formatDate(report.created_at)} · v{report.version}</span>
                                 </div>
                                 <div className="profile-publication-row-right">
-                                  {needsChanges ? (
-                                    <Link to={`/peer-review?highlight=${report.id}`} className="profile-publication-status-link">
+                                  {needsChanges || isRejected ? (
+                                    <Link to={`/peer-review/mine?highlight=${report.id}`} className="profile-publication-status-link">
                                       {badge}
                                       <span className="profile-publication-status-link-text">See why &rarr;</span>
                                     </Link>

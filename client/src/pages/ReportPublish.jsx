@@ -65,8 +65,8 @@ export default function ReportPublish() {
         <div>
           <h1 className="display">Publish a Report</h1>
           <p>
-            Upload a report for peer review. Once two other publishers approve it (or an admin approves it
-            instantly), it appears on the public Reports page.
+            Upload a report for peer review. Once three other publishers approve it (or an admin approves it
+            instantly), it appears on the public Reports page. Two disapprovals remove it from the queue instead.
           </p>
         </div>
       </Reveal>
@@ -77,8 +77,8 @@ export default function ReportPublish() {
             <h2>Submitted for review</h2>
             <p>“{uploaded.title}” has been sent to peer review. You can track its status from your profile.</p>
             <div className="report-publish-success-actions">
-              <button type="button" className="btn btn-primary" onClick={() => navigate('/peer-review')}>
-                Go to Peer Review
+              <button type="button" className="btn btn-primary" onClick={() => navigate('/peer-review/mine')}>
+                Track it in My Submissions
               </button>
               <button type="button" className="btn btn-secondary" onClick={() => navigate('/reports')}>
                 Back to Reports

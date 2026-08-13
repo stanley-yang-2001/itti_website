@@ -1,17 +1,29 @@
-Fix peer review access gate, report count wording, and add notification management
+Restructure Reports page into 3 sections; two-page peer review with
+accumulating disapprovals
 
-- PeerReview: replace silent redirect with an explicit "You don't have
-  access to this page" gate for signed-out/non-publisher users,
-  mirroring the existing Publish a Report pattern
-- Reports: drop ", 0 reports so far" when the report count is zero
-- NavBar: show the user's profile picture (with initials fallback)
-  instead of their name, via a new shared Avatar component
-- NavBar: add a glowing dot on the avatar for unread notifications,
-  polling unread-count and dismissing on profile click (reappears if
-  a new notification arrives after dismissal)
-- Profile: add per-notification selection with "select all", plus
-  bulk "Mark as read" and "Delete" actions
-- Backend: add POST /api/notifications/read and
-  POST /api/notifications/delete for bulk, user-scoped notification
-  updates, backed by new mark_notifications_read() and
-  delete_notifications() model functions
+Reports page:
+- Split into Browse / Publish / Peer Review sections with cascading
+  reveal, matching the home page
+- Report browsing is now a toggle instead of always-rendered
+- Upload button replaced by a link to a new standalone /reports/publish
+  page, which self-guards on auth + publisher access
+- Reveal.jsx's cascade animation extended from home-only to the
+  reports and peer review pages
+
+Peer review:
+- Split /peer-review into two pages: the shared "Awaiting Review"
+  queue (/peer-review) and a personal "My Submissions" page
+  (/peer-review/mine), both self-guarded like /reports/publish instead
+  of redirecting via ProtectedRoute
+- Server: rejects now accumulate like approvals instead of an instant
+  single-reject transition; REQUIRED_REJECTIONS = 2 distinct rejects
+  (or 1 admin reject) pulls a report from every queue for good
+  (review_status = rejected), same instant-decision treatment admins
+  already got on approve
+- Added TYPE_REPORT_REJECTED notification, routed to the uploader's
+  personal submissions page
+- Extracted shared PeerReviewPanel (review controls + comment history)
+  and PublisherAccessGate (login/access-level messaging) components
+- Profile.jsx: notification click-through and Publications "see why"
+  links now point at /peer-review/mine; added a "Not Approved" badge
+  for the new rejected status
