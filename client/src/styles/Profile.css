@@ -397,6 +397,44 @@
   text-decoration:underline;
 }
 
+.profile-notifications-toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:12px;
+  padding-bottom:12px;
+  border-bottom:1px solid var(--line);
+}
+.profile-notifications-select-all{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:13px;
+  color:var(--text-mid);
+  cursor:pointer;
+  user-select:none;
+}
+.profile-notifications-select-all input[type="checkbox"]{
+  width:16px;
+  height:16px;
+  accent-color:var(--cyan);
+  cursor:pointer;
+}
+.profile-notifications-bulk-actions{
+  display:flex;
+  gap:8px;
+}
+.profile-notifications-delete-btn{
+  color:#C0392B;
+  border-color:rgba(192,57,43,0.35);
+}
+.profile-notifications-delete-btn:hover:not(:disabled){
+  border-color:#C0392B;
+  background:rgba(192,57,43,0.05);
+}
+
 .profile-notifications-list{
   display:flex;
   flex-direction:column;
@@ -404,25 +442,48 @@
 }
 .profile-notification-row{
   display:flex;
-  align-items:flex-start;
+  align-items:center;
   gap:10px;
-  padding:12px 16px;
+  padding:6px 8px 6px 16px;
   border:1px solid var(--line);
   border-radius:var(--radius-sm);
   background:rgba(21,27,38,0.015);
-  text-align:left;
-  width:100%;
-  font-family:inherit;
+  transition:border-color 0.15s ease, background 0.15s ease;
 }
 .profile-notification-row.unread{
   background:rgba(15,118,110,0.06);
   border-color:rgba(15,118,110,0.25);
 }
-.profile-notification-row.clickable{
+.profile-notification-row.selected{
+  border-color:var(--cyan);
+  background:rgba(13,138,124,0.08);
+}
+.profile-notification-checkbox{
+  flex-shrink:0;
+  width:16px;
+  height:16px;
+  accent-color:var(--cyan);
   cursor:pointer;
 }
-.profile-notification-row.clickable:hover{
-  border-color:var(--cyan);
+.profile-notification-main{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  flex:1;
+  min-width:0;
+  padding:10px 8px;
+  background:none;
+  border:none;
+  text-align:left;
+  font-family:inherit;
+  color:inherit;
+  cursor:default;
+}
+.profile-notification-main.clickable{
+  cursor:pointer;
+}
+.profile-notification-main.clickable:hover .profile-notification-cta{
+  text-decoration:underline;
 }
 .profile-notification-dot{
   flex-shrink:0;

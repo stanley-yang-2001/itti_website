@@ -8,37 +8,13 @@ import Reveal from '../components/Reveal.jsx';
 import SettingsPanel from '../components/SettingsPanel.jsx';
 import ControlPanel from '../components/ControlPanel.jsx';
 import SEO from '../components/SEO.jsx';
+import Avatar from '../components/Avatar.jsx';
 import {
   fetchSavedObservatoryCharts, deleteSavedObservatoryChart,
   fetchFavoriteReports, unfavoriteReport,
   fetchMyReports,
 } from '../api.js';
 import '../styles/Profile.css';
-
-function initials(name, email) {
-  const source = (name || email || '?').trim();
-  const parts = source.split(/\s+/);
-  if (parts.length === 1) return parts[0][0].toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
-
-/** Shows the user's avatar image, falling back to initials if the URL
- *  fails to load (e.g. a Google avatar URL that 403s) rather than
- *  leaving a broken-image icon with overlapping alt text on the page. */
-function ProfileAvatar({ name, email, pictureUrl }) {
-  const [imageFailed, setImageFailed] = useState(false);
-  const showImage = pictureUrl && !imageFailed;
-
-  return (
-    <div className="profile-avatar">
-      {showImage ? (
-        <img src={pictureUrl} alt="" onError={() => setImageFailed(true)} />
-      ) : (
-        <span>{initials(name, email)}</span>
-      )}
-    </div>
-  );
-}
 
 function formatDate(isoString) {
   if (!isoString) return '';
@@ -140,6 +116,11 @@ export default function Profile() {
   const [notifications, setNotifications] = useState(null); // null = loading
   const [notificationsError, setNotificationsError] = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
+  // Selection for the Notifications tab's bulk "Mark as read" / "Delete"
+  // actions - a Set of notification ids, cleared whenever the list is
+  // reloaded (ids can go stale otherwise, e.g. after a delete).
+  const [selectedNotificationIds, setSelectedNotificationIds] = useState(() => new Set());
+  const [bulkActionPending, setBulkActionPending] = useState(false);
 
   useEffect(() => {
     fetchSavedObservatoryCharts()
@@ -168,7 +149,12 @@ export default function Profile() {
   function loadNotifications() {
     fetch('/api/notifications', { credentials: 'include' })
       .then((res) => res.json())
-      .then(setNotifications)
+      .then((data) => {
+        setNotifications(data);
+        // Ids from a stale list shouldn't linger selected against a
+        // freshly-loaded one (e.g. after a delete removes some rows).
+        setSelectedNotificationIds(new Set());
+      })
       .catch((err) => setNotificationsError(err.message));
   }
 
@@ -204,11 +190,80 @@ export default function Profile() {
   async function handleMarkAllRead() {
     setNotifications((prev) => prev?.map((n) => ({ ...n, is_read: true })) ?? prev); // optimistic
     setUnreadCount(0);
+    setSelectedNotificationIds(new Set());
     try {
       await fetch('/api/notifications/read-all', { method: 'POST', credentials: 'include' });
     } catch {
       loadNotifications();
       loadUnreadCount();
+    }
+  }
+
+  function toggleNotificationSelected(id) {
+    setSelectedNotificationIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAllNotifications() {
+    setSelectedNotificationIds((prev) => {
+      if (notifications && prev.size === notifications.length) return new Set(); // all selected -> clear
+      return new Set((notifications || []).map((n) => n.id));
+    });
+  }
+
+  /** Marks every currently-selected notification read, then clears the selection. */
+  async function handleMarkSelectedRead() {
+    const ids = Array.from(selectedNotificationIds);
+    if (ids.length === 0) return;
+    const idSet = new Set(ids);
+    const unreadAmongSelected = (notifications || []).filter((n) => idSet.has(n.id) && !n.is_read).length;
+    setNotifications((prev) => prev?.map((n) => (idSet.has(n.id) ? { ...n, is_read: true } : n)) ?? prev); // optimistic
+    setUnreadCount((prev) => Math.max(0, prev - unreadAmongSelected)); // optimistic - loadUnreadCount() below reconciles either way
+    setSelectedNotificationIds(new Set());
+    setBulkActionPending(true);
+    try {
+      await fetch('/api/notifications/read', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids }),
+      });
+    } catch {
+      // fall back to a fresh fetch so state can't drift from the server
+    } finally {
+      loadNotifications();
+      loadUnreadCount();
+      setBulkActionPending(false);
+    }
+  }
+
+  /** Deletes every currently-selected notification, then clears the selection. */
+  async function handleDeleteSelected() {
+    const ids = Array.from(selectedNotificationIds);
+    if (ids.length === 0) return;
+    const idSet = new Set(ids);
+    const unreadAmongSelected = (notifications || []).filter((n) => idSet.has(n.id) && !n.is_read).length;
+    setNotifications((prev) => prev?.filter((n) => !idSet.has(n.id)) ?? prev); // optimistic
+    setUnreadCount((prev) => Math.max(0, prev - unreadAmongSelected)); // optimistic - loadUnreadCount() below reconciles either way
+    setSelectedNotificationIds(new Set());
+    setBulkActionPending(true);
+    try {
+      await fetch('/api/notifications/delete', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids }),
+      });
+    } catch {
+      // fall back to a fresh fetch so state can't drift from the server
+    } finally {
+      loadNotifications();
+      loadUnreadCount();
+      setBulkActionPending(false);
     }
   }
 
@@ -269,7 +324,7 @@ export default function Profile() {
           {activeTab === 'profile' && (
             <Reveal delay={0}>
               <section className="profile-header">
-                <ProfileAvatar name={user.name} email={user.email} pictureUrl={user.picture_url} />
+                <Avatar name={user.name} email={user.email} pictureUrl={user.picture_url} className="profile-avatar" />
                 <div className="profile-header-info">
                   <h1 className="profile-name display">{user.name || user.email}</h1>
                   <p className="profile-email">{user.email}</p>
@@ -436,7 +491,7 @@ export default function Profile() {
               <section className="profile-section">
                 <div className="profile-section-head">
                   <h2 className="profile-section-title display">Notifications</h2>
-                  {notifications !== null && unreadCount > 0 && (
+                  {notifications !== null && unreadCount > 0 && selectedNotificationIds.size === 0 && (
                     <button type="button" className="btn btn-secondary" onClick={handleMarkAllRead}>
                       Mark all as read
                     </button>
@@ -451,27 +506,80 @@ export default function Profile() {
                   <p className="profile-status">You don't have any notifications yet.</p>
                 )}
                 {!notificationsError && notifications !== null && notifications.length > 0 && (
-                  <div className="profile-notifications-list">
-                    {notifications.map((notification) => {
-                      const clickable = notification.report_id != null;
-                      const Wrapper = clickable ? 'button' : 'div';
-                      return (
-                        <Wrapper
-                          key={notification.id}
-                          type={clickable ? 'button' : undefined}
-                          className={`profile-notification-row${notification.is_read ? '' : ' unread'}${clickable ? ' clickable' : ''}`}
-                          onClick={clickable ? () => handleNotificationClick(notification) : undefined}
-                        >
-                          {!notification.is_read && <span className="profile-notification-dot" aria-hidden="true" />}
-                          <div className="profile-notification-body">
-                            <p className="profile-notification-message">{notification.message}</p>
-                            <span className="profile-notification-date">{formatDate(notification.created_at)}</span>
+                  <>
+                    <div className="profile-notifications-toolbar">
+                      <label className="profile-notifications-select-all">
+                        <input
+                          type="checkbox"
+                          checked={selectedNotificationIds.size === notifications.length}
+                          ref={(el) => {
+                            if (el) {
+                              el.indeterminate =
+                                selectedNotificationIds.size > 0 && selectedNotificationIds.size < notifications.length;
+                            }
+                          }}
+                          onChange={toggleSelectAllNotifications}
+                        />
+                        {selectedNotificationIds.size > 0
+                          ? `${selectedNotificationIds.size} selected`
+                          : 'Select all'}
+                      </label>
+                      {selectedNotificationIds.size > 0 && (
+                        <div className="profile-notifications-bulk-actions">
+                          <button
+                            type="button"
+                            className="btn btn-secondary"
+                            disabled={bulkActionPending}
+                            onClick={handleMarkSelectedRead}
+                          >
+                            Mark as read
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-secondary profile-notifications-delete-btn"
+                            disabled={bulkActionPending}
+                            onClick={handleDeleteSelected}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="profile-notifications-list">
+                      {notifications.map((notification) => {
+                        const clickable = notification.report_id != null;
+                        const selected = selectedNotificationIds.has(notification.id);
+                        return (
+                          <div
+                            key={notification.id}
+                            className={`profile-notification-row${notification.is_read ? '' : ' unread'}${selected ? ' selected' : ''}`}
+                          >
+                            <input
+                              type="checkbox"
+                              className="profile-notification-checkbox"
+                              checked={selected}
+                              onChange={() => toggleNotificationSelected(notification.id)}
+                              aria-label="Select notification"
+                            />
+                            <button
+                              type="button"
+                              className={`profile-notification-main${clickable ? ' clickable' : ''}`}
+                              onClick={clickable ? () => handleNotificationClick(notification) : undefined}
+                              disabled={!clickable}
+                            >
+                              {!notification.is_read && <span className="profile-notification-dot" aria-hidden="true" />}
+                              <div className="profile-notification-body">
+                                <p className="profile-notification-message">{notification.message}</p>
+                                <span className="profile-notification-date">{formatDate(notification.created_at)}</span>
+                              </div>
+                              {clickable && <span className="profile-notification-cta">See in Peer Review &rarr;</span>}
+                            </button>
                           </div>
-                          {clickable && <span className="profile-notification-cta">See in Peer Review &rarr;</span>}
-                        </Wrapper>
-                      );
-                    })}
-                  </div>
+                        );
+                      })}
+                    </div>
+                  </>
                 )}
               </section>
             </Reveal>

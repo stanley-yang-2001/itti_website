@@ -1087,6 +1087,62 @@
     color:var(--text-mid);
     white-space:nowrap;
   }
+  .navbar-avatar-wrap{
+    position:relative;
+    display:inline-flex;
+    flex-shrink:0;
+  }
+  .navbar-avatar.avatar{
+    width:30px;
+    height:30px;
+    border-radius:50%;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    flex-shrink:0;
+    transition:border-color .15s ease;
+  }
+  .navbar-avatar.avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .navbar-avatar.avatar span{
+    font-family:'Times New Roman', Times, serif;
+    font-size:12px;
+    font-weight:700;
+    color:var(--text-mid);
+  }
+  .navbar-user:hover .navbar-avatar.avatar{
+    border-color:var(--cyan);
+  }
+  /* Glowing "new notification" dot on the avatar - see NavBar.jsx for
+     when it appears/disappears. Sits at the top-right of the avatar,
+     same corner convention as the notification badge in Profile.jsx. */
+  .navbar-notification-dot{
+    position:absolute;
+    top:-2px;
+    right:-2px;
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:var(--cyan);
+    border:2px solid var(--bg-deep);
+    box-shadow:0 0 0 0 rgba(13,138,124,0.55);
+    animation:navbar-notification-dot-glow 2s ease-in-out infinite;
+  }
+  @keyframes navbar-notification-dot-glow{
+    0%   { box-shadow:0 0 0 0 rgba(13,138,124,0.55); }
+    70%  { box-shadow:0 0 0 6px rgba(13,138,124,0); }
+    100% { box-shadow:0 0 0 0 rgba(13,138,124,0); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .navbar-notification-dot{animation:none;}
+  }
   .role-badge{
     font-family:'JetBrains Mono',monospace;
     font-size:10px;
