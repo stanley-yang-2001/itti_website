@@ -2,13 +2,28 @@
 Pluggable email sending.
 
 EMAIL_BACKEND controls how outgoing email actually gets sent:
-  - "console" (default) -> logs the email instead of sending it. Zero
-                            setup, works completely offline, and is what
-                            makes the forgot-password flow fully testable
-                            right now with no email provider at all.
-  - "smtp"               -> sends via a real SMTP server (SendGrid,
-                             Postmark, Mailgun, plain SMTP, etc - anything
-                             that speaks SMTP).
+  - "console"  (default) -> logs the email instead of sending it. Zero
+                             setup, works completely offline, and is what
+                             makes the forgot-password flow fully testable
+                             right now with no email provider at all.
+                             THIS IS WHY, if EMAIL_BACKEND was never
+                             actually set in production, a user reports
+                             "I never got the email" - the code was
+                             generated and is valid, just never left the
+                             server (only logged). Check the deployed
+                             environment's EMAIL_BACKEND value first if
+                             that's reported.
+  - "brevo_api"           -> sends via Brevo's transactional email HTTP
+                             API (api.brevo.com). This is the recommended
+                             option when using Brevo - see
+                             BrevoAPIEmailBackend below and
+                             docs/DEPLOYMENT.md's Brevo section.
+  - "smtp"                -> sends via a real SMTP server (SendGrid,
+                              Postmark, Mailgun, plain SMTP, Brevo's SMTP
+                              relay, etc - anything that speaks SMTP).
+                              Kept as a fallback/alternative to
+                              "brevo_api" for providers that don't offer
+                              an HTTP API, or a preference for SMTP.
 
 Same shape as storage.py: pick a backend via env var, nothing else in
 the codebase needs to change when you're ready to send real email.
@@ -17,6 +32,8 @@ import logging
 import os
 import smtplib
 from email.message import EmailMessage
+
+import requests
 
 logger = logging.getLogger("itti")
 
@@ -32,6 +49,61 @@ class ConsoleEmailBackend:
         logger.info("Subject: %s", subject)
         logger.info("Body:\n%s", body)
         logger.info("=== end email ===")
+
+
+class BrevoAPIEmailBackend:
+    """
+    Sends real email via Brevo's transactional email HTTP API
+    (POST https://api.brevo.com/v3/smtp/email) rather than SMTP. Configure
+    with BREVO_API_KEY, BREVO_FROM_EMAIL, and optionally BREVO_FROM_NAME
+    (see docs/DEPLOYMENT.md's Brevo section for where to get the API key
+    and how to verify a sender).
+
+    Preferred over SMTPEmailBackend when using Brevo specifically: the
+    API call returns Brevo's own error detail synchronously (bad/expired
+    key, unverified sender, etc. come back as a clear HTTP error instead
+    of a generic SMTP auth failure), and avoids opening an outbound SMTP
+    connection at all, which some hosts throttle or block by default.
+    """
+
+    API_URL = "https://api.brevo.com/v3/smtp/email"
+
+    def __init__(self):
+        self.api_key = os.environ.get("BREVO_API_KEY")
+        self.from_email = os.environ.get("BREVO_FROM_EMAIL")
+        self.from_name = os.environ.get("BREVO_FROM_NAME", "International Truth & Trauma Institute")
+
+        if not self.api_key or not self.from_email:
+            raise RuntimeError(
+                "EMAIL_BACKEND=brevo_api requires BREVO_API_KEY and BREVO_FROM_EMAIL "
+                "to be set (BREVO_FROM_NAME is optional)"
+            )
+
+    def send(self, to, subject, body):
+        response = requests.post(
+            self.API_URL,
+            headers={
+                "accept": "application/json",
+                "api-key": self.api_key,
+                "content-type": "application/json",
+            },
+            json={
+                "sender": {"email": self.from_email, "name": self.from_name},
+                "to": [{"email": to}],
+                "subject": subject,
+                "textContent": body,
+            },
+            timeout=10,
+        )
+        if response.status_code >= 400:
+            # Surface Brevo's own error body (e.g. "sender not verified",
+            # "invalid api-key") rather than just the status code - this
+            # is what shows up in the caller's try/except logging (see
+            # forgot_password()'s docstring in app.py for why the reset
+            # request itself still returns success either way).
+            raise RuntimeError(
+                f"Brevo API send failed ({response.status_code}): {response.text}"
+            )
 
 
 class SMTPEmailBackend:
@@ -67,6 +139,8 @@ class SMTPEmailBackend:
 
 def get_email_backend():
     backend = os.environ.get("EMAIL_BACKEND", "console").lower()
+    if backend == "brevo_api":
+        return BrevoAPIEmailBackend()
     if backend == "smtp":
         return SMTPEmailBackend()
     return ConsoleEmailBackend()
