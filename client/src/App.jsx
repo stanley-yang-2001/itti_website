@@ -28,6 +28,7 @@ const Login = lazy(() => import('./pages/Login.jsx'));
 const Signup = lazy(() => import('./pages/SignUp.jsx'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword.jsx'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword.jsx'));
+const VerifyResetCode = lazy(() => import('./pages/VerifyResetCode.jsx'));
 const Unavailable = lazy(() => import('./pages/Unavailable.jsx'));
 const Publish = lazy(() => import('./pages/Publish.jsx'));
 const ReportPublish = lazy(() => import('./pages/ReportPublish.jsx'));
@@ -40,6 +41,7 @@ const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy.jsx'));
 const Profile = lazy(() => import('./pages/Profile.jsx'));
 const Settings = lazy(() => import('./pages/Settings.jsx'));
 const PeerReview = lazy(() => import('./pages/PeerReview.jsx'));
+const PeerReviewMine = lazy(() => import('./pages/PeerReviewMine.jsx'));
 
 /**
  * Gives routed page content a gentle fade-in on navigation instead of
@@ -87,6 +89,10 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/verify" element={<VerifyResetCode />} />
+        {/* Kept for any reset link already emailed before this deploy
+            (1-hour TTL) - see reset_password()'s docstring in app.py.
+            New requests go through /forgot-password -> /reset-password/verify. */}
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/unavailable" element={<Unavailable />} />
 
@@ -106,14 +112,19 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/peer-review"
-          element={
-            <ProtectedRoute requireRole="publisher">
-              <PeerReview />
-            </ProtectedRoute>
-          }
-        />
+        {/* Not wrapped in ProtectedRoute - PeerReview.jsx does its own
+            auth/publisher-access check via PublisherAccessGate, same
+            reasoning as /reports/publish above. */}
+        <Route path="/peer-review" element={<PeerReview />} />
+        <Route path="/peer-review/mine" element={<PeerReviewMine />} />
+        {/* Not wrapped in ProtectedRoute on purpose - see the comment atop
+            PeerReview.jsx: a non-publisher/admin (including a signed-out
+            visitor) landing here sees an explanation instead of a silent
+            redirect, mirroring ReportPublish.jsx. Server-side enforcement
+            is the real gate (@roles_required("publisher", "admin") on
+            every /api/reports/pending, /api/reports/<id>/review, etc.
+            route this page calls). */}
+        <Route path="/peer-review" element={<PeerReview />} />
         <Route
           path="/settings"
           element={

@@ -16,7 +16,7 @@ that's a Droplet instead of App Platform; this guide doesn't cover that path.
 - A DigitalOcean account with billing set up
 - A domain name, if you want `itti.org` instead of the auto-generated
   `*.ondigitalocean.app` URL (optional)
-- Brevo SMTP credentials (see the separate section below — get these first,
+- Brevo API credentials (see the separate section below — get these first,
   since you'll need them during setup)
 
 ## Step 1 — Push the two new files this guide depends on
@@ -47,8 +47,8 @@ Commit and push both to your `database` branch before continuing.
      in both the backend and frontend sections — the frontend needs it to
      render the Google Sign-In button, the backend needs it to verify
      tokens)
-   - `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM_EMAIL` → from Brevo, see
-     below
+   - `BREVO_API_KEY`, `BREVO_FROM_EMAIL` → from Brevo, see below
+     (`BREVO_FROM_NAME` already has a sensible default, no need to touch it)
    - `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` → only if you're using
      the donations feature; delete those two lines entirely if not
 5. Click through the remaining screens (region, plan). For the database,
@@ -175,77 +175,6 @@ minutes — the whole build happens on GitHub's free runners.
 
 ---
 
-# Persistent storage for uploads (fellow photos, report files/images)
-
-**This step is required, not optional, if the site will ever have
-fellow photos or reports uploaded through the live admin/publisher UI.**
-
-By default (`STORAGE_BACKEND` unset, or `local`), uploaded files are
-written to disk inside the backend's own container
-(`server/fellow_uploads/`, `server/report_uploads/`,
-`server/uploads/`). That's fine for local development, but App
-Platform rebuilds this service's container from a fresh image on
-every deploy — and `app.yaml` sets `deploy_on_push: true`, so that
-happens on every single push to `database`, not just occasionally.
-Anything written to local disk after the container started (i.e.
-every photo/file uploaded through the live site, as opposed to one
-that happened to already be committed to the repo and baked into the
-image) is gone the moment the container is rebuilt, while the
-database row referencing it is untouched.
-
-The visible symptom is a fellow's photo (or a report's file/cover
-image) failing to load. Depending on the app version, this shows up
-either as a broken image with a clean 404, or — before
-`storage.py`'s `get_file_response()` was hardened to catch this — a
-raw `{"error": "internal server error"}` from `GET
-/api/fellows/<id>/photo` and the equivalent report routes, since
-Flask's `send_file()` raises a bare `FileNotFoundError` for a missing
-file rather than a handled 404.
-
-The fix is the same one already used for the frontend above: point
-uploads at an S3-compatible bucket instead of local disk. `storage.py`
-already supports this — it's an env var flip, no code changes needed.
-
-## One-time setup
-
-1. **Create a second Spaces bucket**, separate from the frontend one:
-   dashboard → **Spaces Object Storage** → **Create a Spaces Bucket**
-   (e.g. `itti-uploads`, same or different region as the frontend
-   bucket — doesn't need to match). Leave the CDN option off; this
-   bucket doesn't need to be public, since `get_file_response()` serves
-   files through short-lived presigned URLs regardless of the bucket's
-   own visibility settings.
-2. **Reuse or generate Spaces access keys**: the same key/secret pair
-   from the frontend setup works here too (Spaces keys aren't scoped to
-   one bucket), or generate a separate pair under **API** → **Spaces
-   Keys** if you'd rather keep them independent.
-3. **Set these env vars on the backend service** (in `app.yaml` or the
-   dashboard — `app.yaml` in this repo already has the keys, just fill
-   in the placeholders):
-   | Env var | Value |
-   |---|---|
-   | `STORAGE_BACKEND` | `s3` |
-   | `STORAGE_S3_BUCKET` | Your bucket name, e.g. `itti-uploads` |
-   | `STORAGE_S3_ENDPOINT_URL` | Your region's Spaces endpoint, e.g. `https://nyc3.digitaloceanspaces.com` |
-   | `AWS_ACCESS_KEY_ID` | Spaces access key from step 2 |
-   | `AWS_SECRET_ACCESS_KEY` | Spaces secret key from step 2 |
-
-   (`AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` are boto3's standard
-   credential env vars — used here because Spaces speaks the S3 API,
-   not because anything AWS-specific is involved.)
-4. **Redeploy** the backend service so the new env vars take effect.
-
-## If you already deployed without this and have broken images now
-
-Any fellow/report uploaded through the live site before switching to
-`STORAGE_BACKEND=s3` is already gone from local disk and can't be
-recovered from the running container — there's nothing to migrate.
-After completing the setup above, re-upload the affected fellow
-photos (Profile → Control → Fellows) or report cover images; new
-uploads go straight to the bucket and will survive future deploys.
-
----
-
 # Setting up your sending address (Brevo)
 
 This is the "what email address do you actually send from" question. You
@@ -266,7 +195,7 @@ control the DNS for).
    "ITTI" as the name, `notifications@yourpersonalemail.com` as the
    address)
 4. Brevo sends a verification email to that address — click the link in it
-5. Once verified, that address can be used as `SMTP_FROM_EMAIL`
+5. Once verified, that address can be used as `BREVO_FROM_EMAIL`
 
 **Limitation:** deliverability is weaker with single-sender verification
 than full domain verification (more likely to land in spam), and you can
@@ -295,30 +224,43 @@ deliverability.
    few minutes to ~24 hours to propagate — if verification fails
    immediately, wait and retry rather than assuming something's wrong)
 6. Once verified, you can send from **any address** `@yourdomain.org`
-   without verifying each one individually — set `SMTP_FROM_EMAIL` to
+   without verifying each one individually — set `BREVO_FROM_EMAIL` to
    whichever address you want (e.g. `noreply@itti.org`)
 
-## After either option: get your SMTP credentials
+## After either option: get your API key
 
-Once your sender/domain is verified, get the actual connection details:
+Once your sender/domain is verified, get the actual credential:
 
-1. Account name → **SMTP & API** → **SMTP** tab
-2. Copy the **Login** shown there (looks like
-   `9a1b2c3d4e5f6g@smtp-brevo.com` — this is not your Brevo account email)
-3. Click **Generate a new SMTP key**, copy it immediately (shown once)
-4. You now have everything for the five SMTP environment variables used in
-   `app.yaml` / `.env`:
+1. Account name (top right) → **SMTP & API** → **API Keys** tab
+2. Click **Generate a new API key**, give it a name (e.g. "ITTI website"),
+   and copy it immediately — it's shown once
+3. You now have everything for the three Brevo environment variables used
+   in `app.yaml` / `.env`:
    ```
-   SMTP_HOST=smtp-relay.brevo.com
-   SMTP_PORT=587
-   SMTP_USERNAME=<the login from step 2>
-   SMTP_PASSWORD=<the key from step 3>
-   SMTP_FROM_EMAIL=<the address you verified in Option A or B>
+   BREVO_API_KEY=<the key from step 2>
+   BREVO_FROM_EMAIL=<the address you verified in Option A or B>
+   BREVO_FROM_NAME=International Truth & Trauma Institute
    ```
+   (`BREVO_FROM_NAME` is just the display name recipients see, e.g. "ITTI
+   <noreply@itti.org>" — change it to whatever you'd like shown.)
+
+**Using SMTP instead:** Brevo also offers an SMTP relay
+(`smtp-relay.brevo.com:587`) if you'd rather use `EMAIL_BACKEND=smtp` — the
+Login/SMTP key for that live under the same **SMTP & API** page's **SMTP**
+tab. The API key above is unrelated to and not interchangeable with the
+SMTP login/key; the API approach (`EMAIL_BACKEND=brevo_api`) is what
+`app.yaml` uses by default and is recommended since Brevo's API returns a
+clear error (bad key, unverified sender, etc.) instead of a generic SMTP
+failure.
 
 ## Testing it actually works
 
-After deploying with real Brevo credentials, trigger the password-reset
+After deploying with a real `BREVO_API_KEY` and `BREVO_FROM_EMAIL`, confirm
+`EMAIL_BACKEND` is actually set to `brevo_api` in the deployed environment
+(not left on the `console` default, which logs the email instead of sending
+it — this is the most common reason "I never got the email" happens even
+though everything else is configured correctly) — check the app's env vars
+in the DigitalOcean dashboard if unsure. Then trigger the password-reset
 flow (`POST /api/auth/forgot-password` with a real account's email, or just
 click "Forgot password" on the login page) and confirm the email actually
 arrives — check spam the first few times while your domain builds sending

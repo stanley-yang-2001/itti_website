@@ -60,12 +60,34 @@ export function AuthProvider({ children }) {
     return data;
   }
 
-  /** Always resolves with a generic message, regardless of whether the email exists. */
+  /** Always resolves with a generic message, regardless of whether the email exists. Sends a 6-digit code. */
   async function requestPasswordReset(email) {
     return postJson('/api/auth/forgot-password', { email });
   }
 
-  /** Resolves with the user and logs them in, since a valid token proves account ownership. */
+  /** Invalidates the last code and sends a fresh one to the same email. Same generic-message shape. */
+  async function resendPasswordResetCode(email) {
+    return postJson('/api/auth/forgot-password/resend', { email });
+  }
+
+  /** Invalidates any outstanding code for this email - call when the user goes back to re-enter their email. */
+  async function cancelPasswordReset(email) {
+    return postJson('/api/auth/forgot-password/back', { email }).catch(() => {}); // best-effort, never blocks navigation
+  }
+
+  /** Resolves with the user and logs them in, since a correct code proves account ownership. */
+  async function verifyPasswordResetCode(email, code) {
+    const data = await postJson('/api/auth/forgot-password/verify', { email, code });
+    setUser(data);
+    return data;
+  }
+
+  /**
+   * Legacy path: redeems a token from a reset link emailed before this
+   * deploy (see ResetPassword.jsx and reset_password()'s docstring in
+   * app.py). New reset requests never generate these links anymore -
+   * this only exists so an already-sent email still works.
+   */
   async function resetPassword(token, password) {
     const data = await postJson('/api/auth/reset-password', { token, password });
     setUser(data);
@@ -126,6 +148,9 @@ export function AuthProvider({ children }) {
     loginWithPassword,
     signup,
     requestPasswordReset,
+    resendPasswordResetCode,
+    cancelPasswordReset,
+    verifyPasswordResetCode,
     resetPassword,
     updateAccount,
     updatePicture,

@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 import { checkEmail, checkPassword, checkPasswordsMatch, checkName } from "../utils/formValidation.js";
 import Reveal from '../components/Reveal.jsx';
 import PrivacyPolicyModal from '../components/PrivacyPolicyModal.jsx';
+import Modal from '../components/Modal.jsx';
 import SEO from '../components/SEO.jsx';
 import "../styles/SignUp.css";
 
@@ -27,6 +28,9 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
   const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  // Same pattern as Login.jsx - see linked_existing_account in
+  // /api/auth/google's response.
+  const [showLinkedAccountModal, setShowLinkedAccountModal] = useState(false);
 
   function validate() {
     const errors = {};
@@ -86,13 +90,22 @@ export default function Signup() {
     setFormError(null);
     setLoading(true);
     try {
-      await loginWithGoogle(credentialResponse.credential);
-      navigate("/");
+      const data = await loginWithGoogle(credentialResponse.credential);
+      if (data.linked_existing_account) {
+        setShowLinkedAccountModal(true);
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       setFormError(err.message);
     } finally {
       setLoading(false);
     }
+  }
+
+  function handleLinkedAccountAcknowledge() {
+    setShowLinkedAccountModal(false);
+    navigate("/");
   }
 
   function handleGoogleError() {
@@ -215,6 +228,28 @@ export default function Signup() {
       </Reveal>
 
       {showPrivacyModal && <PrivacyPolicyModal onClose={() => setShowPrivacyModal(false)} />}
+
+      {showLinkedAccountModal && (
+        <Modal
+          title="Account updated"
+          onClose={handleLinkedAccountAcknowledge}
+          footer={
+            <button
+              type="button"
+              className="app-modal-btn app-modal-btn--primary"
+              onClick={handleLinkedAccountAcknowledge}
+            >
+              Continue
+            </button>
+          }
+        >
+          <p>
+            An account already existed for this email, so we&rsquo;ve linked your Google
+            sign-in to it. Your existing data hasn&rsquo;t been lost — you can now sign in
+            either with Google or with your original password.
+          </p>
+        </Modal>
+      )}
     </div>
   );
 }
