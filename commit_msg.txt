@@ -1,67 +1,18 @@
-Add multiple expandable references to country profiles; carry over
-two pending email bug fixes
+Fix fellow/report images crashing with 500 in production
 
-Reconciled against several commits that landed upstream in the
-meantime (Peer Review notifications/admin-approve bypass, Reports/
-Peer Review styling, a security audit pass) - most of my prior
-in-progress work turned out to already be merged, so only genuinely
-new changes are included here.
+Root cause: uploaded file paths (fellow photos, report files/images,
+documents) were stored as absolute, machine-specific paths baked in
+by whoever ran the upload locally - unusable on the deployed server,
+which crashed serving them with a raw FileNotFoundError instead of a
+handled 404.
 
-server/app.py
-    Two still-unmerged fixes from earlier: forgot_password()'s email
-    send is now wrapped in try/except (an SMTP failure was returning
-    500 for registered emails vs 200 for unregistered ones, leaking
-    account existence and breaking the page for real users on any
-    Brevo hiccup); enrollment confirmation email now looks up the
-    recipient via get_user(enrollment.user_id) instead of the lazy
-    enrollment.user relationship, which raised DetachedInstanceError
-    on every single successful enrollment (reproduced live) since the
-    session that loaded it was already closed.
-
-server/data_scripts/country_profiles_extract.py
-    parse_survey_docx() now collects every consecutive "Reference:"
-    paragraph into a list (overview.references) instead of keeping
-    only the last one seen. Backward compatible by construction - the
-    247 countries with exactly one reference line just get a one-item
-    list. Docstring/schema comment updated to match.
-
-server/data_scripts/merge_remainder_profiles.py
-    build_merged_docx() also read the old singular field and would
-    have broken the next time this migration script runs. Now writes
-    one "Reference:" paragraph per item in the list. Verified with an
-    actual parse -> rebuild -> re-parse round trip.
-
-server/data_scripts/country_profiles_source/country_profile_section_of_our_international_observatory_website.docx
-    United States and Nigeria entries now carry their full reference
-    lists (25 and 8 respectively) instead of the single representative
-    citation used previously. Edited via direct XML manipulation
-    (unzip -> edit word/document.xml -> rezip) to exactly match the
-    existing bold-heading/plain-body run structure the parser expects;
-    validated paragraph-count delta (+31) matches precisely, and
-    visually confirmed via rendered PDF pages.
-
-server/data/country_profiles.json
-    Regenerated from the above via the actual extract pipeline (not
-    hand-edited) - 249 profiles, 15 with dashboard notes, Nigeria's
-    GTBI/ETTI dashboard_note left untouched (different subject matter
-    entirely - dashboard-score commentary, not general historical
-    trauma narrative, so it was never a target for this change).
-
-client/src/pages/CountryProfiles.jsx / styles/CountryProfiles.css
-    Country overview now renders profile.overview.references (array)
-    behind a "Show references (N)" / "Hide references (N)" toggle at
-    the bottom of the paragraphs, only rendered when at least one
-    reference exists. Reuses the existing outer country-row's chevron
-    rotation (.country-profile-chevron) for visual consistency between
-    the two nested expand/collapse levels, and the already-present but
-    previously unused .country-overview-references CSS convention
-    (originally written for dashboard_note.references, never wired
-    up) rather than inventing new styling from scratch.
-
-Verified: single alembic head; backend imports cleanly (68 routes);
-full client build clean; confirmed the new toggle code is present in
-the compiled bundle; live-tested via the actual running server that
-/api/country-profiles serves 25 references for United States and 8
-for Nigeria; spot-checked several untouched countries to confirm the
-schema migration (reference -> references) applied uniformly across
-all 249 profiles.
+- storage.py: LocalStorage now stores/resolves paths relative to its
+  own base_dir instead of absolute ones, and get_file_response()
+  catches a missing file and returns a clean 404 instead of crashing
+- Add migrate_absolute_storage_paths.py: one-off, idempotent script
+  to repair existing bad rows (fellows/reports/documents) wherever
+  the underlying file can still be found
+- app.yaml + docs/DEPLOYMENT.md: document and configure
+  STORAGE_BACKEND=s3 (DigitalOcean Spaces) for production, since
+  local disk doesn't survive App Platform's per-deploy container
+  rebuilds

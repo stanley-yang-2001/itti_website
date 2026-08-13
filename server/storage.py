@@ -16,6 +16,7 @@ boto3 is only imported when the S3 backend is actually selected, so
 local-only setups don't need it installed.
 """
 import os
+import re
 import uuid
 
 
@@ -27,8 +28,19 @@ class LocalStorage:
         os.makedirs(self.base_dir, exist_ok=True)
 
     def save(self, user_id, filename, file_obj):
-        """Saves an uploaded file. Returns (storage_path, size_bytes).
-        storage_path is what gets stored in Document.file_path."""
+        """
+        Saves an uploaded file. Returns (storage_path, size_bytes).
+        storage_path is what gets stored in e.g. Document.file_path -
+        deliberately a forward-slash-joined path *relative* to
+        self.base_dir (e.g. "2/abcd1234_report.pdf"), not an absolute
+        one, so it stays valid regardless of what machine or container
+        this code happens to run on next. self.base_dir itself already
+        varies per-environment (a Windows dev laptop's checkout path
+        vs. this repo's Docker image's /app), so an absolute path
+        baked in at save() time would only ever resolve back on the
+        exact machine that wrote it - see _resolve()'s docstring for
+        what happens to older rows that already have one.
+        """
         user_dir = os.path.join(self.base_dir, str(user_id))
         os.makedirs(user_dir, exist_ok=True)
 
@@ -37,13 +49,36 @@ class LocalStorage:
         full_path = os.path.join(user_dir, stored_name)
         file_obj.save(full_path)
         size_bytes = os.path.getsize(full_path)
-        return full_path, size_bytes
+        relative_path = f"{user_id}/{stored_name}"
+        return relative_path, size_bytes
+
+    def _resolve(self, storage_path):
+        """
+        storage_path may be:
+          - new-style: relative to self.base_dir, forward-slash
+            separated (what save() has produced since this comment was
+            added) - portable, works the same on every machine.
+          - old-style: an absolute path a previous version of save()
+            returned directly (e.g. a Windows dev machine's
+            "C:\\Users\\...\\fellow_uploads\\fellows\\xyz.jpg", or a
+            plain Unix absolute path from whichever machine originally
+            ran the upload). There's no way to make an already-baked-in
+            absolute path portable after the fact - it's used as-is,
+            which correctly resolves on the machine that wrote it and
+            correctly 404s (via get_file_response()'s FileNotFoundError
+            handling below) anywhere else, rather than crashing. Rows
+            like this need re-uploading once found; see
+            docs/DEPLOYMENT.md.
+        """
+        if os.path.isabs(storage_path) or re.match(r"^[A-Za-z]:[\\/]", storage_path):
+            return storage_path
+        return os.path.join(self.base_dir, *storage_path.replace("\\", "/").split("/"))
 
     def delete(self, storage_path):
         """Best-effort delete - missing files are not an error (the DB
         row is the source of truth for whether a document 'exists')."""
         try:
-            os.remove(storage_path)
+            os.remove(self._resolve(storage_path))
         except OSError:
             pass
 
@@ -54,9 +89,29 @@ class LocalStorage:
         publicly downloadable (e.g. Report files/images) - Document
         never needed this, since a user's own uploads were never served
         back through the app.
+
+        Raises Werkzeug's 404 (via abort()), not a raw exception, if
+        the file is missing on disk - this happens in practice whenever
+        this backend is used on a host with an ephemeral filesystem
+        (e.g. a PaaS container that gets rebuilt from a fresh image on
+        every deploy) or when storage_path is an old-style absolute
+        path from a different machine (see _resolve() above): the DB
+        row referencing this path can outlive, or simply never have
+        matched, the file itself. Without this, Flask's send_file()
+        raises a bare FileNotFoundError, which isn't an HTTPException
+        and so falls through to the app's catch-all error handler - a
+        generic 500 "internal server error" instead of a clean "file
+        not found". See docs/DEPLOYMENT.md, "Persistent storage for
+        uploads", for switching to STORAGE_BACKEND=s3, which avoids
+        this class of failure entirely by not depending on the
+        container's local disk surviving between deploys.
         """
-        from flask import send_file
-        return send_file(storage_path, download_name=download_name, mimetype=mimetype)
+        from flask import send_file, abort
+
+        try:
+            return send_file(self._resolve(storage_path), download_name=download_name, mimetype=mimetype)
+        except FileNotFoundError:
+            abort(404, description="File not found")
 
 
 class S3Storage:
