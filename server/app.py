@@ -78,6 +78,7 @@ from models.report import (
 from models.report_review import record_review, get_reviews_for_report, reviews_to_public_dicts, ReviewError
 from models.notification import (
     get_notifications_for_user, get_unread_count, mark_notification_read, mark_all_read,
+    mark_notifications_read, delete_notifications,
 )
 from models.favorite_report import (
     add_favorite_report, remove_favorite_report, get_favorite_report_ids, get_favorite_reports_by_user,
@@ -1989,8 +1990,9 @@ def review_report_route(report_id):
     Body: { "decision": "approve" | "reject", "comment": "..." }
     comment is required when decision is "reject", optional otherwise.
     All the actual rules (can't review your own report, report must be
-    pending_review, REQUIRED_APPROVALS-th approval publishes, an
-    admin's approve publishes on its own) are enforced in
+    pending_review, REQUIRED_APPROVALS-th approval publishes,
+    REQUIRED_REJECTIONS-th reject removes it from review, an admin's
+    decision is decisive on its own either way) are enforced in
     models/report_review.record_review() - this route just translates
     its ReviewError into a 400 and tells it whether this reviewer is
     an admin.
@@ -2063,6 +2065,41 @@ def mark_all_notifications_read_route():
     user = get_current_user()
     updated = mark_all_read(user.id)
     return jsonify({"updated": updated})
+
+
+@app.post("/api/notifications/read")
+@login_required
+def mark_selected_notifications_read_route():
+    """
+    Marks a client-selected set of notifications read - body:
+    {"ids": [1, 2, 3]}. Backs the Notifications tab's checkbox
+    selection + "Mark as read" action, as distinct from read-all above
+    (everything) and the single-notification route (one, via a click).
+    """
+    user = get_current_user()
+    body = request.get_json(silent=True) or {}
+    ids = body.get("ids")
+    if not isinstance(ids, list) or not all(isinstance(i, int) for i in ids):
+        abort(400, description="ids must be a list of notification ids")
+    updated = mark_notifications_read(ids, user.id)
+    return jsonify({"updated": updated})
+
+
+@app.post("/api/notifications/delete")
+@login_required
+def delete_selected_notifications_route():
+    """
+    Deletes a client-selected set of notifications - body:
+    {"ids": [1, 2, 3]}. Backs the Notifications tab's checkbox
+    selection + "Delete" action.
+    """
+    user = get_current_user()
+    body = request.get_json(silent=True) or {}
+    ids = body.get("ids")
+    if not isinstance(ids, list) or not all(isinstance(i, int) for i in ids):
+        abort(400, description="ids must be a list of notification ids")
+    deleted = delete_notifications(ids, user.id)
+    return jsonify({"deleted": deleted})
 
 
 @app.get("/api/reports/<int:report_id>/reviews")

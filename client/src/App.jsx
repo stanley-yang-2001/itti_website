@@ -41,6 +41,7 @@ const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy.jsx'));
 const Profile = lazy(() => import('./pages/Profile.jsx'));
 const Settings = lazy(() => import('./pages/Settings.jsx'));
 const PeerReview = lazy(() => import('./pages/PeerReview.jsx'));
+const PeerReviewMine = lazy(() => import('./pages/PeerReviewMine.jsx'));
 
 /**
  * Gives routed page content a gentle fade-in on navigation instead of
@@ -111,14 +112,19 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/peer-review"
-          element={
-            <ProtectedRoute requireRole="publisher">
-              <PeerReview />
-            </ProtectedRoute>
-          }
-        />
+        {/* Not wrapped in ProtectedRoute - PeerReview.jsx does its own
+            auth/publisher-access check via PublisherAccessGate, same
+            reasoning as /reports/publish above. */}
+        <Route path="/peer-review" element={<PeerReview />} />
+        <Route path="/peer-review/mine" element={<PeerReviewMine />} />
+        {/* Not wrapped in ProtectedRoute on purpose - see the comment atop
+            PeerReview.jsx: a non-publisher/admin (including a signed-out
+            visitor) landing here sees an explanation instead of a silent
+            redirect, mirroring ReportPublish.jsx. Server-side enforcement
+            is the real gate (@roles_required("publisher", "admin") on
+            every /api/reports/pending, /api/reports/<id>/review, etc.
+            route this page calls). */}
+        <Route path="/peer-review" element={<PeerReview />} />
         <Route
           path="/settings"
           element={

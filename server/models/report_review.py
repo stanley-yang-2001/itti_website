@@ -13,18 +13,23 @@ one place:
   - a reviewer cannot submit twice for the same version (they can
     change their mind by calling record_review() again, which updates
     their existing row rather than creating a duplicate)
-  - a reject requires a comment; sets review_status to
-    changes_requested immediately, regardless of who cast it
+  - a reject requires a comment
   - an approve recount happens after every non-admin approval; the
     REQUIRED_APPROVALS-th distinct approval at the current version
     auto-publishes the report
-  - an admin's approve is decisive on its own - is_admin=True publishes
-    immediately without needing a second approval, mirroring how an
-    admin reject is already decisive on its own (any single reject
-    already sends a report back, admin or not)
-  - either outcome (published or changes_requested) notifies the
-    report's uploader via models.notification, so they don't have to
-    keep re-checking their own Publications list
+  - a reject recount happens after every non-admin reject; the
+    REQUIRED_REJECTIONS-th distinct reject at the current version
+    pulls the report from review entirely (review_status = rejected) -
+    it disappears from every peer-review queue for good. A single
+    reject alone just adds a comment and leaves the report pending,
+    so a second reviewer still needs to weigh in before anything
+    changes.
+  - an admin's decision is decisive on its own - is_admin=True
+    publishes on approve or rejects on reject, immediately, without
+    needing a second vote either way
+  - every outcome (published or rejected) notifies the report's
+    uploader via models.notification, so they don't have to keep
+    re-checking their own Publications list
 """
 
 from datetime import datetime
@@ -33,10 +38,10 @@ from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Uniq
 
 from .database import Base, Session
 from .report import (
-    Report, REQUIRED_APPROVALS, get_author_name,
-    REVIEW_STATUS_PUBLISHED, REVIEW_STATUS_CHANGES_REQUESTED, REVIEW_STATUS_PENDING,
+    Report, REQUIRED_APPROVALS, REQUIRED_REJECTIONS, get_author_name,
+    REVIEW_STATUS_PUBLISHED, REVIEW_STATUS_REJECTED, REVIEW_STATUS_PENDING,
 )
-from .notification import create_notification, TYPE_REPORT_PUBLISHED, TYPE_REPORT_CHANGES_REQUESTED
+from .notification import create_notification, TYPE_REPORT_PUBLISHED, TYPE_REPORT_REJECTED
 
 DECISION_APPROVE = "approve"
 DECISION_REJECT = "reject"
@@ -114,18 +119,23 @@ def record_review(report_id, reviewer_id, decision, comment=None, is_admin=False
     """
     Records a reviewer's decision on a report's CURRENT version, then
     applies the resulting workflow transition:
-      - reject (comment required) -> review_status = changes_requested,
-        whoever cast it - a single reject always sends a report back
+      - reject, is_admin=True -> review_status = rejected immediately,
+        bypassing the distinct-rejection count entirely
+      - reject, is_admin=False -> if this is now the
+        REQUIRED_REJECTIONS-th distinct reject at the current version,
+        review_status = rejected; otherwise the report stays pending
+        (the comment is recorded and visible, but nothing else changes
+        yet - a second reviewer still needs to weigh in)
       - approve, is_admin=True -> review_status = published
         immediately, bypassing the distinct-approval count entirely
       - approve, is_admin=False -> if this is now the
         REQUIRED_APPROVALS-th distinct approval at the current
         version, review_status = published
 
-    Either outcome creates a Notification for the report's uploader
-    (models.notification) - this is the only place that happens, so
-    every path to published/changes_requested notifies them, whether
-    it took one admin decision or REQUIRED_APPROVALS publisher ones.
+    Reaching either terminal state (published or rejected) creates a
+    Notification for the report's uploader (models.notification) -
+    this is the only place that happens, so every path there notifies
+    them, whether it took one admin decision or several publisher ones.
 
     Raises ReviewError (safe, user-facing message) on any rule
     violation. Returns the updated Report.
@@ -175,14 +185,29 @@ def record_review(report_id, reviewer_id, decision, comment=None, is_admin=False
         uploaded_by = report.uploaded_by
 
         if decision == DECISION_REJECT:
-            report.review_status = REVIEW_STATUS_CHANGES_REQUESTED
-            session.commit()
-            create_notification(
-                user_id=uploaded_by,
-                report_id=report_id,
-                type=TYPE_REPORT_CHANGES_REQUESTED,
-                message=f'"{title}" needs changes before it can be published. See the reviewer comment in Peer Review.',
-            )
+            reject_now = is_admin
+            if not reject_now:
+                reject_count = (
+                    session.query(ReportReview)
+                    .filter(
+                        ReportReview.report_id == report_id,
+                        ReportReview.version == report.version,
+                        ReportReview.decision == DECISION_REJECT,
+                    )
+                    .count()
+                )
+                reject_now = reject_count >= REQUIRED_REJECTIONS
+
+            if reject_now:
+                report.review_status = REVIEW_STATUS_REJECTED
+                session.commit()
+                create_notification(
+                    user_id=uploaded_by,
+                    report_id=report_id,
+                    type=TYPE_REPORT_REJECTED,
+                    message=f'"{title}" was not approved by peer review and has been removed from the queue. '
+                            f'See the reviewer comments on your Peer Review page.',
+                )
         else:
             publish_now = is_admin
             if not publish_now:
@@ -235,6 +260,23 @@ def get_approval_count(report_id, version):
                 ReportReview.report_id == report_id,
                 ReportReview.version == version,
                 ReportReview.decision == DECISION_APPROVE,
+            )
+            .count()
+        )
+    finally:
+        session.close()
+
+
+def get_reject_count(report_id, version):
+    """Returns the number of distinct rejects for a report at a specific version."""
+    session = Session()
+    try:
+        return (
+            session.query(ReportReview)
+            .filter(
+                ReportReview.report_id == report_id,
+                ReportReview.version == version,
+                ReportReview.decision == DECISION_REJECT,
             )
             .count()
         )
