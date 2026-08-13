@@ -1,18 +1,29 @@
-Fix fellow/report images crashing with 500 in production
+Restructure Reports page into 3 sections; two-page peer review with
+accumulating disapprovals
 
-Root cause: uploaded file paths (fellow photos, report files/images,
-documents) were stored as absolute, machine-specific paths baked in
-by whoever ran the upload locally - unusable on the deployed server,
-which crashed serving them with a raw FileNotFoundError instead of a
-handled 404.
+Reports page:
+- Split into Browse / Publish / Peer Review sections with cascading
+  reveal, matching the home page
+- Report browsing is now a toggle instead of always-rendered
+- Upload button replaced by a link to a new standalone /reports/publish
+  page, which self-guards on auth + publisher access
+- Reveal.jsx's cascade animation extended from home-only to the
+  reports and peer review pages
 
-- storage.py: LocalStorage now stores/resolves paths relative to its
-  own base_dir instead of absolute ones, and get_file_response()
-  catches a missing file and returns a clean 404 instead of crashing
-- Add migrate_absolute_storage_paths.py: one-off, idempotent script
-  to repair existing bad rows (fellows/reports/documents) wherever
-  the underlying file can still be found
-- app.yaml + docs/DEPLOYMENT.md: document and configure
-  STORAGE_BACKEND=s3 (DigitalOcean Spaces) for production, since
-  local disk doesn't survive App Platform's per-deploy container
-  rebuilds
+Peer review:
+- Split /peer-review into two pages: the shared "Awaiting Review"
+  queue (/peer-review) and a personal "My Submissions" page
+  (/peer-review/mine), both self-guarded like /reports/publish instead
+  of redirecting via ProtectedRoute
+- Server: rejects now accumulate like approvals instead of an instant
+  single-reject transition; REQUIRED_REJECTIONS = 2 distinct rejects
+  (or 1 admin reject) pulls a report from every queue for good
+  (review_status = rejected), same instant-decision treatment admins
+  already got on approve
+- Added TYPE_REPORT_REJECTED notification, routed to the uploader's
+  personal submissions page
+- Extracted shared PeerReviewPanel (review controls + comment history)
+  and PublisherAccessGate (login/access-level messaging) components
+- Profile.jsx: notification click-through and Publications "see why"
+  links now point at /peer-review/mine; added a "Not Approved" badge
+  for the new rejected status

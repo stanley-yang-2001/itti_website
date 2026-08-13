@@ -1838,8 +1838,9 @@ def review_report_route(report_id):
     Body: { "decision": "approve" | "reject", "comment": "..." }
     comment is required when decision is "reject", optional otherwise.
     All the actual rules (can't review your own report, report must be
-    pending_review, REQUIRED_APPROVALS-th approval publishes, an
-    admin's approve publishes on its own) are enforced in
+    pending_review, REQUIRED_APPROVALS-th approval publishes,
+    REQUIRED_REJECTIONS-th reject removes it from review, an admin's
+    decision is decisive on its own either way) are enforced in
     models/report_review.record_review() - this route just translates
     its ReviewError into a 400 and tells it whether this reviewer is
     an admin.

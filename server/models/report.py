@@ -36,8 +36,22 @@ STATUS_HIDDEN = 0
 REVIEW_STATUS_PENDING = "pending_review"
 REVIEW_STATUS_CHANGES_REQUESTED = "changes_requested"
 REVIEW_STATUS_PUBLISHED = "published"
+# Terminal state reached once REQUIRED_REJECTIONS distinct reviewers
+# reject the current version (or a single admin rejects) - see
+# record_review() in report_review.py. Distinct from
+# REVIEW_STATUS_CHANGES_REQUESTED (legacy: a single reject sending a
+# report back for resubmission) - REJECTED reports are pulled from
+# every peer-review queue for good and are not resubmittable; the
+# uploader can still see them (with reviewer comments) and delete them
+# from their own Publications/personal peer-review list.
+REVIEW_STATUS_REJECTED = "rejected"
 
 REQUIRED_APPROVALS = 3
+# Distinct reject decisions at the current version that pull a report
+# from review entirely (see record_review()). Deliberately lower than
+# REQUIRED_APPROVALS - publishing something is meant to be harder than
+# stopping it.
+REQUIRED_REJECTIONS = 2
 
 # The 10 fixed sections the public Reports page is organized into. Order
 # here is the display/navigation order (not alphabetical) - it's also

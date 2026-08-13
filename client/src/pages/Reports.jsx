@@ -273,9 +273,9 @@ export default function Reports() {
             <div className="reports-feature-text">
               <h2 className="reports-feature-heading">Peer review</h2>
               <p className="reports-feature-desc">
-                Review reports submitted by other publishers before they go public. Two approvals (or one from an
-                admin) publish a report; this also requires publisher access, with the same sign-in and access
-                prompts as publishing.
+                Review reports submitted by other publishers before they go public. Three approvals (or one from an
+                admin) publish a report, and two disapprovals remove it; this also requires publisher access, with
+                the same sign-in and access prompts as publishing.
               </p>
             </div>
             <Link className="btn btn-primary" to="/peer-review">

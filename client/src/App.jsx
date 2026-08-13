@@ -40,6 +40,7 @@ const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy.jsx'));
 const Profile = lazy(() => import('./pages/Profile.jsx'));
 const Settings = lazy(() => import('./pages/Settings.jsx'));
 const PeerReview = lazy(() => import('./pages/PeerReview.jsx'));
+const PeerReviewMine = lazy(() => import('./pages/PeerReviewMine.jsx'));
 
 /**
  * Gives routed page content a gentle fade-in on navigation instead of
@@ -106,14 +107,11 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/peer-review"
-          element={
-            <ProtectedRoute requireRole="publisher">
-              <PeerReview />
-            </ProtectedRoute>
-          }
-        />
+        {/* Not wrapped in ProtectedRoute - PeerReview.jsx does its own
+            auth/publisher-access check via PublisherAccessGate, same
+            reasoning as /reports/publish above. */}
+        <Route path="/peer-review" element={<PeerReview />} />
+        <Route path="/peer-review/mine" element={<PeerReviewMine />} />
         <Route
           path="/settings"
           element={

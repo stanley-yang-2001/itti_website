@@ -29,6 +29,7 @@ from pagination import DEFAULT_PAGE_SIZE, clamp_limit, clamp_offset
 # producer can introduce a new one without a migration.
 TYPE_REPORT_PUBLISHED = "report_published"
 TYPE_REPORT_CHANGES_REQUESTED = "report_changes_requested"
+TYPE_REPORT_REJECTED = "report_rejected"
 
 
 class Notification(Base):
