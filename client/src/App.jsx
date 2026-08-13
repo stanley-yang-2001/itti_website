@@ -30,6 +30,7 @@ const ForgotPassword = lazy(() => import('./pages/ForgotPassword.jsx'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword.jsx'));
 const Unavailable = lazy(() => import('./pages/Unavailable.jsx'));
 const Publish = lazy(() => import('./pages/Publish.jsx'));
+const ReportPublish = lazy(() => import('./pages/ReportPublish.jsx'));
 const PublishGlobeData = lazy(() => import('./pages/PublishGlobeData.jsx'));
 const Docs = lazy(() => import('./pages/Docs.jsx'));
 const Donate = lazy(() => import('./pages/Donate.jsx'));
@@ -128,6 +129,10 @@ export default function App() {
             gate (@roles_required("publisher", "admin") on
             POST /api/globe-data/upload). */}
         <Route path="/publish/globe-data" element={<PublishGlobeData />} />
+        {/* Also not wrapped in ProtectedRoute, for the same reason - see
+            the comment atop ReportPublish.jsx. Linked from the "Publish
+            a Report" section of /reports. */}
+        <Route path="/reports/publish" element={<ReportPublish />} />
       </Routes>
       </Suspense>
       </PageTransition>

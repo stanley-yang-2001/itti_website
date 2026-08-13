@@ -710,8 +710,24 @@ def forgot_password():
     if user is not None:
         raw_token = create_reset_token(user.id)
         reset_link = f"{CLIENT_ORIGIN}/reset-password?token={raw_token}"
-        send_password_reset_email(email_backend, user.email, reset_link)
-        logger.info("password reset requested user_id=%s", user.id)
+        try:
+            send_password_reset_email(email_backend, user.email, reset_link)
+            logger.info("password reset requested user_id=%s", user.id)
+        except Exception:
+            # Deliberately NOT re-raised. Letting this propagate would hit
+            # the generic @app.errorhandler(Exception) below and return a
+            # 500 - which, combined with the 200 this route returns when
+            # the email *isn't* registered (no send attempted at all),
+            # would turn "does this request 500 or not" into exactly the
+            # account-existence oracle this route's generic response was
+            # designed to prevent. A broken SMTP config (bad credentials,
+            # an unverified Brevo sender, a transient outage) should look
+            # identical from the outside to a correctly-working one that
+            # just happened to email someone who doesn't recognize the
+            # request - a send failure is still a real problem worth
+            # fixing, just not one the requester should see or be able
+            # to distinguish from "nothing was wrong to begin with."
+            logger.exception("password reset email failed to send user_id=%s", user.id)
 
     return generic_response
 
@@ -2395,10 +2411,26 @@ def _finalize_enrollment_from_payment_intent(stripe_payment_intent):
         payment_method_types=payment_method_types,
     )
     if enrollment and just_finalized:
-        try:
-            send_enrollment_confirmation_email(email_backend, enrollment, enrollment.user.email, enrollment.user.name or enrollment.user.email)
-        except Exception:
-            logger.exception("Failed to send enrollment confirmation email for enrollment_id=%s", enrollment.id)
+        # enrollment.user (a lazy-loaded relationship) is not usable here -
+        # finalize_succeeded_enrollment() above already closed the session
+        # that loaded it, so accessing enrollment.user would raise
+        # DetachedInstanceError. Fetch the user with its own fresh,
+        # short-lived lookup instead, the same way batched/individual
+        # author-name lookups elsewhere in this codebase avoid touching a
+        # relationship on a detached instance.
+        recipient = get_user(enrollment.user_id)
+        if recipient is None:
+            logger.warning(
+                "Enrollment %s finalized but user_id=%s no longer exists - skipping confirmation email",
+                enrollment.id, enrollment.user_id,
+            )
+        else:
+            try:
+                send_enrollment_confirmation_email(
+                    email_backend, enrollment, recipient.email, recipient.name or recipient.email,
+                )
+            except Exception:
+                logger.exception("Failed to send enrollment confirmation email for enrollment_id=%s", enrollment.id)
     return enrollment
 
 

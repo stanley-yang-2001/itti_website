@@ -1,143 +1,18 @@
-Reduce server/CDN load (compression, HTTP caching, N+1 fix, code-
-splitting, image optimization) and fix Report panel image
-cropping/upload limits (description char counter, 2.5MB combined
-file+image limit)
+Fix fellow/report images crashing with 500 in production
 
-Pulled and confirmed a clean fast-forward onto origin/database
-(503793f) before finalizing - the one new upstream commit (CI/
-Playwright fix, a country_profiles.json content update, source docx
-housekeeping) didn't touch any file below.
+Root cause: uploaded file paths (fellow photos, report files/images,
+documents) were stored as absolute, machine-specific paths baked in
+by whoever ran the upload locally - unusable on the deployed server,
+which crashed serving them with a raw FileNotFoundError instead of a
+handled 404.
 
-FILES CHANGED/ADDED
-====================
-
-server/
-├── app.py                        [M] Flask-Compress wiring, 4 cached
-│                                      public endpoints, combined
-│                                      report upload size check
-├── requirements.txt              [M] + Flask-Compress==1.24
-├── validation.py                 [M] report description limit
-│                                      2000 -> 200 chars
-└── models/
-    └── report_review.py          [M] batched reviewer-name lookup
-                                       (fixes N+1 query)
-
-client/
-├── public/
-│   ├── itti-logo.png             [M] 412KB -> 46KB (optimized)
-│   ├── images/
-│   │   └── nigeria-stressor-severity-map.png
-│   │                             [M] 2.1MB -> 665KB (optimized)
-│   └── certifications/
-│       ├── cctnhs.jpg            [M] \
-│       ├── ceopta.jpg            [M]  \
-│       ├── cgpcrp.jpg            [M]   \
-│       ├── cgtba.jpg             [M]    \  all 11 resized +
-│       ├── cgtea.jpg             [M]    /  recompressed,
-│       ├── cticp.jpg             [M]   /   2.4MB -> 1.1MB total
-│       ├── ctisp.jpg             [M]  /
-│       ├── ctodaf.jpg            [M] /
-│       ├── cwmhrp.jpg            [M]
-│       ├── eftlit.jpg            [M]
-│       └── gtbsf.jpg             [M]
-└── src/
-    ├── App.jsx                   [M] React.lazy() code-splitting for
-    │                                  21 of 22 pages
-    ├── components/
-    │   └── RouteLoading.jsx      [A] new - Suspense fallback
-    ├── styles/
-    │   ├── App.css                [M] + .route-loading spinner CSS
-    │   └── Reports.css            [M] image object-fit cover->contain,
-    │                                   char-count/size-total CSS
-    ├── utils/
-    │   └── formValidation.js      [M] description limit 200,
-    │                                   + checkReportCombinedSize()
-    └── pages/
-        ├── ReportUploadForm.jsx   [M] char counter, size hints/total
-        └── ResubmitReportForm.jsx [M] same, for the resubmit flow
-
-[M] = modified, [A] = added. 18 files total (17 modified, 1 new).
-
-====================
-CHANGE DETAILS
-====================
-
-Server load reduction:
-
-- Flask-Compress: gzips every JSON response above 500 bytes for any
-  client that accepts it - no frontend change needed. Wired in before
-  set_security_headers is registered so compression runs as the true
-  last step (Flask runs after_request hooks in reverse registration
-  order), after headers/ETag are computed on the real response.
-- Real HTTP caching (public, ETag, conditional-GET via a new
-  cacheable_json_response() helper) on the four hottest, genuinely
-  public, non-personalized GET endpoints: /api/world-data,
-  /api/countries(/<code>), /api/country-profiles(/<code>). Required
-  changing Cache-Control: no-store from an unconditional overwrite to
-  a safe default via setdefault() - every other route, including
-  auth/notification endpoints, is unaffected and still gets no-store.
-- Fixed a real N+1 query bug: GET /api/reports/<id>/reviews was
-  opening a new DB session per review row to look up the reviewer's
-  name. reviews_to_public_dicts() batches that into one query.
-- React.lazy() code-splitting for 21 of 22 pages (Home stays eager).
-  Previously zero code-splitting existed anywhere - visiting the
-  homepage meant downloading the entire app regardless of which page
-  someone came for.
-- Image optimization: logo/map pngquant-compressed, certification
-  images resized to match their actual ~900px display width and
-  recompressed. All verified visually - no visible quality loss.
-- Reconciled twice against upstream while in flight (a homepage-icons/
-  Facebook-link commit, then a large peer-review-notifications/
-  report-resubmission feature touching the same files) - reapplied
-  each piece individually rather than force-merging, confirmed nothing
-  from either side was lost.
-
-Report panel image + upload limits:
-
-- Fixed image cropping: .report-card-image used object-fit: cover
-  with a fixed height, cropping any image whose aspect ratio didn't
-  match. Switched to object-fit: contain - every image now displays
-  in full, letterboxed rather than cut off. Verified visually with a
-  real portrait test image rendered through the actual CSS.
-- Added upload guidance (1200x630px, landscape) to both
-  ReportUploadForm.jsx and ResubmitReportForm.jsx - found and fixed
-  both, since the newer resubmit flow has its own separate cover-image
-  field with the same gap.
-- Description limited to 200 characters (was 2000) - server
-  (validation.py) and client (formValidation.js) both updated and
-  verified matching. Live "142/200" character counter next to the
-  Description label in both upload forms, turning red at the limit.
-- New 2.5MB combined limit for report file + cover image together,
-  enforced server-side in a restructured _save_report_upload() that
-  checks the combined total BEFORE writing anything to storage (previously
-  the file was saved, then the image checked, then deleted on
-  failure). A new report-specific MAX_REPORT_COMBINED_BYTES constant
-  was added rather than changing the existing MAX_UPLOAD_BYTES, which
-  is shared with an unrelated upload endpoint. Live "X.XX MB of a
-  2.5 MB combined limit" indicator on both forms, updating as either
-  file is selected, red when over, plus client-side validation so
-  users find out before submitting.
-
-====================
-VERIFICATION
-====================
-
-Backend: imports cleanly; a single test-client pass confirms gzip +
-caching + conditional-GET (304s) all work together, auth/notification
-endpoints correctly stay no-store/uncompressed, the batched reviews
-helper is reached, description length is enforced (200 accepted, 201
-rejected), and the combined-size check rejects an oversized (3.0MB)
-file+image combo with a clear message while an in-bounds combo
-correctly passes through to the next validation step.
-
-Frontend: fresh `npm install && npm run build` (full pipeline incl.
-postbuild prerender) completes cleanly after the final pull, all 11
-routes still prerender correctly with the optimized images present in
-dist/. Character counter and combined-size indicator visually verified
-via headless-browser screenshots in a layout faithfully matching the
-real form.
-
-Total measured resource reduction (see prior round's detailed
-breakdown): ~86% smaller on the 4 compressed+cached API endpoints,
-~48% smaller JS bundle for a homepage visit, ~64% smaller across the
-three optimized image assets (3.19MB saved).
+- storage.py: LocalStorage now stores/resolves paths relative to its
+  own base_dir instead of absolute ones, and get_file_response()
+  catches a missing file and returns a clean 404 instead of crashing
+- Add migrate_absolute_storage_paths.py: one-off, idempotent script
+  to repair existing bad rows (fellows/reports/documents) wherever
+  the underlying file can still be found
+- app.yaml + docs/DEPLOYMENT.md: document and configure
+  STORAGE_BACKEND=s3 (DigitalOcean Spaces) for production, since
+  local disk doesn't survive App Platform's per-deploy container
+  rebuilds

@@ -29,21 +29,24 @@ function mergeRefs(...refs) {
  * which is the usual expectation for this kind of effect and avoids
  * content flickering in and out while scrolling up and down.
  *
- * Scoped to the home page only ("/") - every <Reveal> elsewhere in the
- * app (there are ~24 pages using it) renders its child immediately,
- * fully visible, with no observer and no transition. Rather than
- * stripping <Reveal> out of every one of those call sites, this one
- * component just no-ops itself off the home page, so the cascading
- * scroll-reveal effect is Home-only without touching the other pages.
+ * Scoped to an allowlist of pages ("/" and the Reports page/its publish
+ * sub-page) - every <Reveal> elsewhere in the app (there are ~24 pages
+ * using it) renders its child immediately, fully visible, with no
+ * observer and no transition. Rather than stripping <Reveal> out of
+ * every one of those call sites, this one component just no-ops itself
+ * off the other pages, so the cascading scroll-reveal effect only
+ * applies where it's been explicitly opted into.
  */
+const CASCADE_PATHS = ['/', '/reports', '/reports/publish'];
+
 export default function Reveal({ children, delay = 0 }) {
   const ownRef = useRef(null);
   const { pathname } = useLocation();
-  const isHome = pathname === '/';
-  const [visible, setVisible] = useState(!isHome);
+  const cascadeEnabled = CASCADE_PATHS.includes(pathname);
+  const [visible, setVisible] = useState(!cascadeEnabled);
 
   useEffect(() => {
-    if (!isHome) {
+    if (!cascadeEnabled) {
       setVisible(true);
       return undefined;
     }
@@ -69,13 +72,13 @@ export default function Reveal({ children, delay = 0 }) {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [isHome]);
+  }, [cascadeEnabled]);
 
   const child = React.Children.only(children);
-  const mergedClassName = isHome
+  const mergedClassName = cascadeEnabled
     ? [child.props.className, 'reveal-on-scroll', visible ? 'is-visible' : ''].filter(Boolean).join(' ')
     : child.props.className;
-  const mergedStyle = isHome ? { ...child.props.style, transitionDelay: `${delay}ms` } : child.props.style;
+  const mergedStyle = cascadeEnabled ? { ...child.props.style, transitionDelay: `${delay}ms` } : child.props.style;
 
   return cloneElement(child, {
     ref: mergeRefs(ownRef, child.ref),
