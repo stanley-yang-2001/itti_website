@@ -106,14 +106,14 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/peer-review"
-          element={
-            <ProtectedRoute requireRole="publisher">
-              <PeerReview />
-            </ProtectedRoute>
-          }
-        />
+        {/* Not wrapped in ProtectedRoute on purpose - see the comment atop
+            PeerReview.jsx: a non-publisher/admin (including a signed-out
+            visitor) landing here sees an explanation instead of a silent
+            redirect, mirroring ReportPublish.jsx. Server-side enforcement
+            is the real gate (@roles_required("publisher", "admin") on
+            every /api/reports/pending, /api/reports/<id>/review, etc.
+            route this page calls). */}
+        <Route path="/peer-review" element={<PeerReview />} />
         <Route
           path="/settings"
           element={

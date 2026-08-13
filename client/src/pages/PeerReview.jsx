@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import ReportCard from '../components/ReportCard.jsx';
 import ReportViewerModal from '../components/ReportViewerModal.jsx';
 import Reveal from '../components/Reveal.jsx';
+import SEO from '../components/SEO.jsx';
 import '../styles/PeerReview.css';
 
 // Must stay in sync with REQUIRED_APPROVALS in server/models/report.py -
@@ -144,9 +145,14 @@ function ReviewPanel({ report, currentUser, onDecided }) {
 }
 
 /**
- * Peer Review page - reachable by role publisher or admin (see
- * <ProtectedRoute requireRole="publisher"> in App.jsx, which also
- * allows admin). Linked from Profile > Publications.
+ * Peer Review page - reachable by role publisher or admin. Linked from
+ * Profile > Publications. Not wrapped in <ProtectedRoute> in App.jsx
+ * on purpose (mirrors ReportPublish.jsx): a signed-out visitor or a
+ * signed-in non-publisher landing here - whether via that link or a
+ * direct URL - sees an explanation of why they can't use this page,
+ * rather than being silently redirected elsewhere. Server-side
+ * enforcement is the real gate (@roles_required("publisher", "admin")
+ * on every review-queue/review-decision route this page calls).
  *
  * Two sections:
  *   - Awaiting Review (GET /api/reports/pending): the actual review
@@ -165,7 +171,7 @@ function ReviewPanel({ report, currentUser, onDecided }) {
  * underneath.
  */
 export default function PeerReview() {
-  const { user } = useAuth();
+  const { user, isAuthenticated, isPublisher, loading: authLoading } = useAuth();
   const [searchParams] = useSearchParams();
   const highlightId = searchParams.get('highlight');
   const [pending, setPending] = useState(null);
@@ -211,7 +217,41 @@ export default function PeerReview() {
     loadChangesRequested();
   }
 
-  if (!user) return null;
+  if (authLoading) return null;
+
+  if (!isAuthenticated) {
+    return (
+      <div className="peer-review-page">
+        <SEO path="/peer-review" title="Peer Review" noindex />
+        <div className="peer-review-gate">
+          <h1>Log in to review reports</h1>
+          <p>You need an account with publisher access to review reports awaiting approval.</p>
+          <Link className="btn btn-primary" to="/login" state={{ from: { pathname: '/peer-review' } }}>
+            Log in
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isPublisher) {
+    return (
+      <div className="peer-review-page">
+        <SEO path="/peer-review" title="Peer Review" noindex />
+        <div className="peer-review-gate">
+          <h1>You don't have access to this page</h1>
+          <p>
+            Reviewing reports is limited to accounts with publisher access. Your current account doesn't have
+            that access level yet.
+          </p>
+          <p>
+            To request an upgrade, contact{' '}
+            <a href="mailto:support@ittiglobal.org">support@ittiglobal.org</a>.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="peer-review-page">
