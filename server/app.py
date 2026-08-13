@@ -78,12 +78,16 @@ from models.report import (
 from models.report_review import record_review, get_reviews_for_report, reviews_to_public_dicts, ReviewError
 from models.notification import (
     get_notifications_for_user, get_unread_count, mark_notification_read, mark_all_read,
+    mark_notifications_read, delete_notifications,
 )
 from models.favorite_report import (
     add_favorite_report, remove_favorite_report, get_favorite_report_ids, get_favorite_reports_by_user,
 )
 from models.user_event import create_user_event, get_events_by_user, CRUDAction
 from models.password_reset_token import create_reset_token, get_valid_token, mark_token_used
+from models.password_reset_code import (
+    create_reset_code, verify_code, invalidate_active_codes, MAX_VERIFY_ATTEMPTS,
+)
 from models.saved_chart import (
     create_saved_chart, get_saved_chart, get_saved_charts_by_user, delete_saved_chart,
 )
@@ -105,7 +109,7 @@ from models.fellow import (
 from storage import get_storage
 import image_processing
 from email_backend import (
-    get_email_backend, send_password_reset_email, send_donation_confirmation_email,
+    get_email_backend, send_password_reset_code_email, send_donation_confirmation_email,
     send_enrollment_confirmation_email,
 )
 import validation
@@ -568,6 +572,7 @@ def auth_google():
     # or email) would otherwise be invisible here, and create_user() below
     # would then crash on the unique google_sub/email constraint instead of
     # reactivating the existing row.
+    linked_existing_account = False
     user = get_user_by_google_sub(google_sub, include_hidden=True)
     if user is None:
         # An account with this email may already exist from an email/password
@@ -575,6 +580,14 @@ def auth_google():
         # email is unique and it's the same person.
         user = get_user_by_email(email, include_hidden=True)
         if user is not None:
+            # Only "linking" if this account didn't already have Google
+            # attached - a pure reactivation of an already-Google-linked
+            # soft-deleted account shouldn't say "your account was updated
+            # with the existing account," since nothing is actually being
+            # merged here (see the has_password check on the frontend for
+            # why this specifically means "was this a password account they
+            # hadn't used Google with before").
+            linked_existing_account = user.google_sub is None and user.password_hash is not None
             update_user(user.id, google_sub=google_sub, name=user.name or name, picture_url=user.picture_url or picture_url)
         else:
             user = create_user(google_sub=google_sub, email=email, name=name, picture_url=picture_url)
@@ -592,8 +605,18 @@ def auth_google():
     session["user_id"] = user.id
     session.permanent = True
 
+    if linked_existing_account:
+        logger.info("google login linked to existing password account user_id=%s", user.id)
+
     logger.info("google login user_id=%s", user.id)
-    return jsonify(user.to_public_dict())
+    response = user.to_public_dict()
+    # Sibling key, not folded into to_public_dict() itself - that method's
+    # shape is shared by every auth/profile endpoint (login, signup,
+    # /auth/me, update-profile, etc.), and this flag is only meaningful
+    # for this one response, describing what just happened in this
+    # request rather than being a persistent property of the user.
+    response["linked_existing_account"] = linked_existing_account
+    return jsonify(response)
 
 
 @app.post("/api/auth/signup")
@@ -685,22 +708,52 @@ def auth_login():
     return jsonify(user.to_public_dict())
 
 
+def _send_reset_code_or_none(user):
+    """
+    Shared by forgot_password and resend_reset_code: creates+sends a
+    fresh code for a user, swallowing send failures the same way (see
+    the comment in forgot_password below for why). Returns True if a
+    code was actually created (even if the email send itself failed),
+    False if create_reset_code() refused due to the resend cooldown -
+    callers use that to distinguish "silently did nothing" from "hit
+    the resend-too-fast guard," which resend_reset_code needs to expose
+    to the user (it's not an email-enumeration risk, since the caller
+    already has an active session en route to entering a code).
+    """
+    try:
+        raw_code = create_reset_code(user.id)
+    except RuntimeError:
+        return False
+
+    try:
+        send_password_reset_code_email(email_backend, user.email, raw_code)
+        logger.info("password reset code sent user_id=%s", user.id)
+    except Exception:
+        # Deliberately NOT re-raised - see forgot_password()'s docstring
+        # for why a send failure here must look identical, from the
+        # outside, to "nothing was wrong to begin with."
+        logger.exception("password reset code email failed to send user_id=%s", user.id)
+    return True
+
+
 @app.post("/api/auth/forgot-password")
 @limiter.limit("5 per hour")
 def forgot_password():
     """
     Body: { "email": "..." }
-    Always returns the same generic message regardless of whether the
+    Always returns the same generic response regardless of whether the
     email is registered - this deliberately doesn't reveal which emails
-    have accounts. If the account exists, a reset link is emailed via
-    the configured backend (console-logged in dev by default, see
-    email_backend.py).
+    have accounts. If the account exists, a 6-digit verification code is
+    emailed via the configured backend (console-logged in dev by
+    default, see email_backend.py). The frontend always advances to the
+    "enter your code" screen next, since revealing "no code was sent"
+    would itself leak account existence.
     """
     body = request.get_json(silent=True) or {}
     email = (body.get("email") or "").strip().lower()
 
     generic_response = jsonify({
-        "message": "If an account exists for that email, a password reset link has been sent."
+        "message": "If an account exists for that email, a verification code has been sent."
     })
 
     if not email or not EMAIL_RE.match(email):
@@ -708,28 +761,125 @@ def forgot_password():
 
     user = get_user_by_email(email)
     if user is not None:
-        raw_token = create_reset_token(user.id)
-        reset_link = f"{CLIENT_ORIGIN}/reset-password?token={raw_token}"
-        try:
-            send_password_reset_email(email_backend, user.email, reset_link)
-            logger.info("password reset requested user_id=%s", user.id)
-        except Exception:
-            # Deliberately NOT re-raised. Letting this propagate would hit
-            # the generic @app.errorhandler(Exception) below and return a
-            # 500 - which, combined with the 200 this route returns when
-            # the email *isn't* registered (no send attempted at all),
-            # would turn "does this request 500 or not" into exactly the
-            # account-existence oracle this route's generic response was
-            # designed to prevent. A broken SMTP config (bad credentials,
-            # an unverified Brevo sender, a transient outage) should look
-            # identical from the outside to a correctly-working one that
-            # just happened to email someone who doesn't recognize the
-            # request - a send failure is still a real problem worth
-            # fixing, just not one the requester should see or be able
-            # to distinguish from "nothing was wrong to begin with."
-            logger.exception("password reset email failed to send user_id=%s", user.id)
+        # A broken SMTP config (bad credentials, an unverified Brevo
+        # sender, a transient outage) should look identical from the
+        # outside to a correctly-working one that just happened to email
+        # someone who doesn't recognize the request - a send failure is
+        # still a real problem worth fixing (logged above), just not one
+        # the requester should see or be able to distinguish from
+        # "nothing was wrong to begin with." This is also why this
+        # route's own exceptions must never propagate to the generic
+        # @app.errorhandler(Exception) below: that would 500 only when
+        # the email IS registered, which is exactly the account-
+        # existence oracle the generic response is designed to prevent.
+        _send_reset_code_or_none(user)
 
     return generic_response
+
+
+@app.post("/api/auth/forgot-password/resend")
+@limiter.limit("5 per hour")
+def resend_reset_code():
+    """
+    Body: { "email": "..." }
+    Same generic-response shape and email-enumeration protection as
+    forgot-password above (a resend request is just another code
+    request) - but additionally invalidates whatever code was
+    outstanding, per create_reset_code()'s own invalidate-previous
+    behavior, and surfaces the resend cooldown as a distinct message
+    when it's hit, since "you just requested one, hang on" is useful
+    feedback that doesn't leak whether the account exists (the same
+    generic wording is shown either way if the email isn't registered).
+    """
+    body = request.get_json(silent=True) or {}
+    email = (body.get("email") or "").strip().lower()
+
+    generic_response = jsonify({
+        "message": "If an account exists for that email, a new verification code has been sent."
+    })
+
+    if not email or not EMAIL_RE.match(email):
+        return generic_response
+
+    user = get_user_by_email(email)
+    if user is not None:
+        sent = _send_reset_code_or_none(user)
+        if not sent:
+            return jsonify({
+                "message": "A code was already sent recently - please wait a moment before requesting another."
+            })
+
+    return generic_response
+
+
+@app.post("/api/auth/forgot-password/back")
+def forgot_password_back():
+    """
+    Body: { "email": "..." }
+    Called when the user backs out of the "enter your code" screen to
+    re-enter their email (e.g. they mistyped it). Invalidates any
+    outstanding code for that email so it can't still be used after the
+    user has indicated it's the wrong address. No-ops silently (same
+    generic response) if the email isn't registered - nothing to
+    invalidate, and this must not become an email-enumeration oracle
+    either.
+    """
+    body = request.get_json(silent=True) or {}
+    email = (body.get("email") or "").strip().lower()
+
+    if email and EMAIL_RE.match(email):
+        user = get_user_by_email(email)
+        if user is not None:
+            invalidate_active_codes(user.id)
+
+    return jsonify({"message": "ok"})
+
+
+@app.post("/api/auth/forgot-password/verify")
+@limiter.limit("10 per hour")
+def verify_reset_code():
+    """
+    Body: { "email": "...", "code": "..." }
+    Checks a 6-digit code against the most recent one issued for that
+    email. On success, logs the user in immediately (same as the old
+    link-based reset_password did) - entering the correct code proves
+    account ownership just as clicking a unique emailed link did, and
+    this lets the frontend land directly on the Profile page's Settings
+    tab to actually change the password, fully authenticated, rather
+    than needing a separate one-off "set new password" form/token.
+    """
+    body = request.get_json(silent=True) or {}
+    email = (body.get("email") or "").strip().lower()
+    code = (body.get("code") or "").strip()
+
+    generic_invalid = jsonify({"error": "invalid_email_or_code", "description": "That code doesn't match."})
+
+    if not email or not EMAIL_RE.match(email) or not code:
+        return generic_invalid, 400
+
+    user = get_user_by_email(email)
+    if user is None:
+        # Same wording as a real mismatch below - doesn't reveal whether
+        # the email itself is registered.
+        return generic_invalid, 400
+
+    result = verify_code(user.id, code)
+
+    if result == "ok":
+        session.clear()
+        session["user_id"] = user.id
+        session.permanent = True
+        logger.info("password reset code verified user_id=%s", user.id)
+        return jsonify(user.to_public_dict())
+
+    if result == "too_many_attempts":
+        abort(429, description="Too many incorrect attempts. Please request a new code.")
+
+    if result == "expired":
+        abort(400, description="This code has expired. Please request a new one.")
+
+    # "mismatch"
+    abort(400, description="That code doesn't match. Please check it and try again.")
 
 
 @app.post("/api/auth/reset-password")
@@ -737,11 +887,13 @@ def forgot_password():
 def reset_password():
     """
     Body: { "token": "...", "password": "..." }
-    Redeems a reset token (single-use, expires after 1 hour - see
-    models/password_reset_token.py) and sets a new password. Works even
-    for accounts that only ever signed in with Google, since it's just
-    setting password_hash - they'd gain the ability to also log in with
-    a password afterward.
+    Legacy link-based redemption path, kept only so any reset link
+    already emailed before this deploy (1-hour TTL - see
+    models/password_reset_token.py) still works rather than 400ing
+    outright. The forgot-password flow itself no longer generates these
+    tokens or links (see forgot_password() above, which now sends a
+    6-digit code instead) - new requests go through
+    /api/auth/forgot-password/verify.
     """
     body = request.get_json(silent=True) or {}
     token = body.get("token") or ""
@@ -1838,8 +1990,9 @@ def review_report_route(report_id):
     Body: { "decision": "approve" | "reject", "comment": "..." }
     comment is required when decision is "reject", optional otherwise.
     All the actual rules (can't review your own report, report must be
-    pending_review, REQUIRED_APPROVALS-th approval publishes, an
-    admin's approve publishes on its own) are enforced in
+    pending_review, REQUIRED_APPROVALS-th approval publishes,
+    REQUIRED_REJECTIONS-th reject removes it from review, an admin's
+    decision is decisive on its own either way) are enforced in
     models/report_review.record_review() - this route just translates
     its ReviewError into a 400 and tells it whether this reviewer is
     an admin.
@@ -1912,6 +2065,41 @@ def mark_all_notifications_read_route():
     user = get_current_user()
     updated = mark_all_read(user.id)
     return jsonify({"updated": updated})
+
+
+@app.post("/api/notifications/read")
+@login_required
+def mark_selected_notifications_read_route():
+    """
+    Marks a client-selected set of notifications read - body:
+    {"ids": [1, 2, 3]}. Backs the Notifications tab's checkbox
+    selection + "Mark as read" action, as distinct from read-all above
+    (everything) and the single-notification route (one, via a click).
+    """
+    user = get_current_user()
+    body = request.get_json(silent=True) or {}
+    ids = body.get("ids")
+    if not isinstance(ids, list) or not all(isinstance(i, int) for i in ids):
+        abort(400, description="ids must be a list of notification ids")
+    updated = mark_notifications_read(ids, user.id)
+    return jsonify({"updated": updated})
+
+
+@app.post("/api/notifications/delete")
+@login_required
+def delete_selected_notifications_route():
+    """
+    Deletes a client-selected set of notifications - body:
+    {"ids": [1, 2, 3]}. Backs the Notifications tab's checkbox
+    selection + "Delete" action.
+    """
+    user = get_current_user()
+    body = request.get_json(silent=True) or {}
+    ids = body.get("ids")
+    if not isinstance(ids, list) or not all(isinstance(i, int) for i in ids):
+        abort(400, description="ids must be a list of notification ids")
+    deleted = delete_notifications(ids, user.id)
+    return jsonify({"deleted": deleted})
 
 
 @app.get("/api/reports/<int:report_id>/reviews")

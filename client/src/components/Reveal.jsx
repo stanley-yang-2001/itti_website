@@ -37,7 +37,7 @@ function mergeRefs(...refs) {
  * off the other pages, so the cascading scroll-reveal effect only
  * applies where it's been explicitly opted into.
  */
-const CASCADE_PATHS = ['/', '/reports', '/reports/publish'];
+const CASCADE_PATHS = ['/', '/reports', '/reports/publish', '/peer-review', '/peer-review/mine'];
 
 export default function Reveal({ children, delay = 0 }) {
   const ownRef = useRef(null);

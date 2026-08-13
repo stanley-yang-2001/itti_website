@@ -185,6 +185,39 @@
   color: #C0392B;
 }
 
+.settings-password-form {
+  gap: 20px;
+}
+.settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+.settings-field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.settings-field-hint {
+  font-size: 12px;
+}
+.settings-field-hint--match {
+  color: #1E8449;
+}
+.settings-field-hint--mismatch {
+  color: #C0392B;
+}
+.settings-reset-banner {
+  margin: 0 0 16px 0;
+  padding: 10px 12px;
+  background: rgba(30, 132, 73, 0.08);
+  border: 1px solid rgba(30, 132, 73, 0.3);
+  border-radius: 6px;
+}
+
 .settings-section--danger {
   border-color: rgba(220, 90, 90, 0.3);
 }
