@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { checkPasswordsMatch } from '../utils/formValidation.js';
 import Reveal from './Reveal.jsx';
 import '../styles/Settings.css';
 
@@ -33,6 +34,7 @@ function initials(name, email) {
 export default function SettingsPanel() {
   const { user, updateAccount, updatePicture, deleteAccount, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const fileInputRef = useRef(null);
 
   // ---- Profile picture ----
@@ -129,6 +131,15 @@ export default function SettingsPanel() {
     currentPassword.length > 0 &&
     newPassword.length >= 8 &&
     newPassword === confirmPassword;
+
+  // Same live "do these match yet?" feedback as SignUp.jsx/ResetPassword.jsx,
+  // rather than only finding out after submitting.
+  const confirmPasswordHint =
+    confirmPassword.length === 0
+      ? null
+      : checkPasswordsMatch(newPassword, confirmPassword) === null
+      ? { text: 'Passwords match', kind: 'match' }
+      : { text: 'Passwords do not match', kind: 'mismatch' };
 
   async function handlePasswordSubmit(e) {
     e.preventDefault();
@@ -275,29 +286,48 @@ export default function SettingsPanel() {
       <Reveal delay={180}>
         <section className="settings-section">
           <h3>Password</h3>
+          {location.state?.fromReset && (
+            <p className="settings-status settings-status--success settings-reset-banner">
+              Your code was verified. Choose a new password below.
+            </p>
+          )}
           {user.has_password ? (
-            <form onSubmit={handlePasswordSubmit} className="settings-form settings-form--stacked">
-              <input
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                placeholder="Current password"
-                autoComplete="current-password"
-              />
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="New password"
-                autoComplete="new-password"
-              />
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm new password"
-                autoComplete="new-password"
-              />
+            <form onSubmit={handlePasswordSubmit} className="settings-form settings-form--stacked settings-password-form">
+              <label className="settings-field">
+                <span className="settings-field-label">Current password</span>
+                <input
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="Current password"
+                  autoComplete="current-password"
+                />
+              </label>
+              <label className="settings-field">
+                <span className="settings-field-label">New password</span>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="At least 8 characters"
+                  autoComplete="new-password"
+                />
+              </label>
+              <label className="settings-field">
+                <span className="settings-field-label">Confirm new password</span>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Re-enter new password"
+                  autoComplete="new-password"
+                />
+                {confirmPasswordHint && (
+                  <span className={`settings-field-hint settings-field-hint--${confirmPasswordHint.kind}`}>
+                    {confirmPasswordHint.text}
+                  </span>
+                )}
+              </label>
               <button type="submit" className="settings-btn" disabled={!passwordReady || passwordSaving}>
                 {passwordSaving ? 'Saving…' : 'Confirm'}
               </button>

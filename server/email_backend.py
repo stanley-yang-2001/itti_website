@@ -72,15 +72,21 @@ def get_email_backend():
     return ConsoleEmailBackend()
 
 
-def send_password_reset_email(backend, to_email, reset_link):
+def send_password_reset_code_email(backend, to_email, code):
+    """
+    code is the raw 6-digit code (see models/password_reset_code.py) -
+    the user types this into the Verify Reset Code page rather than
+    clicking a link. Sent for both the initial request and every resend.
+    """
     backend.send(
         to=to_email,
-        subject="Reset your ITTI password",
+        subject="Your ITTI password reset code",
         body=(
             "Someone (hopefully you) requested a password reset for your ITTI account.\n\n"
-            f"Reset your password here: {reset_link}\n\n"
-            "This link expires in 1 hour. If you didn't request this, you can safely "
-            "ignore this email - your password will not be changed."
+            f"Your verification code is: {code}\n\n"
+            "Enter this code on the page where you requested the reset. This code "
+            "expires in 10 minutes. If you didn't request this, you can safely ignore "
+            "this email - your password will not be changed."
         ),
     )
 

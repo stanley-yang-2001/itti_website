@@ -28,6 +28,7 @@ const Login = lazy(() => import('./pages/Login.jsx'));
 const Signup = lazy(() => import('./pages/SignUp.jsx'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword.jsx'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword.jsx'));
+const VerifyResetCode = lazy(() => import('./pages/VerifyResetCode.jsx'));
 const Unavailable = lazy(() => import('./pages/Unavailable.jsx'));
 const Publish = lazy(() => import('./pages/Publish.jsx'));
 const ReportPublish = lazy(() => import('./pages/ReportPublish.jsx'));
@@ -87,6 +88,10 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/verify" element={<VerifyResetCode />} />
+        {/* Kept for any reset link already emailed before this deploy
+            (1-hour TTL) - see reset_password()'s docstring in app.py.
+            New requests go through /forgot-password -> /reset-password/verify. */}
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/unavailable" element={<Unavailable />} />
 
