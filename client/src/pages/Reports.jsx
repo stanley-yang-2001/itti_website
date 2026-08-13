@@ -1,9 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import ReportCard from '../components/ReportCard.jsx';
 import ReportViewerModal from '../components/ReportViewerModal.jsx';
-import ReportUploadForm from './ReportUploadForm.jsx';
 import { fetchFavoriteReportIds, favoriteReport, unfavoriteReport } from '../api.js';
 import { REPORT_CATEGORIES } from '../constants/reportCategories.js';
 import Reveal from '../components/Reveal.jsx';
@@ -18,17 +17,17 @@ export default function Reports() {
   const { user, isAuthenticated } = useAuth();
   const [reports, setReports] = useState(null); // null = loading
   const [loadError, setLoadError] = useState(null);
-  const [showUploadForm, setShowUploadForm] = useState(false);
+  const [showBrowser, setShowBrowser] = useState(Boolean(highlightId));
   const [favoriteIds, setFavoriteIds] = useState(new Set());
   const [activeCategory, setActiveCategory] = useState(REPORT_CATEGORIES[0]);
   const [readingReport, setReadingReport] = useState(null);
 
   // Server-side enforcement is @roles_required("publisher", "admin") on
   // POST/DELETE /api/reports - this is only the UX layer that decides
-  // whether to show the button at all. Deliberately checks role
-  // directly rather than AuthContext's isPublisher, since isPublisher
-  // doesn't currently include admin.
-  const canUpload = user?.role === 'publisher' || user?.role === 'admin';
+  // whether to show report-management controls (delete) on a card.
+  // Deliberately checks role directly rather than AuthContext's
+  // isPublisher, since isPublisher doesn't currently include admin.
+  const canManageReports = user?.role === 'publisher' || user?.role === 'admin';
 
   async function loadReports() {
     try {
@@ -130,11 +129,6 @@ export default function Reports() {
     }
   }
 
-  function handleUploaded() {
-    setShowUploadForm(false);
-    loadReports();
-  }
-
   async function handleDelete(reportId) {
     const res = await fetch(`/api/reports/${reportId}`, {
       method: 'DELETE',
@@ -148,6 +142,8 @@ export default function Reports() {
     }
   }
 
+  const totalReports = reports?.length ?? null;
+
   return (
     <div className="reports-page">
       <SEO
@@ -160,84 +156,133 @@ export default function Reports() {
           <div className="reports-header">
             <div>
               <h1 className="display">Reports</h1>
-              <p>Published research reports and field bulletins.</p>
+              <p>Published research reports and field bulletins, and how to take part in producing them.</p>
             </div>
-            {canUpload && !showUploadForm && (
-              <button type="button" className="btn btn-primary" onClick={() => setShowUploadForm(true)}>
-                Upload Report
-              </button>
-            )}
           </div>
         </Reveal>
 
-        {showUploadForm && (
-          <ReportUploadForm onUploaded={handleUploaded} onCancel={() => setShowUploadForm(false)} />
-        )}
-
-        {loadError && <p className="reports-error">{loadError}</p>}
-        {!loadError && reports === null && <p className="reports-status">Loading reports…</p>}
-
-        {!loadError && reports !== null && (
-          <>
-            <nav className="reports-section-nav" aria-label="Report sections">
-              {REPORT_CATEGORIES.map((category) => {
-                const count = reportsByCategory.get(category)?.length || 0;
-                return (
-                  <button
-                    key={category}
-                    type="button"
-                    className={`reports-section-tab${category === activeCategory ? ' is-active' : ''}`}
-                    onClick={() => setActiveCategory(category)}
-                    aria-current={category === activeCategory ? 'true' : undefined}
-                  >
-                    {category}
-                    <span className="reports-section-tab-count">{count}</span>
-                  </button>
-                );
-              })}
-            </nav>
-
-            <div className="reports-section-pager">
-              <button type="button" className="reports-section-pager-btn" onClick={() => goToSection(-1)}>
-                ← Previous section
-              </button>
-              <span className="reports-section-pager-position">
-                Section {activeIndex + 1} of {REPORT_CATEGORIES.length}
-              </span>
-              <button type="button" className="reports-section-pager-btn" onClick={() => goToSection(1)}>
-                Next section →
-              </button>
+        {/* ---------- Section 1: browse ---------- */}
+        <Reveal delay={30}>
+          <section className="reports-feature-section">
+            <div className="reports-feature-text">
+              <h2 className="reports-feature-heading">See the reports</h2>
+              <p className="reports-feature-desc">
+                Browse published research reports and field bulletins across{' '}
+                {REPORT_CATEGORIES.length} sections
+                {totalReports !== null ? `, ${totalReports} report${totalReports === 1 ? '' : 's'} so far` : ''}.
+              </p>
             </div>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => setShowBrowser((v) => !v)}
+              aria-expanded={showBrowser}
+            >
+              {showBrowser ? 'Hide reports' : 'View Reports'}
+            </button>
+          </section>
+        </Reveal>
 
-            <Reveal delay={90} key={activeCategory}>
-              <div>
-                <h3 className="reports-section-heading">{activeCategory}</h3>
-                {activeReports.length === 0 ? (
-                  <p className="reports-status">No reports have been published in this section yet.</p>
-                ) : (
-                  <div className="reports-grid">
-                    {activeReports.map((report) => (
-                      <div
-                        key={report.id}
-                        id={`report-${report.id}`}
-                        className={String(report.id) === highlightId ? 'reports-card-highlight' : undefined}
+        {showBrowser && (
+          <div className="reports-browser">
+            {loadError && <p className="reports-error">{loadError}</p>}
+            {!loadError && reports === null && <p className="reports-status">Loading reports…</p>}
+
+            {!loadError && reports !== null && (
+              <>
+                <nav className="reports-section-nav" aria-label="Report sections">
+                  {REPORT_CATEGORIES.map((category) => {
+                    const count = reportsByCategory.get(category)?.length || 0;
+                    return (
+                      <button
+                        key={category}
+                        type="button"
+                        className={`reports-section-tab${category === activeCategory ? ' is-active' : ''}`}
+                        onClick={() => setActiveCategory(category)}
+                        aria-current={category === activeCategory ? 'true' : undefined}
                       >
-                        <ReportCard
-                          report={report}
-                          canManage={canUpload && (user?.role === 'admin' || user?.id === report.uploaded_by)}
-                          onDelete={handleDelete}
-                          isFavorited={favoriteIds.has(report.id)}
-                          onToggleFavorite={isAuthenticated ? handleToggleFavorite : undefined}
-                          onRead={setReadingReport}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </Reveal>
-          </>
+                        {category}
+                        <span className="reports-section-tab-count">{count}</span>
+                      </button>
+                    );
+                  })}
+                </nav>
+
+                <div className="reports-section-pager">
+                  <button type="button" className="reports-section-pager-btn" onClick={() => goToSection(-1)}>
+                    ← Previous section
+                  </button>
+                  <span className="reports-section-pager-position">
+                    Section {activeIndex + 1} of {REPORT_CATEGORIES.length}
+                  </span>
+                  <button type="button" className="reports-section-pager-btn" onClick={() => goToSection(1)}>
+                    Next section →
+                  </button>
+                </div>
+
+                <div key={activeCategory}>
+                  <h3 className="reports-section-heading">{activeCategory}</h3>
+                  {activeReports.length === 0 ? (
+                    <p className="reports-status">No reports have been published in this section yet.</p>
+                  ) : (
+                    <div className="reports-grid">
+                      {activeReports.map((report) => (
+                        <div
+                          key={report.id}
+                          id={`report-${report.id}`}
+                          className={String(report.id) === highlightId ? 'reports-card-highlight' : undefined}
+                        >
+                          <ReportCard
+                            report={report}
+                            canManage={canManageReports && (user?.role === 'admin' || user?.id === report.uploaded_by)}
+                            onDelete={handleDelete}
+                            isFavorited={favoriteIds.has(report.id)}
+                            onToggleFavorite={isAuthenticated ? handleToggleFavorite : undefined}
+                            onRead={setReadingReport}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
         )}
+
+        {/* ---------- Section 2: publish ---------- */}
+        <Reveal delay={60}>
+          <section className="reports-feature-section">
+            <div className="reports-feature-text">
+              <h2 className="reports-feature-heading">Publish a report</h2>
+              <p className="reports-feature-desc">
+                Upload your own research, briefs, or bulletins for peer review. Publisher access is required —
+                logged-out visitors will be asked to log in, and accounts without publisher access will see how
+                to request it.
+              </p>
+            </div>
+            <Link className="btn btn-primary" to="/reports/publish">
+              Publish a Report
+            </Link>
+          </section>
+        </Reveal>
+
+        {/* ---------- Section 3: peer review ---------- */}
+        <Reveal delay={90}>
+          <section className="reports-feature-section">
+            <div className="reports-feature-text">
+              <h2 className="reports-feature-heading">Peer review</h2>
+              <p className="reports-feature-desc">
+                Review reports submitted by other publishers before they go public. Two approvals (or one from an
+                admin) publish a report; this also requires publisher access, with the same sign-in and access
+                prompts as publishing.
+              </p>
+            </div>
+            <Link className="btn btn-primary" to="/peer-review">
+              Go to Peer Review
+            </Link>
+          </section>
+        </Reveal>
       </div>
 
       {readingReport && (
