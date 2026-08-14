@@ -71,9 +71,10 @@ from models.document import (
     hard_delete_document,
 )
 from models.report import (
-    create_report, get_report, get_published_reports, get_pending_reports,
+    create_report, get_report, get_all_reports, get_published_reports, get_pending_reports,
     get_changes_requested_reports, get_reports_by_uploader,
-    delete_report, hard_delete_report, resubmit_report, reports_to_public_dicts,
+    delete_report, hard_delete_report, resubmit_report, set_report_category,
+    reports_to_public_dicts, REPORT_CATEGORIES,
 )
 from models.report_review import record_review, get_reviews_for_report, reviews_to_public_dicts, ReviewError
 from models.notification import (
@@ -1733,6 +1734,64 @@ def list_changes_requested_reports_route():
     return paginated_json_response(reports_to_public_dicts(reports), total, limit, offset)
 
 
+@app.get("/api/reports/all")
+@roles_required("admin")
+def list_all_reports_route():
+    """
+    Every report regardless of review_status (pending, changes_requested,
+    published, or rejected) or hidden status, newest first. Admin-only -
+    unlike every other /api/reports/* list route, which is scoped to
+    one review stage for a specific page of the site, this backs the
+    Control tab's "recategorize an existing report" tool (see
+    ReportCategoryControl.jsx), where an admin needs to find any report
+    regardless of what stage it's in.
+
+    Query params:
+      - "search": optional, case-insensitive substring match on title
+      - "category": optional, exact match - one of REPORT_CATEGORIES
+      - "limit"/"offset": standard pagination (see pagination.py)
+    """
+    search = (request.args.get("search") or "").strip() or None
+    category = (request.args.get("category") or "").strip() or None
+    limit, offset = parse_pagination_args()
+    reports, total = get_all_reports(search=search, category=category, limit=limit, offset=offset)
+    return paginated_json_response(reports_to_public_dicts(reports), total, limit, offset)
+
+
+@app.patch("/api/reports/<int:report_id>/category")
+@roles_required("admin")
+def update_report_category_route(report_id):
+    """
+    Body: { "category": "..." }
+    Admin-only correction tool - updates ONLY the category, regardless
+    of the report's review_status or version. Deliberately does not
+    touch review_status, version, or send the report back through peer
+    review (unlike resubmit_report(), which is a content change from
+    the uploader) - recategorizing an already-published report is a
+    metadata fix, not new content needing re-approval. Exists because
+    every report uploaded before upload_report()'s category-handling
+    fix silently landed in the default "National Trauma Assessment"
+    category regardless of what the uploader actually selected - see
+    that route's own history for the root cause. This is how those
+    are corrected after the fact.
+    """
+    body = request.get_json(silent=True) or {}
+    category = (body.get("category") or "").strip()
+
+    error = validation.run_check("report_category", category)
+    if error:
+        abort(400, description=error)
+
+    report = set_report_category(report_id, category)
+    if report is None:
+        abort(404, description="Report not found")
+
+    user = get_current_user()
+    logger.info("report category updated id=%s to=%r by admin_user_id=%s", report_id, category, user.id)
+
+    return jsonify(report.to_public_dict())
+
+
 @app.get("/api/reports/<int:report_id>")
 def get_report_route(report_id):
     """A single report's metadata. Public only once published; otherwise
@@ -1874,10 +1933,12 @@ def upload_report():
 
     title = (request.form.get("title") or "").strip()
     description = (request.form.get("description") or "").strip()
+    category = (request.form.get("category") or "").strip()
 
     error = validation.validate_all([
         ("report_title", title),
         ("report_description", description),
+        ("report_category", category),
     ])
     if error:
         abort(400, description=error)
@@ -1893,6 +1954,7 @@ def upload_report():
         uploaded_by=user.id,
         title=title,
         description=description,
+        category=category,
         file_path=file_path,
         file_type=file_type,
         original_filename=original_filename,
