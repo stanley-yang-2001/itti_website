@@ -1,26 +1,54 @@
-commit 7bd1ce6
-Restore S3 storage config for uploads dropped in later merges
+Turn "Read" into a real /reports/:id page instead of a same-page
+modal (also fixed in Peer Review); align Reports header with
+Country Profiles; add back-to-Reports links
 
-app.yaml and docs/DEPLOYMENT.md lost the STORAGE_BACKEND=s3 setup
-from 86f9450 ("Fix fellow/report images crashing with 500 in
-production") somewhere across the report_page/peer_review and
-login_brevo merges - likely just not carried forward by whoever
-resolved those unrelated conflicts in the same files. The code-level
-half of that fix (storage.py's portable relative paths + clean 404
-on a missing file, migrate_absolute_storage_paths.py) was untouched
-and is still present.
+client/src/pages/ReportView.jsx                               [A]
+    New page at /reports/:id - PDF iframe / DOCX-via-mammoth
+    viewer, carried over from the deleted ReportViewerModal but
+    as a real routed page: shareable/bookmarkable URL, works with
+    the browser back button.
 
-Without this, production has no STORAGE_BACKEND set, so uploads
-still default to local disk - which App Platform wipes on every
-redeploy (deploy_on_push: true) - meaning any fellow photo or report
-file/image uploaded through the live site will still fail to load
-once the next deploy happens, even though it now 404s cleanly
-instead of 500ing.
+client/src/components/ReportViewerModal.jsx                   [D]
+    Removed - replaced by ReportView.jsx everywhere it was used.
 
-- app.yaml: re-add STORAGE_BACKEND, STORAGE_S3_BUCKET,
-  STORAGE_S3_ENDPOINT_URL, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
-  env vars for the backend service, with setup guidance in comments
-- docs/DEPLOYMENT.md: re-add the "Persistent storage for uploads"
-  section (bucket setup, env vars, and what to do about images
-  already broken before this is configured), plus a pointer to
-  migrate_absolute_storage_paths.py for pre-existing bad rows
+client/src/App.jsx                                             [M]
+    Registered /reports/:id.
+
+client/src/pages/Reports.jsx                                   [M]
+    "Read" now navigates to /reports/:id instead of opening the
+    modal.
+
+client/src/pages/PeerReview.jsx                                [M]
+client/src/pages/PeerReviewMine.jsx                             [M]
+    Same modal-to-page fix applied here too - reviewers read
+    not-yet-published reports through the same /reports/:id page
+    (already permitted server-side by _can_view_report). Added
+    "← Back to Reports" at the top-left of every state (logged-out
+    gate, non-publisher gate, main view).
+
+client/src/pages/ReportPublish.jsx                              [M]
+    Added "← Back to Reports" at the top-left of every state.
+
+client/src/pages/Profile.jsx                                   [M]
+    Fixed a pre-existing bug found along the way: the Favorites
+    tab rendered ReportCard without an onRead prop, which would
+    throw on click. Now navigates to /reports/:id; removed the
+    now-redundant separate "View in Reports" link.
+
+client/src/components/ReportCard.jsx                            [M]
+    Updated onRead doc comment (no longer references a modal).
+
+client/src/styles/App.css                                       [M]
+    New shared .page-back-link utility class, used by all four
+    pages above rather than each defining its own.
+
+client/src/styles/Reports.css                                   [M]
+    Reports' header padding/heading size matched to Country
+    Profiles' (.country-profiles-page/.country-profiles-heading)
+    exactly; kept the wider 1080px content max-width for the
+    report grid. Removed the old modal-overlay CSS, replaced with
+    ReportView's page-level styles (reused the existing PDF/DOCX
+    rendering rules unchanged).
+
+Verified: full vite build compiles cleanly; all four pages'
+back-links and CSS confirmed present in the built bundles.
