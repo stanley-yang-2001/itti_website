@@ -1,26 +1,2 @@
-commit 7bd1ce6
-Restore S3 storage config for uploads dropped in later merges
-
-app.yaml and docs/DEPLOYMENT.md lost the STORAGE_BACKEND=s3 setup
-from 86f9450 ("Fix fellow/report images crashing with 500 in
-production") somewhere across the report_page/peer_review and
-login_brevo merges - likely just not carried forward by whoever
-resolved those unrelated conflicts in the same files. The code-level
-half of that fix (storage.py's portable relative paths + clean 404
-on a missing file, migrate_absolute_storage_paths.py) was untouched
-and is still present.
-
-Without this, production has no STORAGE_BACKEND set, so uploads
-still default to local disk - which App Platform wipes on every
-redeploy (deploy_on_push: true) - meaning any fellow photo or report
-file/image uploaded through the live site will still fail to load
-once the next deploy happens, even though it now 404s cleanly
-instead of 500ing.
-
-- app.yaml: re-add STORAGE_BACKEND, STORAGE_S3_BUCKET,
-  STORAGE_S3_ENDPOINT_URL, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
-  env vars for the backend service, with setup guidance in comments
-- docs/DEPLOYMENT.md: re-add the "Persistent storage for uploads"
-  section (bucket setup, env vars, and what to do about images
-  already broken before this is configured), plus a pointer to
-  migrate_absolute_storage_paths.py for pre-existing bad rows
+Fix GET /api/reports 500: repair drifted reports schema, stop create_all() from masking future drift
+Rewrite fix_reports_schema.py to be generic, not reports-only

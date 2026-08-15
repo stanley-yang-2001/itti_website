@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import ReportCard from '../components/ReportCard.jsx';
-import ReportViewerModal from '../components/ReportViewerModal.jsx';
 import PeerReviewPanel from '../components/PeerReviewPanel.jsx';
 import PublisherAccessGate from '../components/PublisherAccessGate.jsx';
 import Reveal from '../components/Reveal.jsx';
@@ -29,11 +28,11 @@ import '../styles/PeerReview.css';
  */
 export default function PeerReview() {
   const { user, isAuthenticated, isPublisher, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const highlightId = searchParams.get('highlight');
   const [pending, setPending] = useState(null);
   const [error, setError] = useState(null);
-  const [readingReport, setReadingReport] = useState(null);
 
   function loadPending() {
     fetch('/api/reports/pending', { credentials: 'include' })
@@ -64,36 +63,14 @@ export default function PeerReview() {
 
   if (authLoading) return null;
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !isPublisher) {
     return (
       <div className="peer-review-page">
         <SEO path="/peer-review" title="Peer Review" noindex />
-        <div className="peer-review-gate">
-          <h1>Log in to review reports</h1>
-          <p>You need an account with publisher access to review reports awaiting approval.</p>
-          <Link className="btn btn-primary" to="/login" state={{ from: { pathname: '/peer-review' } }}>
-            Log in
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isPublisher) {
-    return (
-      <div className="peer-review-page">
-        <SEO path="/peer-review" title="Peer Review" noindex />
-        <div className="peer-review-gate">
-          <h1>You don't have access to this page</h1>
-          <p>
-            Reviewing reports is limited to accounts with publisher access. Your current account doesn't have
-            that access level yet.
-          </p>
-          <p>
-            To request an upgrade, contact{' '}
-            <a href="mailto:support@ittiglobal.org">support@ittiglobal.org</a>.
-          </p>
-        </div>
+        <Link to="/reports" className="page-back-link">
+          ← Back to Reports
+        </Link>
+        <PublisherAccessGate isAuthenticated={isAuthenticated} fromPath="/peer-review" />
       </div>
     );
   }
@@ -102,6 +79,9 @@ export default function PeerReview() {
     <div className="peer-review-page">
       <SEO path="/peer-review" title="Peer Review" noindex />
       <Reveal delay={0}>
+        <Link to="/reports" className="page-back-link">
+          ← Back to Reports
+        </Link>
         <div className="peer-review-header">
           <div>
             <h2 className="display">Peer Review</h2>
@@ -136,7 +116,7 @@ export default function PeerReview() {
                   id={`peer-review-report-${report.id}`}
                   className={`peer-review-item${String(report.id) === highlightId ? ' peer-review-item-highlight' : ''}`}
                 >
-                  <ReportCard report={report} onRead={setReadingReport} />
+                  <ReportCard report={report} onRead={(r) => navigate(`/reports/${r.id}`)} />
                   <PeerReviewPanel report={report} currentUser={user} onDecided={handleDecided} />
                 </div>
               ))}
@@ -144,10 +124,6 @@ export default function PeerReview() {
           )}
         </section>
       </Reveal>
-
-      {readingReport && (
-        <ReportViewerModal report={readingReport} onClose={() => setReadingReport(null)} />
-      )}
     </div>
   );
 }
