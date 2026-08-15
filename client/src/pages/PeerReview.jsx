@@ -63,13 +63,14 @@ export default function PeerReview() {
 
   if (authLoading) return null;
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !isPublisher) {
     return (
       <div className="peer-review-page">
         <SEO path="/peer-review" title="Peer Review" noindex />
         <Link to="/reports" className="page-back-link">
           ← Back to Reports
         </Link>
+<<<<<<< HEAD
         <div className="peer-review-gate">
           <h1>Log in to review reports</h1>
           <p>You need an account with publisher access to review reports awaiting approval.</p>
@@ -99,6 +100,9 @@ export default function PeerReview() {
             <a href="mailto:support@ittiglobal.org">support@ittiglobal.org</a>.
           </p>
         </div>
+=======
+        <PublisherAccessGate isAuthenticated={isAuthenticated} fromPath="/peer-review" />
+>>>>>>> 8f671229e15aada48f5687f4d21265f7ee9304b1
       </div>
     );
   }

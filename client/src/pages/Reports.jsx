@@ -167,7 +167,7 @@ export default function Reports() {
               <p className="reports-feature-desc">
                 Browse published research reports and field bulletins across{' '}
                 {REPORT_CATEGORIES.length} sections
-                {totalReports ? `, ${totalReports} report${totalReports === 1 ? '' : 's'} so far` : ''}.
+                {totalReports !== null ? `, ${totalReports} report${totalReports === 1 ? '' : 's'} so far` : ''}.
               </p>
             </div>
             <button

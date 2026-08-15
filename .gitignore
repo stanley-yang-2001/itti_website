@@ -36,6 +36,7 @@ server/app.db/
 server/app.db
 
 
+
 # Uploaded content (local storage backend's on-disk save location - see
 # storage.py). Real, potentially large user-uploaded files don't belong
 # in git; a few had ended up committed here before this rule existed -

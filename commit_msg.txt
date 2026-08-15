@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 commit 7bd1ce6
 Restore S3 storage config for uploads dropped in later merges
 
@@ -24,3 +25,7 @@ instead of 500ing.
   section (bucket setup, env vars, and what to do about images
   already broken before this is configured), plus a pointer to
   migrate_absolute_storage_paths.py for pre-existing bad rows
+=======
+Fix GET /api/reports 500: repair drifted reports schema, stop create_all() from masking future drift
+Rewrite fix_reports_schema.py to be generic, not reports-only
+>>>>>>> 8f671229e15aada48f5687f4d21265f7ee9304b1
