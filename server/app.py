@@ -307,7 +307,8 @@ def set_security_headers(response):
     # default this docstring describes - setdefault only fills in a
     # value if the route didn't already set one, it never clobbers an
     # explicit choice a route made.
-    response.headers.setdefault("Cache-Control", "no-store")
+    response.headers.setdefault("Cache-Control", "no-store, private")
+    response.headers["Pragma"] = "no-cache"
     response.headers["Vary"] = "Cookie"
     if request.is_secure:
         response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains"
