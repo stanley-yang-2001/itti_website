@@ -60,6 +60,7 @@ import globe_data
 import country_profiles_upload
 from decorators import get_current_user, login_required, roles_required
 from pagination import parse_pagination_args, paginated_json_response
+from sqlalchemy import inspect
 from models.database import Base, DATABASE_URL, engine
 from models.user import (
     create_user, get_user, get_user_by_google_sub, get_user_by_email,
@@ -364,11 +365,25 @@ def handle_uncaught_exception(e):
 
 
 # Local SQLite dev DB: auto-create tables so `python app.py` just works
-# with zero setup. Any real database (DATABASE_URL set, e.g. Postgres) is
-# expected to be managed via migrations instead - see migrations/README
-# and `alembic upgrade head`, run once before first boot and again after
-# pulling any change with a new revision.
-if DATABASE_URL.startswith("sqlite"):
+# with zero setup on a brand new clone. Deliberately gated on the DB
+# being completely empty (no tables at all yet) rather than just "is
+# this sqlite" - a real deployment can also use sqlite (e.g. a small
+# droplet with no Postgres), and unconditionally re-running create_all()
+# on every restart is NOT safe there: create_all() only ever creates
+# tables that don't exist yet, it never alters an existing table to add
+# a newly-modeled column. That mismatch (new tables silently kept
+# current, older tables silently left missing every column any
+# migration added after their first creation) is exactly what caused
+# `reports` to end up missing resubmission_note/review_status/version/
+# category/updated_at for months on the ittiglobal.org droplet, invisible
+# until GET /api/reports finally hit one of the missing columns - see
+# server/fix_reports_schema.py for the one-time repair, and
+# docs/DEPLOYMENT.md.
+#
+# Once ANY tables exist - whether from this running once, or from
+# `alembic upgrade head` - alembic owns schema changes from then on;
+# this block gets out of the way and never fires again for that DB.
+if DATABASE_URL.startswith("sqlite") and not inspect(engine).get_table_names():
     Base.metadata.create_all(engine)
 
 storage = get_storage(UPLOAD_DIR)
