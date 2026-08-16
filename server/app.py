@@ -65,7 +65,7 @@ from models.database import Base, DATABASE_URL, engine
 from models.user import (
     create_user, get_user, get_user_by_google_sub, get_user_by_email,
     update_user, delete_user, restore_user, STATUS_HIDDEN,
-    get_all_users, VALID_ROLES, ROLE_ADMIN, ROLE_PUBLISHER,
+    get_all_users, VALID_ROLES, ROLE_ADMIN, ROLE_PUBLISHER, ROLE_REVIEWER,
 )
 from models.document import (
     create_document, get_documents_by_user, get_document, delete_document,
@@ -73,11 +73,15 @@ from models.document import (
 )
 from models.report import (
     create_report, get_report, get_all_reports, get_published_reports, get_pending_reports,
-    get_changes_requested_reports, get_reports_by_uploader,
-    delete_report, hard_delete_report, resubmit_report, set_report_category,
-    reports_to_public_dicts, REPORT_CATEGORIES,
+    get_changes_requested_reports, get_deletion_requested_reports, get_deleted_reports,
+    get_reports_by_uploader,
+    delete_report, restore_report, hard_delete_report, resubmit_report, set_report_category,
+    request_report_deletion, reports_to_public_dicts, REPORT_CATEGORIES,
 )
-from models.report_review import record_review, get_reviews_for_report, reviews_to_public_dicts, ReviewError
+from models.report_review import (
+    record_review, get_reviews_for_report, reviews_to_public_dicts, ReviewError,
+    record_deletion_review, DeletionReviewError,
+)
 from models.notification import (
     get_notifications_for_user, get_unread_count, mark_notification_read, mark_all_read,
     mark_notifications_read, delete_notifications,
@@ -1697,18 +1701,22 @@ def remove_document_permanently(document_id):
 def _can_view_report(report, user):
     """
     True if `user` (may be None, i.e. a guest) is allowed to see this
-    report at all. Published+visible reports are public. Anything else
-    (pending_review, changes_requested, or soft-deleted) is only
-    visible to the report's own uploader or to a publisher/admin -
-    i.e. the same pool of people who can act on it.
+    report at all. Published+visible reports are public - so are
+    deletion_requested reports (see REVIEW_STATUS_DELETION_REQUESTED's
+    own comment in models/report.py: a report stays visible on the
+    public Reports page throughout its deletion review, so it's public
+    the same way a published report is). Anything else (pending_review,
+    changes_requested, rejected, or soft-deleted) is only visible to
+    the report's own uploader or to a publisher/reviewer/admin - i.e.
+    the same pool of people who can act on it.
     """
     if report.status != 1:
         return user is not None and (user.role == ROLE_ADMIN)
-    if report.review_status == "published":
+    if report.review_status in ("published", "deletion_requested"):
         return True
     if user is None:
         return False
-    return user.id == report.uploaded_by or user.role in (ROLE_PUBLISHER, ROLE_ADMIN)
+    return user.id == report.uploaded_by or user.role in (ROLE_PUBLISHER, ROLE_REVIEWER, ROLE_ADMIN)
 
 
 @app.get("/api/reports")
@@ -1728,7 +1736,7 @@ def list_reports():
 
 
 @app.get("/api/reports/pending")
-@roles_required("publisher", "admin")
+@roles_required("publisher", "reviewer", "admin")
 def list_pending_reports_route():
     """Reports awaiting review, oldest first. Peer Review page - publisher/admin only."""
     limit, offset = parse_pagination_args()
@@ -1737,7 +1745,7 @@ def list_pending_reports_route():
 
 
 @app.get("/api/reports/changes-requested")
-@roles_required("publisher", "admin")
+@roles_required("publisher", "reviewer", "admin")
 def list_changes_requested_reports_route():
     """
     Reports sent back to their uploader for changes, most recently
@@ -1932,7 +1940,7 @@ def _save_report_upload(user_id, file, image):
 
 
 @app.post("/api/reports")
-@roles_required("publisher", "admin")
+@roles_required("publisher", "reviewer", "admin")
 @limiter.limit("20 per hour")
 def upload_report():
     """
@@ -2061,7 +2069,7 @@ def resubmit_report_route(report_id):
 
 
 @app.post("/api/reports/<int:report_id>/review")
-@roles_required("publisher", "admin")
+@roles_required("publisher", "reviewer", "admin")
 @limiter.limit("60 per hour")
 def review_report_route(report_id):
     """
@@ -2181,7 +2189,7 @@ def delete_selected_notifications_route():
 
 
 @app.get("/api/reports/<int:report_id>/reviews")
-@roles_required("publisher", "admin")
+@roles_required("publisher", "reviewer", "admin")
 def list_report_reviews_route(report_id):
     """All review decisions for a report (every version, newest first). Publisher/admin only."""
     report = get_report(report_id)
@@ -2192,12 +2200,24 @@ def list_report_reviews_route(report_id):
 
 
 @app.delete("/api/reports/<int:report_id>")
-@roles_required("publisher", "admin")
+@roles_required("publisher", "reviewer", "admin")
 def remove_report(report_id):
     """
     Soft-deletes a report: flips status to 0 (hidden) rather than
-    removing the files or DB row. Publishers may only remove their own
-    reports; admins may remove any.
+    removing the files or DB row. Admins may remove any report,
+    instantly, same as always (deleted_via="admin" is recorded for the
+    Deleted Reports page).
+
+    Publishers/reviewers may only remove their own reports, and ONLY
+    while still pending_review/changes_requested/rejected - i.e. a
+    report that's never been public, so there's nothing for anyone
+    else to weigh in on. A PUBLISHED report is a 409 here: use
+    POST /api/reports/<id>/request-deletion instead, which starts the
+    reviewer-approval watching period (see that route and
+    request_report_deletion() in report.py) rather than deleting
+    outright. This is the one behavior change from the old version of
+    this route, which let a publisher instantly delete anything of
+    their own, published or not.
     """
     user = get_current_user()
     report = get_report(report_id)
@@ -2206,9 +2226,133 @@ def remove_report(report_id):
     if report.uploaded_by != user.id and user.role != ROLE_ADMIN:
         abort(404, description="Report not found")  # same as "not found" - don't reveal it exists but isn't theirs
 
-    delete_report(report_id)
+    if user.role != ROLE_ADMIN and report.review_status == "published":
+        abort(409, description=(
+            "This report is already published - request its deletion instead, which needs a reviewer's approval."
+        ))
+
+    delete_report(report_id, via=("admin" if user.role == ROLE_ADMIN else None))
     create_user_event(user_id=user.id, document_id=None, action=CRUDAction.DELETE)
     return jsonify({"status": "deleted", "id": report_id})
+
+
+@app.post("/api/reports/<int:report_id>/request-deletion")
+@roles_required("publisher", "admin")
+@limiter.limit("30 per hour")
+def request_report_deletion_route(report_id):
+    """
+    Body: { "reason": "..." }
+    A publisher asking to delete their own PUBLISHED report. Unlike the
+    instant DELETE above, this starts a watching period: the report
+    stays visible on the public Reports page (see
+    REVIEW_STATUS_DELETION_REQUESTED's own comment in report.py) until
+    a reviewer/admin decides via POST .../deletion-review below. An
+    admin CAN call this too (e.g. to formally document a reason before
+    still deciding it themselves as the reviewer), but has no real need
+    to - the plain instant DELETE above already skips this entirely for
+    admins.
+    """
+    user = get_current_user()
+    report = get_report(report_id)
+    if report is None or report.status == 0:
+        abort(404, description="Report not found")
+    if report.uploaded_by != user.id and user.role != ROLE_ADMIN:
+        abort(404, description="Report not found")
+
+    body = request.get_json(silent=True) or {}
+    reason = (body.get("reason") or "").strip()
+
+    error = validation.run_check("deletion_reason", reason)
+    if error:
+        abort(400, description=error)
+
+    try:
+        updated = request_report_deletion(report_id, reason)
+    except ValueError as e:
+        abort(400, description=str(e))
+
+    logger.info("report deletion requested id=%s by user_id=%s", report_id, user.id)
+    return jsonify(updated.to_public_dict())
+
+
+@app.post("/api/reports/<int:report_id>/deletion-review")
+@roles_required("reviewer", "admin")
+@limiter.limit("60 per hour")
+def review_deletion_request_route(report_id):
+    """
+    Body: { "decision": "approve" | "deny" }
+    Reviewer/admin-only. A single decision is final immediately (no
+    vote counting, unlike the publish workflow's review_report_route) -
+    see record_deletion_review() in report_review.py for the full
+    reasoning. "approve" soft-deletes the report (deleted_via=
+    "deletion_review"); "deny" puts it back to review_status=published
+    (it was visible the whole time either way).
+    """
+    user = get_current_user()
+    body = request.get_json(silent=True) or {}
+    decision = (body.get("decision") or "").strip().lower()
+
+    try:
+        updated_report = record_deletion_review(report_id, user.id, decision)
+    except DeletionReviewError as e:
+        abort(400, description=str(e))
+
+    create_user_event(user_id=user.id, document_id=None, action=CRUDAction.UPDATE)
+    logger.info("report deletion review id=%s reviewer_id=%s decision=%s -> review_status=%s",
+                report_id, user.id, decision, updated_report.review_status)
+
+    return jsonify(updated_report.to_public_dict())
+
+
+@app.get("/api/reports/deletion-requests")
+@roles_required("reviewer", "admin")
+def list_deletion_requested_reports_route():
+    """
+    Reports currently awaiting a reviewer's deletion decision, oldest
+    request first. Backs the Peer Review page's Deletion Requests tab.
+    """
+    limit, offset = parse_pagination_args()
+    reports, total = get_deletion_requested_reports(limit=limit, offset=offset)
+    return paginated_json_response(reports_to_public_dicts(reports), total, limit, offset)
+
+
+@app.get("/api/reports/deleted")
+@roles_required("admin")
+def list_deleted_reports_route():
+    """
+    Admin-only. Every soft-deleted report that was published at some
+    point (deleted_via is set - see get_deleted_reports()'s own
+    docstring for exactly what that includes/excludes), searchable and
+    filterable by category same as GET /api/reports/all. Backs the
+    admin-only Deleted Reports page.
+    """
+    search = (request.args.get("search") or "").strip() or None
+    category = (request.args.get("category") or "").strip() or None
+    limit, offset = parse_pagination_args()
+    reports, total = get_deleted_reports(search=search, category=category, limit=limit, offset=offset)
+    return paginated_json_response(reports_to_public_dicts(reports), total, limit, offset)
+
+
+@app.post("/api/reports/<int:report_id>/repost")
+@roles_required("admin")
+def repost_report_route(report_id):
+    """
+    Admin-only. Un-deletes a report from the Deleted Reports page: just
+    restore_report() (status back to visible) - deliberately does NOT
+    touch review_status, category, file, or any other field, so
+    "repost" really does mean "bring back exactly what was there
+    before", not a fresh resubmission through peer review again. Only
+    valid for a report currently on the Deleted Reports page (status
+    hidden AND deleted_via set) - reposting a report that was never
+    actually published doesn't mean anything.
+    """
+    report = get_report(report_id)
+    if report is None or report.status != 0 or report.deleted_via is None:
+        abort(404, description="Report not found in Deleted Reports")
+
+    restore_report(report_id)
+    logger.info("report reposted id=%s by admin_id=%s", report_id, get_current_user().id)
+    return jsonify({"status": "reposted", "id": report_id})
 
 
 @app.delete("/api/reports/<int:report_id>/permanent")

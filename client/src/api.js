@@ -121,3 +121,62 @@ export async function fetchAllReportsAdmin({ search = "", category = "", limit =
 export function updateReportCategory(reportId, category) {
   return sendJson(`/reports/${reportId}/category`, "PATCH", { category });
 }
+
+/**
+ * A publisher/admin requesting to delete their own PUBLISHED report -
+ * starts the reviewer-approval watching period rather than deleting
+ * outright (see docs/ACCESS_LEVELS.md's "Report deletion" section).
+ * Returns the updated report (review_status becomes
+ * "deletion_requested").
+ */
+export function requestReportDeletion(reportId, reason) {
+  return sendJson(`/reports/${reportId}/request-deletion`, "POST", { reason });
+}
+
+/**
+ * Reviewer/admin-only: decides a pending deletion request. decision is
+ * "approve" or "deny" - a single decision is final immediately, unlike
+ * the vote-counted publish workflow. Returns the updated report.
+ */
+export function reviewDeletionRequest(reportId, decision) {
+  return sendJson(`/reports/${reportId}/deletion-review`, "POST", { decision });
+}
+
+/** Reviewer/admin-only: reports currently awaiting a deletion decision, oldest request first. */
+export async function fetchDeletionRequestedReports({ limit = 20, offset = 0 } = {}) {
+  const params = new URLSearchParams({ limit: String(limit), offset: String(offset) });
+  const res = await fetch(`${API_BASE}/reports/deletion-requests?${params.toString()}`, { credentials: "include" });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.description || data.error || "Request to /reports/deletion-requests failed");
+  }
+  return { reports: data, total: Number(res.headers.get("X-Total-Count")) || 0 };
+}
+
+/**
+ * Admin-only: every soft-deleted report that was published at some
+ * point, for the Deleted Reports page. Same shape as
+ * fetchAllReportsAdmin above.
+ */
+export async function fetchDeletedReportsAdmin({ search = "", category = "", limit = 20, offset = 0 } = {}) {
+  const params = new URLSearchParams({ limit: String(limit), offset: String(offset) });
+  if (search) params.set("search", search);
+  if (category) params.set("category", category);
+
+  const res = await fetch(`${API_BASE}/reports/deleted?${params.toString()}`, { credentials: "include" });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.description || data.error || "Request to /reports/deleted failed");
+  }
+  return { reports: data, total: Number(res.headers.get("X-Total-Count")) || 0 };
+}
+
+/** Admin-only: un-deletes a report from the Deleted Reports page - restores visibility, nothing else changes. */
+export function repostReport(reportId) {
+  return sendJson(`/reports/${reportId}/repost`, "POST", {});
+}
+
+/** Admin-only: permanently removes a report and its files. Irreversible. */
+export function hardDeleteReport(reportId) {
+  return sendJson(`/reports/${reportId}/permanent`, "DELETE");
+}

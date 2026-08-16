@@ -9,6 +9,15 @@ email/password) — see docs/ACCESS_LEVELS.md for the full design.
   ROLE_PUBLISHER — fellows/staff who can upload/publish documents. Never
                    set by /api/auth/google or /api/auth/signup; granted
                    separately via promote_user.py.
+  ROLE_REVIEWER  — a tier above publisher, below admin. Everything a
+                   publisher can do, plus deciding a publisher's
+                   deletion requests on their own published reports
+                   (see record_deletion_review() in
+                   models/report_review.py) - a single reviewer
+                   decision is final either way (unlike the 3-approval/
+                   2-rejection publish workflow), so this tier exists
+                   to put that single point of decision in the hands of
+                   someone other than the uploader's peers.
 """
 
 from datetime import datetime
@@ -24,8 +33,9 @@ STATUS_HIDDEN = 0
 
 ROLE_BASIC = "basic"
 ROLE_PUBLISHER = "publisher"
+ROLE_REVIEWER = "reviewer"
 ROLE_ADMIN = "admin"
-VALID_ROLES = {ROLE_BASIC, ROLE_PUBLISHER, ROLE_ADMIN}
+VALID_ROLES = {ROLE_BASIC, ROLE_PUBLISHER, ROLE_REVIEWER, ROLE_ADMIN}
 
 
 class User(Base):

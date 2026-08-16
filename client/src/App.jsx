@@ -43,6 +43,8 @@ const Profile = lazy(() => import('./pages/Profile.jsx'));
 const Settings = lazy(() => import('./pages/Settings.jsx'));
 const PeerReview = lazy(() => import('./pages/PeerReview.jsx'));
 const PeerReviewMine = lazy(() => import('./pages/PeerReviewMine.jsx'));
+const PeerReviewDeletions = lazy(() => import('./pages/PeerReviewDeletions.jsx'));
+const DeletedReportsPage = lazy(() => import('./pages/DeletedReportsPage.jsx'));
 
 /**
  * Gives routed page content a gentle fade-in on navigation instead of
@@ -118,6 +120,14 @@ export default function App() {
             reasoning as /reports/publish above. */}
         <Route path="/peer-review" element={<PeerReview />} />
         <Route path="/peer-review/mine" element={<PeerReviewMine />} />
+        {/* Same not-wrapped-in-ProtectedRoute reasoning as the two routes
+            above - PeerReviewDeletions.jsx does its own auth/reviewer-
+            access check. Reviewer/admin only (not publisher) - see the
+            comment atop that page. */}
+        <Route path="/peer-review/deletions" element={<PeerReviewDeletions />} />
+        {/* Not wrapped in ProtectedRoute - DeletedReportsPage.jsx does its
+            own admin check, same pattern as the peer-review pages above. */}
+        <Route path="/admin/deleted-reports" element={<DeletedReportsPage />} />
         <Route
           path="/settings"
           element={
