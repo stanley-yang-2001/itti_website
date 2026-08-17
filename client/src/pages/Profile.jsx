@@ -366,7 +366,7 @@ export default function Profile() {
                 {!favoritesError && favoriteReports !== null && favoriteReports.length === 0 && (
                   <div className="profile-empty">
                     <p>No favorited reports yet.</p>
-                    <Link to="/reports" className="btn btn-secondary">Browse Reports</Link>
+                    <Link to="/reports/browse" className="btn btn-secondary">Browse Reports</Link>
                   </div>
                 )}
                 {!favoritesError && favoriteReports !== null && favoriteReports.length > 0 && (

@@ -1,2 +1,50 @@
-Fix GET /api/reports 500: repair drifted reports schema, stop create_all() from masking future drift
-Rewrite fix_reports_schema.py to be generic, not reports-only
+"View Reports" on the /reports landing page toggled an inline section
+open/closed instead of navigating anywhere - inconsistent with the
+landing page's other two cards (Publish, Peer Review), which already
+link to their own dedicated routes.
+ 
+- ReportsBrowse.jsx (new): the actual browser - category tabs, pager,
+  grid, favoriting, per-report delete - moved here wholesale from
+  Reports.jsx, along with the state and effects it needs (including
+  the ?highlight=<id> deep-link scroll behavior).
+- Reports.jsx: now a plain landing page. Still fetches the report
+  list, but only to keep the "X reports so far" count in its copy;
+  the "View Reports" button is a <Link to="/reports/browse"> instead
+  of a state toggle.
+
+- App.jsx: register /reports/browse (lazy-loaded, same as every other
+  route), placed alongside /reports/publish and ahead of the
+  /reports/:id catch-all. Also fixed a stale comment on /peer-review
+  still referencing PublisherAccessGate after an earlier commit
+  (cc8ba06) moved that page to an inline gate.
+
+- Reveal.jsx: /reports/browse wasn't on the CASCADE_PATHS allowlist,
+  so its content would've rendered instantly with no scroll-reveal
+  animation, unlike the rest of the Reports/Peer Review page family.
+  Added it.
+
+- Profile.jsx: the empty-favorites "Browse Reports" button now points
+  straight at /reports/browse instead of the landing page, matching
+  its label.
+
+- sitemap.xml: added /reports/browse - it's the real, public content
+  page now (/reports is just a landing hub). /reports/publish and
+  /peer-review/* correctly stay excluded, being auth-gated.
+
+
+Verified: clean vite build, ReportsBrowse code-splits into its own
+chunk, no leftover references to the removed showBrowser state, and
+ReportCard's onDelete(reportId) contract on this branch matches
+exactly between ReportsBrowse.jsx and how it was already called in
+the pre-split Reports.jsx.
+
+
+Note: this branch (database) doesn't yet have the reviewer-role /
+deletion-request workflow that's already on main (commit f4bc44e) -
+an equivalent version of this same split was built against that
+newer code and pushed to main directly, since that file diverged too
+far from this branch's Reports.jsx to merge cleanly. Whoever next
+merges database into main (or main into database) will need to
+reconcile Reports.jsx/ReportsBrowse.jsx between the two - the main
+version's ReportsBrowse.jsx additionally integrates DeleteReportModal
+and requestReportDeletion(), which don't exist on this branch yet.

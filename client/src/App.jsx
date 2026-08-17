@@ -20,6 +20,7 @@ import Home from './pages/Home.jsx';
 const About = lazy(() => import('./pages/About.jsx'));
 const Observatory = lazy(() => import('./pages/Observatory.jsx'));
 const Reports = lazy(() => import('./pages/Reports.jsx'));
+const ReportsBrowse = lazy(() => import('./pages/ReportsBrowse.jsx'));
 const ReportView = lazy(() => import('./pages/ReportView.jsx'));
 const CountryProfiles = lazy(() => import('./pages/CountryProfiles.jsx'));
 const Fellowship = lazy(() => import('./pages/Fellowship.jsx'));
@@ -114,8 +115,8 @@ export default function App() {
           }
         />
         {/* Not wrapped in ProtectedRoute - PeerReview.jsx does its own
-            auth/publisher-access check via PublisherAccessGate, same
-            reasoning as /reports/publish above. */}
+            auth/publisher-access check inline, same reasoning as
+            /reports/publish below. */}
         <Route path="/peer-review" element={<PeerReview />} />
         <Route path="/peer-review/mine" element={<PeerReviewMine />} />
         <Route
@@ -137,6 +138,12 @@ export default function App() {
             the comment atop ReportPublish.jsx. Linked from the "Publish
             a Report" section of /reports. */}
         <Route path="/reports/publish" element={<ReportPublish />} />
+        {/* The actual report browser (category tabs, pager, grid) - a
+            real page rather than /reports expanding in place, so
+            "View Reports" behaves the same as the other two cards on
+            that landing page (Publish, Peer Review), which already
+            navigate elsewhere. See the comment atop ReportsBrowse.jsx. */}
+        <Route path="/reports/browse" element={<ReportsBrowse />} />
         {/* A real page (not a same-page modal) so a specific report has
             its own shareable/bookmarkable URL and works with the
             browser back button - see the comment atop ReportView.jsx.
