@@ -38,7 +38,10 @@ export default function PeerReviewMine() {
   const [error, setError] = useState(null);
 
   function loadMine() {
-    fetch('/api/reports/mine', { credentials: 'include' })
+    // Same reasoning as PeerReview.jsx's loadPending(): shown in full,
+    // no pagination UI, so needs everything - see that comment for why
+    // ?limit=200 (this endpoint's actual ceiling) is here explicitly.
+    fetch('/api/reports/mine?limit=200', { credentials: 'include' })
       .then((res) => res.json())
       .then(setMine)
       .catch(() => setError('Could not load your submissions.'));

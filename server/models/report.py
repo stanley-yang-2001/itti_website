@@ -24,7 +24,7 @@ state, and hiding it never affects its review progress.
 
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, BigInteger
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, BigInteger, Index
 from sqlalchemy.orm import relationship
 
 from .database import Base, Session
@@ -113,6 +113,22 @@ class Report(Base):
 
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    # get_published_reports()/get_pending_reports()/get_changes_requested_reports()
+    # below all filter on both of these columns together - see
+    # migrations/versions/9be8486b4b71_add_composite_index_reports.py for
+    # the full reasoning (column order, why it's not also a covering
+    # index for each function's ORDER BY). Declared here too, not just
+    # in that migration, so a database bootstrapped via
+    # Base.metadata.create_all() (see app.py's startup block) gets this
+    # index too, rather than only a database that's been through
+    # `alembic upgrade head` - that exact kind of drift between the two
+    # is what caused reports to end up silently missing columns on the
+    # ittiglobal.org droplet; this keeps the model and the migration
+    # in sync instead of repeating it for an index.
+    __table_args__ = (
+        Index('ix_reports_review_status_status', 'review_status', 'status'),
+    )
 
     uploader = relationship("User")
 

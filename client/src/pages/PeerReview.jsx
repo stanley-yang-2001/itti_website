@@ -35,7 +35,12 @@ export default function PeerReview() {
   const [error, setError] = useState(null);
 
   function loadPending() {
-    fetch('/api/reports/pending', { credentials: 'include' })
+    // Same reasoning as ReportsBrowse.jsx's loadReports(): this page
+    // shows the whole pending-review queue at once (no pagination UI),
+    // so it needs everything GET /api/reports/pending has - which is
+    // capped at pagination.DEFAULT_PAGE_SIZE (100) without an explicit
+    // limit. MAX_PAGE_SIZE (200) is this endpoint's actual ceiling.
+    fetch('/api/reports/pending?limit=200', { credentials: 'include' })
       .then((res) => res.json())
       .then(setPending)
       .catch(() => setError('Could not load reports awaiting review.'));

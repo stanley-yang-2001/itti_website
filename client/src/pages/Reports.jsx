@@ -22,10 +22,19 @@ export default function Reports() {
   const [totalReports, setTotalReports] = useState(null); // null = loading/unknown
 
   useEffect(() => {
-    fetch('/api/reports')
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (Array.isArray(data)) setTotalReports(data.length);
+    // Only need the count for the "X reports so far" copy below, not the
+    // reports themselves - GET /api/reports is capped at
+    // pagination.DEFAULT_PAGE_SIZE (100) per response body, so reading
+    // data.length here would silently under-report once the site has
+    // more than 100 published reports. X-Total-Count is the real total
+    // regardless of how many rows came back in the body - see
+    // paginated_json_response() in server/pagination.py. limit=1 keeps
+    // the (otherwise-unused) response body itself minimal.
+    fetch('/api/reports?limit=1')
+      .then((res) => {
+        if (!res.ok) return;
+        const total = Number(res.headers.get('X-Total-Count'));
+        if (Number.isFinite(total)) setTotalReports(total);
       })
       .catch(() => {}); // non-critical - copy just omits the count on failure
   }, []);

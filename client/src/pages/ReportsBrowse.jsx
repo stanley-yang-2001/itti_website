@@ -39,7 +39,19 @@ export default function ReportsBrowse() {
 
   async function loadReports() {
     try {
-      const res = await fetch('/api/reports');
+      // This page loads every published report up front and groups/counts
+      // them by category client-side for instant tab-switching, rather
+      // than re-fetching per category - so it needs everything in one
+      // response, not the default page. GET /api/reports is capped at
+      // pagination.DEFAULT_PAGE_SIZE (100) unless ?limit= says otherwise,
+      // so without this the category tabs/counts would silently go
+      // wrong (missing/undercounted reports) the moment the site passes
+      // 100 published reports - MAX_PAGE_SIZE (200, server-enforced) is
+      // the most this endpoint will ever return in one call. Past 200
+      // published reports this page needs real pagination (e.g. fetch
+      // per active category instead of everything at once) - it doesn't
+      // have that today.
+      const res = await fetch('/api/reports?limit=200');
       if (isBadRequest(res)) {
         navigate('/unavailable?from=%2Freports%2Fbrowse&fromLabel=Back%20to%20Reports');
         return;
