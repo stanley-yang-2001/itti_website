@@ -19,7 +19,7 @@ along with it.
 
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Boolean, Index
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Boolean
 
 from .database import Base, Session
 from pagination import DEFAULT_PAGE_SIZE, clamp_limit, clamp_offset
@@ -30,6 +30,10 @@ from pagination import DEFAULT_PAGE_SIZE, clamp_limit, clamp_offset
 TYPE_REPORT_PUBLISHED = "report_published"
 TYPE_REPORT_CHANGES_REQUESTED = "report_changes_requested"
 TYPE_REPORT_REJECTED = "report_rejected"
+# Sent to the uploader when a reviewer/admin decides their deletion
+# request - see record_deletion_review() in report_review.py.
+TYPE_REPORT_DELETION_APPROVED = "report_deletion_approved"
+TYPE_REPORT_DELETION_DENIED = "report_deletion_denied"
 
 
 class Notification(Base):
@@ -42,26 +46,6 @@ class Notification(Base):
     message = Column(Text, nullable=False)
     is_read = Column(Boolean, nullable=False, default=False, index=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-
-    # get_unread_count() and mark_all_read() both filter user_id AND
-    # is_read together - and get_unread_count() specifically is polled
-    # every 30s per signed-in user for as long as they have a tab open
-    # (see the navbar's unread-dot polling, client/src/components/NavBar.jsx),
-    # making it one of the most frequently-run queries in the whole app.
-    # user_id and is_read already had their own single-column indexes,
-    # but a query filtering both can only make full use of one of them at
-    # a time (confirmed via EXPLAIN QUERY PLAN: only
-    # ix_notifications_user_id got used, is_read's matches were still
-    # filtered by scanning every one of that user's notification rows).
-    # This composite index lets both queries resolve with a single index
-    # seek instead. Same reasoning as reports' composite index - see
-    # migrations/versions/9be8486b4b71_add_composite_index_reports.py -
-    # including declaring it here AND in a migration so
-    # Base.metadata.create_all() and `alembic upgrade head` can't drift
-    # out of sync with each other.
-    __table_args__ = (
-        Index('ix_notifications_user_id_is_read', 'user_id', 'is_read'),
-    )
 
     def to_public_dict(self):
         return {

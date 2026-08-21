@@ -20,7 +20,6 @@ import Home from './pages/Home.jsx';
 const About = lazy(() => import('./pages/About.jsx'));
 const Observatory = lazy(() => import('./pages/Observatory.jsx'));
 const Reports = lazy(() => import('./pages/Reports.jsx'));
-const ReportsBrowse = lazy(() => import('./pages/ReportsBrowse.jsx'));
 const ReportView = lazy(() => import('./pages/ReportView.jsx'));
 const CountryProfiles = lazy(() => import('./pages/CountryProfiles.jsx'));
 const Fellowship = lazy(() => import('./pages/Fellowship.jsx'));
@@ -44,6 +43,8 @@ const Profile = lazy(() => import('./pages/Profile.jsx'));
 const Settings = lazy(() => import('./pages/Settings.jsx'));
 const PeerReview = lazy(() => import('./pages/PeerReview.jsx'));
 const PeerReviewMine = lazy(() => import('./pages/PeerReviewMine.jsx'));
+const PeerReviewDeletions = lazy(() => import('./pages/PeerReviewDeletions.jsx'));
+const DeletedReportsPage = lazy(() => import('./pages/DeletedReportsPage.jsx'));
 
 /**
  * Gives routed page content a gentle fade-in on navigation instead of
@@ -115,10 +116,18 @@ export default function App() {
           }
         />
         {/* Not wrapped in ProtectedRoute - PeerReview.jsx does its own
-            auth/publisher-access check inline, same reasoning as
-            /reports/publish below. */}
+            auth/publisher-access check via PublisherAccessGate, same
+            reasoning as /reports/publish above. */}
         <Route path="/peer-review" element={<PeerReview />} />
         <Route path="/peer-review/mine" element={<PeerReviewMine />} />
+        {/* Same not-wrapped-in-ProtectedRoute reasoning as the two routes
+            above - PeerReviewDeletions.jsx does its own auth/reviewer-
+            access check. Reviewer/admin only (not publisher) - see the
+            comment atop that page. */}
+        <Route path="/peer-review/deletions" element={<PeerReviewDeletions />} />
+        {/* Not wrapped in ProtectedRoute - DeletedReportsPage.jsx does its
+            own admin check, same pattern as the peer-review pages above. */}
+        <Route path="/admin/deleted-reports" element={<DeletedReportsPage />} />
         <Route
           path="/settings"
           element={
@@ -138,12 +147,6 @@ export default function App() {
             the comment atop ReportPublish.jsx. Linked from the "Publish
             a Report" section of /reports. */}
         <Route path="/reports/publish" element={<ReportPublish />} />
-        {/* The actual report browser (category tabs, pager, grid) - a
-            real page rather than /reports expanding in place, so
-            "View Reports" behaves the same as the other two cards on
-            that landing page (Publish, Peer Review), which already
-            navigate elsewhere. See the comment atop ReportsBrowse.jsx. */}
-        <Route path="/reports/browse" element={<ReportsBrowse />} />
         {/* A real page (not a same-page modal) so a specific report has
             its own shareable/bookmarkable URL and works with the
             browser back button - see the comment atop ReportView.jsx.

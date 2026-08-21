@@ -1,0 +1,288 @@
+From 8113c0c4df3ad05f633448578525a3ea48760d83 Mon Sep 17 00:00:00 2001
+From: Claude <claude@anthropic.com>
+Date: Mon, 17 Aug 2026 20:05:18 +0000
+Subject: [PATCH 1/2] Performance/correctness audit: fix silent report-list
+ truncation, add composite index on reports
+
+Went through the repo looking for algorithmic/structural improvements.
+Most of the obvious wins were already done (batched author/reviewer
+name lookups instead of N+1, in-memory + HTTP caching on the country
+data endpoints, memoized derived data in the Observatory charts) - the
+two real findings below are what's actually left.
+
+Silent report-list truncation (client/src/pages/*.jsx):
+GET /api/reports, /api/reports/pending, and /api/reports/mine are all
+capped at pagination.DEFAULT_PAGE_SIZE (100) unless the caller passes
+?limit=. Four pages call these with no limit at all, expecting to get
+everything back in one response, since none of them have any
+pagination UI of their own:
+  - ReportsBrowse.jsx groups/counts all published reports by category
+    client-side for instant tab-switching
+  - Reports.jsx just wanted a total count for its "X reports so far"
+    copy, but was computing it from the (capped) response body itself
+  - PeerReview.jsx's pending-review queue and PeerReviewMine.jsx's "my
+    submissions" list are both rendered in full, no pager
+This isn't a problem yet at current content volume, but it's a
+ticking correctness bug: the moment any of these lists passes 100
+rows, results silently go wrong with no error and no visible sign
+anything is missing - undercounted "X reports so far", missing older
+reports from category browsing, an incomplete review queue.
+
+- ReportsBrowse.jsx, PeerReview.jsx, PeerReviewMine.jsx: request
+  ?limit=200 explicitly (MAX_PAGE_SIZE, this endpoint's actual
+  ceiling) instead of the silent 100-row default. Documented that
+  past 200 rows each of these needs real pagination, which none of
+  them have today - this fixes the immediate silent-failure risk, not
+  the underlying "these pages assume unbounded lists" design.
+- Reports.jsx: switched from data.length to reading the X-Total-Count
+  response header (already set by paginated_json_response() for
+  exactly this purpose), and requests ?limit=1 since the response
+  body itself is unused - correct regardless of how many published
+  reports exist, and trims that fetch's body from up to 100 report
+  objects down to 1.
+
+Composite index on reports (review_status, status)
+(server/models/report.py, new migration):
+get_published_reports(), get_pending_reports(), and
+get_changes_requested_reports() all filter on both columns together.
+Each already had its own single-column index, but a two-column
+WHERE clause can only make full use of one single-column index at a
+time (SQLite has no automatic index merge; Postgres falls back to a
+less efficient bitmap merge) - the other column's matches still get
+filtered by scanning/re-checking rows one at a time. Added
+ix_reports_review_status_status so the database can satisfy the whole
+WHERE clause with a single index seek instead - confirmed with
+EXPLAIN QUERY PLAN (SEARCH ... USING INDEX ix_reports_review_status_status,
+not a table scan).
+
+Declared as __table_args__ on the model AND as a migration, not just
+one or the other - verified both Base.metadata.create_all() and
+`alembic upgrade head` produce the byte-identical index set. Keeping
+these in sync is exactly the lesson from the earlier reports-table
+schema-drift incident (see fix_reports_schema.py / docs/DEPLOYMENT.md)
+- an index that only exists on one of the two bootstrap paths is the
+same kind of silent split-brain schema that caused that one.
+
+Checked but left alone (no clear win, or too large a change for what
+was found):
+- The two >500kB build chunks vite's own build output warns about
+  (main vendor chunk, Observatory's chunk) - Observatory being large
+  is inherent to it being an isolated, already-lazy-loaded chunk for
+  a genuinely heavy globe/charting feature, not loaded on any other
+  page. The main chunk is Rollup's automatic shared-vendor grouping,
+  not an eager heavy import anywhere in App.jsx - untangling it
+  further needs bundle-visualizer tooling to do responsibly rather
+  than guessed manualChunks config.
+- image_processing.py (fellow photo normalization) is already tight:
+  fixed 600x600 JPEG, quality 85, optimize=True.
+- The exact same unbounded-list assumption likely exists on the
+  admin/reviewer side (e.g. GET /api/reports/all backing
+  ReportCategoryControl.jsx, and whatever backs
+  PeerReviewDeletions.jsx/DeletedReportsPage.jsx on main) - not
+  checked in this pass since this branch (database) doesn't have that
+  code yet; worth the same treatment once it lands here.
+---
+ client/src/pages/PeerReview.jsx               |  7 ++-
+ client/src/pages/PeerReviewMine.jsx           |  5 +-
+ client/src/pages/Reports.jsx                  | 17 +++--
+ client/src/pages/ReportsBrowse.jsx            | 14 ++++-
+ ...be8486b4b71_add_composite_index_reports.py | 63 +++++++++++++++++++
+ server/models/report.py                       | 18 +++++-
+ 6 files changed, 116 insertions(+), 8 deletions(-)
+ create mode 100644 server/migrations/versions/9be8486b4b71_add_composite_index_reports.py
+
+diff --git a/client/src/pages/PeerReview.jsx b/client/src/pages/PeerReview.jsx
+index 46d2763..c2285a7 100644
+--- a/client/src/pages/PeerReview.jsx
++++ b/client/src/pages/PeerReview.jsx
+@@ -35,7 +35,12 @@ export default function PeerReview() {
+   const [error, setError] = useState(null);
+ 
+   function loadPending() {
+-    fetch('/api/reports/pending', { credentials: 'include' })
++    // Same reasoning as ReportsBrowse.jsx's loadReports(): this page
++    // shows the whole pending-review queue at once (no pagination UI),
++    // so it needs everything GET /api/reports/pending has - which is
++    // capped at pagination.DEFAULT_PAGE_SIZE (100) without an explicit
++    // limit. MAX_PAGE_SIZE (200) is this endpoint's actual ceiling.
++    fetch('/api/reports/pending?limit=200', { credentials: 'include' })
+       .then((res) => res.json())
+       .then(setPending)
+       .catch(() => setError('Could not load reports awaiting review.'));
+diff --git a/client/src/pages/PeerReviewMine.jsx b/client/src/pages/PeerReviewMine.jsx
+index 035dbfc..e0b9e06 100644
+--- a/client/src/pages/PeerReviewMine.jsx
++++ b/client/src/pages/PeerReviewMine.jsx
+@@ -38,7 +38,10 @@ export default function PeerReviewMine() {
+   const [error, setError] = useState(null);
+ 
+   function loadMine() {
+-    fetch('/api/reports/mine', { credentials: 'include' })
++    // Same reasoning as PeerReview.jsx's loadPending(): shown in full,
++    // no pagination UI, so needs everything - see that comment for why
++    // ?limit=200 (this endpoint's actual ceiling) is here explicitly.
++    fetch('/api/reports/mine?limit=200', { credentials: 'include' })
+       .then((res) => res.json())
+       .then(setMine)
+       .catch(() => setError('Could not load your submissions.'));
+diff --git a/client/src/pages/Reports.jsx b/client/src/pages/Reports.jsx
+index 4385c1b..4c32f65 100644
+--- a/client/src/pages/Reports.jsx
++++ b/client/src/pages/Reports.jsx
+@@ -22,10 +22,19 @@ export default function Reports() {
+   const [totalReports, setTotalReports] = useState(null); // null = loading/unknown
+ 
+   useEffect(() => {
+-    fetch('/api/reports')
+-      .then((res) => (res.ok ? res.json() : null))
+-      .then((data) => {
+-        if (Array.isArray(data)) setTotalReports(data.length);
++    // Only need the count for the "X reports so far" copy below, not the
++    // reports themselves - GET /api/reports is capped at
++    // pagination.DEFAULT_PAGE_SIZE (100) per response body, so reading
++    // data.length here would silently under-report once the site has
++    // more than 100 published reports. X-Total-Count is the real total
++    // regardless of how many rows came back in the body - see
++    // paginated_json_response() in server/pagination.py. limit=1 keeps
++    // the (otherwise-unused) response body itself minimal.
++    fetch('/api/reports?limit=1')
++      .then((res) => {
++        if (!res.ok) return;
++        const total = Number(res.headers.get('X-Total-Count'));
++        if (Number.isFinite(total)) setTotalReports(total);
+       })
+       .catch(() => {}); // non-critical - copy just omits the count on failure
+   }, []);
+diff --git a/client/src/pages/ReportsBrowse.jsx b/client/src/pages/ReportsBrowse.jsx
+index db37ece..e70f15f 100644
+--- a/client/src/pages/ReportsBrowse.jsx
++++ b/client/src/pages/ReportsBrowse.jsx
+@@ -39,7 +39,19 @@ export default function ReportsBrowse() {
+ 
+   async function loadReports() {
+     try {
+-      const res = await fetch('/api/reports');
++      // This page loads every published report up front and groups/counts
++      // them by category client-side for instant tab-switching, rather
++      // than re-fetching per category - so it needs everything in one
++      // response, not the default page. GET /api/reports is capped at
++      // pagination.DEFAULT_PAGE_SIZE (100) unless ?limit= says otherwise,
++      // so without this the category tabs/counts would silently go
++      // wrong (missing/undercounted reports) the moment the site passes
++      // 100 published reports - MAX_PAGE_SIZE (200, server-enforced) is
++      // the most this endpoint will ever return in one call. Past 200
++      // published reports this page needs real pagination (e.g. fetch
++      // per active category instead of everything at once) - it doesn't
++      // have that today.
++      const res = await fetch('/api/reports?limit=200');
+       if (isBadRequest(res)) {
+         navigate('/unavailable?from=%2Freports%2Fbrowse&fromLabel=Back%20to%20Reports');
+         return;
+diff --git a/server/migrations/versions/9be8486b4b71_add_composite_index_reports.py b/server/migrations/versions/9be8486b4b71_add_composite_index_reports.py
+new file mode 100644
+index 0000000..6ca2b3e
+--- /dev/null
++++ b/server/migrations/versions/9be8486b4b71_add_composite_index_reports.py
+@@ -0,0 +1,63 @@
++"""add composite index on reports (review_status, status)
++
++Revision ID: 9be8486b4b71
++Revises: 9dd9f4e91099
++Create Date: 2026-08-17 00:00:00.000000
++
++get_published_reports(), get_pending_reports(), and
++get_changes_requested_reports() (server/models/report.py) all filter
++on review_status AND status together - e.g.
++"WHERE review_status = 'published' AND status = 1" - which are the
++three queries behind GET /api/reports, /api/reports/pending, and
++/api/reports/changes-requested respectively. Each column already has
++its own single-column index (added by earlier migrations, matching
++index=True on the model), but a query filtering on two columns can
++only make full use of one single-column index at a time on SQLite (no
++automatic index merge) and gets a less efficient bitmap-merge on
++Postgres rather than a direct index seek - both still have to filter
++the *other* column's matches by scanning/re-checking rows one at a
++time. A composite index covering both columns together lets the
++database satisfy the whole WHERE clause with a single index seek
++instead.
++
++Column order is (review_status, status) rather than the reverse:
++review_status is the more selective/primary differentiator between
++these three query functions (four distinct values as of the
++deletion-request workflow: pending_review, published,
++changes_requested, deletion_requested), while status is close to a
++constant across the table in practice (nearly every row is
++STATUS_VISIBLE=1; STATUS_HIDDEN is the rare case) - putting the more
++selective column first is what lets a B-tree composite index narrow
++the search space the most before the second column even comes into
++play.
++
++Not attempting to also cover each function's ORDER BY (created_at
++DESC / created_at ASC / updated_at DESC respectively) in the same
++index - three different trailing sort columns would need three
++separate composite indexes to each act as a fully covering index for
++its one query, which is a real write-amplification/disk cost for a
++site this size with no evidence yet that the sort step itself (rather
++than the initial WHERE-clause table scan this migration fixes) is a
++bottleneck. Worth revisiting if the reports table grows very large
++and profiling says otherwise.
++"""
++from typing import Sequence, Union
++
++from alembic import op
++
++
++# revision identifiers, used by Alembic.
++revision: str = '9be8486b4b71'
++down_revision: Union[str, None] = '9dd9f4e91099'
++branch_labels: Union[str, Sequence[str], None] = None
++depends_on: Union[str, Sequence[str], None] = None
++
++
++def upgrade() -> None:
++    op.create_index(
++        'ix_reports_review_status_status', 'reports', ['review_status', 'status'], unique=False,
++    )
++
++
++def downgrade() -> None:
++    op.drop_index('ix_reports_review_status_status', table_name='reports')
+diff --git a/server/models/report.py b/server/models/report.py
+index 0f6da7f..52e8fee 100644
+--- a/server/models/report.py
++++ b/server/models/report.py
+@@ -24,7 +24,7 @@ state, and hiding it never affects its review progress.
+ 
+ from datetime import datetime
+ 
+-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, BigInteger
++from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, BigInteger, Index
+ from sqlalchemy.orm import relationship
+ 
+ from .database import Base, Session
+@@ -114,6 +114,22 @@ class Report(Base):
+     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+ 
++    # get_published_reports()/get_pending_reports()/get_changes_requested_reports()
++    # below all filter on both of these columns together - see
++    # migrations/versions/9be8486b4b71_add_composite_index_reports.py for
++    # the full reasoning (column order, why it's not also a covering
++    # index for each function's ORDER BY). Declared here too, not just
++    # in that migration, so a database bootstrapped via
++    # Base.metadata.create_all() (see app.py's startup block) gets this
++    # index too, rather than only a database that's been through
++    # `alembic upgrade head` - that exact kind of drift between the two
++    # is what caused reports to end up silently missing columns on the
++    # ittiglobal.org droplet; this keeps the model and the migration
++    # in sync instead of repeating it for an index.
++    __table_args__ = (
++        Index('ix_reports_review_status_status', 'review_status', 'status'),
++    )
++
+     uploader = relationship("User")
+ 
+     def __repr__(self):
+-- 
+2.43.0
+

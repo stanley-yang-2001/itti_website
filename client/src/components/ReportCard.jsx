@@ -23,6 +23,10 @@ function formatFileSize(bytes) {
  * rendering a logged-out visitor's card) and the star doesn't render at
  * all, rather than rendering a star that can't do anything.
  *
+ * onDelete: called with the FULL report object (not just its id) - the
+ * caller needs review_status to decide whether this is an instant
+ * delete or a request-deletion-with-reason (see DeleteReportModal.jsx).
+ *
  * onRead: navigates to this report's own page (/reports/:id, see
  * ReportView.jsx). Always shown - unlike the star, reading a report
  * needs no login.
@@ -95,7 +99,7 @@ export default function ReportCard({ report, canManage, onDelete, isFavorited, o
             <button
               type="button"
               className="report-card-delete"
-              onClick={() => onDelete(report.id)}
+              onClick={() => onDelete(report)}
             >
               Delete
             </button>

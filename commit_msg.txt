@@ -1,50 +1,108 @@
-"View Reports" on the /reports landing page toggled an inline section
-open/closed instead of navigating anywhere - inconsistent with the
-landing page's other two cards (Publish, Peer Review), which already
-link to their own dedicated routes.
- 
-- ReportsBrowse.jsx (new): the actual browser - category tabs, pager,
-  grid, favoriting, per-report delete - moved here wholesale from
-  Reports.jsx, along with the state and effects it needs (including
-  the ?highlight=<id> deep-link scroll behavior).
-- Reports.jsx: now a plain landing page. Still fetches the report
-  list, but only to keep the "X reports so far" count in its copy;
-  the "View Reports" button is a <Link to="/reports/browse"> instead
-  of a state toggle.
+Add reviewer role and publisher-report deletion workflow (request →
+reviewer approval → admin repost/permanent-delete)
 
-- App.jsx: register /reports/browse (lazy-loaded, same as every other
-  route), placed alongside /reports/publish and ahead of the
-  /reports/:id catch-all. Also fixed a stale comment on /peer-review
-  still referencing PublisherAccessGate after an earlier commit
-  (cc8ba06) moved that page to an inline gate.
+server/models/user.py                                        [M]
+    New ROLE_REVIEWER, added to VALID_ROLES - sits between
+    publisher and admin. promote_user.py and the admin role-update
+    route already work generically off VALID_ROLES.
 
-- Reveal.jsx: /reports/browse wasn't on the CASCADE_PATHS allowlist,
-  so its content would've rendered instantly with no scroll-reveal
-  animation, unlike the rest of the Reports/Peer Review page family.
-  Added it.
+server/models/report.py                                      [M]
+    New REVIEW_STATUS_DELETION_REQUESTED. New columns:
+    pending_deletion_reason, pending_deletion_requested_at,
+    deleted_via ("deletion_review" | "admin" - tracks how a
+    published report was soft-deleted). New functions:
+    request_report_deletion(), cancel_deletion_request(),
+    get_deletion_requested_reports(), get_deleted_reports() (admin
+    view - includes both deletion paths). delete_report() now
+    accepts via= and resets review_status back to "published" when
+    approved through review (same state an admin's direct delete
+    leaves a report in, so "repost" is correct either way).
 
-- Profile.jsx: the empty-favorites "Browse Reports" button now points
-  straight at /reports/browse instead of the landing page, matching
-  its label.
+server/models/report_review.py                                [M]
+    New record_deletion_review() - a SINGLE reviewer/admin decision,
+    final immediately either way (not vote-counted like the publish
+    workflow). Self-review blocked, same rule as record_review().
 
-- sitemap.xml: added /reports/browse - it's the real, public content
-  page now (/reports is just a landing hub). /reports/publish and
-  /peer-review/* correctly stay excluded, being auth-gated.
+server/models/notification.py                                 [M]
+    Two new notification types for the uploader when their deletion
+    request is approved/denied.
 
+server/validation.py                                           [M]
+    New deletion_reason check - presence required, length-capped.
 
-Verified: clean vite build, ReportsBrowse code-splits into its own
-chunk, no leftover references to the removed showBrowser state, and
-ReportCard's onDelete(reportId) contract on this branch matches
-exactly between ReportsBrowse.jsx and how it was already called in
-the pre-split Reports.jsx.
+server/migrations/versions/c1a9ddadbaec_...py                  [A]
+    Adds the three new Report columns.
 
+server/app.py                                                  [M]
+    - _can_view_report: a deletion_requested report is now public,
+      same as published (it stays visible throughout review).
+    - DELETE /api/reports/<id>: publisher/reviewer deleting their
+      own PUBLISHED report now 409s (use request-deletion instead);
+      still instant for anything not yet published, and always
+      instant for admin (deleted_via="admin" recorded).
+    - New: POST .../request-deletion, POST .../deletion-review,
+      GET /api/reports/deletion-requests, GET /api/reports/deleted,
+      POST .../repost.
+    - Reviewer added to every report-specific @roles_required(
+      "publisher", "admin") route (view/upload/vote on new
+      submissions) - reviewer inherits publisher's abilities, per
+      "above publisher, below admin."
 
-Note: this branch (database) doesn't yet have the reviewer-role /
-deletion-request workflow that's already on main (commit f4bc44e) -
-an equivalent version of this same split was built against that
-newer code and pushed to main directly, since that file diverged too
-far from this branch's Reports.jsx to merge cleanly. Whoever next
-merges database into main (or main into database) will need to
-reconcile Reports.jsx/ReportsBrowse.jsx between the two - the main
-version's ReportsBrowse.jsx additionally integrates DeleteReportModal
-and requestReportDeletion(), which don't exist on this branch yet.
+client/src/components/DeleteReportModal.jsx                    [A]
+    Shared modal used by every report-deleting page. Branches on
+    review_status: published needs a typed reason and calls
+    request-deletion; anything else deletes instantly.
+
+client/src/components/DeletionReviewPanel.jsx                  [A]
+    Approve/deny panel for a single deletion request - no vote
+    count, unlike PeerReviewPanel.
+
+client/src/components/DeletedReportsControl.jsx                [A]
+    Small Control-tab panel linking to the new admin page.
+
+client/src/pages/PeerReviewDeletions.jsx                       [A]
+    New page at /peer-review/deletions - reviewer/admin only (not
+    publisher). Third tab alongside Awaiting Review / My
+    Submissions.
+
+client/src/pages/DeletedReportsPage.jsx                        [A]
+    New admin-only page at /admin/deleted-reports - categorized
+    like the public Reports page, checkbox multi-select, bulk
+    repost or bulk permanent-delete (confirmed via modal).
+
+client/src/pages/Reports.jsx                                   [M]
+client/src/pages/PeerReviewMine.jsx                             [M]
+client/src/pages/ReportView.jsx                                [M]
+    All three: delete now opens DeleteReportModal instead of
+    deleting directly; a deletion_requested report shows a status
+    banner. ReportView.jsx's canManage also fixed to include
+    reviewer (previously publisher-only).
+
+client/src/components/ReportCard.jsx                           [M]
+    onDelete now passes the full report object instead of just its
+    id, so callers can branch on review_status.
+
+client/src/pages/PeerReview.jsx                                 [M]
+client/src/components/ControlPanel.jsx                          [M]
+client/src/components/AccessLevelPanel.jsx                       [M]
+    Nav tab / panel / role-dropdown wiring for the above.
+
+client/src/api.js                                                [M]
+    requestReportDeletion, reviewDeletionRequest,
+    fetchDeletionRequestedReports, fetchDeletedReportsAdmin,
+    repostReport, hardDeleteReport.
+
+client/src/App.jsx                                                [M]
+client/src/styles/App.css                                         [M]
+client/src/styles/Control.css                                     [M]
+docs/ACCESS_LEVELS.md                                              [M]
+    Routes, shared CSS (.page-back-link, .deletion-requested-banner,
+    modal textarea styling), and the new tier/workflow documented.
+
+Verified: full end-to-end regression (publish -> deletion request
+-> stays public -> reviewer queue -> approve -> hidden -> admin's
+categorized deleted-reports page -> repost -> hard delete) passed
+against a freshly-migrated database; clean vite build; zero
+conflict markers after merging onto four intervening upstream
+commits (schema-drift fix, app.db untracking, gate-screen
+refactor, Reveal-wrapper back-link fix).
