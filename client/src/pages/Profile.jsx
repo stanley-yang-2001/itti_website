@@ -12,7 +12,7 @@ import Avatar from '../components/Avatar.jsx';
 import {
   fetchSavedObservatoryCharts, deleteSavedObservatoryChart,
   fetchFavoriteReports, unfavoriteReport,
-  fetchMyReports,
+  fetchMyReports, csrfFetch,
 } from '../api.js';
 import '../styles/Profile.css';
 
@@ -177,7 +177,7 @@ export default function Profile() {
       );
       setUnreadCount((prev) => Math.max(0, prev - 1));
       try {
-        await fetch(`/api/notifications/${notification.id}/read`, { method: 'POST', credentials: 'include' });
+        await csrfFetch(`/api/notifications/${notification.id}/read`, { method: 'POST' });
       } catch {
         // Non-critical - worst case it shows as unread again next load.
       }
@@ -192,7 +192,7 @@ export default function Profile() {
     setUnreadCount(0);
     setSelectedNotificationIds(new Set());
     try {
-      await fetch('/api/notifications/read-all', { method: 'POST', credentials: 'include' });
+      await csrfFetch('/api/notifications/read-all', { method: 'POST' });
     } catch {
       loadNotifications();
       loadUnreadCount();
@@ -226,9 +226,8 @@ export default function Profile() {
     setSelectedNotificationIds(new Set());
     setBulkActionPending(true);
     try {
-      await fetch('/api/notifications/read', {
+      await csrfFetch('/api/notifications/read', {
         method: 'POST',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ids }),
       });
@@ -252,9 +251,8 @@ export default function Profile() {
     setSelectedNotificationIds(new Set());
     setBulkActionPending(true);
     try {
-      await fetch('/api/notifications/delete', {
+      await csrfFetch('/api/notifications/delete', {
         method: 'POST',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ids }),
       });

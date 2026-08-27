@@ -30,6 +30,9 @@ const Signup = lazy(() => import('./pages/SignUp.jsx'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword.jsx'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword.jsx'));
 const VerifyResetCode = lazy(() => import('./pages/VerifyResetCode.jsx'));
+const VerifyEmail = lazy(() => import('./pages/VerifyEmail.jsx'));
+const NotFound = lazy(() => import('./pages/NotFound.jsx'));
+const SearchResults = lazy(() => import('./pages/SearchResults.jsx'));
 const Unavailable = lazy(() => import('./pages/Unavailable.jsx'));
 const Publish = lazy(() => import('./pages/Publish.jsx'));
 const ReportPublish = lazy(() => import('./pages/ReportPublish.jsx'));
@@ -93,6 +96,7 @@ export default function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/verify" element={<VerifyResetCode />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
         {/* Kept for any reset link already emailed before this deploy
             (1-hour TTL) - see reset_password()'s docstring in app.py.
             New requests go through /forgot-password -> /reset-password/verify. */}
@@ -156,6 +160,12 @@ export default function App() {
             current viewer (see _can_view_report in app.py) - the same
             server-side gate every other report route already relies on. */}
         <Route path="/reports/:id" element={<ReportView />} />
+        <Route path="/search" element={<SearchResults />} />
+
+        {/* Must stay LAST - React Router matches routes in declaration
+            order for a given specificity, and "*" matches literally
+            anything, so any route after this one would be unreachable. */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
       </Suspense>
       </PageTransition>

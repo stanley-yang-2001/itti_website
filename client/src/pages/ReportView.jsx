@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import { favoriteReport, unfavoriteReport, fetchFavoriteReportIds, requestReportDeletion } from '../api.js';
+import { favoriteReport, unfavoriteReport, fetchFavoriteReportIds, requestReportDeletion, csrfFetch } from '../api.js';
 import Reveal from '../components/Reveal.jsx';
 import SEO from '../components/SEO.jsx';
 import DeleteReportModal from '../components/DeleteReportModal.jsx';
@@ -138,7 +138,7 @@ export default function ReportView() {
   }
 
   async function handleInstantDelete() {
-    const res = await fetch(`/api/reports/${report.id}`, { method: 'DELETE', credentials: 'include' });
+    const res = await csrfFetch(`/api/reports/${report.id}`, { method: 'DELETE' });
     if (res.ok) {
       navigate('/reports');
     } else {

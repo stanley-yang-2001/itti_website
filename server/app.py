@@ -38,6 +38,8 @@ import json
 import io
 import os
 import re
+import secrets
+import hmac
 import tempfile
 from datetime import datetime, timedelta
 
@@ -74,7 +76,7 @@ from models.document import (
 from models.report import (
     create_report, get_report, get_all_reports, get_published_reports, get_pending_reports,
     get_changes_requested_reports, get_deletion_requested_reports, get_deleted_reports,
-    get_reports_by_uploader,
+    get_reports_by_uploader, search_published_reports,
     delete_report, restore_report, hard_delete_report, resubmit_report, set_report_category,
     request_report_deletion, reports_to_public_dicts, REPORT_CATEGORIES,
 )
@@ -93,6 +95,9 @@ from models.user_event import create_user_event, get_events_by_user, CRUDAction
 from models.password_reset_token import create_reset_token, get_valid_token, mark_token_used
 from models.password_reset_code import (
     create_reset_code, verify_code, invalidate_active_codes, MAX_VERIFY_ATTEMPTS,
+)
+from models.email_verification_code import (
+    create_verification_code, verify_code as verify_email_code,
 )
 from models.saved_chart import (
     create_saved_chart, get_saved_chart, get_saved_charts_by_user, delete_saved_chart,
@@ -115,8 +120,8 @@ from models.fellow import (
 from storage import get_storage
 import image_processing
 from email_backend import (
-    get_email_backend, send_password_reset_code_email, send_donation_confirmation_email,
-    send_enrollment_confirmation_email,
+    get_email_backend, send_password_reset_code_email, send_email_verification_code_email,
+    send_donation_confirmation_email, send_enrollment_confirmation_email,
 )
 import validation
 
@@ -226,6 +231,96 @@ app.config["MAX_CONTENT_LENGTH"] = 25 * 1024 * 1024  # 25 MB
 # browser. CLIENT_ORIGIN still needs updating to the real frontend domain
 # once one exists - that part isn't code-solvable yet.
 CORS(app, supports_credentials=True, origins=[CLIENT_ORIGIN])
+
+# ---------------------------------------------------------------------------
+# CSRF protection (double-submit cookie pattern)
+# ---------------------------------------------------------------------------
+# Why this approach specifically: this is a pure JSON API authenticated by a
+# cookie (see the session config above), not server-rendered HTML forms, so
+# Flask-WTF's form-field-based CSRF token doesn't fit naturally - there's no
+# <form> for it to inject a hidden field into. The double-submit cookie
+# pattern works cleanly with fetch()+CORS instead: the browser holds a
+# csrf_token cookie (readable by JS, unlike the HttpOnly session cookie
+# above) and the frontend echoes it back in an X-CSRF-Token header on every
+# state-changing request. A cross-site attacker can trick a browser into
+# *sending* a request with the ambient session cookie attached (the actual
+# CSRF vulnerability), but can't read the csrf_token cookie themselves
+# (blocked by the same-origin policy) to also set that header correctly -
+# so a forged request is missing/wrong on the one thing that matters.
+#
+# This layers on top of, not instead of, SESSION_COOKIE_SAMESITE=Lax above -
+# Lax alone already blocks the cookie on cross-site POSTs in modern
+# browsers, but doesn't cover every historical/edge-case browser behavior,
+# and defense-in-depth here is cheap.
+CSRF_COOKIE_NAME = "csrf_token"
+CSRF_HEADER_NAME = "X-CSRF-Token"
+# Reused by every route this app already treats as "not a normal browser
+# request with our session cookie attached" - the two Stripe webhooks
+# (server-to-server, authenticated by Stripe's own signature instead) plus
+# any safe/read-only method, which by definition can't change state and so
+# isn't a CSRF target in the first place.
+CSRF_EXEMPT_PATHS = {"/api/donations/webhook", "/api/certifications/webhook"}
+
+
+@app.before_request
+def enforce_csrf():
+    if request.method in ("GET", "HEAD", "OPTIONS"):
+        return None
+    if request.path in CSRF_EXEMPT_PATHS:
+        return None
+
+    cookie_token = request.cookies.get(CSRF_COOKIE_NAME)
+    header_token = request.headers.get(CSRF_HEADER_NAME)
+
+    # compare_digest (constant-time) rather than == - not because the
+    # token itself is secret (the whole point of this pattern is that it's
+    # NOT secret, it's just something an attacker can't also read), but
+    # because there's no reason to leak timing information about a
+    # security comparison when a constant-time one costs nothing extra.
+    if (
+        not cookie_token
+        or not header_token
+        or not hmac.compare_digest(cookie_token, header_token)
+    ):
+        return jsonify({
+            "error": "csrf_failed",
+            "description": "Your session could not be verified. Please refresh the page and try again.",
+        }), 403
+    return None
+
+
+@app.after_request
+def ensure_csrf_cookie(response):
+    """
+    Issues a csrf_token cookie on any response that doesn't already have
+    one - readable by JS (NOT HttpOnly, unlike the session cookie), since
+    the frontend needs to read it back out to set the X-CSRF-Token header
+    on its next request. SameSite/Secure mirror the session cookie's own
+    settings (see app.config["SESSION_COOKIE_*"] above) for the same
+    cross-origin reasoning.
+
+    Checks the RESPONSE's own Set-Cookie headers, not request.cookies -
+    request.cookies only reflects what the browser already sent on the
+    way in, so checking that here would miss the case where a route
+    (get_csrf_token() below) already called response.set_cookie() with a
+    specific value earlier in the same response - checking request.cookies
+    instead would then overwrite that value with a second, different
+    random token, and the token this hook just set would silently not
+    match the one get_csrf_token() had already returned in its JSON body.
+    """
+    already_setting_cookie = any(
+        value.startswith(f"{CSRF_COOKIE_NAME}=") for value in response.headers.getlist("Set-Cookie")
+    )
+    if not request.cookies.get(CSRF_COOKIE_NAME) and not already_setting_cookie:
+        response.set_cookie(
+            CSRF_COOKIE_NAME,
+            secrets.token_urlsafe(32),
+            httponly=False,
+            samesite=app.config["SESSION_COOKIE_SAMESITE"],
+            secure=app.config["SESSION_COOKIE_SECURE"],
+            max_age=int(timedelta(days=7).total_seconds()),
+        )
+    return response
 
 # storage_uri="memory://" keeps each rate-limit counter in that worker
 # process's own memory - fine at this app's current scale (no shared
@@ -553,16 +648,62 @@ def health():
     return jsonify({"status": "ok"})
 
 
+@app.get("/api/csrf-token")
+def get_csrf_token():
+    """
+    A GET, so it's never itself subject to the CSRF check above (and
+    doesn't need to be, since it doesn't change any state). The frontend
+    calls this once on app load (see AuthContext.jsx) specifically so a
+    csrf_token cookie is guaranteed to exist before the very first
+    state-changing request (login, signup, etc.) - without this, that
+    first POST would arrive with no cookie yet to compare against and
+    get rejected by enforce_csrf(), a chicken-and-egg problem the plain
+    after_request hook alone can't solve for a request that never has a
+    prior GET.
+
+    Reuses the existing cookie if the browser already sent one (request.
+    cookies reflects what was already set - most calls to this route
+    after the first will already have it), otherwise generates a fresh
+    one directly here rather than relying on ensure_csrf_cookie() to
+    notice it's missing: that hook runs on the RESPONSE and has no way to
+    also report the value back in this response's JSON body, since by
+    the time it runs this view function has already returned. Returning
+    it in the body (not just the cookie) lets the frontend read it
+    immediately from this call's result rather than needing to parse
+    document.cookie in a separate step right after.
+    """
+    token = request.cookies.get(CSRF_COOKIE_NAME) or secrets.token_urlsafe(32)
+    response = jsonify({"csrf_token": token})
+    response.set_cookie(
+        CSRF_COOKIE_NAME,
+        token,
+        httponly=False,
+        samesite=app.config["SESSION_COOKIE_SAMESITE"],
+        secure=app.config["SESSION_COOKIE_SECURE"],
+        max_age=int(timedelta(days=7).total_seconds()),
+    )
+    return response
+
+
 # ---------------------------------------------------------------------------
 # Auth (Google Sign-In + email/password)
 # ---------------------------------------------------------------------------
 
 @app.post("/api/auth/google")
+@limiter.limit("20 per minute")
 def auth_google():
     """
     Body: { "credential": "<Google ID token JWT from the frontend button>" }
     Verifies the token with Google, creates the user if new (always at
     ROLE_BASIC), and starts a Flask session (cookie-based).
+
+    Rate limited same as the reasoning for every other auth route here -
+    even though a valid credential requires an actual Google account (this
+    isn't guessable the way a password is), the route still does real work
+    per request (a network call to Google to verify the JWT, a DB lookup/
+    write) with no cost to an attacker submitting garbage tokens just to
+    burn server time, and no rate limit at all was a gap relative to every
+    other route in this file that touches auth/session state.
     """
     body = request.get_json(silent=True) or {}
     credential = body.get("credential")
@@ -609,7 +750,13 @@ def auth_google():
             # why this specifically means "was this a password account they
             # hadn't used Google with before").
             linked_existing_account = user.google_sub is None and user.password_hash is not None
-            update_user(user.id, google_sub=google_sub, name=user.name or name, picture_url=user.picture_url or picture_url)
+            # email_verified=True unconditionally here too, even if they
+            # were already verified - Google just independently proved
+            # ownership of this exact email address, which is at least as
+            # strong a guarantee as the emailed-code flow this account
+            # may or may not have completed.
+            update_user(user.id, google_sub=google_sub, name=user.name or name,
+                        picture_url=user.picture_url or picture_url, email_verified=True)
         else:
             user = create_user(google_sub=google_sub, email=email, name=name, picture_url=picture_url)
 
@@ -651,6 +798,14 @@ def auth_signup():
     belongs to a previously soft-deleted account instead, reactivates it
     with the new name/password rather than erroring - their old
     documents/event history come back with it.
+
+    Does NOT log the user in - unlike before email verification existed,
+    a fresh signup starts unverified (email_verified=False - see that
+    column's own comment in models/user.py) and /api/auth/login refuses
+    to authenticate an unverified account. Instead, this sends a 6-digit
+    code and the response tells the frontend to route to the "enter your
+    code" screen (see /api/auth/verify-email below), the same pattern
+    already used for password reset.
     """
     body = request.get_json(silent=True) or {}
     email = (body.get("email") or "").strip().lower()
@@ -674,7 +829,12 @@ def auth_signup():
         # They previously deleted this account. Treat signing up again with
         # the same email as reactivating it (with the new password/name)
         # rather than a dead end - their old documents/event history are
-        # still attached to this same row and come back with it.
+        # still attached to this same row and come back with it. Their
+        # prior verification status is intentionally NOT reset to False -
+        # if they'd verified this email before, Google-linked it, or this
+        # is a re-signup after a failed verification attempt on a still-
+        # unverified row, either way falling through to the same
+        # send-a-code path below is correct and harmless either way.
         password_hash = generate_password_hash(password)
         update_user(existing.id, password_hash=password_hash, name=name or existing.name)
         restore_user(existing.id)
@@ -685,21 +845,138 @@ def auth_signup():
         user = create_user(email=email, password_hash=password_hash, name=name)
         logger.info("signup user_id=%s", user.id)
 
-    session.clear()
-    session["user_id"] = user.id
-    session.permanent = True
+    if user.email_verified:
+        # Already verified (e.g. reactivating a previously-verified
+        # account) - log them in immediately, same as before email
+        # verification existed, since there's nothing left to prove.
+        session.clear()
+        session["user_id"] = user.id
+        session.permanent = True
+        return jsonify(user.to_public_dict()), 201
 
-    return jsonify(user.to_public_dict()), 201
+    try:
+        raw_code = create_verification_code(user.id)
+        send_email_verification_code_email(email_backend, user.email, raw_code)
+        logger.info("signup verification code sent user_id=%s", user.id)
+    except Exception:
+        # Unlike forgot_password()'s deliberate silence (see that route's
+        # own comment on why a send failure there must be invisible to
+        # the caller) - here the account genuinely isn't usable without a
+        # code, so the person needs to know sending failed rather than
+        # being left staring at a "check your email" screen for an email
+        # that never arrived. Logged for operators either way.
+        logger.exception("signup verification code email failed to send user_id=%s", user.id)
+        abort(500, description="Your account was created, but we couldn't send the verification email. Please try resending it.")
+
+    return jsonify({"id": user.id, "email": user.email, "needs_verification": True}), 201
+
+
+@app.post("/api/auth/verify-email")
+@limiter.limit("10 per hour")
+def verify_email_route():
+    """
+    Body: { "email": "...", "code": "..." }
+    Marks the account verified and logs the user in - entering the
+    correct code proves email ownership, same reasoning as
+    /api/auth/forgot-password/verify logging the user in on a correct
+    reset code.
+    """
+    body = request.get_json(silent=True) or {}
+    email = (body.get("email") or "").strip().lower()
+    code = (body.get("code") or "").strip()
+
+    generic_invalid = jsonify({"error": "invalid_email_or_code", "description": "That code doesn't match."})
+
+    if not email or not EMAIL_RE.match(email) or not code:
+        return generic_invalid, 400
+
+    user = get_user_by_email(email)
+    if user is None:
+        return generic_invalid, 400
+
+    result = verify_email_code(user.id, code)
+
+    if result == "ok":
+        update_user(user.id, email_verified=True)
+        user = get_user(user.id)
+        session.clear()
+        session["user_id"] = user.id
+        session.permanent = True
+        logger.info("email verified user_id=%s", user.id)
+        return jsonify(user.to_public_dict())
+
+    if result == "too_many_attempts":
+        abort(429, description="Too many incorrect attempts. Please request a new code.")
+    if result == "expired":
+        abort(400, description="This code has expired. Please request a new one.")
+    abort(400, description="That code doesn't match. Please check it and try again.")
+
+
+@app.post("/api/auth/resend-verification")
+@limiter.limit("5 per hour")
+def resend_verification_route():
+    """
+    Body: { "email": "..." }
+    Same generic-response shape as /api/auth/forgot-password/resend, for
+    the same email-enumeration reason - but this one intentionally DOES
+    let the caller know if the account is already verified (nothing to
+    resend) or doesn't exist, unlike the password-reset flow. Signup
+    already told this exact person their own account's email a moment
+    ago (the 201 response includes it) - there's no new information
+    being leaked to a stranger that they couldn't already get by simply
+    trying to sign up with that email and seeing the 409.
+    """
+    body = request.get_json(silent=True) or {}
+    email = (body.get("email") or "").strip().lower()
+
+    if not email or not EMAIL_RE.match(email):
+        abort(400, description="A valid email is required")
+
+    user = get_user_by_email(email)
+    if user is None:
+        abort(404, description="No account found for that email")
+    if user.email_verified:
+        return jsonify({"message": "This account is already verified - you can log in."})
+
+    try:
+        raw_code = create_verification_code(user.id)
+    except RuntimeError as e:
+        return jsonify({"message": str(e)})
+
+    try:
+        send_email_verification_code_email(email_backend, user.email, raw_code)
+        logger.info("verification code resent user_id=%s", user.id)
+    except Exception:
+        logger.exception("resend verification code email failed to send user_id=%s", user.id)
+        abort(500, description="Could not send the verification email. Please try again in a moment.")
+
+    return jsonify({"message": "A new verification code has been sent."})
 
 
 @app.post("/api/auth/login")
-@limiter.limit("10 per minute")
+@limiter.limit("8 per minute")
+@limiter.limit("30 per hour")
 def auth_login():
     """
     Body: { "email": "...", "password": "..." }
     Logs in with an email/password account created via /api/auth/signup.
     If the account was previously soft-deleted, a correct password
     reactivates it rather than being rejected.
+
+    Refuses to log in an unverified account (email_verified=False - see
+    that column's own comment in models/user.py) even with the correct
+    password - returns 403 with needs_verification so the frontend can
+    route straight to the code-entry screen instead of a generic error.
+
+    Two limits, not one: "8 per minute" alone would still allow 480
+    attempts/hour if spread out evenly, which is a meaningful budget for
+    guessing a weak password against one known email - this app has no
+    account-level lockout (soft-deleted accounts already reactivate on a
+    correct password, so a per-account failed-attempt counter would need
+    to interact with that), so this IP-based limit is the only real
+    defense against credential-guessing on login. The per-minute limit
+    alone still absorbs a real user mistyping their password a few times
+    in a row without being blocked.
     """
     body = request.get_json(silent=True) or {}
     email = (body.get("email") or "").strip().lower()
@@ -711,6 +988,21 @@ def auth_login():
     user = get_user_by_email(email, include_hidden=True)
     if user is None or not user.password_hash or not check_password_hash(user.password_hash, password):
         abort(401, description="Invalid email or password")
+
+    if not user.email_verified:
+        # Correct password, but the email was never confirmed - a
+        # different failure mode than "wrong credentials", so it gets its
+        # own status code and payload rather than the generic 401 above,
+        # which would otherwise leave the frontend no way to distinguish
+        # "wrong password" from "right password, unverified account."
+        # Returned directly (not abort()) since the extra "email" field
+        # needs to reach the frontend - the shared HTTPException handler
+        # only forwards error/description, not arbitrary extra keys.
+        return jsonify({
+            "error": "email_not_verified",
+            "description": "Please verify your email before logging in.",
+            "email": user.email,
+        }), 403
 
     if user.status == STATUS_HIDDEN:
         # Correct password proves ownership, so treat this as an intentional
@@ -834,6 +1126,7 @@ def resend_reset_code():
 
 
 @app.post("/api/auth/forgot-password/back")
+@limiter.limit("20 per hour")
 def forgot_password_back():
     """
     Body: { "email": "..." }
@@ -843,7 +1136,9 @@ def forgot_password_back():
     user has indicated it's the wrong address. No-ops silently (same
     generic response) if the email isn't registered - nothing to
     invalidate, and this must not become an email-enumeration oracle
-    either.
+    either. Rate limited mainly so this can't be used to grief someone
+    else's in-progress reset by repeatedly invalidating their codes
+    faster than they can act on one.
     """
     body = request.get_json(silent=True) or {}
     email = (body.get("email") or "").strip().lower()
@@ -949,6 +1244,12 @@ def auth_me():
     """Returns the logged-in user, or 401 if no session."""
     user = get_current_user()
     if user is None:
+        # login_required above already returned 401 for an expired/missing
+        # session before this line could even run - reaching here with
+        # user is None specifically means the session's user_id no longer
+        # corresponds to a real account (e.g. the account was hard-deleted
+        # between requests), a different, rarer situation from a timed-out
+        # session.
         session.clear()
         abort(404, description="User not found")
     return jsonify(user.to_public_dict())
@@ -956,6 +1257,7 @@ def auth_me():
 
 @app.post("/api/auth/update-profile")
 @login_required
+@limiter.limit("20 per hour")
 def update_profile():
     """
     Body: { "name"?: str, "current_password"?: str, "new_password"?: str }
@@ -964,6 +1266,11 @@ def update_profile():
     field without the other is a 400. Google-only accounts (no
     password_hash yet) can set an initial password by sending just
     "new_password" with no "current_password".
+
+    Rate limited - this checks current_password against the stored hash
+    when changing password, which is otherwise brute-forceable by anyone
+    who has (or has stolen/fixated) a valid session, same as any other
+    password-verification endpoint in this file.
     """
     user = get_current_user()
     body = request.get_json(silent=True) or {}
@@ -1009,12 +1316,19 @@ def auth_logout():
 
 @app.delete("/api/auth/me")
 @login_required
+@limiter.limit("10 per hour")
 def delete_account():
     """
     Soft-deletes the logged-in user's account: sets status to 0
     (hidden) rather than removing the row. Their documents and event
     history stay intact. Logs the deletion as a DELETE event, then
     clears the session.
+
+    Rate limited as defense-in-depth even though this doesn't check a
+    password (there's nothing to brute-force) - a destructive action
+    with no confirmation step beyond "are you logged in" is worth
+    throttling against a buggy client retry-looping or a replayed
+    request, same reasoning as everywhere else in this file.
     """
     user = get_current_user()
     delete_user(user.id)
@@ -1733,6 +2047,24 @@ def list_reports():
     limit, offset = parse_pagination_args()
     reports, total = get_published_reports(limit=limit, offset=offset)
     return paginated_json_response(reports_to_public_dicts(reports), total, limit, offset)
+
+
+@app.get("/api/reports/search")
+@limiter.limit("60 per minute")
+def search_reports_route():
+    """
+    ?q=<query> - public, no login required. Backs the sitewide search
+    bar (see SearchBar.jsx) - a small, fixed-size preview of matching
+    PUBLISHED reports (title or description), not a paginated browse.
+    Returns [] for a blank/missing query rather than 400ing, so a
+    frontend that fires this on every keystroke doesn't need special-
+    case handling for an empty search box.
+    """
+    query_text = (request.args.get("q") or "").strip()
+    if not query_text:
+        return jsonify([])
+    reports = search_published_reports(query_text, limit=5)
+    return jsonify(reports_to_public_dicts(reports))
 
 
 @app.get("/api/reports/pending")

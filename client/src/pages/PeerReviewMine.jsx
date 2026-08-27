@@ -7,7 +7,7 @@ import PublisherAccessGate from '../components/PublisherAccessGate.jsx';
 import DeleteReportModal from '../components/DeleteReportModal.jsx';
 import Reveal from '../components/Reveal.jsx';
 import SEO from '../components/SEO.jsx';
-import { requestReportDeletion } from '../api.js';
+import { requestReportDeletion, csrfFetch } from '../api.js';
 import '../styles/PeerReview.css';
 
 /**
@@ -67,9 +67,8 @@ export default function PeerReviewMine() {
   }
 
   async function handleInstantDelete(reportId) {
-    const res = await fetch(`/api/reports/${reportId}`, {
+    const res = await csrfFetch(`/api/reports/${reportId}`, {
       method: 'DELETE',
-      credentials: 'include',
     });
     if (res.ok) {
       loadMine();

@@ -11,6 +11,62 @@
   authenticated and `User.status` (which just tracks soft-deleted
   accounts, unrelated to permissions).
 
+## Session inactivity timeout
+
+A session is cleared after 30 minutes with no authenticated request -
+see `SESSION_INACTIVITY_TIMEOUT` in `server/decorators.py`. This is
+enforced inside `get_current_user()`, the single function every
+`@login_required`/`@roles_required` route (and `/api/auth/me`) calls to
+find the logged-in user - so the timeout applies everywhere those are
+used, not just one route that happens to check it.
+
+**Why 30 minutes:** OWASP classifies an app like this one (accounts
+hold real permissions - publish/delete content, admin/reviewer roles -
+but nothing financial or health-record-level sensitive) as "medium
+risk," for which 15-30 minutes is the consistent recommendation across
+OWASP's own session-management guidance, NIST 800-63B, and PCI-DSS-
+adjacent standards. 30 minutes (the permissive end of that range) was
+chosen to favor usability given this isn't a high-risk app.
+
+**How it works:** the session dict carries a `last_active` timestamp,
+stamped to "now" on every request that finds a valid session.
+`get_current_user()` compares that timestamp to now on the *next*
+request - if more than 30 minutes have elapsed, the session is cleared
+and treated exactly as if the person had never logged in (a 401 with
+`{"reason": "session_expired"}`, distinguishing it from a request that
+was never authenticated at all). This is a **sliding** window, not a
+fixed timer from login - any authenticated request resets the clock,
+so someone actively using the site never gets logged out mid-session
+no matter how long they've been on it in total.
+
+This is separate from, and much shorter than,
+`PERMANENT_SESSION_LIFETIME` (7 days, in `app.py`) - that's an absolute
+ceiling on the signed cookie itself (the browser won't even send it back
+after 7 days, inactive or not), while the 30-minute check is an
+application-level rule enforced per-request regardless of what the
+cookie's own expiry says. Both apply; whichever is stricter at any given
+moment is what actually logs someone out.
+
+**Frontend behavior:** `AuthContext.jsx` re-checks `/api/auth/me` every
+5 minutes while a user is logged in (independent of whatever else
+they're doing - e.g. reading a long report with no other clicks would
+otherwise never surface an expired session until they happened to
+click something). On a `session_expired` 401, it redirects to `/login`
+with a message rather than leaving the person on a page that silently
+stopped working.
+
+Separately, `ProtectedRoute.jsx` re-verifies the session fresh with the
+server (via `AuthContext`'s `checkSession()`) on every navigation to a
+protected page, rather than trusting whatever `isAuthenticated` already
+holds in React state - that flag can be up to 5 minutes stale (the
+periodic poll's own interval), so without this a session that expired
+in that gap would let someone through to a protected page anyway, which
+would then just fail its own data-fetching silently instead of
+prompting a login. This is what actually closes the gap for someone
+*navigating to* a protected page after their session expired, as
+opposed to already being on one when it expires (which the periodic
+poll above handles).
+
 ## The four tiers today
 
 | Role        | Granted how                                     | Can do                                       |

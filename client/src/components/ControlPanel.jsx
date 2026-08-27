@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { csrfFetch } from '../api.js';
 import Reveal from './Reveal.jsx';
 import FellowsControl from './FellowsControl.jsx';
 import AccessLevelPanel from './AccessLevelPanel.jsx';
@@ -70,9 +71,8 @@ function RestoreSection({ kind, historyEndpoint, restoreEndpoint, describeSucces
     setRestoring(true);
     setStatus(null);
     try {
-      const res = await fetch(restoreEndpoint, {
+      const res = await csrfFetch(restoreEndpoint, {
         method: 'POST',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ kind, filename: selected }),
       });
@@ -178,9 +178,8 @@ function UploadSection({ title, description, endpoint, historyEndpoint, restoreE
     formData.append('file', file);
 
     try {
-      const res = await fetch(endpoint, {
+      const res = await csrfFetch(endpoint, {
         method: 'POST',
-        credentials: 'include',
         body: formData,
       });
       const data = await res.json().catch(() => ({}));

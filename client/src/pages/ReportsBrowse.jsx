@@ -2,10 +2,11 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import ReportCard from '../components/ReportCard.jsx';
-import { fetchFavoriteReportIds, favoriteReport, unfavoriteReport } from '../api.js';
+import { fetchFavoriteReportIds, favoriteReport, unfavoriteReport, requestReportDeletion, csrfFetch } from '../api.js';
 import { REPORT_CATEGORIES } from '../constants/reportCategories.js';
 import Reveal from '../components/Reveal.jsx';
 import SEO from '../components/SEO.jsx';
+import DeleteReportModal from '../components/DeleteReportModal.jsx';
 import { isBadRequest } from '../utils/apiError';
 import '../styles/Reports.css';
 
@@ -28,6 +29,7 @@ export default function ReportsBrowse() {
   const [reports, setReports] = useState(null); // null = loading
   const [loadError, setLoadError] = useState(null);
   const [favoriteIds, setFavoriteIds] = useState(new Set());
+  const [deletingReport, setDeletingReport] = useState(null); // the report a delete/request-deletion modal is open for
   const [activeCategory, setActiveCategory] = useState(REPORT_CATEGORIES[0]);
 
   // Server-side enforcement is @roles_required("publisher", "admin") on
@@ -144,17 +146,21 @@ export default function ReportsBrowse() {
     }
   }
 
-  async function handleDelete(reportId) {
-    const res = await fetch(`/api/reports/${reportId}`, {
+  async function handleInstantDelete(reportId) {
+    const res = await csrfFetch(`/api/reports/${reportId}`, {
       method: 'DELETE',
-      credentials: 'include',
     });
     if (res.ok) {
       loadReports();
     } else {
       const data = await res.json().catch(() => ({}));
-      setLoadError(data.description || data.error || 'Could not delete report.');
+      throw new Error(data.description || data.error || 'Could not delete report.');
     }
+  }
+
+  async function handleRequestDeletion(reportId, reason) {
+    await requestReportDeletion(reportId, reason);
+    loadReports(); // review_status is now "deletion_requested" - the card/badge should reflect that immediately
   }
 
   return (
@@ -229,7 +235,7 @@ export default function ReportsBrowse() {
                           <ReportCard
                             report={report}
                             canManage={canManageReports && (user?.role === 'admin' || user?.id === report.uploaded_by)}
-                            onDelete={handleDelete}
+                            onDelete={setDeletingReport}
                             isFavorited={favoriteIds.has(report.id)}
                             onToggleFavorite={isAuthenticated ? handleToggleFavorite : undefined}
                             onRead={(r) => navigate(`/reports/${r.id}`)}
@@ -244,6 +250,16 @@ export default function ReportsBrowse() {
           </div>
         </Reveal>
       </div>
+
+      {deletingReport && (
+        <DeleteReportModal
+          report={deletingReport}
+          canInstantDelete={user?.role === 'admin'}
+          onInstantDelete={() => handleInstantDelete(deletingReport.id)}
+          onRequestDeletion={(reason) => handleRequestDeletion(deletingReport.id, reason)}
+          onClose={() => setDeletingReport(null)}
+        />
+      )}
     </div>
   );
 }

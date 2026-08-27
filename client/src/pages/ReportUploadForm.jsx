@@ -4,6 +4,7 @@ import {
   MAX_REPORT_DESCRIPTION_LENGTH, MAX_REPORT_COMBINED_BYTES,
 } from '../utils/formValidation.js';
 import { REPORT_CATEGORIES, DEFAULT_REPORT_CATEGORY } from '../constants/reportCategories.js';
+import { csrfFetch } from '../api.js';
 
 /**
  * Publisher/admin-only upload form for the Reports page. The actual
@@ -53,9 +54,8 @@ export default function ReportUploadForm({ onUploaded, onCancel }) {
     if (image) formData.append('image', image);
 
     try {
-      const res = await fetch('/api/reports', {
+      const res = await csrfFetch('/api/reports', {
         method: 'POST',
-        credentials: 'include',
         body: formData,
       });
       const data = await res.json().catch(() => ({}));
