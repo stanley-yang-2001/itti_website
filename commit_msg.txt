@@ -1,10 +1,10 @@
-Starting from "what's missing for a fully functional site," here's everything landed, in commit order on the database branch:
+docs: rewrite Observatory user guide with bolded controls + bullets
 
-f605ead — 404 page + email verification (signup no longer auto-logs-in; login blocks unverified accounts)
-8bc9b88 — CSRF protection (double-submit cookie pattern, every mutating request across the whole client migrated)
-9da7b95 — Terms-of-Service content added to Privacy Policy (marked draft, needs legal review)
-0794458 — Database backup documentation + fixed a real gap (production DB had zero backup capability due to a missing cluster_name)
-8acd986 — Rate-limiting review (tightened login, closed 5 unrated auth-route gaps)
-(sitewide search commit) — navbar search, full results page, backend search endpoint
-eae3c6b — automated test suites for everything above
-(pending) — content: update Dr. Igweobi's fellowship bio (title/credentials) and spell out GTBI/ETTI in the homepage mission statement
+- Restructure USER_GUIDE_STEPS body into text/bold segments so button,
+  tab, and checkbox names render bold and are visually distinct from
+  guide narration.
+- Add per-step bullets array for supplementary detail, trimmed out of
+  the main paragraph to keep each step scannable.
+- Update Docs.jsx to render the new segment/bullets shape.
+- Add docs-card-bullets styling in Docs.css.
+- Log progress in commit_msg.txt.
