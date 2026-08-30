@@ -53,3 +53,6 @@ server/fellow_uploads/
 # request that got committed by mistake) - removed from tracking
 # alongside this rule; see git log if that history needs revisiting.
 *.patch
+
+# commit message
+commit_msg.txt
