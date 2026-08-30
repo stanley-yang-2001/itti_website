@@ -84,17 +84,19 @@ export default function SearchResults() {
       <SEO path="/search" title={query ? `Search: ${query}` : 'Search'} noindex />
       <div className="search-results-content">
         <Reveal delay={0}>
-          <h1>Search</h1>
-          <form onSubmit={handleSubmit} className="search-results-form">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Search reports, fellows, countries…"
-              autoComplete="off"
-            />
-            <button type="submit" className="btn btn-primary">Search</button>
-          </form>
+          <div>
+            <h1>Search</h1>
+            <form onSubmit={handleSubmit} className="search-results-form">
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="Search reports, fellows, countries…"
+                autoComplete="off"
+              />
+              <button type="submit" className="btn btn-primary">Search</button>
+            </form>
+          </div>
         </Reveal>
 
         {!query.trim() && (
