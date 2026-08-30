@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import ReportCard from '../components/ReportCard.jsx';
-import { fetchFavoriteReportIds, favoriteReport, unfavoriteReport, requestReportDeletion, csrfFetch } from '../api.js';
+import { fetchFavoriteReportIds, favoriteReport, unfavoriteReport, requestReportDeletion } from '../api.js';
 import { REPORT_CATEGORIES } from '../constants/reportCategories.js';
 import Reveal from '../components/Reveal.jsx';
 import SEO from '../components/SEO.jsx';
@@ -130,7 +130,7 @@ export default function Reports() {
   }
 
   async function handleInstantDelete(reportId) {
-    const res = await csrfFetch(`/api/reports/${reportId}`, {
+    const res = await fetch(`/api/reports/${reportId}`, {
       method: 'DELETE',
     });
     if (res.ok) {

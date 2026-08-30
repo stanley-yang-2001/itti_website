@@ -76,9 +76,9 @@ from models.document import (
 from models.report import (
     create_report, get_report, get_all_reports, get_published_reports, get_pending_reports,
     get_changes_requested_reports, get_deletion_requested_reports, get_deleted_reports,
-    get_reports_by_uploader, search_published_reports,
+    get_reports_by_uploader,
     delete_report, restore_report, hard_delete_report, resubmit_report, set_report_category,
-    request_report_deletion, reports_to_public_dicts, REPORT_CATEGORIES, REVIEW_STATUS_PENDING,
+    request_report_deletion, reports_to_public_dicts, REPORT_CATEGORIES,
 )
 from models.report_review import (
     record_review, get_reviews_for_report, reviews_to_public_dicts, ReviewError,
