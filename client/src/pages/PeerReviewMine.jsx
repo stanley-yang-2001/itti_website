@@ -7,7 +7,7 @@ import PublisherAccessGate from '../components/PublisherAccessGate.jsx';
 import DeleteReportModal from '../components/DeleteReportModal.jsx';
 import Reveal from '../components/Reveal.jsx';
 import SEO from '../components/SEO.jsx';
-import { requestReportDeletion, csrfFetch } from '../api.js';
+import { requestReportDeletion } from '../api.js';
 import '../styles/PeerReview.css';
 
 /**
@@ -67,7 +67,7 @@ export default function PeerReviewMine() {
   }
 
   async function handleInstantDelete(reportId) {
-    const res = await csrfFetch(`/api/reports/${reportId}`, {
+    const res = await fetch(`/api/reports/${reportId}`, {
       method: 'DELETE',
     });
     if (res.ok) {
@@ -153,13 +153,7 @@ export default function PeerReviewMine() {
                         Deletion requested - awaiting a reviewer's decision. It stays published until then.
                       </p>
                     )}
-                    <ReportCard
-                      report={report}
-                      canManage
-                      onDelete={setDeletingReport}
-                      onEdit={(r) => navigate(`/reports/${r.id}/edit`)}
-                      onRead={(r) => navigate(`/reports/${r.id}`)}
-                    />
+                    <ReportCard report={report} canManage onDelete={setDeletingReport} onRead={(r) => navigate(`/reports/${r.id}`)} />
                     <PeerReviewPanel report={report} currentUser={user} onDecided={handleDecided} />
                   </div>
                 ))}

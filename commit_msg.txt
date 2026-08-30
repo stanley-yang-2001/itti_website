@@ -1,45 +1,108 @@
-Update country trauma profiles: fix citations and references for 24 countries
+Add reviewer role and publisher-report deletion workflow (request →
+reviewer approval → admin repost/permanent-delete)
 
-Cross-referenced two source docs (country-trauma-profiles-referenced-audit.docx
-and remainder-country-trauma-profiles-finalized.docx, covering all 249
-countries between them) against the live country_profiles.json and applied
-the following corrections:
+server/models/user.py                                        [M]
+    New ROLE_REVIEWER, added to VALID_ROLES - sits between
+    publisher and admin. promote_user.py and the admin role-update
+    route already work generically off VALID_ROLES.
 
-Citation fixes (wrong/mismatched author cited in-text vs. reference list):
-  Afghanistan, Cameroon, Central African Republic, Cyprus, Eritrea,
-  Indonesia, Iran, Western Sahara
+server/models/report.py                                      [M]
+    New REVIEW_STATUS_DELETION_REQUESTED. New columns:
+    pending_deletion_reason, pending_deletion_requested_at,
+    deleted_via ("deletion_review" | "admin" - tracks how a
+    published report was soft-deleted). New functions:
+    request_report_deletion(), cancel_deletion_request(),
+    get_deletion_requested_reports(), get_deleted_reports() (admin
+    view - includes both deletion paths). delete_report() now
+    accepts via= and resets review_status back to "published" when
+    approved through review (same state an admin's direct delete
+    leaves a report in, so "repost" is correct either way).
 
-New references added (previously cited in-text but missing from the
-reference list):
-  Afghanistan, Bosnia and Herzegovina, Serbia, Haiti, Indonesia, Iran, Iraq
+server/models/report_review.py                                [M]
+    New record_deletion_review() - a SINGLE reviewer/admin decision,
+    final immediately either way (not vote-counted like the publish
+    workflow). Self-review blocked, same rule as record_review().
 
-Unsupported/uncited citations removed from body text:
-  Bahrain, India, Kenya, Lebanon, Mexico, Mozambique, Nigeria, Rwanda,
-  Sudan, Syria
+server/models/notification.py                                 [M]
+    Two new notification types for the uploader when their deletion
+    request is approved/denied.
 
-Content fix:
-  Cabo Verde - rewrote an overstated/unsupported sentence about volcanic
-  disaster impact
+server/validation.py                                           [M]
+    New deletion_reason check - presence required, length-capped.
 
-Data cleanup:
-  Åland Islands - removed a stray auto-generated meta-commentary paragraph
-  that had been accidentally merged into the profile as real content
+server/migrations/versions/c1a9ddadbaec_...py                  [A]
+    Adds the three new Report columns.
 
-Updated both the live data file and the canonical source docx that
-country_profiles_extract.py rebuilds it from, verified byte-for-byte
-identical output by re-running the extract pipeline end-to-end. Previous
-canonical docx backed up per the existing repo convention.
+server/app.py                                                  [M]
+    - _can_view_report: a deletion_requested report is now public,
+      same as published (it stays visible throughout review).
+    - DELETE /api/reports/<id>: publisher/reviewer deleting their
+      own PUBLISHED report now 409s (use request-deletion instead);
+      still instant for anything not yet published, and always
+      instant for admin (deleted_via="admin" recorded).
+    - New: POST .../request-deletion, POST .../deletion-review,
+      GET /api/reports/deletion-requests, GET /api/reports/deleted,
+      POST .../repost.
+    - Reviewer added to every report-specific @roles_required(
+      "publisher", "admin") route (view/upload/vote on new
+      submissions) - reviewer inherits publisher's abilities, per
+      "above publisher, below admin."
 
-Note: the audit doc also contains a Kosovo entry with no corresponding
-country code in country_data.json — intentionally left out pending a
-decision on adding a new country code/route.
+client/src/components/DeleteReportModal.jsx                    [A]
+    Shared modal used by every report-deleting page. Branches on
+    review_status: published needs a typed reason and calls
+    request-deletion; anything else deletes instantly.
 
-Also fixes a crash on the Search Results page: Reveal.jsx calls
-React.Children.only(children), which throws unless it receives exactly
-one element. The first <Reveal> in SearchResults.jsx wrapped two
-siblings (an <h1> and a <form>), triggering "React.Children.only
-expected to receive a single React element child" any time /search
-rendered. Wrapped both in a single <div> so Reveal only ever sees one
-child; confirmed the page's CSS uses descendant selectors
-(.search-results-content h1, .search-results-form), not direct-child
-selectors, so the extra wrapper doesn't affect styling.
+client/src/components/DeletionReviewPanel.jsx                  [A]
+    Approve/deny panel for a single deletion request - no vote
+    count, unlike PeerReviewPanel.
+
+client/src/components/DeletedReportsControl.jsx                [A]
+    Small Control-tab panel linking to the new admin page.
+
+client/src/pages/PeerReviewDeletions.jsx                       [A]
+    New page at /peer-review/deletions - reviewer/admin only (not
+    publisher). Third tab alongside Awaiting Review / My
+    Submissions.
+
+client/src/pages/DeletedReportsPage.jsx                        [A]
+    New admin-only page at /admin/deleted-reports - categorized
+    like the public Reports page, checkbox multi-select, bulk
+    repost or bulk permanent-delete (confirmed via modal).
+
+client/src/pages/Reports.jsx                                   [M]
+client/src/pages/PeerReviewMine.jsx                             [M]
+client/src/pages/ReportView.jsx                                [M]
+    All three: delete now opens DeleteReportModal instead of
+    deleting directly; a deletion_requested report shows a status
+    banner. ReportView.jsx's canManage also fixed to include
+    reviewer (previously publisher-only).
+
+client/src/components/ReportCard.jsx                           [M]
+    onDelete now passes the full report object instead of just its
+    id, so callers can branch on review_status.
+
+client/src/pages/PeerReview.jsx                                 [M]
+client/src/components/ControlPanel.jsx                          [M]
+client/src/components/AccessLevelPanel.jsx                       [M]
+    Nav tab / panel / role-dropdown wiring for the above.
+
+client/src/api.js                                                [M]
+    requestReportDeletion, reviewDeletionRequest,
+    fetchDeletionRequestedReports, fetchDeletedReportsAdmin,
+    repostReport, hardDeleteReport.
+
+client/src/App.jsx                                                [M]
+client/src/styles/App.css                                         [M]
+client/src/styles/Control.css                                     [M]
+docs/ACCESS_LEVELS.md                                              [M]
+    Routes, shared CSS (.page-back-link, .deletion-requested-banner,
+    modal textarea styling), and the new tier/workflow documented.
+
+Verified: full end-to-end regression (publish -> deletion request
+-> stays public -> reviewer queue -> approve -> hidden -> admin's
+categorized deleted-reports page -> repost -> hard delete) passed
+against a freshly-migrated database; clean vite build; zero
+conflict markers after merging onto four intervening upstream
+commits (schema-drift fix, app.db untracking, gate-screen
+refactor, Reveal-wrapper back-link fix).
