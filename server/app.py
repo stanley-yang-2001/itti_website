@@ -78,7 +78,7 @@ from models.report import (
     get_changes_requested_reports, get_deletion_requested_reports, get_deleted_reports,
     get_reports_by_uploader, search_published_reports,
     delete_report, restore_report, hard_delete_report, resubmit_report, set_report_category,
-    request_report_deletion, reports_to_public_dicts, REPORT_CATEGORIES,
+    request_report_deletion, reports_to_public_dicts, REPORT_CATEGORIES, REVIEW_STATUS_PENDING,
 )
 from models.report_review import (
     record_review, get_reviews_for_report, reviews_to_public_dicts, ReviewError,
@@ -2271,6 +2271,92 @@ def _save_report_upload(user_id, file, image):
     return file_path, file_type, file_size_bytes, file.filename, image_path, image_mime_type
 
 
+def _save_report_edit_uploads(user_id, existing_file_size_bytes, file, image):
+    """
+    Like _save_report_upload above, but both `file` and `image` are
+    optional - used by the "edit while pending_review" flow (POST
+    /api/reports/<id>/edit), where a publisher may be changing only
+    the text fields, only the cover image, only the report file, or
+    any combination, unlike a first upload or a changes_requested
+    resubmission, both of which always bring a new file.
+
+    Returns a dict of resubmit_report() kwargs covering only whatever
+    was actually replaced - e.g. {} if neither file nor image was
+    given, or just {"image_path": ..., "image_mime_type": ...} if only
+    the image changed. resubmit_report() leaves any field not present
+    in this dict untouched, so the caller can pass it straight through
+    as **kwargs.
+
+    Combined-size validation (MAX_REPORT_COMBINED_BYTES) is checked
+    against whichever of file/image are actually being replaced,
+    using existing_file_size_bytes as the file side of that check when
+    the file itself isn't being replaced - so swapping in a large
+    cover image on a report that already has a large file is still
+    caught, without re-validating a file that isn't changing.
+    """
+    has_new_file = file is not None and file.filename != ""
+    has_new_image = image is not None and image.filename != ""
+
+    result = {}
+    new_file_size = existing_file_size_bytes or 0
+    new_image_size = 0
+    ext = None
+
+    if has_new_file:
+        ext = os.path.splitext(file.filename)[1].lower()
+        if ext not in ALLOWED_REPORT_FILE_EXTENSIONS:
+            abort(400, description="Reports must be a PDF or Word document (.pdf, .doc, .docx)")
+        file.stream.seek(0, os.SEEK_END)
+        new_file_size = file.stream.tell()
+        file.stream.seek(0)
+        if new_file_size > MAX_UPLOAD_BYTES:
+            abort(400, description=f"File exceeds the {MAX_UPLOAD_BYTES // (1024 * 1024)}MB limit")
+        if new_file_size == 0:
+            abort(400, description="File is empty")
+
+    if has_new_image:
+        image_ext = os.path.splitext(image.filename)[1].lower()
+        if image_ext not in ALLOWED_REPORT_IMAGE_EXTENSIONS:
+            abort(400, description="Cover image must be a PNG, JPG, or WEBP file")
+        image.stream.seek(0, os.SEEK_END)
+        new_image_size = image.stream.tell()
+        image.stream.seek(0)
+        if new_image_size > MAX_REPORT_IMAGE_BYTES:
+            abort(400, description=f"Cover image exceeds the {MAX_REPORT_IMAGE_BYTES // (1024 * 1024)}MB limit")
+
+    if new_file_size + new_image_size > MAX_REPORT_COMBINED_BYTES:
+        combined_mb = MAX_REPORT_COMBINED_BYTES / (1024 * 1024)
+        abort(
+            400,
+            description=(
+                f"Report file and cover image together must be under {combined_mb:.1f}MB "
+                f"(currently {(new_file_size + new_image_size) / (1024 * 1024):.1f}MB combined)."
+            ),
+        )
+
+    if has_new_file:
+        file_path, file_size_bytes = report_storage.save(user_id, file.filename, file)
+        result["file_path"] = file_path
+        result["file_type"] = ext.lstrip(".")
+        result["file_size_bytes"] = file_size_bytes
+        result["original_filename"] = file.filename
+
+    if has_new_image:
+        try:
+            Image.open(image.stream).verify()
+        except Exception:
+            if has_new_file:
+                report_storage.delete(result["file_path"])
+            abort(400, description="Cover image could not be read as a valid image file")
+        image.stream.seek(0)
+
+        image_path, _ = report_storage.save(user_id, image.filename, image)
+        result["image_path"] = image_path
+        result["image_mime_type"] = image.mimetype
+
+    return result
+
+
 @app.post("/api/reports")
 @roles_required("publisher", "reviewer", "admin")
 @limiter.limit("20 per hour")
@@ -2396,6 +2482,79 @@ def resubmit_report_route(report_id):
         image_mime_type=image_mime_type,
     )
     logger.info("report resubmitted id=%s by user_id=%s new_version=%s", report_id, user.id, updated.version)
+
+    return jsonify(updated.to_public_dict())
+
+
+@app.post("/api/reports/<int:report_id>/edit")
+@login_required
+@limiter.limit("20 per hour")
+def edit_report_route(report_id):
+    """
+    Multipart form fields:
+      - "title", "description", "category": string, required - this
+        route is meant to feel like resubmitting the same form used to
+        publish the report in the first place, prefilled, not a
+        partial patch, so all three are always sent.
+      - "file": optional new .pdf/.doc/.docx - omit to keep the
+        current file.
+      - "image": optional new cover image - omit to keep the current
+        one (or the lack of one).
+
+    Only usable by the report's own uploader, and only while it's
+    still pending_review - i.e. sitting in the peer review queue with
+    no decision made yet. A report already in changes_requested has
+    its own dedicated flow at POST /api/reports/<id>/resubmit (which
+    also carries a note back to the reviewer who requested changes);
+    a published, rejected, or deletion_requested report is past the
+    point where "editing" like this makes sense.
+
+    Like resubmit_report_route, this bumps version and resets
+    review_status to pending_review - since approvals/rejections in
+    report_review.py are scoped to `version`, that clears the current
+    approve/reject vote count for the new version without touching the
+    old version's review history. Category is applied via
+    set_report_category() as a separate call, since resubmit_report()
+    deliberately doesn't touch category (see its own docstring) - it's
+    not a peer-reviewable content field anywhere else in this app, and
+    keeping it out of resubmit_report() means this route is the only
+    place category changes are tied to a version bump/review reset.
+    """
+    user = get_current_user()
+    report = get_report(report_id)
+    if report is None or report.uploaded_by != user.id:
+        abort(404, description="Report not found")
+    if report.review_status != REVIEW_STATUS_PENDING:
+        abort(400, description="This report can only be edited while it's awaiting review.")
+
+    title = (request.form.get("title") or "").strip()
+    description = (request.form.get("description") or "").strip()
+    category = (request.form.get("category") or "").strip()
+
+    error = validation.validate_all([
+        ("report_title", title),
+        ("report_description", description),
+        ("report_category", category),
+    ])
+    if error:
+        abort(400, description=error)
+
+    upload_fields = _save_report_edit_uploads(
+        user.id, report.file_size_bytes, request.files.get("file"), request.files.get("image")
+    )
+
+    # resubmit_report() unconditionally overwrites resubmission_note
+    # (unlike title/description, which it only touches if not None) -
+    # pass the report's current value through rather than clearing it,
+    # since a plain edit here shouldn't erase a genuine note left over
+    # from an earlier changes_requested -> pending_review resubmission.
+    resubmit_report(
+        report_id, title=title, description=description,
+        resubmission_note=report.resubmission_note, **upload_fields
+    )
+    updated = set_report_category(report_id, category)
+
+    logger.info("report edited id=%s by user_id=%s new_version=%s", report_id, user.id, updated.version)
 
     return jsonify(updated.to_public_dict())
 

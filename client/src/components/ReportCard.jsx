@@ -27,6 +27,15 @@ function formatFileSize(bytes) {
  * caller needs review_status to decide whether this is an instant
  * delete or a request-deletion-with-reason (see DeleteReportModal.jsx).
  *
+ * onEdit: optional. Called with the FULL report object (same as
+ * onDelete) when the person clicks Edit - only ever passed for a
+ * report that's both the viewer's own and still pending_review (see
+ * PeerReviewMine.jsx), since editing anything else redirects to
+ * either the dedicated Resubmit flow (changes_requested) or isn't
+ * possible at all (published/rejected/deletion_requested). Omit it
+ * and no Edit button renders, same pattern as isFavorited/
+ * onToggleFavorite above.
+ *
  * onRead: navigates to this report's own page (/reports/:id, see
  * ReportView.jsx). Always shown - unlike the star, reading a report
  * needs no login.
@@ -40,7 +49,7 @@ function formatFileSize(bytes) {
  * (and what a scanning reader can rely on being there) never shifts
  * between reports.
  */
-export default function ReportCard({ report, canManage, onDelete, isFavorited, onToggleFavorite, onRead }) {
+export default function ReportCard({ report, canManage, onDelete, onEdit, isFavorited, onToggleFavorite, onRead }) {
   return (
     <div className="report-card">
       {report.has_image && (
@@ -95,14 +104,27 @@ export default function ReportCard({ report, canManage, onDelete, isFavorited, o
               Download
             </a>
           </div>
-          {canManage && (
-            <button
-              type="button"
-              className="report-card-delete"
-              onClick={() => onDelete(report)}
-            >
-              Delete
-            </button>
+          {(onEdit || canManage) && (
+            <div className="report-card-actions-right">
+              {onEdit && report.review_status === 'pending_review' && (
+                <button
+                  type="button"
+                  className="report-card-edit"
+                  onClick={() => onEdit(report)}
+                >
+                  Edit
+                </button>
+              )}
+              {canManage && (
+                <button
+                  type="button"
+                  className="report-card-delete"
+                  onClick={() => onDelete(report)}
+                >
+                  Delete
+                </button>
+              )}
+            </div>
           )}
         </div>
       </div>

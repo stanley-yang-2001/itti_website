@@ -36,6 +36,7 @@ const SearchResults = lazy(() => import('./pages/SearchResults.jsx'));
 const Unavailable = lazy(() => import('./pages/Unavailable.jsx'));
 const Publish = lazy(() => import('./pages/Publish.jsx'));
 const ReportPublish = lazy(() => import('./pages/ReportPublish.jsx'));
+const ReportEdit = lazy(() => import('./pages/ReportEdit.jsx'));
 const PublishGlobeData = lazy(() => import('./pages/PublishGlobeData.jsx'));
 const Docs = lazy(() => import('./pages/Docs.jsx'));
 const Donate = lazy(() => import('./pages/Donate.jsx'));
@@ -151,6 +152,16 @@ export default function App() {
             the comment atop ReportPublish.jsx. Linked from the "Publish
             a Report" section of /reports. */}
         <Route path="/reports/publish" element={<ReportPublish />} />
+        {/* Same not-wrapped-in-ProtectedRoute reasoning as above -
+            ReportEdit.jsx does its own auth/ownership/review_status
+            gating, mirroring ReportPublish.jsx. Linked from an Edit
+            option in Profile > Publications and from My Submissions
+            (see ReportCard.jsx's onEdit prop) for a report still
+            pending_review. More specific than the /reports/:id route
+            below (3 segments vs 2), so react-router ranks it first
+            regardless of declaration order - no ambiguity between the
+            two. */}
+        <Route path="/reports/:id/edit" element={<ReportEdit />} />
         {/* A real page (not a same-page modal) so a specific report has
             its own shareable/bookmarkable URL and works with the
             browser back button - see the comment atop ReportView.jsx.

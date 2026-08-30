@@ -153,7 +153,13 @@ export default function PeerReviewMine() {
                         Deletion requested - awaiting a reviewer's decision. It stays published until then.
                       </p>
                     )}
-                    <ReportCard report={report} canManage onDelete={setDeletingReport} onRead={(r) => navigate(`/reports/${r.id}`)} />
+                    <ReportCard
+                      report={report}
+                      canManage
+                      onDelete={setDeletingReport}
+                      onEdit={(r) => navigate(`/reports/${r.id}/edit`)}
+                      onRead={(r) => navigate(`/reports/${r.id}`)}
+                    />
                     <PeerReviewPanel report={report} currentUser={user} onDecided={handleDecided} />
                   </div>
                 ))}

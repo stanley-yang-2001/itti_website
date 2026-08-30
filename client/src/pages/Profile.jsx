@@ -436,6 +436,7 @@ export default function Profile() {
                           );
                           const needsChanges = report.review_status === 'changes_requested';
                           const isRejected = report.review_status === 'rejected';
+                          const isPending = report.review_status === 'pending_review';
                           return (
                             <div key={report.id} className="profile-publication-item">
                               <div className="profile-publication-row">
@@ -459,6 +460,15 @@ export default function Profile() {
                                       onClick={() => setResubmittingId(report.id)}
                                     >
                                       Resubmit
+                                    </button>
+                                  )}
+                                  {isPending && (
+                                    <button
+                                      type="button"
+                                      className="btn btn-secondary profile-publication-resubmit-btn"
+                                      onClick={() => navigate(`/reports/${report.id}/edit`)}
+                                    >
+                                      Edit
                                     </button>
                                   )}
                                 </div>

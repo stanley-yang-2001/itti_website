@@ -1,10 +1,45 @@
-docs: rewrite Observatory user guide with bolded controls + bullets
+Update country trauma profiles: fix citations and references for 24 countries
 
-- Restructure USER_GUIDE_STEPS body into text/bold segments so button,
-  tab, and checkbox names render bold and are visually distinct from
-  guide narration.
-- Add per-step bullets array for supplementary detail, trimmed out of
-  the main paragraph to keep each step scannable.
-- Update Docs.jsx to render the new segment/bullets shape.
-- Add docs-card-bullets styling in Docs.css.
-- Log progress in commit_msg.txt.
+Cross-referenced two source docs (country-trauma-profiles-referenced-audit.docx
+and remainder-country-trauma-profiles-finalized.docx, covering all 249
+countries between them) against the live country_profiles.json and applied
+the following corrections:
+
+Citation fixes (wrong/mismatched author cited in-text vs. reference list):
+  Afghanistan, Cameroon, Central African Republic, Cyprus, Eritrea,
+  Indonesia, Iran, Western Sahara
+
+New references added (previously cited in-text but missing from the
+reference list):
+  Afghanistan, Bosnia and Herzegovina, Serbia, Haiti, Indonesia, Iran, Iraq
+
+Unsupported/uncited citations removed from body text:
+  Bahrain, India, Kenya, Lebanon, Mexico, Mozambique, Nigeria, Rwanda,
+  Sudan, Syria
+
+Content fix:
+  Cabo Verde - rewrote an overstated/unsupported sentence about volcanic
+  disaster impact
+
+Data cleanup:
+  Åland Islands - removed a stray auto-generated meta-commentary paragraph
+  that had been accidentally merged into the profile as real content
+
+Updated both the live data file and the canonical source docx that
+country_profiles_extract.py rebuilds it from, verified byte-for-byte
+identical output by re-running the extract pipeline end-to-end. Previous
+canonical docx backed up per the existing repo convention.
+
+Note: the audit doc also contains a Kosovo entry with no corresponding
+country code in country_data.json — intentionally left out pending a
+decision on adding a new country code/route.
+
+Also fixes a crash on the Search Results page: Reveal.jsx calls
+React.Children.only(children), which throws unless it receives exactly
+one element. The first <Reveal> in SearchResults.jsx wrapped two
+siblings (an <h1> and a <form>), triggering "React.Children.only
+expected to receive a single React element child" any time /search
+rendered. Wrapped both in a single <div> so Reveal only ever sees one
+child; confirmed the page's CSS uses descendant selectors
+(.search-results-content h1, .search-results-form), not direct-child
+selectors, so the extra wrapper doesn't affect styling.
