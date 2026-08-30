@@ -40,7 +40,7 @@ function formatFileSize(bytes) {
  * (and what a scanning reader can rely on being there) never shifts
  * between reports.
  */
-export default function ReportCard({ report, canManage, onDelete, isFavorited, onToggleFavorite, onRead }) {
+export default function ReportCard({ report, canManage, onDelete, onEdit, isFavorited, onToggleFavorite, onRead }) {
   return (
     <div className="report-card">
       {report.has_image && (

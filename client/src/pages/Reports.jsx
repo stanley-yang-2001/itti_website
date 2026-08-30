@@ -132,7 +132,6 @@ export default function Reports() {
   async function handleInstantDelete(reportId) {
     const res = await fetch(`/api/reports/${reportId}`, {
       method: 'DELETE',
-      credentials: 'include',
     });
     if (res.ok) {
       loadReports();

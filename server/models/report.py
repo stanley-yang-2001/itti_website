@@ -24,7 +24,7 @@ state, and hiding it never affects its review progress.
 
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, BigInteger
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, BigInteger, or_
 from sqlalchemy.orm import relationship
 
 from .database import Base, Session
@@ -357,6 +357,45 @@ def get_published_reports(include_hidden=False, limit=DEFAULT_PAGE_SIZE, offset=
         total = query.count()
         reports = query.order_by(Report.created_at.desc()).offset(offset).limit(limit).all()
         return reports, total
+    finally:
+        session.close()
+
+
+def search_published_reports(query_text, limit=5):
+    """
+    A lightweight, public search over PUBLISHED+visible reports only -
+    matches query_text against title OR description, case-insensitive.
+    Backs the sitewide search bar (see SearchBar.jsx) - deliberately a
+    separate function from get_published_reports() above rather than
+    adding a search= param to it, since that function's contract (used
+    by the main Reports page, no search concept there at all) shouldn't
+    change shape for a caller that only exists elsewhere.
+
+    Unlike get_all_reports()'s admin search (title-only, any
+    review_status), this is intentionally public-safe: only ever
+    returns reports every visitor can already see, and searches
+    description text too since a sitewide search is more likely to be
+    a topic/keyword lookup than someone hunting for an exact title they
+    already know. Capped at a small fixed limit (no pagination) - this
+    is preview-of-results, not a full report browser; the "see all
+    results" link routes to /reports/browse with the same query instead.
+    """
+    if not query_text or not query_text.strip():
+        return []
+    session = Session()
+    try:
+        pattern = f"%{query_text.strip()}%"
+        return (
+            session.query(Report)
+            .filter(
+                Report.review_status == REVIEW_STATUS_PUBLISHED,
+                Report.status == STATUS_VISIBLE,
+                or_(Report.title.ilike(pattern), Report.description.ilike(pattern)),
+            )
+            .order_by(Report.created_at.desc())
+            .limit(limit)
+            .all()
+        )
     finally:
         session.close()
 
